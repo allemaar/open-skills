@@ -1,0 +1,3 @@
+@DOC id=bad-syntax-demo title="Gate-fires fixture — malformed; the public parser must reject this"
+@INTENT goal "deliberately malformed: missing ver=, pipe separators dropped, broken tokens"
+@STEP rid step:one | n=notanint | op=

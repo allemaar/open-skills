@@ -1,0 +1,65 @@
+@DOC ver=2.0 | id=insight-assess | title="Structured Decision Evaluation — Pros/Cons/Impact/Verdict" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Evaluate an approach, decision, option, or implementation across multiple dimensions and deliver a committed recommendation" | trigger="user runs /assess, asks for evaluation/comparison/impact analysis, or wants a structured pros-cons-recommendation pass"
+@STAMP ts:ts=2026-05-09T00:00:00Z | src=human | method=manual
+
+# --- Governance ---
+
+@SEC name="Governance"
+@RULE rid=rule:concrete | lvl=MUST | when="listing pros and cons" | then="cite actual code, libraries, or patterns. No vague generalizations."
+@RULE rid=rule:full-quality | lvl=MUST | when="evaluating" | then="check performance, DX, and maintainability — not just correctness"
+@RULE rid=rule:consistent-dims | lvl=MUST | when="comparing multiple options" | then="use the same dimensions across all options"
+@RULE rid=rule:no-execution | lvl=MUST_NOT | when="assessing" | then="make changes, write code, or execute — evaluation only"
+@RULE rid=rule:no-hedge | lvl=MUST_NOT | when="rendering verdict" | then="hedge without a clear verdict — always commit to a recommendation"
+@RULE rid=rule:caveats | lvl=SHOULD | when="recommending PROCEED" | then="note caveats or conditions even if minor"
+@RULE rid=rule:alternatives | lvl=SHOULD | when="recommending RECONSIDER or REJECT" | then="suggest concrete alternatives"
+
+# --- Phase 1: Frame the Decision ---
+
+@SEC name="Phase 1 — Frame the Decision"
+@STEP rid=step:frame | n:int=1 | op=std:ai.prompt@v1 | args=[task="Identify what is being assessed: specific approach, decision between options, implementation pattern, or architectural direction. Load relevant context — files, docs, KIs, skills. Define what we are optimizing for and the constraints."] | out=[ref:framing] | note="Phase 1 — define the subject and the optimization target."
+@CHECK rid=check:framed | assert="ref:framing has clear subject" | fail=ABORT | msg="Cannot assess without a clear subject. Ask the user to clarify before proceeding."
+
+# --- Phase 2: Dimensional Analysis ---
+
+@SEC name="Phase 2 — Dimensional Analysis"
+@NOTE text="Skip dimensions that don't apply. Score applicable dimensions STRONG/ADEQUATE/WEAK with justification."
+
+@STEP rid=step:pros-cons | n:int=2 | op=std:ai.prompt@v1 | args=[task="List concrete advantages and disadvantages. Cite actual code, dependencies, or patterns. If comparing multiple options, do side-by-side."] | in=[ref:framing] | out=[ref:pros-cons] | rules=[rid:rule:concrete,rid:rule:consistent-dims]
+
+@MAP name=QualityDimensions | pairs=["Performance"->"bundle size, runtime overhead, N+1 queries, render cycles","Code-quality"->"DRY violations, coupling, testability, readability","Developer-experience"->"API ergonomics, debugging ease, onboarding friction","Maintainability"->"upgrade path, community support, lock-in risk"]
+@STEP rid=step:quality | n:int=3 | op=std:ai.prompt@v1 | args=[task="Score each applicable dimension in QualityDimensions as STRONG, ADEQUATE, or WEAK with justification."] | in=[ref:framing,ref:pros-cons] | use=[cfg:QualityDimensions] | out=[ref:quality] | rules=[rid:rule:full-quality]
+
+@MAP name=ImpactDimensions | pairs=["Blast-radius"->"which packages, apps, or files are affected","Migration-effort"->"if replacing something","Breaking-changes"->"if any","Learning-curve"->"for the team","Future-flexibility"->"does this open or close doors?"]
+@STEP rid=step:impact | n:int=4 | op=std:ai.prompt@v1 | args=[task="Map each impact dimension. Classify overall impact as LOW, MEDIUM, or HIGH."] | in=[ref:framing,ref:quality] | use=[cfg:ImpactDimensions] | out=[ref:impact]
+
+# --- Phase 3: Alignment Check ---
+
+@SEC name="Phase 3 — Alignment Check"
+@STEP rid=step:alignment | n:int=5 | op=std:ai.prompt@v1 | args=[task="Check alignment with repo coding standards, existing patterns, prior art in skills and KIs. If this introduces a new pattern, is it justified?"] | in=[ref:framing,ref:quality,ref:impact] | out=[ref:alignment]
+
+# --- Phase 4: Recommendation ---
+
+@SEC name="Phase 4 — Recommendation"
+@MAP name=VerdictOptions | pairs=["all-dimensions-strong-impact-low"->"PROCEED","strong-but-with-caveats"->"PROCEED WITH CAVEATS","mixed-or-high-impact-with-concerns"->"RECONSIDER","weak-or-misaligned"->"REJECT"]
+
+@STEP rid=step:verdict | n:int=6 | op=std:ai.prompt@v1 | args=[task="Synthesize all dimensions into a verdict from VerdictOptions. Provide RATIONALE (1–2 sentences). If PROCEED WITH CAVEATS: list CONDITIONS. If RECONSIDER or REJECT: provide ALTERNATIVES."] | in=[ref:pros-cons,ref:quality,ref:impact,ref:alignment] | use=[cfg:VerdictOptions] | out=[ref:recommendation] | rules=[rid:rule:no-hedge,rid:rule:caveats,rid:rule:alternatives]
+@CHECK rid=check:recommendation | assert="ref:recommendation includes verdict and rationale" | fail=ABORT | msg="Assessment is incomplete without a recommendation delivered to the user."
+
+# --- Downstream ---
+
+@SEC name="Downstream"
+@MAP name=NextCommand | pairs=["verdict-proceed"->"/plan-create","more-options-needed"->"/explore","deeper-review-of-output"->"/critique"]
+
+
+# --- Next Skills ---
+
+@SEC name="Next Skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only; never auto-invoke. Skip silently if the next-skills list is empty."] | in=[] | out=[ref:nsp-offer]
+
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated

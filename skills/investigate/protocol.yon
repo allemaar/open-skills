@@ -1,0 +1,56 @@
+@DOC ver=2.0 | id=investigate | title="Read-Only Fact Gathering — Files, Patterns, Dependencies, Constraints" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Gather facts about the codebase (files, deps, patterns, constraints) without making any changes. Output is a structured fact report, not a plan." | trigger="user runs /investigate or asks to look into, explore the codebase, understand how this works, what files are involved, map dependencies, or wants read-only fact-gathering before deciding"
+@STAMP ts:ts=2026-05-18T00:00:00Z | src=human | method=manual
+
+# --- Governance ---
+
+@SEC name="Governance"
+@RULE rid=rule:read-only | lvl=MUST_NOT | when="investigating" | then="create plans, write code, or make any changes"
+@RULE rid=rule:include-paths | lvl=MUST | when="reporting findings" | then="include actual file paths, not just descriptions"
+
+# --- Caller Options ---
+
+@SEC name="Caller Options"
+@STEP rid=step:cop | n:int=0 | op=std:ai.prompt@v1 | args=[task="Run the Caller Options protocol (caller-options/protocol.yon): triage for material optionality across declared venues and modes; surface to the caller unless one path dominates; bind the chosen mode and venue. Skip if a resolved-invocation marker is present."] | out=[ref:cop-choice]
+@CHECK rid=check:cop | assert="ref:cop-choice is resolved before the skill's own steps run" | fail=WARN | msg="Caller Options should resolve venue and mode before execution."
+
+# --- Phase 1: Context Loading ---
+
+@SEC name="Phase 1 — Context Loading"
+@STEP rid=step:parse-query | n:int=1 | op=std:ai.prompt@v1 | args=[task="Identify target files, directories, or concepts from the user's request."] | out=[ref:targets]
+@STEP rid=step:list-files | n:int=2 | op=std:fs.list@v1 | args=[recursive:bool=true] | in=[ref:targets] | out=[ref:file-tree]
+@STEP rid=step:read-entrypoints | n:int=3 | op=std:fs.read@v1 | args=[paths="package.json, README.md, index files, or front-door files for the target area"] | in=[ref:targets,ref:file-tree] | out=[ref:entrypoints] | note="Read whatever serves as the front door to the target area."
+
+# --- Phase 2: Pattern Discovery ---
+
+@SEC name="Phase 2 — Pattern Discovery"
+@MAP name=DomainSkillRouting | pairs=["UI-task"->"repo-ui-ux-standards","Backend-task"->"repo-coding-standards","Other-domain"->"any matching skill for additional context"]
+
+@STEP rid=step:search-usages | n:int=4 | op=std:fs.search@v1 | args=[task="grep for functions, components, or patterns relevant to the query; follow call sites and import chains"] | in=[ref:targets,ref:entrypoints] | out=[ref:usages]
+@STEP rid=step:load-skills | n:int=5 | op=std:ai.prompt@v1 | args=[task="Identify domain skill that applies and load it for additional context."] | in=[ref:targets] | use=[cfg:DomainSkillRouting] | out=[ref:domain-skill] | note="Optional: skip if no domain skill applies."
+
+# --- Phase 3: Reporting ---
+
+@SEC name="Phase 3 — Reporting"
+@MAP name=ReportSections | pairs=["Files-Found"->"paths to all relevant files, not just descriptions","Patterns-Used"->"architectural or implementation patterns in play","Dependencies"->"what this area depends on; what depends on it","Constraints-Discovered"->"existing conventions, locked APIs, shared types, anything that would constrain a future implementation"]
+
+@STEP rid=step:report | n:int=6 | op=std:ai.prompt@v1 | args=[task="Synthesize findings into a structured fact report using ReportSections."] | in=[ref:file-tree,ref:entrypoints,ref:usages,ref:domain-skill] | use=[cfg:ReportSections] | out=[ref:fact-report] | rules=[rid:rule:include-paths]
+
+# --- Downstream ---
+
+@SEC name="Downstream"
+@MAP name=NextCommand | pairs=["brainstorm-options-from-facts"->"/explore","evaluate-approach-against-constraints"->"/assess","design-implementation-with-known-facts"->"/plan-create"]
+
+
+# --- Next Skills ---
+
+@SEC name="Next Skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only; never auto-invoke. Skip silently if the next-skills list is empty."] | in=[] | out=[ref:nsp-offer]
+
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated

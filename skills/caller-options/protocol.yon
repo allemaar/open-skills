@@ -1,0 +1,61 @@
+@DOC ver=2.0 | id=caller-options | title="Caller Options — Surface Skill Venue & Mode Optionality to the Caller" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="When a participating skill is triggered, detect material optionality across Venue and Mode, evaluate the live options, surface them to the caller, and execute the chosen combination." | trigger="a skill carrying the COP opt-in block is invoked, or the user runs /caller-options directly"
+@STAMP ts:ts=2026-05-18T00:00:00Z | src=human | method=manual
+
+# --- Governance ---
+
+@SEC name="Governance"
+@RULE rid=rule:triage-skip | lvl=MUST | when="exactly one venue and one mode clearly dominate" | then="skip enumerate, assess, and surface — execute the obvious path without prompting the caller"
+@RULE rid=rule:never-delegate | lvl=MUST_NOT | when="the triggered skill is on the never-delegate list" | then="offer a delegated or fan-out venue — never-delegate skills run inline only"
+@RULE rid=rule:self-orch | lvl=MUST_NOT | when="the triggered skill spawns its own sub-agents" | then="wrap it in a delegated venue — COP never nests an orchestrator (depth-2 hazard); such skills run inline only"
+@RULE rid=rule:conservative-venue | lvl=MUST | when="defaulting a venue" | then="default to inline unless VENUE-HEURISTICS clearly favors delegated; offer fan-out only where the skill already parallelizes"
+@RULE rid=rule:tiered-assess | lvl=MUST | when="assessing surviving options" | then="compare inline for two or fewer options; invoke /insight-assess only for three or more"
+@RULE rid=rule:depth-1-brief | lvl=MUST | when="executing a delegated or fan-out venue" | then="the primed brief must be prepended with the COP-RESOLVED marker block (depth 1) — the sub-agent runs its skill and any COP participant it triggers inline, and does not re-enter COP"
+@RULE rid=rule:no-reentry | lvl=MUST_NOT | when="the invocation carries a COP-RESOLVED marker block" | then="re-enter COP — a resolved invocation executes its fixed mode-by-venue combination directly"
+@RULE rid=rule:caller-kind | lvl=MUST | when="surfacing options" | then="for a human caller use AskUserQuestion with the recommended option first; for an agent caller state the options and the pick visibly, honoring caller-options.default-policy"
+@RULE rid=rule:inspect | lvl=MUST | when="accepting delegated or fan-out output" | then="inspect the sub-agent diff or concrete output first — never accept on narrative report alone"
+
+# --- Phase 1: Triage ---
+
+@SEC name="Phase 1 — Triage"
+@STEP rid=step:triage | n:int=1 | op=std:ai.prompt@v1 | args=[task="Read the triggered skill's caller-options declaration (venue values, modes, default-policy) and the current task. Determine whether material optionality exists: more than one venue viable, or more than one mode viable."] | out=[ref:triage] | rules=[rid:rule:triage-skip] | note="Anti-nag gate — most invocations resolve here."
+@CHECK rid=check:optionality | assert="ref:triage shows material optionality" | fail=SKIP | msg="No material optionality — skip Phases 2-4 and execute the dominant path."
+
+# --- Phase 2: Enumerate ---
+
+@SEC name="Phase 2 — Enumerate"
+@STEP rid=step:enumerate | n:int=2 | op=std:ai.prompt@v1 | args=[task="List the viable mode-by-venue combinations. Apply VENUE-HEURISTICS: drop delegated and fan-out for never-delegate-listed or self-orchestrating skills; drop delegated and fan-out when a resolved-invocation marker is present."] | in=[ref:triage] | use=[cfg:VenueValues] | out=[ref:options] | rules=[rid:rule:never-delegate,rid:rule:self-orch,rid:rule:conservative-venue]
+@CHECK rid=check:depth | assert="when a resolved-invocation marker is present, ref:options contains inline venues only" | fail=ABORT | msg="Depth guard: a COP-spawned invocation must not enumerate delegated or fan-out venues."
+@NOTE text="The depth guard fires when the invocation carries a COP-RESOLVED marker block (see the ResolvedMarker note in Config). No harness signal identifies arbitrary sub-agent nesting; the marker's depth-1 field, carried in every primed brief, closes the broader case — a COP-spawned sub-agent runs any COP participant it triggers inline."
+
+# --- Phase 3: Assess ---
+
+@SEC name="Phase 3 — Assess"
+@STEP rid=step:assess | n:int=3 | op=std:ai.prompt@v1 | args=[task="Evaluate the surviving options for cost, context hygiene, and fit. Two or fewer options: compare inline. Three or more: invoke /insight-assess. Produce a recommended option."] | in=[ref:options] | out=[ref:assessed] | rules=[rid:rule:tiered-assess]
+
+# --- Phase 4: Surface ---
+
+@SEC name="Phase 4 — Surface"
+@STEP rid=step:surface | n:int=4 | op=std:ai.prompt@v1 | args=[task="Surface the options to the caller and obtain a choice, honoring the surfacing policy for the caller kind. Human: AskUserQuestion, recommended first. Agent: state options and pick visibly."] | in=[ref:assessed] | use=[cfg:SurfacingPolicy] | out=[ref:choice] | rules=[rid:rule:caller-kind]
+@CHECK rid=check:choice | assert="ref:choice records a single mode-by-venue combination" | fail=ABORT | msg="Cannot execute without a resolved combination."
+
+# --- Phase 5: Execute ---
+
+@SEC name="Phase 5 — Execute"
+@STEP rid=step:execute | n:int=5 | op=std:ai.prompt@v1 | args=[task="Execute the chosen combination. inline: run the skill in the active agent. delegated: build a primed brief reusing the handoff brief schema and activation phrase, prepended with the COP-RESOLVED marker block (see the ResolvedMarker note); spawn one sub-agent; orchestrate; inspect its diff or output before accepting. fan-out: spawn N independent workers, each brief prepended with the COP-RESOLVED block, and reuse orchestrate-mode wave consolidation. The sub-agent receives a resolved invocation and does not re-enter COP."] | in=[ref:choice] | out=[ref:result] | rules=[rid:rule:depth-1-brief,rid:rule:no-reentry,rid:rule:inspect]
+@CHECK rid=check:delegated-gate | assert="when the venue is delegated or fan-out, the sub-agent diff or output was inspected before acceptance" | fail=ABORT | msg="Delegated work must be inspected before acceptance — no narrative-only acceptance."
+
+# --- Config ---
+
+@SEC name="Config"
+@MAP name=VenueValues | pairs=["inline"->"the active agent runs the skill directly","delegated"->"route the skill into one primed sub-agent; the active agent orchestrates","fan-out"->"split into N independent sub-agents; reuse orchestrate-mode wave consolidation"]
+@MAP name=SurfacingPolicy | pairs=["ask"->"surface and wait for the caller's pick — default","recommend"->"state the options and the pick, then proceed without blocking","auto"->"pick the recommended option silently and log the choice"]
+@NOTE text="ResolvedMarker — COP prepends a COP-RESOLVED marker block to every primed brief in Phase 5 (literal format in references/OPT-IN-BLOCK.md). It names the resolved skill, venue, mode, and a depth of 1. A participant's step:cop checks its incoming brief for this block; if present it skips COP and runs the fixed combination. The depth-1 field directs the sub-agent to run any COP participant it itself triggers inline, closing the depth-2 path."
+
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=6 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated

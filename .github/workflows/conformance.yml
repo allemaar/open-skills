@@ -1,0 +1,34 @@
+name: conformance
+
+# Validates every skill's protocol.yon against the public @younndai/yon-parser on
+# every push and PR. The badge in the README reflects this job: green = all skills'
+# protocols are YON-valid; red = a protocol.yon regressed.
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install the public YON parser
+        run: npm install -g @younndai/yon-parser
+      - name: Validate all protocol.yon (strict)
+        run: node tools/conformance.mjs
+      - name: Structural lint (cross-references, names, dual-doc sync)
+        run: node tools/lint.mjs
+      - name: YON-DAG semantic check (dangling refs, unreachable steps)
+        run: node tools/yon-dag.mjs
+      - name: Spine manifest in sync (catalog.yon + catalog.json + llms.txt + skills.graph.yon)
+        run: node tools/spine.mjs --check
+      - name: Validate the YON manifests (catalog + graph are themselves YON)
+        run: |
+          yon validate catalog.yon --profile full
+          yon validate skills.graph.yon --profile full
+      - name: Gate-fires proof (the guards actually reject bad input)
+        run: node tools/gate-fires.mjs

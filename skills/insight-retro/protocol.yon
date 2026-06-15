@@ -1,0 +1,93 @@
+@DOC ver=2.0 | id=insight-retro | title="Post-Implementation Retrospective — Blast Radius, Docs, Skills, Lessons" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Run a structured retrospective after shipping significant work. Map what changed, audit docs, capture patterns, update knowledge, flag follow-up. Observation only — fixes are separate." | trigger="user runs /retro, asks for retrospective, post-mortem, lessons learned, or what changed after completing significant implementation work"
+@STAMP ts:ts=2026-06-04T00:00:00Z | src=human | method=manual
+
+# --- Governance ---
+
+@SEC name="Governance"
+@RULE rid=rule:check-skill-index | lvl=MUST | when="finding reusable patterns" | then="check skill-index first to avoid proposing duplicates"
+@RULE rid=rule:propose-format | lvl=MUST | when="proposing new skills" | then="include skill name, domain family, and estimated content scope"
+@RULE rid=rule:concrete-followup | lvl=MUST | when="identifying tech debt" | then="propose concrete follow-up — not vague observations"
+@RULE rid=rule:significance-criteria | lvl=MUST | when="assessing sidecars" | then="apply significance criteria: >100 LOC, public API, component/hook/route handler/schema"
+@RULE rid=rule:cite-misleading | lvl=MUST | when="finding MISLEADING docs" | then="cite both the doc claim and the contradicting code"
+@RULE rid=rule:no-fix-inline | lvl=MUST_NOT | when="running retro" | then="fix issues in-line — retro is observation only; fixes are separate tasks"
+@RULE rid=rule:propose-high-reuse-now | lvl=SHOULD | when="reuse potential is HIGH" | then="propose creating the skill immediately after retro"
+@RULE rid=rule:streamline-small-blast | lvl=SHOULD | when="blast radius is small (<5 files)" | then="streamline the report to essentials only"
+
+# --- Phase 1: Blast Radius Mapping ---
+
+@SEC name="Phase 1 — Blast Radius Mapping"
+@MAP name=BlastRadiusManifest | pairs=["packages-touched"->"list of packages","apps-touched"->"list of apps","files-cmd"->"created/modified/deleted","new-exports"->"new APIs introduced"]
+@MAP name=BlastRadiusSources | pairs=["plan-files"->"implementation_plan.md, walkthrough.md, task.md","conv-history"->"conversation context","git-diff"->"actual file changes"]
+
+@STEP rid=step:blast-radius | n:int=1 | op=std:fs.search@v1 | args=[task="Identify everything that changed during execution. Group changes by package/app."] | use=[cfg:BlastRadiusSources,cfg:BlastRadiusManifest] | out=[ref:blast-radius]
+@CHECK rid=check:radius-known | assert="ref:blast-radius is documented" | fail=ABORT | msg="Cannot proceed without knowing what changed."
+
+# --- Phase 2: Pattern Extraction ---
+
+@SEC name="Phase 2 — Pattern Extraction"
+@MAP name=PatternFields | pairs=["name"->"short identifier","description"->"what the pattern does","reuse"->"HIGH/MEDIUM/LOW","action"->"new skill | update existing skill | document in KI | skip"]
+@MAP name=PatternSignals | pairs=["new-arch-pattern"->"used in 2+ places","gotcha"->"workaround future work will hit","integration"->"between packages, not yet documented","novel"->"worth codifying"]
+
+@STEP rid=step:patterns | n:int=2 | op=std:ai.prompt@v1 | args=[task="Identify reusable patterns that emerged. For each: name, description, reuse potential (HIGH/MEDIUM/LOW), recommended action."] | in=[ref:blast-radius] | use=[cfg:PatternFields,cfg:PatternSignals] | out=[ref:patterns]
+
+# --- Phase 3: Documentation Audit ---
+
+@SEC name="Phase 3 — Documentation Audit"
+@MAP name=DocSurfaces | pairs=["readme"->"README.md","llms"->"llms.txt","sidecar"->"index.yon, *.yon, *.feature.yon","changelog"->"CHANGELOG.md","barrel"->"index.ts","skill-md"->"SKILL.md (in docs/skills repos)","skill-cross-ref"->"cross-reference maps between skills"]
+@MAP name=SidecarTriggers | pairs=["significant-file"->">100 LOC or public API or component/hook/route handler/schema","new-dir-3-plus"->"new directory with >3 significant files → flag missing index.yon","cross-file-feature"->">2 related files → flag missing *.feature.yon"]
+@MAP name=DocSeverity | pairs=["MISLEADING"->"docs say X, code does Y — cite both","STALE"->"docs describe removed features","MISSING"->"new features/files undocumented","ACCURATE"->"no action"]
+
+@STEP rid=step:doc-audit | n:int=3 | op=std:ai.prompt@v1 | args=[task="For each package/app in blast radius, audit all documentation surfaces. For docs/skills repos: also check SKILL.md description quality, runtime parity, cross-ref maps, front-matter consistency. Consider /skills-audit for full library hygiene."] | in=[ref:blast-radius] | use=[cfg:DocSurfaces] | out=[ref:doc-discovery]
+@STEP rid=step:sidecar-audit | n:int=4 | op=std:ai.prompt@v1 | args=[task="For each significant changed file (per SidecarTriggers): does a colocated .yon exist? If yes, still accurate? If no, should one be created?"] | in=[ref:blast-radius] | use=[cfg:SidecarTriggers] | out=[ref:sidecar-findings] | rules=[rid:rule:significance-criteria]
+@STEP rid=step:readme-accuracy | n:int=5 | op=std:ai.prompt@v1 | args=[task="Verify prose against current code: described APIs accurate? New features documented? Removed features still mentioned?"] | in=[ref:doc-discovery] | out=[ref:readme-findings]
+@STEP rid=step:doc-report | n:int=6 | op=std:ai.prompt@v1 | args=[task="Report findings by severity using DocSeverity."] | in=[ref:doc-discovery,ref:sidecar-findings,ref:readme-findings] | use=[cfg:DocSeverity] | out=[ref:doc-audit] | rules=[rid:rule:cite-misleading]
+
+# --- Phase 4: Knowledge & Skill Assessment ---
+
+@SEC name="Phase 4 — Knowledge & Skill Assessment"
+@MAP name=SkillStatus | pairs=["A"->"skill exists and covers it — no action","B"->"skill exists but incomplete — specify what's missing/outdated","C"->"no skill exists — evaluate reuse (2+ uses, non-obvious decisions, multi-file scope)"]
+
+@STEP rid=step:ki-assess | n:int=7 | op=std:ai.prompt@v1 | args=[task="Cross-reference changes against existing KI summaries. Report: KIs to update (with what changed), KIs to create (with proposed scope), KIs still accurate (no action)."] | in=[ref:blast-radius,ref:patterns] | out=[ref:ki-assessment]
+@STEP rid=step:skill-assess | n:int=8 | op=std:ai.prompt@v1 | args=[task="Load skill-index. Cross-reference patterns/libraries/techniques against existing skills using SkillStatus categories. For C: propose skill name, domain family, key sections, complexity estimate."] | in=[ref:patterns] | use=[cfg:SkillStatus] | out=[ref:skill-assessment] | rules=[rid:rule:check-skill-index,rid:rule:propose-format,rid:rule:propose-high-reuse-now]
+
+# --- Phase 5: Difficulty Analysis ---
+
+@SEC name="Phase 5 — Difficulty Analysis"
+@MAP name=DifficultyFields | pairs=["root-cause"->"why it happened","resolution"->"how it was resolved","prevention"->"preventive measure for the future"]
+
+@STEP rid=step:difficulty | n:int=9 | op=std:ai.prompt@v1 | args=[task="Reflect on execution difficulty: what was harder than expected, what assumptions proved wrong, what took multiple attempts, what external blockers were hit. For each: root cause, resolution, prevention."] | in=[ref:blast-radius] | use=[cfg:DifficultyFields] | out=[ref:difficulty-log]
+
+# --- Phase 6: Tech Debt Inventory ---
+
+@SEC name="Phase 6 — Tech Debt Inventory"
+@MAP name=TechDebtFields | pairs=["item"->"what was deferred","severity"->"LOW/MEDIUM/HIGH","effort"->"estimated","timeline"->"recommended"]
+@MAP name=TechDebtSignals | pairs=["shortcuts"->"taken under time pressure","markers"->"TODO/FIXME/HACK comments added","deferred"->"known limitations or edge cases deferred","test-gaps"->"test coverage gaps","sidecar-gaps"->"sidecar coverage gaps"]
+
+@STEP rid=step:tech-debt | n:int=10 | op=std:ai.prompt@v1 | args=[task="Inventory tech debt introduced or discovered using TechDebtFields and TechDebtSignals."] | in=[ref:blast-radius] | use=[cfg:TechDebtFields,cfg:TechDebtSignals] | out=[ref:tech-debt] | rules=[rid:rule:concrete-followup,rid:rule:no-fix-inline]
+
+# --- Phase 7: Retrospective Report ---
+
+@SEC name="Phase 7 — Retrospective Report"
+@MAP name=ReportSections | pairs=["1-blast-radius"->"summary","2-patterns"->"with recommended actions","3-doc-audit"->"gaps, stale sidecars, README accuracy (MUST-DO vs SHOULD-DO)","4-knowledge-skills"->"KIs and skills to update/create","5-difficulty"->"log","6-tech-debt"->"inventory","7-gate-status"->"for committed work: gate-suite outcome (pass/fail/skipped — why) + any unverified acceptance criterion; name skipped gates and unverified criteria explicitly"]
+
+@STEP rid=step:report | n:int=11 | op=std:ai.prompt@v1 | args=[task="Compile full retrospective report per ReportSections. Present with actionable next steps."] | in=[ref:blast-radius,ref:patterns,ref:doc-audit,ref:ki-assessment,ref:skill-assessment,ref:difficulty-log,ref:tech-debt] | use=[cfg:ReportSections] | out=[ref:retro-report] | rules=[rid:rule:streamline-small-blast]
+@CHECK rid=check:report-complete | assert="ref:retro-report includes all 7 sections" | fail=ABORT | msg="Retrospective is incomplete without this report."
+
+# --- Downstream ---
+
+@SEC name="Downstream"
+@MAP name=NextCommand | pairs=["create-update-flagged-skills"->"/skill-gap"]
+
+
+# --- Next Skills ---
+
+@SEC name="Next Skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only; never auto-invoke. Skip silently if the next-skills list is empty."] | in=[] | out=[ref:nsp-offer]
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated

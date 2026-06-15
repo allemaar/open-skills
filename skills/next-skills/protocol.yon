@@ -1,0 +1,18 @@
+@DOC ver=2.0 | id=next-skills | title="Next Skills protocol (NSP)" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="On a skill's completion, surface its declared successor skills for the caller to pick — offer only, never auto-invoke" | audience=agent
+@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated
+
+@NOTE text="Protocol hook that runs AFTER a skill completes (mirror of caller-options, which runs before). It offers successors; the caller gates every hop. Never blocks a skill from finishing."
+
+@SEC name="Steps"
+@STEP rid=step:read | n:int=1 | op=std:ai.prompt@v1 | args=[task="Read the just-finished skill's next-skills front-matter list. Each entry has skill, phrase (activation phrase), and why (one line). If the list is absent or empty, stop silently — surface nothing."] | out=[ref:recommendations] | rules=[rid:rule:empty-silent,rid:rule:degrade]
+@STEP rid=step:surface | n:int=2 | op=std:human.review@v1 | in=[ref:recommendations] | args=[task="Present the recommendations for the caller to pick, runtime-mapped: Claude Code -> AskUserQuestion (multiSelect, label=skill, description=why); other runtimes -> a numbered prose list, each line 'N. <phrase> — <why>'. Recommendations are offered, never auto-invoked."] | out=[ref:caller-pick] | rules=[rid:rule:offer-only]
+@STEP rid=step:activate | n:int=3 | op=std:ai.prompt@v1 | in=[ref:caller-pick] | args=[task="On the caller's pick, activate the chosen skill(s) via their activation phrase. On no pick, end quietly."] | rules=[rid:rule:loop-safe]
+
+@SEC name="Rules"
+@RULE rid=rule:offer-only | lvl=MUST_NOT | when="surfacing recommendations" | then="auto-invoke any recommended skill — the caller gates every hop"
+@RULE rid=rule:empty-silent | lvl=MUST | when="the next-skills list is absent or empty" | then="stop silently and surface nothing; never block the skill from completing"
+@RULE rid=rule:loop-safe | lvl=MUST | when="recommendations could chain A to B back to A" | then="rely on the caller's per-hop pick; NSP never auto-chains (its equivalent of the COP depth guard)"
+@RULE rid=rule:degrade | lvl=MUST | when="the next-skills skill is missing, unlinked, or unreadable" | then="treat the opt-in as a no-op — the participating skill completes normally"
+
+@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated

@@ -1,0 +1,82 @@
+@DOC ver=2.0 | id=plan-deep-dive | title="Phase-by-Phase Deep Inspection of Multi-Phase Plans" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Pressure-test a multi-phase plan one phase at a time: gaps, quality, future-readiness. Stop at every phase. Never batch or skip." | trigger="user runs /deep-dive, asks to do a deep dive, inspect each phase, look at this more carefully, or check if we are missing anything on an existing plan"
+@STAMP ts:ts=2026-05-09T00:00:00Z | src=human | method=manual
+
+# --- Governance ---
+
+@SEC name="Governance"
+@RULE rid=rule:no-batch | lvl=MUST | when="iterating phases" | then="stop at each phase — never batch or skip"
+@RULE rid=rule:concrete-fixes | lvl=MUST | when="finding gaps" | then="propose concrete fixes — not vague observations"
+@RULE rid=rule:horizons | lvl=MUST | when="assessing future-readiness" | then="consider 3-month and 6-month horizons explicitly"
+@RULE rid=rule:user-approves-amendments | lvl=MUST | when="applying amendments to plan artifact" | then="apply only after user approval in Step 6 — never before"
+@RULE rid=rule:no-lgtm | lvl=MUST_NOT | when="reporting findings" | then="output 'LGTM' or similar without substantive analysis"
+@RULE rid=rule:check-siblings | lvl=SHOULD | when="referencing existing work" | then="load relevant SKILL.md files from skills directory if present"
+
+# --- Escalation Rule ---
+
+@SEC name="Escalation"
+@NOTE text="If phase-by-phase inspection surfaces gaps that require redesigning the plan rather than tweaking it (missing phase, wrong sequencing, fundamental approach issue), stop the deep-dive and recommend /plan-create to redesign."
+
+# --- Phase 1: Load & Enumerate ---
+
+@SEC name="Phase 1 — Load & Enumerate"
+@STEP rid=step:load-plan | n:int=1 | op=std:fs.read@v1 | args=[search="implementation_plan.md, PLAN.md, current multi-phase artifact, or plan referenced inline by user"] | out=[ref:plan]
+@STEP rid=step:enumerate | n:int=2 | op=std:ai.prompt@v1 | args=[task="Extract the ordered list of phases."] | in=[ref:plan] | out=[ref:phases]
+@STEP rid=step:confirm-plan | n:int=3 | op=std:human.review@v1 | args=[task="Present loaded artifact's title and first substantive line. Ask: Is this the correct and current plan? Wait for confirmation before proceeding."] | in=[ref:plan] | out=[ref:plan-confirmed]
+@CHECK rid=check:phases-found | assert="ref:phases is non-empty AND ref:plan-confirmed == true" | fail=ABORT | msg="No phases found or plan not confirmed. Cannot proceed. Identify the plan before continuing."
+
+# --- Phase 2: Iterative Phase Drill-Down ---
+
+@SEC name="Phase 2 — Iterative Phase Drill-Down"
+@NOTE text="Maintain a running verdict log (code block or structured list) updated after each Step 5. The log is cited verbatim in Phase 3 — do not reconstruct from memory."
+
+@MAP name=VerdictLogColumns | pairs=["Phase"->"phase number/name","Verdict"->"PASS/AMEND/RETHINK","Key-Findings"->"named gaps/issues/risks","Amendments-Applied"->"what was changed after user approval"]
+
+# Sub-steps per phase iteration:
+
+@STEP rid=step:read-phase | n:int=4 | op=std:ai.prompt@v1 | args=[task="Read the current phase in full. Summarize scope, deliverables, and dependencies."] | in=[ref:plan] | out=[ref:phase-summary] | note="Iter Step 1 — per phase."
+@STEP rid=step:gap-assess | n:int=5 | op=std:ai.prompt@v1 | args=[task="Gap assessment: omitted edge cases, unstated assumptions, undeclared dependencies, missing error handling, missing validation, incomplete coverage. Minimum: at least one named gap, or explicit 'No gaps found — [reason].' Blank or 'looks good' is not acceptable."] | in=[ref:phase-summary] | out=[ref:gaps] | note="Iter Step 2 — gap assessment."
+@STEP rid=step:quality-assess | n:int=6 | op=std:ai.prompt@v1 | args=[task="Quality assessment: simpler approaches, performance, better abstractions, scope creep, alignment with existing patterns and skills, DRY, naming. Minimum: at least one named issue or explicit 'No quality issues found — [reason].'"] | in=[ref:phase-summary] | out=[ref:quality] | rules=[rid:rule:check-siblings] | note="Iter Step 3 — quality assessment."
+@STEP rid=step:future-assess | n:int=7 | op=std:ai.prompt@v1 | args=[task="Future assessment at 3-month and 6-month horizons: extensibility, breaking change risk, forward compatibility, scalability, tech debt, future migrations. Minimum: at least one named risk or explicit 'No future risks found — [reason].'"] | in=[ref:phase-summary] | out=[ref:future] | rules=[rid:rule:horizons] | note="Iter Step 4 — future assessment."
+
+@MAP name=PhaseVerdicts | pairs=["PASS"->"no significant gaps, quality issues, or future risks","AMEND"->"gaps or improvements found; plan can proceed after targeted fixes","RETHINK"->"stop and redesign — primary deliverable undefined OR undeclared dependency on unplanned work OR approach contradicts a stated constraint/goal"]
+
+@STEP rid=step:phase-verdict | n:int=8 | op=std:ai.prompt@v1 | args=[task="Synthesize gaps/quality/future into a verdict from PhaseVerdicts. Present verdict and findings to user. Do NOT apply amendments yet. Update running verdict log."] | in=[ref:gaps,ref:quality,ref:future] | use=[cfg:PhaseVerdicts,cfg:VerdictLogColumns] | out=[ref:phase-verdict] | rules=[rid:rule:no-lgtm,rid:rule:concrete-fixes] | note="Iter Step 5 — phase verdict, presented."
+
+@STEP rid=step:user-gate | n:int=9 | op=std:human.review@v1 | args=[task="User must acknowledge at least one specific finding by name before gate passes. Blanket 'yes' or 'proceed' is not sufficient. If verdict is PASS with no findings, user must confirm 'no findings noted.'"] | in=[ref:phase-verdict] | out=[ref:user-acknowledgment] | rules=[rid:rule:user-approves-amendments] | note="Iter Step 6 — user gate."
+@STEP rid=step:apply-amendments | n:int=10 | op=std:fs.write@v1 | args=[task="After user approval: apply amendments to the plan artifact."] | in=[ref:user-acknowledgment,ref:phase-verdict] | out=[ref:amended-plan] | note="Iter Step 6 (cont) — apply amendments. Then loop back to step:read-phase for next phase."
+
+@CHECK rid=check:phase-passes | assert="ref:user-acknowledgment confirms at least one finding by name (or 'no findings noted' for PASS)" | fail=ABORT | msg="User gate not satisfied. Do not advance to next phase."
+
+# --- Phase 3: Synthesis ---
+
+@SEC name="Phase 3 — Synthesis"
+@MAP name=SynthesisFields | pairs=["per-phase-verdicts"->"copied from running verdict log","total-amendments"->"count and list","residual-risks"->"findings not resolved by amendments","future-considerations"->"3-month/6-month items surfaced during Step 4 passes","overall-confidence"->"1-10, where 10 = all phases PASS with zero findings, 1 = multiple RETHINK with unresolved issues. State score and primary reason it is not higher."]
+
+@STEP rid=step:synthesize | n:int=11 | op=std:ai.prompt@v1 | args=[task="Produce consolidated deep-dive report using SynthesisFields. Cite per-phase verdicts directly from running verdict log."] | in=[ref:amended-plan] | use=[cfg:SynthesisFields] | out=[ref:final-report]
+@CHECK rid=check:synthesis | assert="ref:final-report includes per-phase-verdicts, total-amendments, residual-risks, future-considerations, overall-confidence" | fail=ABORT | msg="Deep dive incomplete without synthesis."
+
+# --- Verdict Examples (Documentation) ---
+
+@SEC name="Verdict Examples"
+@NOTE text="AMEND example: 'Phase 3 AMEND — missing rollback step identified; added explicit rollback instruction to the phase before advancing.'"
+@NOTE text="RETHINK example: 'Phase 2 RETHINK — primary deliverable (the API schema) was undefined; could not assess completeness. Returned to /plan-create to define it before re-running.'"
+
+# --- Downstream ---
+
+@SEC name="Downstream"
+@MAP name=NextCommand | pairs=["all-phases-PASS"->"/plan-execute","RETHINK-on-any-phase"->"/plan-create"]
+
+
+# --- Next Skills ---
+
+@SEC name="Next Skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only; never auto-invoke. Skip silently if the next-skills list is empty."] | in=[] | out=[ref:nsp-offer]
+
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated

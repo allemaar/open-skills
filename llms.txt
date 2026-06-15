@@ -1,0 +1,64 @@
+# open-skills
+
+> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Each skill is a folder under skills/ with a SKILL.md (plain-language what/when) and, for 31 of 45, a protocol.yon — a declarative, machine-validatable contract of its steps, rules, and gates. Apache-2.0. Read before you trust: nothing executes that you cannot read first.
+
+## About YON
+The protocol.yon files are written in YON (https://github.com/YounndAI/yon), a stream-first data format for AI-agent workflows with a public spec (https://github.com/YounndAI/yon-spec) and an Apache-2.0 reference parser (@younndai/yon-parser). YON is what makes each skill auditable: its rules (MUST / MUST_NOT) and gates (ABORT / WARN) are named, typed objects, not prose.
+
+## For agents — how to install
+No build step, no opaque installer. To install a skill on the user's machine:
+1. Enumerate skills from catalog.json (repo root) — each record carries name, description, triggers, gates, and install commands.
+2. Detect the user's runtime skills dir — use whichever exists: ~/.claude/skills | ~/.codex/skills | ~/.agents/skills.
+3. COPY the skill folder (copy-default, never symlink): `cp -r skills/<name> <runtime>/skills/<name>` (Windows PowerShell: `Copy-Item -Recurse skills/<name> <runtime>/skills/<name>`).
+4. If it ships a protocol.yon, validate it: `npx @younndai/yon-parser validate <runtime>/skills/<name>/protocol.yon --profile <profile>` (profile is in catalog.json).
+That is the whole install: copy a readable folder, validate its declarative contract. No code runs on faith.
+
+## Skills
+- ask-gate [protocol.yon] — The Ask-Gate Protocol (AGP). — triggers: /ask-gate
+- audit-coupled-constant [md-only] — Audit every site of a constant whose value is duplicated across multiple call sites (retry budgets, timeouts, page sizes, magic numbers, feature flags). — triggers: /audit-coupled-constant, audit budget consistency, find all sites of this value, check coupled invariant
+- caller-options [protocol.yon] — The Caller Options protocol (COP). — triggers: /caller-options
+- cold-review [protocol.yon] — Run outside-agent review of actual work artifacts against objectives, with classification, fresh reviewer lenses, evidence-based findings, scoring, and thresholds. — triggers: /cold-review, cold review this, get outside review, have fresh agents inspect this work
+- defuddle [md-only] — Extract clean markdown from web pages via Defuddle CLI (strips nav/ads/clutter, saves tokens). — triggers: read this article, fetch this page, summarize this blog post, pull this doc
+- design-an-interface [md-only] — Generate multiple radically different interface designs for a module, then compare and synthesize. — triggers: /design-an-interface, design an API, explore interface options, compare module shapes
+- double-check [protocol.yon] — Targeted re-verification of a specific claim, output, or decision. — triggers: /double-check, verify this, re-check this, are you sure about this
+- extract-signal [protocol.yon] — An elastic signal-extraction methodology run under /multi-agent-mode. — triggers: /extract-signal, extract the signal on X and present it as Y, gather + vet + report the signal about X
+- github-sync [protocol.yon] — Review the session's git changes, summarize them for approval, then commit and push to GitHub. — triggers: /github-sync, sync to github, commit and push, push this session
+- handoff [protocol.yon] — Generate a structured cold-agent handoff brief (YAML frontmatter + Obsidian markdown + YON blocks) that any fresh LLM session can pick up and execute. — triggers: /handoff, create a handoff, dispatch to a fresh agent, hand this to a cold session
+- handoff-execute [protocol.yon] — Execute a handoff brief with enforced source-read discipline — load the brief's @SOURCES.required tier fully before planning, cite sources per plan step, run @OUTCOME.verify after, emit the retro per @GROUND_TRUTH_REQUIRED. — triggers: /handoff-execute, /handoff-execute <brief-path>
+- improve-codebase-architecture [protocol.yon] — Explore a codebase to find opportunities for architectural improvement by deepening shallow modules (John Ousterhout, "A Philosophy of Software Design"). — triggers: /improve-codebase-architecture, improve architecture, find refactoring opportunities, make this more testable
+- insight-adversarial [protocol.yon] — Multi-pass adversarial critique from dynamically selected personas — including Claude's own POV. — triggers: /insight-adversarial, adversarial, red team this, multi-POV review
+- insight-angles [protocol.yon] — Angle & connection discovery engine. — triggers: /insight-angles, find unseen angles, what connections am I missing, what are we not seeing
+- insight-assess [protocol.yon] — Structured decision evaluation — pros/cons, impact assessment, quality analysis, recommendation. — triggers: /assess, /insight-assess
+- insight-critique [protocol.yon] — Advisory review workflow. — triggers: /critique, review this, critique this, what's wrong with this
+- insight-cross-examine [protocol.yon] — Context-routed deliberation engine. — triggers: /insight-cross-examine, cross-examine this, weigh these options, pick between these and recommend
+- insight-explore [protocol.yon] — Brainstorm 3+ possible implementations before committing. — triggers: /explore, brainstorm options, what are the ways to do this, explore approaches
+- insight-retro [protocol.yon] — Post-implementation retrospective — map blast radius, audit documentation, extract skills, update KIs, document lessons learned. — triggers: /retro, retrospective, post-mortem, lessons learned
+- insight-skill-gap [protocol.yon] — Scan recent work and identify if new skills should be created or existing ones updated. — triggers: /skill-gap, check for skill gaps, what skills should we add, did we miss anything worth capturing
+- investigate [protocol.yon] — Gather facts (files, deps, patterns) without making changes. — triggers: /investigate, look into this, explore the codebase, understand how this works
+- json-canvas [md-only] — Create and edit JSON Canvas files (.canvas) with nodes, edges, groups, and connections. — triggers: make a canvas, build a mind map, draw a flowchart in Obsidian, add nodes to this canvas
+- monorepo-deps [protocol.yon] — End-to-end syncpack + manypkg flow for an npm monorepo: check, fix, update, and maintain `.syncpackrc.json`. — triggers: /monorepo-deps, update deps, sync deps, check deps
+- multi-agent-mode [md-only] — Activate multi-agent mode: the lead agent still works directly but delegates independent helper slices when useful. — triggers: /multi-agent-mode, multi-agent mode, use helper agents, work with subagents
+- new-skill-creator [protocol.yon] — Scaffold a new Agent Skill end-to-end (folder, SKILL.md, optional protocol.yon for dual-doc skills, tri-runtime links for Claude Code + Codex + generic .agents/, commit and push). — triggers: /new-skill-creator, create a skill, make a new skill for X, add a slash command
+- next-skills [protocol.yon] — The Next Skills protocol (NSP). — triggers: /next-skills
+- obsidian-bases [md-only] — Create and edit Obsidian Bases (.base YAML files) with views, filters, formulas, and summaries. — triggers: make a base, build a database view of my notes, add a filter/formula to this base, create a table/card view
+- obsidian-cli [md-only] — Drive a running Obsidian instance via the `obsidian` CLI — search vault, open/create/move notes, toggle tasks, edit properties, reload plugins, run JS, capture errors/screenshots. — triggers: search my vault, open this note in Obsidian, list notes tagged X, reload my plugin
+- obsidian-markdown [md-only] — Write valid Obsidian-Flavored Markdown — wikilinks, embeds, callouts, frontmatter properties, tags, comments. — triggers: write this as an Obsidian note, add a callout, use wikilinks, set frontmatter properties
+- orchestrate-mode [md-only] — Activate orchestrator mode in the current session: the lead agent dispatches isolated worker subagents and does not execute concrete work directly. — triggers: /orchestrate-mode, become an orchestrator, orchestrator mode, delegate everything
+- plan-cleanup [protocol.yon] — Post-execution cleanup — remove planning artifacts and tech debt left behind after a plan runs. — triggers: /plan-cleanup, clean up artifacts, remove the plan file, no tech debt
+- plan-create [protocol.yon] — Propose a phased, gated implementation plan before any work begins. — triggers: /plan-create, make a plan, plan this out, design before coding
+- plan-deep-dive [protocol.yon] — Phase-by-phase deep inspection of any multi-phase plan — stop at each phase and assess completeness, quality, and future-readiness before advancing. — triggers: /deep-dive, do a deep dive, inspect each phase, look at this more carefully
+- plan-evolve [md-only] — Evolve a target to its next version — treat what shipped as v1, plan the next iteration. — triggers: what would v2 look like, evolve this, what's next for this, next iteration of this
+- plan-execute [protocol.yon] — Apply the last approved plan exactly. — triggers: /execute, execute the plan, implement this, do it
+- plan-phases [protocol.yon] — Restructure an existing plan into phases with /verify gates after each phase and critical steps. — triggers: /phase-plan, add phases to this plan, gate this plan, restructure the plan
+- prime-expand [protocol.yon] — Expand a vague gap into concrete questions + named source candidates via a delegated sub-agent — caller sees only the proposed pair for confirm/edit/refuse, never the expansion reasoning. — triggers: /prime-expand, expand on this
+- prime-fetch [protocol.yon] — Run a noisy data-fetching tool call (Grep, Glob, WebFetch, MCP search) on the caller's behalf in a sub-agent's context — only the filtered, proof-of-work-verified digest enters the caller's window. — triggers: /prime-fetch
+- prime-sweep [protocol.yon] — Prime the calling agent with high-signal context from large source surfaces (multiple files, packages, folders) via parallel delegated sub-agents. — triggers: /prime-sweep
+- reflect [md-only] — Lightweight cognitive pause — surface assumptions, uncertainty, and what you'd do differently. — triggers: /reflect, step back and think before continuing
+- self-improve [protocol.yon] — The Self-Improvement Protocol (SIP). — triggers: /self-improve, /self-improve [skill]
+- skills-help [md-only] — The skills library menu — every skill grouped by family, each with a one-line description and a dual-doc/single-doc marker; pass a family name to drill into one family in full detail. — triggers: /skills-help, /skills-help {family}, list my skills, which skill for X
+- verify [protocol.yon] — Formal phase gate — checks intent, plan, and execution artifacts for drift. — triggers: /verify
+- yon-read [md-only] — Read, interpret, or explain existing YON content. — triggers: read this YON, what does this YON mean, explain this @DOC/@RULE/@STEP, summarize this YON
+- yon-write [md-only] — YON Writing & Compilation Mode. — triggers: write YON, convert to YON, create a .yon file, encode this as YON
+
+---
+open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL.

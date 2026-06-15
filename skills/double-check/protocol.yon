@@ -1,0 +1,42 @@
+@DOC ver=2.0 | id=double-check | title="/double-check" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Re-verify a specific plan, output, decision, or document by re-reading the actual sources, adversarially challenging it, proposing improvements, and delivering a verdict" | audience=agent
+@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated
+
+@NOTE text="Re-Read & Improve protocol — not a single-pass gate. Re-read the target fresh, challenge each part, propose improvements, iterate until solid. Not /verify (formal intent/plan/execution gate) and not /insight-critique (advisory output review) — double-check is a targeted re-read of one claim."
+
+@SEC name="Caller Options"
+@STEP rid=step:cop | n:int=0 | op=std:ai.prompt@v1 | args=[task="Run the Caller Options protocol (caller-options/protocol.yon): triage venue optionality (inline vs delegated sub-agent); surface to the caller unless one path clearly dominates; bind the choice. Skip if a resolved-invocation marker is present."] | out=[ref:cop-choice]
+@CHECK rid=check:cop | assert="ref:cop-choice is resolved before the skill's own steps run" | fail=WARN | msg="Caller Options should resolve the venue before execution."
+
+@SEC name="Inputs"
+@INPUT rid=in:target | name="target" | type=artifact | required:bool=true
+
+@SEC name="Phase 1: Scope"
+@STEP rid=step:scope | n:int=1 | op=std:ai.prompt@v1 | in=[rid:in:target] | args=[task="Identify exactly what is being double-checked — a plan, an output, a decision, a document — and load it fresh. Do not rely on prior context or cached understanding."] | out=[ref:scoped-target]
+@CHECK rid=check:target | assert="rid:in:target resolves to a concrete plan, output, decision, or document" | fail=ABORT | msg="Cannot double-check without a clear target. If the target is ambiguous, ask the user before proceeding."
+
+@SEC name="Phase 2: Fresh Re-Read"
+@STEP rid=step:reread | n:int=2 | op=std:ai.prompt@v1 | in=[ref:scoped-target] | args=[task="Re-read the target from scratch as if seeing it for the first time, going back to the ACTUAL sources (files, code, docs). Summarize what it says, what it assumes (implicit and explicit), and what it depends on. List every assumption, stated or unstated."] | out=[ref:reread] | rules=[rid:rule:sources]
+
+@SEC name="Phase 3: Challenge"
+@STEP rid=step:challenge | n:int=3 | op=std:ai.prompt@v1 | in=[ref:reread] | args=[task="Adversarially challenge each part — actively try to find problems. Plans: steps wrong, missing, out of order, unnecessary? Outputs: claims unsupported? Decisions: alternatives considered? Look for gaps/omissions, wrong or unstated assumptions, over- or under-engineering, scope issues, ordering issues, missing dependencies."] | out=[ref:challenge-findings] | rules=[rid:rule:adversarial]
+
+@SEC name="Phase 4: Improve"
+@STEP rid=step:improve | n:int=4 | op=std:ai.prompt@v1 | in=[ref:challenge-findings] | args=[task="For each issue found: state the problem, propose the fix, explain why it is better. If the target is already solid, say so with evidence — but do not stop looking just because it seems fine."] | out=[ref:improvements]
+
+@SEC name="Phase 5: Verdict"
+@STEP rid=step:verdict | n:int=5 | op=std:ai.prompt@v1 | in=[ref:improvements] | args=[task="Deliver one verdict: SOLID (holds up under scrutiny — cite evidence), IMPROVED (issues found and fixes proposed — list them; offer to apply and run another pass), or RETHINK (fundamental problems — explain what must change)."] | out=[ref:verdict] | rules=[rid:rule:evidence,rid:rule:no-rubber-stamp,rid:rule:offer-rerun]
+@CHECK rid=check:verdict | assert="a verdict of SOLID, IMPROVED, or RETHINK is delivered to the user" | fail=ABORT | msg="double-check is incomplete without a verdict."
+@SCHEMA key=verdict | opts=[SOLID,IMPROVED,RETHINK]
+
+@SEC name="Rules"
+@RULE rid=rule:sources | lvl=MUST | when="re-reading the target" | then="go back to the actual sources — never verify from memory or prior analysis alone"
+@RULE rid=rule:adversarial | lvl=MUST | when="challenging the target" | then="actively look for problems; do not just confirm"
+@RULE rid=rule:evidence | lvl=MUST | when="delivering the verdict" | then="cite evidence for every conclusion"
+@RULE rid=rule:no-rubber-stamp | lvl=MUST_NOT | when="concluding" | then="rubber-stamp without substantive analysis"
+@RULE rid=rule:offer-rerun | lvl=SHOULD | when="the verdict is IMPROVED" | then="offer to apply the fixes and run another pass"
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill, draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated

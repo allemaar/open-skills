@@ -1,0 +1,10 @@
+node_modules/
+.DS_Store
+*.log
+
+# Stray agent-runtime / machine-local config must never ship inside a skill
+# (a leaked skills/<name>/.claude/settings.json carried private machine paths once).
+skills/*/.claude/
+skills/*/.codex/
+skills/*/.agents/
+**/settings.local.json

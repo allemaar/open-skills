@@ -1,0 +1,74 @@
+@DOC ver=2.0 | id=improve-codebase-architecture | title="Improve Codebase Architecture — Deepen Shallow Modules" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Explore a codebase, surface architectural friction, and propose module-deepening refactors (Ousterhout, A Philosophy of Software Design) as GitHub issue RFCs. A deep module has a small interface hiding a large implementation." | trigger="user says improve architecture, find refactoring opportunities, make this more testable, this codebase is hard to navigate, consolidate these modules, find coupling problems, write an RFC for this refactor, or asks why tests are brittle / a module is hard to mock / changing one thing always breaks another"
+@STAMP ts:ts=2026-05-18T00:00:00Z | src=human | method=manual
+
+# --- Core Principle ---
+
+@SEC name="Core Principle"
+@NOTE text="A deep module has a small interface hiding a large implementation. Deep modules are more testable, more AI-navigable, and let you test at the boundary instead of inside."
+@RULE rid=rule:deepening-test | lvl=MUST | when="considering any candidate" | then="apply the deepening test — would merging these modules produce a SMALLER combined interface than they have separately? If no, it is reorganization, not deepening — skip it."
+@RULE rid=rule:replace-dont-layer | lvl=MUST | when="planning tests for a deepened module" | then="replace, don't layer — write new tests at the deepened interface boundary, delete now-redundant unit tests on the merged shallow modules, assert on observable outcomes through the public interface not internal state"
+
+# --- Reference: Dependency Categories ---
+
+@SEC name="Reference — Dependency Categories"
+@MAP name=DependencyCategories | pairs=["in-process"->"pure computation, in-memory state, no I/O — always deepenable; merge and test directly","local-substitutable"->"dependencies with local test stand-ins (PGLite for Postgres, memfs for filesystem) — deepenable if the stand-in exists; test the merged module with the stand-in in the suite","remote-but-owned"->"your own services across a network boundary — define a port at the boundary, deep module owns the logic, transport injected; tests use an in-memory adapter, production the real one","true-external"->"third-party services you don't control (Stripe, Twilio) — mock at the boundary; deepened module takes the external dependency as an injected port, tests provide a mock"]
+@NOTE text="The dependency category determines the entire testing strategy — classify each candidate before designing."
+
+# --- Step 1: Explore the Codebase ---
+
+@SEC name="Step 1 — Explore the Codebase"
+@STEP rid=step:explore | n:int=1 | op=std:fs.read@v1 | args=[task="Navigate the codebase organically. Note friction: where understanding one concept requires bouncing between many small files; where modules are so shallow the interface is nearly as complex as the implementation; where pure functions were extracted just for testability while real bugs hide in how they're called; where tightly-coupled modules create integration risk at the seams; which parts are untested or hard to test. The friction you encounter IS the signal — don't follow rigid heuristics."] | out=[ref:friction]
+@RULE rid=rule:no-manufactured-candidates | lvl=MUST_NOT | when="exploration finds no strong candidates" | then="manufacture candidates — say so directly; a thin adapter over a stable external API is correct design, not a problem. Tell the user what you found and why the codebase resists the pattern."
+
+# --- Step 2: Present Candidates ---
+
+@SEC name="Step 2 — Present Candidates"
+@MAP name=CandidateFields | pairs=["cluster"->"which modules/concepts are involved","why-coupled"->"shared types, call patterns, co-ownership of a concept","dependency-category"->"one of the four, with a one-sentence rationale","test-delta"->"name the specific test files that would be deleted, and describe the new boundary tests that replace them"]
+@STEP rid=step:present-candidates | n:int=2 | op=std:ai.prompt@v1 | args=[task="For each genuine candidate that passes the deepening test, present the CandidateFields. Then ask the user: which of these would you like to explore?"] | in=[ref:friction] | use=[cfg:CandidateFields] | out=[ref:candidates] | rules=[rid:rule:deepening-test]
+@CHECK rid=check:deepening-test | assert="every presented candidate passes the deepening test — merging produces a smaller interface" | fail=ABORT | msg="Candidate is reorganization, not deepening. Drop it before presenting."
+
+# --- Step 3: User Picks a Candidate ---
+
+@SEC name="Step 3 — User Picks a Candidate"
+@STEP rid=step:user-picks-candidate | n:int=3 | op=std:human.review@v1 | args=[task="User selects one candidate to explore."] | in=[ref:candidates] | out=[ref:chosen-candidate]
+
+# --- Step 4: Frame the Problem Space ---
+
+@SEC name="Step 4 — Frame the Problem Space"
+@STEP rid=step:frame | n:int=4 | op=std:ai.prompt@v1 | args=[task="Write a user-facing explanation of the chosen candidate: the constraints any new interface must satisfy; the dependencies it must handle (with category); a rough illustrative code sketch to make constraints concrete — a grounding device, not a proposal. Show it to the user, then immediately proceed to Step 5; the user reads while designs are worked."] | in=[ref:chosen-candidate] | use=[cfg:DependencyCategories] | out=[ref:problem-frame]
+
+# --- Step 5: Design Multiple Interfaces ---
+
+@SEC name="Step 5 — Design Multiple Interfaces"
+@MAP name=DesignConstraints | pairs=["A-Minimal"->"1-3 entry points max; ruthlessly hide everything","B-Flexible"->"support many use cases and extension points; maximize what callers can customize","C-Caller-optimized"->"make the most common call site trivial; ergonomics over generality","D-Ports-and-Adapters"->"if applicable: design around injected adapters for cross-boundary dependencies"]
+@MAP name=DesignOutput | pairs=["1-signature"->"interface signature (types, methods, params)","2-usage"->"usage example showing how a caller uses it","3-hides"->"what complexity it hides internally","4-deps"->"dependency strategy per category","5-tradeoffs"->"trade-offs"]
+@STEP rid=step:design | n:int=5 | op=std:ai.prompt@v1 | args=[task="Produce 3-4 radically different interface designs, each under a constraint from DesignConstraints, each producing DesignOutput. If sub-agents are available, spawn 3-4 in parallel with the sub-agent technical brief from SKILL.md — give each an independent brief, do NOT share prior designs (isolation is the point). If not, work each design constraint sequentially and treat each as complete and committed before the next — no contamination. After all designs, compare them in prose and give an opinionated recommendation (or propose a hybrid)."] | in=[ref:problem-frame] | use=[cfg:DesignConstraints,cfg:DesignOutput] | out=[ref:designs]
+@CHECK rid=check:not-extraction | assert="each design's total interface surface is smaller than the original modules combined" | fail=WARN | msg="A design with the same total interface surface is a rename, not deepening. The interface must get smaller."
+
+# --- Step 6: User Picks an Interface ---
+
+@SEC name="Step 6 — User Picks an Interface"
+@STEP rid=step:user-picks-interface | n:int=6 | op=std:human.review@v1 | args=[task="User selects an interface design or accepts the recommendation."] | in=[ref:designs] | out=[ref:chosen-design]
+
+# --- Step 7: Create GitHub Issue ---
+
+@SEC name="Step 7 — Create GitHub Issue (RFC)"
+@STEP rid=step:rfc | n:int=7 | op=std:ai.prompt@v1 | args=[task="Draft the RFC using the template in SKILL.md (Problem, Proposed Interface, Dependency Strategy, Testing Strategy, Implementation Recommendations). Render the complete draft as a markdown block in the conversation, then ask: 'Should I create this issue now?'"] | in=[ref:chosen-design] | out=[ref:rfc-draft] | rules=[rid:rule:name-old-tests,rid:rule:file-agnostic-recommendations]
+@STEP rid=step:create-issue | n:int=8 | op=std:shell.exec@v1 | args=[cmd="gh issue create",task="Only after explicit user confirmation. If gh is not installed or unavailable, print the final draft for manual paste instead."] | in=[ref:rfc-draft] | out=[ref:issue] | rules=[rid:rule:wait-for-confirm]
+@CHECK rid=check:confirmed | assert="user explicitly confirmed before gh issue create runs" | fail=ABORT | msg="Do not create the issue without explicit confirmation. Print the draft instead."
+
+# --- RFC Quality Rules ---
+
+@SEC name="RFC Quality Rules"
+@RULE rid=rule:name-old-tests | lvl=MUST | when="writing the RFC Testing Strategy" | then="name specific test files under 'Old tests to delete'. If you cannot name them, return to Step 2 and find them — a vague entry leaves dead test weight behind."
+@RULE rid=rule:file-agnostic-recommendations | lvl=MUST | when="writing Implementation Recommendations" | then="write durable architectural principles (responsibilities, what to hide, what to expose), not file-path instructions. If a sentence names a current file, rewrite it as a responsibility statement."
+@RULE rid=rule:wait-for-confirm | lvl=MUST | when="about to run gh issue create" | then="wait for explicit user confirmation — never create the issue unprompted"
+
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=9 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated

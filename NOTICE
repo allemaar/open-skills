@@ -1,0 +1,14 @@
+open-skills
+Copyright 2026 Alexandru Mares (allemaar.com)
+
+Licensed under the Apache License, Version 2.0. See LICENSE.
+
+Each skill in this project may include a declarative `protocol.yon` file authored
+in YON, a stream-first data format. YON, the YON specification, and the
+@younndai/* tooling (including @younndai/yon-parser) are separate products of
+MARLINK TRADING SRL (YounndAI), distributed under their own licenses. "YON" and
+"YounndAI" are trademarks of MARLINK TRADING SRL.
+
+This is a personal, independent project authored by Alexandru Mares. It is not a
+YounndAI product and is not affiliated with or endorsed by YounndAI beyond its
+use of the public, openly licensed YON format and tooling.

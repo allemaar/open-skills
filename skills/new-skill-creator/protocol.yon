@@ -1,0 +1,45 @@
+@DOC ver=2.0 | id=new-skill-creator | title="/new-skill-creator" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Scaffold a new Agent Skill end-to-end — folder, SKILL.md, optional protocol.yon for dual-doc skills, three parallel runtime links, commit and push" | trigger="user runs /new-skill-creator or says create a skill, make a new skill for X, add a slash command, codify this as a skill"
+@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated
+
+@NOTE text="Two formats: single-doc (one SKILL.md — routers, triggers, mode-setters, reference cards) and dual-doc (SKILL.md + protocol.yon — heavy procedural skills with phases, gates, severity-ranked rules). For editing an existing skill, edit the SKILL.md directly — do not run this. Migrating single-doc→dual-doc and renaming are alternate flows (see the closing notes + SKILL.md §6/§7)."
+
+@SEC name="Step 1: Gather"
+@STEP rid=step:gather | n:int=1 | op=std:human.review@v1 | args=[task="Ask the author (AskUserQuestion on Claude Code; numbered prose elsewhere): kebab-case name; one-sentence purpose; 2-3 trigger phrases; sibling skills it could be confused with; should only the user invoke it (disable-model-invocation, per references/CRITERION.md); is it runtime-specific (default all three); dual-doc or single-doc (per map:dualdoc, default single when unsure); Caller-Options participant; Next-Skills participant; Self-Improvement participant; visibility public|private."] | out=[ref:spec] | rules=[rid:rule:no-overwrite,rid:rule:confirm,rid:rule:kebab]
+@CHECK rid=check:no-overwrite | assert="the named skill does not already exist, or the author explicitly approved overwrite" | fail=ABORT | msg="Never overwrite an existing skill without asking. To edit, edit the SKILL.md directly."
+
+@SEC name="Step 2: Format decision"
+@MAP rid=map:dualdoc | name=DualDocCriterion | pairs=["3+ ordered phases or steps"->"dual-doc","explicit gates / checks / verification points"->"dual-doc","tabular routing or decision logic"->"dual-doc","severity-ranked MUST/SHOULD/MUST_NOT rules"->"dual-doc","projected length > ~150 lines"->"dual-doc","trigger / router / mode-setter"->"single-doc","reference card or schema doc"->"single-doc","short utility wrapper < ~100 lines"->"single-doc","explanatory prose with no enforceable rules"->"single-doc"]
+@STEP rid=step:format | n:int=2 | op=std:ai.prompt@v1 | in=[ref:spec] | use=[cfg:map:dualdoc] | args=[task="Decide dual-doc vs single-doc per map:dualdoc. When in doubt, single-doc — migration to dual-doc later is the SKILL.md §6 recipe."] | out=[ref:format]
+
+@SEC name="Step 3: Scaffold files"
+@STEP rid=step:scaffold | n:int=3 | op=std:fs.write@v1 | in=[ref:spec,ref:format] | args=[task="Write skills/<name>/SKILL.md: frontmatter (name; description with 2-3 triggers + a 'Not for X — use Y' sibling-boundary clause; disable-model-invocation per CRITERION.md; runtime only if not all three; visibility required). For dual-doc, also write protocol.yon (@DOC kind=skill profile=exec; @INTENT; @STAMP; @SEC; @RULE; @STEP; @CHECK; @MAP where tabular) drafted via /yon-writer against /yon-read's tag registry — and keep the SKILL.md body execution-sufficient on its own (multi-runtime). Add the COP / NSP / SIP opt-in blocks where the author opted in."] | out=[ref:files] | rules=[rid:rule:boundary,rid:rule:self-sufficient,rid:rule:under-500]
+@CHECK rid=check:dual-validate | assert="for a dual-doc skill, protocol.yon passes: npx @younndai/yon-parser validate protocol.yon --profile exec" | fail=ABORT | msg="A dual-doc protocol.yon must validate against the public parser before it is linked and pushed."
+
+@SEC name="Step 4: Link runtimes"
+@STEP rid=step:link | n:int=4 | op=std:cmd.run@v1 | in=[ref:files] | args=[task="Create three parallel DIRECT runtime links (never a chain), each pointing straight at the repo source: ~/.claude/skills, ~/.codex/skills, ~/.agents/skills. Windows: mklink /D (or /J fallback); POSIX: ln -s (NOT on Windows Git-Bash — it silently copies). Links are directory-level, so companion files travel automatically. Skip a runtime only if the front-matter runtime: list excludes it."] | out=[ref:links] | rules=[rid:rule:three-links,rid:rule:no-elevate]
+
+@SEC name="Step 5: Publish"
+@STEP rid=step:commit | n:int=5 | op=std:cmd.run@v1 | in=[ref:links] | args=[task="git add skills/<name>; commit 'skill: add <name>'; push."] | out=[ref:pushed]
+@STEP rid=step:confirm | n:int=6 | op=std:io.emit@v1 | in=[ref:pushed] | args=[task="Confirm to the author: skill /<name> created; format (single- or dual-doc); linked into the three runtimes (or the declared subset); pushed; per-runtime pickup (Claude Code immediate or on restart; Codex next session; .agents per its consumer)."] | out=[ref:confirmation]
+
+@SEC name="Rules"
+@RULE rid=rule:no-overwrite | lvl=MUST_NOT | when="the named skill already exists" | then="overwrite it without asking first — to change an existing skill, edit its SKILL.md directly"
+@RULE rid=rule:confirm | lvl=MUST | when="before writing any files" | then="confirm the skill name and description with the author"
+@RULE rid=rule:kebab | lvl=MUST | when="naming the skill" | then="use kebab-case only"
+@RULE rid=rule:boundary | lvl=MUST | when="the skill could be confused with an existing one (overlapping triggers or domain)" | then="add a 'Not for X — use Y' sibling-boundary clause to the description so the router can disambiguate"
+@RULE rid=rule:under-500 | lvl=MUST | when="writing SKILL.md" | then="keep it under 500 lines; a longer skill is a dual-doc candidate"
+@RULE rid=rule:three-links | lvl=MUST | when="linking into runtimes" | then="create three parallel direct links, never a chain — each runtime directory is read independently"
+@RULE rid=rule:self-sufficient | lvl=MUST | when="the skill is dual-doc" | then="keep the SKILL.md body execution-sufficient on its own — protocol.yon adds precision, it never replaces the SKILL.md (Codex and .agents may not read YON)"
+@RULE rid=rule:no-elevate | lvl=MUST | when="runtime link creation fails" | then="stop and report — do not try to elevate or work around it"
+
+@NOTE text="Alternate flow — migrate single-doc→dual-doc (SKILL.md §6): snapshot SKILL.md to archive/SKILL-<date>.md; draft protocol.yon via /yon-writer; validate; rewrite SKILL.md to the dual-doc shape (~30-50% of the original); smoke-test on Claude Code and (if cross-runtime) Codex; atomic commit 'skill: dual-doc migration for <name>'."
+@NOTE text="Alternate flow — rename (SKILL.md §7 + references/RENAME-CHECKLIST.md): rename folder; update front-matter + heading; update protocol.yon @DOC id + @STAMP; rebuild all three symlinks; sweep cross-references (other skills' next-skills:, boundary clauses, README, skills-help, skills-audit); run node tools/lint.mjs; atomic commit 'skill: rename <old> → <new>'."
+
+@SEC name="Next Skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol (next-skills/protocol.yon): surface the next-skills front-matter recommendation (cold-review — review the new skill against its objectives) for the caller to pick. Offer only; never auto-invoke. Skip silently if the list is empty."] | in=[] | out=[ref:nsp-offer]
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill, draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated

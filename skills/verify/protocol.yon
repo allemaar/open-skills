@@ -1,0 +1,37 @@
+@DOC ver=2.0 | id=verify | title="/verify" | kind=workflow | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Formal gate: verify alignment between intent, plan, and execution artifacts before proceeding" | audience=agent
+@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated
+
+@NOTE text="Hard gate on two artifacts — intent and execution, both required (fail=ABORT). The plan is optional: when absent, verify short-circuits to the report with status=plan-not-found (see rule:plan-absent). Use /reflect for a softer pause with no artifact requirements."
+
+@SEC name="Inputs"
+@INPUT rid=in:intent | name="intent" | type=artifact | required:bool=true
+@INPUT rid=in:plan | name="plan" | type=artifact | required:bool=false
+@INPUT rid=in:execution | name="execution" | type=artifact | required:bool=true
+
+@SEC name="Preconditions"
+@CHECK rid=check:intent | assert="rid:in:intent != null" | fail=ABORT | msg="No intent artifact. Cannot verify alignment — provide the original goal, or use /reflect for a softer pause."
+@CHECK rid=check:execution | assert="rid:in:execution != null" | fail=ABORT | msg="No execution artifact. There is nothing to verify yet."
+@RULE rid=rule:plan-absent | lvl=MUST | when="rid:in:plan is absent" | then="skip steps 2 and 3, jump to step:report, and set status=plan-not-found"
+
+@SEC name="Phase 1: Intent Check"
+@STEP rid=step:intent | n:int=1 | op=std:ai.prompt@v1 | timeout_ms:int=30000 | in=[rid:in:intent] | args=[task="Using the intent artifact as ground truth: what was the original goal? Has the current direction drifted from it? Name any specific drift with evidence from the artifact."] | out=[ref:intent-finding]
+
+@SEC name="Phase 2: Plan Check"
+@STEP rid=step:plan | n:int=2 | op=std:ai.prompt@v1 | timeout_ms:int=30000 | in=[rid:in:intent,rid:in:plan] | args=[task="Using the plan artifact: does the plan match the intent? Check for scope creep, missing steps, unstated assumptions, over-engineering. Cite specific lines or sections."] | out=[ref:plan-finding]
+
+@SEC name="Phase 3: Execution Check"
+@STEP rid=step:exe | n:int=3 | op=std:ai.prompt@v1 | timeout_ms:int=30000 | in=[rid:in:plan,rid:in:execution] | args=[task="Using the plan and execution artifacts: does the execution match the plan? Check for skipped steps, deviations, unplanned changes, incomplete work. Cite specific evidence."] | out=[ref:exe-finding]
+
+@SEC name="Phase 4: Report"
+@STEP rid=step:report | n:int=4 | op=std:ai.prompt@v1 | timeout_ms:int=15000 | in=[ref:intent-finding,ref:plan-finding,ref:exe-finding] | args=[task="Produce a structured report with these fields: clean (bool), gaps (list), drifts (list), issues (list), status (see schema:status). If clean=true, cite evidence. Do not claim clean without substantive analysis of all prior phases."] | out=[rid:out:report]
+@OUTPUT rid=out:report | name="report" | type=struct | note="fields: clean:bool, gaps:list, drifts:list, issues:list, status (constrained by schema:status)"
+@SCHEMA key=status | opts=[clean,gaps-found,plan-not-found,incomplete] | default=incomplete
+@NOTE text="On the plan-absent short-circuit (rule:plan-absent), step:report runs with only ref:intent-finding — plan-finding and exe-finding are not produced because steps 2 and 3 are skipped — and emits the verdict with status=plan-not-found."
+
+@SEC name="Routing"
+@RULE rid=rule:route-investigate | lvl=SHOULD | when="the report's issues list is non-empty" | then="suggest /investigate to dig into the issues"
+@RULE rid=rule:route-replan | lvl=SHOULD | when="the report's drifts list is non-empty" | then="suggest /plan-create to redesign against the intent"
+@RULE rid=rule:route-sync | lvl=SHOULD | when="the report's clean field is true" | then="suggest /github-sync to commit and push"
+
+@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated

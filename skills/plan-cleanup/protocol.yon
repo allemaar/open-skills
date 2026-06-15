@@ -1,0 +1,43 @@
+@DOC ver=2.0 | id=plan-cleanup | title="Post-Execution Cleanup — Remove Planning Artifacts" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Remove planning artifacts and tech debt left behind after a plan has been executed. No new work, no scope additions, just cleanup." | trigger="user runs /plan-cleanup, says clean up artifacts, remove the plan file, or no tech debt"
+@STAMP ts:ts=2026-05-09T00:00:00Z | src=human | method=manual
+
+# --- Governance ---
+
+@SEC name="Governance"
+@RULE rid=rule:list-first | lvl=MUST | when="found candidate artifacts" | then="list every artifact before removing — never silently delete"
+@RULE rid=rule:verify-artifact | lvl=MUST | when="evaluating each candidate" | then="confirm it is a planning artifact, not a project file needed going forward"
+@RULE rid=rule:scope-bound | lvl=MUST_NOT | when="cleaning up" | then="remove files outside the current project scope"
+@RULE rid=rule:respect-skip | lvl=MUST_NOT | when="user has explicitly skipped a file" | then="remove that file"
+@RULE rid=rule:terminal-decl | lvl=MUST | when="cleanup completes or halts" | then="emit a terminal declaration line"
+
+# --- Phase 1: Identify Artifacts ---
+
+@SEC name="Phase 1 — Identify Artifacts"
+@MAP name=ArtifactCategories | pairs=["planning-docs"->"PLAN.md, implementation_plan.md, *-plan.md, task.md (only if plan artifact, not pre-existing)","execution-scaffolding"->"temp files, stub files, files marked temporary in plan","tool-artifacts"->".claude/ directories created incidentally in skill or tool folders (NOT user's project .claude/)"]
+
+@STEP rid=step:scan | n:int=1 | op=std:fs.search@v1 | args=[task="Scan project for candidates in each ArtifactCategories bucket. For each candidate, verify it is needed by the project going forward. If only a planning-cycle artifact, mark for removal."] | use=[cfg:ArtifactCategories] | out=[ref:candidates] | rules=[rid:rule:verify-artifact]
+@CHECK rid=check:any-found | assert="ref:candidates is non-empty" | fail=SKIP | msg="No artifacts found — workspace is clean. Stop here."
+
+# --- Phase 2: Confirm and Remove ---
+
+@SEC name="Phase 2 — Confirm and Remove"
+@STEP rid=step:confirm | n:int=2 | op=std:human.review@v1 | args=[task="Present artifact list to user. Format: 'Found the following planning artifacts: ...' Ask: Remove all? (y / skip [filename] / cancel)"] | in=[ref:candidates] | out=[ref:approved-removal] | rules=[rid:rule:list-first]
+@STEP rid=step:remove | n:int=3 | op=std:fs.delete@v1 | args=[strategy="git rm if tracked, rm if untracked"] | in=[ref:approved-removal] | out=[ref:removed] | rules=[rid:rule:scope-bound,rid:rule:respect-skip] | note="Never remove files outside current project scope. Honor user skips."
+
+# --- Phase 3: Verify and Commit ---
+
+@SEC name="Phase 3 — Verify and Commit"
+@STEP rid=step:verify-gone | n:int=4 | op=std:fs.list@v1 | args=[task="Confirm each artifact is gone. List what was removed."] | in=[ref:removed] | out=[ref:removal-confirmation]
+@STEP rid=step:commit | n:int=5 | op=std:shell.exec@v1 | args=[cmd="git commit -m 'chore: remove planning artifacts'"] | in=[ref:removal-confirmation] | note="Only if in git repo and files were tracked. Push if user's workflow includes pushing."
+
+@MAP name=TerminalDeclarations | pairs=["clean-success"->"Cleanup complete — [N] artifacts removed.","already-clean"->"Cleanup complete — workspace was already clean.","halted"->"Cleanup halted — [reason]. Removed: [list]. Skipped: [list]."]
+@STEP rid=step:declare | n:int=6 | op=std:ai.prompt@v1 | args=[task="Emit a terminal declaration line per TerminalDeclarations."] | in=[ref:removal-confirmation] | use=[cfg:TerminalDeclarations] | rules=[rid:rule:terminal-decl]
+
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=7 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated

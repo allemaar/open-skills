@@ -1,0 +1,70 @@
+@DOC ver=2.0 | id=plan-phases | title="Plan Restructuring — Phases + /verify Gates" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Restructure an existing flat or unstructured plan into phased execution with /verify gates after each phase and critical steps. Restructure, never delete." | trigger="user runs /phase-plan, asks to add phases, gate this plan, restructure the plan, or add checkpoints"
+@STAMP ts:ts=2026-05-09T00:00:00Z | src=human | method=manual
+
+# --- Governance ---
+
+@SEC name="Governance"
+@RULE rid=rule:preserve-content | lvl=MUST | when="restructuring" | then="preserve ALL original plan content — restructure, never delete"
+@RULE rid=rule:preserve-intent | lvl=MUST | when="restructuring" | then="maintain original intent and goal alignment"
+@RULE rid=rule:same-format | lvl=MUST | when="rewriting" | then="use the same file format as the original plan"
+@RULE rid=rule:no-scope-add | lvl=MUST_NOT | when="restructuring" | then="add new scope or features not in the original plan"
+@RULE rid=rule:no-ceremonial-gates | lvl=MUST_NOT | when="inserting verify gates" | then="create gates with vague focus — every gate must validate something specific"
+@RULE rid=rule:gate-after-phase | lvl=MUST | when="completing any phase" | then="insert a /verify gate validating the phase deliverable"
+@RULE rid=rule:gate-after-risky | lvl=MUST | when="phase contains schema migration, breaking change, or security-sensitive step" | then="insert an inline /verify gate after that step"
+@RULE rid=rule:gate-cross-package | lvl=MUST | when="step has cross-package impact" | then="insert an inline /verify gate verifying no downstream breakage"
+@RULE rid=rule:split-large-phases | lvl=SHOULD | when="phase has more than 5 steps" | then="split into sub-phases with intermediate /verify gates"
+
+# --- Verify Gate Concept ---
+
+@SEC name="/verify Concept"
+@NOTE text="A /verify gate is a verification point where execution stops, current state is validated, and only continues to the next phase/step once the gate passes. If /verify is not a recognized command in the runtime, replace with explicit user confirmation prompt."
+
+@MAP name=GateQuality | pairs=["good-gate"->"observable conditions a different person could verify independently (e.g. migration applied: users.email column non-null, existing rows have values, no FK errors in test suite)","bad-gate"->"vague focus with no observable condition (e.g. make sure the migration looks right) — REJECT"]
+
+# --- Phase 1: Locate & Load ---
+
+@SEC name="Phase 1 — Locate & Load Existing Plan"
+@STEP rid=step:find-plan | n:int=1 | op=std:fs.read@v1 | args=[search="implementation_plan.md, PLAN.md, task.md, recent conversation context, or user-provided file"] | out=[ref:plan] | note="If multiple candidates, use the most recently modified file and note the choice."
+@CHECK rid=check:plan-found | assert="ref:plan is non-empty" | fail=ABORT | msg="No plan found. Ask the user to provide the plan before continuing. Do not proceed to Phase 2."
+@STEP rid=step:assess-structure | n:int=2 | op=std:ai.prompt@v1 | args=[task="Assess structure: flat single list? Partially phased? Missing verification steps? Identify structural gaps."] | in=[ref:plan] | out=[ref:structure-assessment]
+
+# --- Phase 2: Decompose Into Phases ---
+
+@SEC name="Phase 2 — Decompose Into Phases"
+@STEP rid=step:identify-boundaries | n:int=3 | op=std:ai.prompt@v1 | args=[task="Identify natural phase boundaries — group related steps by dependency order, component, or concern. Each phase must be independently verifiable. Mark critical steps that need individual /verify gates."] | in=[ref:plan,ref:structure-assessment] | out=[ref:phase-boundaries]
+@STEP rid=step:define-phases | n:int=4 | op=std:ai.prompt@v1 | args=[task="Each phase needs: clear name, goal/deliverable, ordered steps, success criteria. Ensure phases flow logically — dependencies before dependents."] | in=[ref:phase-boundaries] | out=[ref:phases]
+@CHECK rid=check:phase-quality | assert="phases are logically ordered, dependencies respected, each phase independently verifiable, no original steps lost" | fail=ABORT | msg="Phase decomposition failed quality check. Revise before continuing."
+
+# --- Phase 3: Insert Check Gates ---
+
+@SEC name="Phase 3 — Insert Check Gates"
+@STEP rid=step:phase-gates | n:int=5 | op=std:ai.prompt@v1 | args=[task="Insert a /verify gate after every phase. Gate focus must be specific to what that phase accomplished and what the next phase depends on."] | in=[ref:phases] | out=[ref:phase-gated] | rules=[rid:rule:gate-after-phase,rid:rule:no-ceremonial-gates] | use=[cfg:GateQuality]
+@STEP rid=step:critical-gates | n:int=6 | op=std:ai.prompt@v1 | args=[task="Identify steps within phases that warrant individual /verify gates: risky operations, breaking changes, schema migrations, cross-package impacts, security-sensitive changes. Insert inline /verify gates immediately after."] | in=[ref:phase-gated] | out=[ref:fully-gated] | rules=[rid:rule:gate-after-risky,rid:rule:gate-cross-package,rid:rule:split-large-phases]
+@CHECK rid=check:gate-coverage | assert="every phase has trailing /verify; critical intra-phase steps gated; gate focus descriptions are specific and actionable" | fail=ABORT | msg="Gate coverage check failed. Address missing or ceremonial gates."
+
+# --- Phase 4: Rewrite & Output ---
+
+@SEC name="Phase 4 — Rewrite & Output"
+@STEP rid=step:rewrite | n:int=7 | op=std:fs.write@v1 | args=[task="Rewrite the plan in its original format with the new phased structure. Preserve all original content — restructure, do not delete. Each phase clearly shows: steps, /verify gate, what the gate validates. If plan has no source file (only conversation context), output as fenced code block in response."] | in=[ref:fully-gated] | out=[ref:rewritten-plan] | rules=[rid:rule:preserve-content,rid:rule:preserve-intent,rid:rule:same-format,rid:rule:no-scope-add]
+@STEP rid=step:diff-report | n:int=8 | op=std:ai.prompt@v1 | args=[task="Diff report: how many phases created, how many /verify gates added, any steps reordered or split."] | in=[ref:plan,ref:rewritten-plan] | out=[ref:diff-report]
+@CHECK rid=check:final | assert="restructured plan preserves all original intent; gates are meaningful, not ceremonial; plan is now executable phase-by-phase" | fail=ABORT | msg="Final gate failed. Revise before delivery."
+
+# --- Downstream ---
+
+@SEC name="Downstream"
+@MAP name=NextCommand | pairs=["implement-phased-plan"->"/execute","verify-restructured-plan-before-executing"->"/double-check"]
+
+
+# --- Next Skills ---
+
+@SEC name="Next Skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only; never auto-invoke. Skip silently if the next-skills list is empty."] | in=[] | out=[ref:nsp-offer]
+
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated

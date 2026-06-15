@@ -1,0 +1,61 @@
+@DOC ver=2.0 | id=insight-skill-gap | title="Skill Gap Discovery — New/Updated Skill Proposals from Recent Work" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Scan recent implementation work and identify whether new skills should be created or existing ones updated" | trigger="user runs /skill-gap, asks to check for skill gaps, what skills should we add, or after /retro flags patterns worth codifying"
+@STAMP ts:ts=2026-05-09T00:00:00Z | src=human | method=manual
+
+# --- Governance ---
+
+@SEC name="Governance"
+@RULE rid=rule:no-dup | lvl=MUST | when="proposing a new skill" | then="verify no existing skill covers the same domain — use skill-search or check the index"
+@RULE rid=rule:naming | lvl=MUST | when="naming a proposed skill" | then="follow domain-prefix naming convention (e.g., drizzle-*, nextjs16-*)"
+@RULE rid=rule:specific-update | lvl=MUST | when="proposing updates to an existing skill" | then="specify exactly which sections are missing or outdated"
+@RULE rid=rule:check-template | lvl=MUST | when="proposing new skills" | then="check new-skill-creator for template requirements before drafting"
+@RULE rid=rule:no-oneoff | lvl=MUST_NOT | when="proposing skills" | then="propose for one-off patterns with no reuse potential"
+@RULE rid=rule:high-reuse-now | lvl=SHOULD | when="reuse potential is HIGH" | then="recommend immediate creation, not deferral"
+
+# --- Phase 1: Recent Work Scan ---
+
+@SEC name="Phase 1 — Recent Work Scan"
+@STEP rid=step:gather | n:int=1 | op=std:ai.prompt@v1 | args=[task="Gather recent context — conversation history, changed files, new patterns introduced. Summarize: what was built, which libraries/frameworks were used, what novel patterns emerged."] | out=[ref:recent-work]
+@STEP rid=step:load-index | n:int=2 | op=std:fs.read@v1 | args=[path="skill-index"] | out=[ref:skill-index] | note="Read current skill index to know what already exists before analyzing gaps."
+
+# --- Phase 2: Gap Analysis ---
+
+@SEC name="Phase 2 — Gap Analysis"
+@MAP name=GapClassification | pairs=["A:skill-exists-covers"->"no action","B:skill-exists-incomplete"->"propose update; specify which sections are missing or outdated","C:no-skill-exists"->"evaluate if it deserves one"]
+@MAP name=NewSkillCriteria | pairs=["reusable"->"used 2+ times, or clearly will be","non-obvious"->"involves non-obvious decisions or gotchas","spans"->"spans multiple files or concepts"]
+
+@STEP rid=step:gap | n:int=3 | op=std:ai.prompt@v1 | args=[task="Cross-reference patterns from recent-work against skill-index. Classify each pattern using GapClassification. For C cases, evaluate against NewSkillCriteria."] | in=[ref:recent-work,ref:skill-index] | use=[cfg:GapClassification,cfg:NewSkillCriteria] | out=[ref:gap-analysis] | rules=[rid:rule:no-dup,rid:rule:no-oneoff]
+@CHECK rid=check:documented | assert="ref:gap-analysis is documented" | fail=ABORT | msg="Gap analysis must be documented before proceeding."
+
+# --- Phase 3: Skill Proposals ---
+
+@SEC name="Phase 3 — Skill Proposals"
+@MAP name=ProposalFields | pairs=["skill-name"->"following naming convention with domain prefix","skill-family"->"domain prefix","prerequisites"->"what the user needs to know first","complexity"->"how large/involved the skill content will be","key-sections"->"what the skill should teach"]
+
+@STEP rid=step:propose | n:int=4 | op=std:ai.prompt@v1 | args=[task="For each gap, draft a skill specification using ProposalFields. Reference new-skill-creator template requirements."] | in=[ref:gap-analysis] | use=[cfg:ProposalFields] | out=[ref:proposals] | rules=[rid:rule:naming,rid:rule:specific-update,rid:rule:check-template,rid:rule:high-reuse-now]
+@STEP rid=step:approve | n:int=5 | op=std:human.review@v1 | args=[task="Present proposals to user and wait for approval before Phase 4."] | in=[ref:proposals] | out=[ref:approved-proposals]
+
+# --- Phase 4: Execution (Optional) ---
+
+@SEC name="Phase 4 — Execution"
+@NOTE text="Phase 4 only runs if user approves in Phase 3."
+@STEP rid=step:create | n:int=6 | op=std:ai.prompt@v1 | args=[task="Create approved skills using new-skill-creator workflow. For updates to existing skills, apply targeted edits to specified sections."] | in=[ref:approved-proposals] | note="Defers to /new-skill-creator for new skills."
+
+# --- Downstream ---
+
+@SEC name="Downstream"
+@MAP name=NextCommand | pairs=["build-approved-skills"->"/new-skill-creator"]
+
+
+# --- Next Skills ---
+
+@SEC name="Next Skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only; never auto-invoke. Skip silently if the next-skills list is empty."] | in=[] | out=[ref:nsp-offer]
+
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated

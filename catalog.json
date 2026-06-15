@@ -1,0 +1,2130 @@
+{
+  "$schema": "https://yon.younndai.com/open-skills-catalog.schema.json",
+  "name": "open-skills",
+  "homepage": "https://allemaar.com",
+  "repository": "https://github.com/allemaar/open-skills",
+  "generated": "2026-06-15",
+  "generator": "tools/spine.mjs",
+  "license": "Apache-2.0",
+  "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL.",
+  "runtimeDirs": [
+    "~/.claude/skills",
+    "~/.codex/skills",
+    "~/.agents/skills"
+  ],
+  "count": 45,
+  "dualDoc": 31,
+  "install": "Copy a skill folder into your runtime skills dir (copy-default, not symlink), then validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.",
+  "skills": [
+    {
+      "name": "ask-gate",
+      "description": "The Ask-Gate Protocol (AGP). Before surfacing an AskUserQuestion, triage whether the question is genuinely the handler's call (anti-nag); ask routine questions directly after a quality checklist, but escalate high-stakes / branching / irreversible ones through /insight-critique then /insight-assess first. Trigger via /ask-gate, or automatically before any handler-facing question. Not /caller-options (routes a skill's venue/mode) or /next-skills (recommends successors) — AGP governs the question itself.",
+      "visibility": "public",
+      "triggers": [
+        "/ask-gate"
+      ],
+      "nextSkills": [
+        {
+          "skill": "insight-cross-examine",
+          "phrase": "/insight-cross-examine",
+          "why": "When triage escalates a high-stakes branching question, deliberate the options to a recommendation before asking."
+        },
+        {
+          "skill": "insight-assess",
+          "phrase": "/assess",
+          "why": "Evaluate the specific options behind an escalated decision so the handler's call is grounded."
+        },
+        {
+          "skill": "reflect",
+          "phrase": "/reflect",
+          "why": "If the question is the handler's but you want to surface your own assumptions first, pause before phrasing it."
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "genuinely-handler-call=SKIP"
+      ],
+      "rules": [
+        "question-moment-only=MUST",
+        "depth-guard=MUST",
+        "no-recurse=MUST_NOT",
+        "triage-first=MUST",
+        "escalate-high-stakes=SHOULD",
+        "escalate-once=MUST_NOT"
+      ],
+      "steps": 4,
+      "install": {
+        "copy": "cp -r skills/ask-gate <runtime>/skills/ask-gate",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/ask-gate/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "audit-coupled-constant",
+      "description": "Audit every site of a constant whose value is duplicated across multiple call sites (retry budgets, timeouts, page sizes, magic numbers, feature flags). The author-maintained `SEE ALSO` trail is documentation, not enforcement — one missed site means the trail lies. Trigger on /audit-coupled-constant, \"audit budget consistency\", \"find all sites of this value\", \"check coupled invariant\", \"before raising this constant\", or after any edit to a constant that has SEE ALSO cross-references in its comments. Pairs naturally before /cold-review on a \"raise the budget\" PR. Not for extract-constant refactors that consolidate scattered values into a single named import — use /improve-codebase-architecture. Not for constants enforced by the type system (TypeScript `as const` literal imported everywhere) where the compiler is the audit — skip.",
+      "visibility": "public",
+      "triggers": [
+        "/audit-coupled-constant",
+        "audit budget consistency",
+        "find all sites of this value",
+        "check coupled invariant",
+        "before raising this constant"
+      ],
+      "nextSkills": [
+        {
+          "skill": "cold-review",
+          "phrase": "/cold-review",
+          "why": "After the audit finds (or confirms zero) missed sites, a fresh-context review is the strongest sanity check that the coupled change is consistent."
+        },
+        {
+          "skill": "insight-critique",
+          "phrase": "/critique",
+          "why": "If the audit surfaces ambiguous sites (intentionally different vs. drift), a focused critique on the specific divergence resolves it before commit."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/audit-coupled-constant <runtime>/skills/audit-coupled-constant",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "caller-options",
+      "description": "The Caller Options protocol (COP). When a participating skill runs, detect optionality in Venue (inline / delegated sub-agent / fan-out) and Mode, evaluate it, and surface the choice to the caller instead of picking silently. Trigger via /caller-options, or automatically when a skill carrying the COP opt-in block runs. Not a session mode — use orchestrate-mode or multi-agent-mode for that; COP routes one skill invocation.",
+      "visibility": "public",
+      "triggers": [
+        "/caller-options"
+      ],
+      "nextSkills": [
+        {
+          "skill": "multi-agent-mode",
+          "phrase": "/multi-agent-mode",
+          "why": "After the caller picks a delegated/helper venue, enter the mode that owns lead-plus-helper delegation."
+        },
+        {
+          "skill": "orchestrate-mode",
+          "phrase": "/orchestrate-mode",
+          "why": "If the caller chose pure fan-out, switch to the dispatch-only mode that governs isolated workers."
+        },
+        {
+          "skill": "ask-gate",
+          "phrase": "/ask-gate",
+          "why": "The sibling protocol — once venue is routed, triage any handler-facing question the run raises."
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "optionality=SKIP",
+        "depth=ABORT",
+        "choice=ABORT",
+        "delegated-gate=ABORT"
+      ],
+      "rules": [
+        "triage-skip=MUST",
+        "never-delegate=MUST_NOT",
+        "self-orch=MUST_NOT",
+        "conservative-venue=MUST",
+        "tiered-assess=MUST",
+        "depth-1-brief=MUST",
+        "no-reentry=MUST_NOT",
+        "caller-kind=MUST",
+        "inspect=MUST"
+      ],
+      "steps": 6,
+      "install": {
+        "copy": "cp -r skills/caller-options <runtime>/skills/caller-options",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/caller-options/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "cold-review",
+      "description": "Run outside-agent review of actual work artifacts against objectives, with classification, fresh reviewer lenses, evidence-based findings, scoring, and thresholds. Trigger on /cold-review, \"cold review this\", \"get outside review\", \"have fresh agents inspect this work\", or \"review this with fresh context\". Use verify for self-gating intent/plan/execution; use insight-adversarial for persona critique of ideas or plans.",
+      "visibility": "public",
+      "triggers": [
+        "/cold-review",
+        "cold review this",
+        "get outside review",
+        "have fresh agents inspect this work",
+        "review this with fresh context"
+      ],
+      "nextSkills": [
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "Turn the review's findings into a phased plan to remediate what it flagged."
+        },
+        {
+          "skill": "insight-cross-examine",
+          "phrase": "/insight-cross-examine",
+          "why": "When the verdict is borderline, deliberate the findings to a clear go/no-go before acting."
+        },
+        {
+          "skill": "github-sync",
+          "phrase": "/github-sync",
+          "why": "Commit and push the reviewed artifact once it passes the threshold."
+        },
+        {
+          "skill": "double-check",
+          "phrase": "/double-check",
+          "why": "Re-verify a single contested finding the review raised before reworking everything."
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "cop=WARN",
+        "target-exists=ABORT",
+        "critical-caps-verdict=WARN"
+      ],
+      "rules": [
+        "artifacts-only=MUST",
+        "not-idea-tool=MUST_NOT",
+        "max-three=MUST_NOT",
+        "degraded-labeled=MUST",
+        "narrow-evidence-brief=MUST",
+        "reviewers-read-only=MUST_NOT",
+        "concrete-not-memory=MUST",
+        "classify-first=MUST",
+        "fresh-agents=MUST",
+        "evidence-required=MUST",
+        "severity-tiers=MUST",
+        "score-and-verdict=MUST",
+        "not-verification=MUST_NOT"
+      ],
+      "steps": 7,
+      "install": {
+        "copy": "cp -r skills/cold-review <runtime>/skills/cold-review",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/cold-review/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "defuddle",
+      "description": "Extract clean markdown from web pages via Defuddle CLI (strips nav/ads/clutter, saves tokens). Trigger whenever the user pastes a URL or says \"read this article\", \"fetch this page\", \"summarize this blog post\", \"pull this doc\"; use this instead of WebFetch for any standard article, doc, or blog. Skip for APIs/JSON/raw downloads.",
+      "visibility": "public",
+      "triggers": [
+        "read this article",
+        "fetch this page",
+        "summarize this blog post",
+        "pull this doc"
+      ],
+      "nextSkills": [
+        {
+          "skill": "insight-cross-examine",
+          "phrase": "/insight-cross-examine",
+          "why": "Deliberate over the extracted article's claims or options now that it is in clean context."
+        },
+        {
+          "skill": "prime-sweep",
+          "phrase": "/prime-sweep",
+          "why": "When one page isn't enough, fan out to the larger source surface and bring back digested signal."
+        },
+        {
+          "skill": "obsidian-markdown",
+          "phrase": "/obsidian-markdown",
+          "why": "Persist the cleaned article as a properly-formatted Obsidian note once it is extracted."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/defuddle <runtime>/skills/defuddle",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "design-an-interface",
+      "description": "Generate multiple radically different interface designs for a module, then compare and synthesize. Use when the user wants to design an API, explore interface options, compare module shapes, or says \"design it twice\" / \"give me options\" / \"what should this interface look like\". Also trigger proactively when a user is about to implement something non-trivial and hasn't locked in an interface yet. Not /insight-explore (brainstorms approaches as prose) or /plan-create (turns a chosen design into a phased plan) — this produces concrete, comparable interface designs.",
+      "visibility": "public",
+      "triggers": [
+        "/design-an-interface",
+        "design an API",
+        "explore interface options",
+        "compare module shapes",
+        "design it twice",
+        "give me options",
+        "what should this interface look like"
+      ],
+      "nextSkills": [
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "Turn the chosen interface design into a phased plan"
+        },
+        {
+          "skill": "improve-codebase-architecture",
+          "phrase": "/improve-codebase-architecture",
+          "why": "Find refactors that deepen the modules behind the interface"
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/design-an-interface <runtime>/skills/design-an-interface",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "double-check",
+      "description": "Targeted re-verification of a specific claim, output, or decision. Re-read sources, challenge, cross-reference, and deliver a verdict. Trigger when the user runs /double-check or asks to \"verify this\", \"re-check this\", \"are you sure about this\", \"go over this again\", or \"make sure this is right\". Not /verify (formal phase gate needing intent+plan+execution artifacts) or /insight-critique (advisory review of an output) — double-check is a quick targeted re-read of one claim.",
+      "visibility": "public",
+      "triggers": [
+        "/double-check",
+        "verify this",
+        "re-check this",
+        "are you sure about this",
+        "go over this again",
+        "make sure this is right"
+      ],
+      "nextSkills": [
+        {
+          "skill": "verify",
+          "phrase": "/verify",
+          "why": "Escalate from a single-claim re-check to the formal intent/plan/execution gate before proceeding"
+        },
+        {
+          "skill": "github-sync",
+          "phrase": "/github-sync",
+          "why": "If the claim held up, commit and push the verified work"
+        },
+        {
+          "skill": "insight-adversarial",
+          "phrase": "/insight-adversarial",
+          "why": "If the re-check raised doubt, stress-test the output from multiple adversarial POVs"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "cop=WARN",
+        "target=ABORT",
+        "verdict=ABORT"
+      ],
+      "rules": [
+        "sources=MUST",
+        "adversarial=MUST",
+        "evidence=MUST",
+        "no-rubber-stamp=MUST_NOT",
+        "offer-rerun=SHOULD"
+      ],
+      "steps": 7,
+      "install": {
+        "copy": "cp -r skills/double-check <runtime>/skills/double-check",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/double-check/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "extract-signal",
+      "description": "An elastic signal-extraction methodology run under /multi-agent-mode. INFERS from the call what signal, what form, what stakes, and where output goes. Default is agentic — a normal call spawns a freshly-primed sub-agent that gathers, vets, and returns the signal; when extract-signal IS the agent (in-session / new-session) it works inline with output inline by default (or to a file if specified). Composes techniques per task: gather (/prime-sweep, /prime-fetch, /prime-expand), diverge (/insight-explore), vet (/insight-critique → /insight-assess), cold second opinion (/cold-review-style). Vetting scales with stakes; the presented signal carries provenance and is sensitivity-matched to its destination. Trigger on /extract-signal, \"extract the signal on X and present it as Y\", \"gather + vet + report the signal about X\". Not the prime-* / insight-* / cold-review skills it composes; not /multi-agent-mode (the mode it runs under).",
+      "visibility": "public",
+      "triggers": [
+        "/extract-signal",
+        "extract the signal on X and present it as Y",
+        "gather + vet + report the signal about X"
+      ],
+      "nextSkills": [
+        {
+          "skill": "insight-assess",
+          "phrase": "/insight-assess",
+          "why": "Evaluate and decide among the options the extracted signal surfaced"
+        },
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "Turn the vetted signal into a phased implementation plan"
+        },
+        {
+          "skill": "handoff",
+          "phrase": "/handoff",
+          "why": "Package the extracted, provenance-tagged signal as a brief for a fresh agent"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "empty=WARN"
+      ],
+      "rules": [
+        "relocation=MUST",
+        "agentic-default=MUST",
+        "in-session=MUST",
+        "depth=MUST_NOT",
+        "no-fixed-seq=MUST_NOT",
+        "vet-to-stakes=MUST",
+        "contradiction=MUST",
+        "blocker=MUST",
+        "provenance=MUST",
+        "sensitivity=MUST",
+        "concurrency=MUST",
+        "terminate=SHOULD"
+      ],
+      "steps": 5,
+      "install": {
+        "copy": "cp -r skills/extract-signal <runtime>/skills/extract-signal",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/extract-signal/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "github-sync",
+      "description": "Review the session's git changes, summarize them for approval, then commit and push to GitHub. Trigger when the user runs /github-sync or says \"sync to github\", \"commit and push\", \"push this session\", \"wrap up and push\", \"save this session to git\". For commit-only (no push) or partial staging, do not use this skill.",
+      "visibility": "public",
+      "triggers": [
+        "/github-sync",
+        "sync to github",
+        "commit and push",
+        "push this session",
+        "wrap up and push",
+        "save this session to git"
+      ],
+      "nextSkills": [
+        {
+          "skill": "insight-retro",
+          "phrase": "/retro",
+          "why": "After the push lands, run a retrospective on what shipped this session"
+        },
+        {
+          "skill": "handoff",
+          "phrase": "/handoff",
+          "why": "Hand the remaining work off to a fresh session now that committed state is the baseline"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "proposed-messages-clean=ABORT",
+        "approved=ABORT",
+        "no-drift=ABORT",
+        "staged-match=ABORT",
+        "message-exact=ABORT",
+        "attribution-clean=ABORT"
+      ],
+      "rules": [
+        "no-commit-without-approval=MUST_NOT",
+        "no-blind-add=MUST_NOT",
+        "no-vague-groups=MUST_NOT",
+        "no-unlisted-files=MUST_NOT",
+        "path-output-literal=SHOULD",
+        "no-hidden-message-lines=MUST_NOT",
+        "no-force-push=MUST_NOT",
+        "no-attribution=MUST_NOT",
+        "verify-clean-before-push=MUST",
+        "message-only-default=MAY",
+        "nothing-to-commit=MUST"
+      ],
+      "steps": 10,
+      "install": {
+        "copy": "cp -r skills/github-sync <runtime>/skills/github-sync",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/github-sync/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "handoff",
+      "description": "Generate a structured cold-agent handoff brief (YAML frontmatter + Obsidian markdown + YON blocks) that any fresh LLM session can pick up and execute. Trigger when the user runs /handoff or says \"create a handoff\", \"dispatch to a fresh agent\", \"hand this to a cold session\", \"switch to a new session\", \"I have N tasks for cold agents\", \"package this for another agent\". Use /orchestrate-mode instead when you want to keep the *current* session as coordinator (no artifact produced).",
+      "visibility": "public",
+      "triggers": [
+        "/handoff",
+        "create a handoff",
+        "dispatch to a fresh agent",
+        "hand this to a cold session",
+        "switch to a new session",
+        "I have N tasks for cold agents",
+        "package this for another agent"
+      ],
+      "nextSkills": [
+        {
+          "skill": "handoff-execute",
+          "phrase": "/handoff-execute",
+          "why": "The receiving session executes the brief with enforced source-read discipline"
+        },
+        {
+          "skill": "github-sync",
+          "phrase": "/github-sync",
+          "why": "Commit and push the handoff brief artifact so the cold session can fetch it"
+        },
+        {
+          "skill": "orchestrate-mode",
+          "phrase": "/orchestrate-mode",
+          "why": "Dispatch the packaged tasks to isolated worker agents from the current session"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "verify=ABORT",
+        "sources=WARN"
+      ],
+      "rules": [
+        "verifiable=MUST",
+        "sources-gate=MUST",
+        "no-undersized=MUST_NOT",
+        "abs-paths=MUST",
+        "wikilinks=MUST",
+        "mkdir=MUST",
+        "no-runtime-names=MUST_NOT",
+        "file-canonical=MUST_NOT"
+      ],
+      "steps": 9,
+      "install": {
+        "copy": "cp -r skills/handoff <runtime>/skills/handoff",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/handoff/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "handoff-execute",
+      "description": "Execute a handoff brief with enforced source-read discipline — load the brief's @SOURCES.required tier fully before planning, cite sources per plan step, run @OUTCOME.verify after, emit the retro per @GROUND_TRUTH_REQUIRED. Trigger when the user runs /handoff-execute <brief-path>, or pastes the activation phrase emitted by /handoff. Not auto-triggered — the receiving session invokes explicitly. Use /plan-execute for PLAN.md files (different schema); use /handoff to *create* a brief; use /cold-review for outside-agent review, not for executing the work itself.",
+      "visibility": "public",
+      "triggers": [
+        "/handoff-execute",
+        "/handoff-execute <brief-path>"
+      ],
+      "nextSkills": [
+        {
+          "skill": "cold-review",
+          "phrase": "/cold-review",
+          "why": "For diagnosis-mode briefs especially — fresh reviewers catch coupled-invariant misses (missed call sites, stale SEE ALSO trails, mis-categorized failures) that the executing agent's context bias hides. High-leverage immediately after the first commit lands."
+        },
+        {
+          "skill": "insight-critique",
+          "phrase": "/insight-critique",
+          "why": "Second-assess the cold agent's retro and verdict"
+        },
+        {
+          "skill": "github-sync",
+          "phrase": "/github-sync",
+          "why": "Commit and push the work the cold agent produced"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "brief-valid=ABORT",
+        "sources-loaded=ABORT",
+        "advisory-warning=WARN",
+        "premise-intact=ABORT",
+        "verify-cmd-resolvable=WARN",
+        "plan-cites-sources=WARN",
+        "plan-covers-acceptance=WARN",
+        "retro-has-ground-truth=ABORT",
+        "retro-write-fallback=WARN"
+      ],
+      "rules": [
+        "handoff-briefs-only=MUST",
+        "not-self-gate=MUST_NOT",
+        "no-silent-retry=MUST_NOT",
+        "on-demand-optional=SHOULD",
+        "no-scope-expansion=MUST_NOT",
+        "retro-canonical=MUST",
+        "retro-write-failure=MUST",
+        "read-required-before-plan=MUST",
+        "premise-preflight=MUST",
+        "verify-cmd-preflight=SHOULD",
+        "cover-acceptance=MUST",
+        "gate-status=SHOULD",
+        "retro-ground-truth=MUST",
+        "cite-sources=SHOULD",
+        "no-invented-sources=MUST_NOT",
+        "no-auto-resolve=MUST_NOT"
+      ],
+      "steps": 11,
+      "install": {
+        "copy": "cp -r skills/handoff-execute <runtime>/skills/handoff-execute",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/handoff-execute/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "description": "Explore a codebase to find opportunities for architectural improvement by deepening shallow modules (John Ousterhout, \"A Philosophy of Software Design\"). Use when the user says \"improve architecture\", \"find refactoring opportunities\", \"make this more testable\", \"this codebase is hard to navigate\", \"consolidate these modules\", \"find coupling problems\", \"write an RFC for this refactor\", or \"help me think about module design\". Also trigger when the user asks why tests are brittle, why a module is hard to mock, or why changing one thing always breaks another.",
+      "visibility": "public",
+      "triggers": [
+        "/improve-codebase-architecture",
+        "improve architecture",
+        "find refactoring opportunities",
+        "make this more testable",
+        "this codebase is hard to navigate",
+        "consolidate these modules",
+        "find coupling problems",
+        "write an RFC for this refactor",
+        "help me think about module design"
+      ],
+      "nextSkills": [
+        {
+          "skill": "prime-sweep",
+          "phrase": "/prime-sweep",
+          "why": "When the codebase to refactor spans ≥3 sources or >10k tokens — delegate the surveying to keep your context clean"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "deepening-test=ABORT",
+        "not-extraction=WARN",
+        "confirmed=ABORT"
+      ],
+      "rules": [
+        "deepening-test=MUST",
+        "replace-dont-layer=MUST",
+        "no-manufactured-candidates=MUST_NOT",
+        "name-old-tests=MUST",
+        "file-agnostic-recommendations=MUST",
+        "wait-for-confirm=MUST"
+      ],
+      "steps": 9,
+      "install": {
+        "copy": "cp -r skills/improve-codebase-architecture <runtime>/skills/improve-codebase-architecture",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/improve-codebase-architecture/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "insight-adversarial",
+      "description": "Multi-pass adversarial critique from dynamically selected personas — including Claude's own POV. Trigger on: \"adversarial\", \"red team this\", \"multi-POV review\", \"stress-test\", \"poke holes\", \"what am I missing\", \"attack my plan\", \"critique from multiple angles\", \"is this solid\", \"what would a skeptic say\", or any request for rigorous structured criticism of a plan, design, doc, workflow, YON, idea, or system. Runs 1–3 passes. First pass selects 4+ personas from the roster. Each subsequent pass adds 2–4 new personas to the mix. Third pass wraps with a final verdict if all issues are within acceptable params. Do not skip this skill when the user wants real scrutiny — \"just give me feedback\" often means they need this.",
+      "visibility": "public",
+      "triggers": [
+        "/insight-adversarial",
+        "adversarial",
+        "red team this",
+        "multi-POV review",
+        "stress-test",
+        "poke holes",
+        "what am I missing",
+        "attack my plan",
+        "critique from multiple angles",
+        "is this solid",
+        "what would a skeptic say"
+      ],
+      "nextSkills": [
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "Redesign the plan if the stress-test found fundamental flaws"
+        },
+        {
+          "skill": "plan-execute",
+          "phrase": "/plan-execute",
+          "why": "Proceed to execution if the plan held up under scrutiny"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "cop=WARN",
+        "persona-count=ABORT",
+        "no-reuse=ABORT"
+      ],
+      "rules": [
+        "classify-first=MUST",
+        "min-4=MUST",
+        "claude-pov-last=MUST",
+        "no-reuse=MUST_NOT",
+        "no-solutions-in-pass=MUST_NOT",
+        "no-soft=MUST_NOT",
+        "new-personas-pass2=SHOULD",
+        "tailor-personas=SHOULD",
+        "user-suppress=MAY"
+      ],
+      "steps": 9,
+      "install": {
+        "copy": "cp -r skills/insight-adversarial <runtime>/skills/insight-adversarial",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-adversarial/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "insight-angles",
+      "description": "Angle & connection discovery engine. Classifies a subject (domain, type, current trends), picks lenses from a 15-family roster AND derives dynamic subject-specific ones, then runs layered passes via a context-adaptive venue (cold fan-out for independence — the cold-review effect — or inline) to surface frames, typed connections, hidden assumptions, candidate-expansions, and second-order effects, scored by novelty × relevance. Trigger on /insight-angles, \"find unseen angles\", \"what connections am I missing\", \"what are we not seeing\", \"surface hidden assumptions\", \"reframe this\". Not insight-explore (generates solution options — angles surfaces frames & connections) or insight-adversarial (attacks for flaws via personas — angles widens via lenses). Not insight-critique (reviews an output) or insight-cross-examine (the deliberation engine that orchestrates this one).",
+      "visibility": "public",
+      "triggers": [
+        "/insight-angles",
+        "find unseen angles",
+        "what connections am I missing",
+        "what are we not seeing",
+        "surface hidden assumptions",
+        "reframe this"
+      ],
+      "nextSkills": [
+        {
+          "skill": "insight-cross-examine",
+          "phrase": "/insight-cross-examine",
+          "why": "Deliberate to a decision over the angles and candidate-expansions you surfaced"
+        },
+        {
+          "skill": "insight-assess",
+          "phrase": "/insight-assess",
+          "why": "Evaluate a candidate-expansion you want to take forward"
+        },
+        {
+          "skill": "insight-explore",
+          "phrase": "/insight-explore",
+          "why": "Turn a promising frame into concrete implementation options"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "framed=ABORT",
+        "map=ABORT"
+      ],
+      "rules": [
+        "surface-or-none=MUST",
+        "dynamic-lenses=MUST",
+        "adaptive-venue=MUST",
+        "leaf-agents=MUST",
+        "layers-compound=MUST",
+        "stay-in-lane=MUST",
+        "assessable-links=MUST",
+        "novelty-vs-trends=MUST",
+        "log-selection=MUST",
+        "no-auto-dive=MUST_NOT",
+        "no-execution=MUST_NOT",
+        "marker-quick=MUST",
+        "prefer-nonobvious=SHOULD"
+      ],
+      "steps": 9,
+      "install": {
+        "copy": "cp -r skills/insight-angles <runtime>/skills/insight-angles",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-angles/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "insight-assess",
+      "description": "Structured decision evaluation — pros/cons, impact assessment, quality analysis, recommendation. Trigger when the user runs /assess or asks for evaluation, comparison, or impact analysis of an approach, decision, option, or implementation. Use insight-explore for divergent option generation, insight-critique for focused output review, and insight-adversarial for multi-POV stress testing.",
+      "visibility": "public",
+      "triggers": [
+        "/assess",
+        "/insight-assess"
+      ],
+      "nextSkills": [
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "Turn the recommended option into a phased plan (if the verdict is PROCEED)"
+        },
+        {
+          "skill": "insight-explore",
+          "phrase": "/insight-explore",
+          "why": "Generate more options if none of the assessed ones fit"
+        },
+        {
+          "skill": "insight-critique",
+          "phrase": "/insight-critique",
+          "why": "Get a deeper review of a specific output before deciding"
+        },
+        {
+          "skill": "prime-expand",
+          "phrase": "/prime-expand",
+          "why": "When the decision target is vague — clarify intent (concrete question + named sources) before evaluating options"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "framed=ABORT",
+        "recommendation=ABORT"
+      ],
+      "rules": [
+        "concrete=MUST",
+        "full-quality=MUST",
+        "consistent-dims=MUST",
+        "no-execution=MUST_NOT",
+        "no-hedge=MUST_NOT",
+        "caveats=SHOULD",
+        "alternatives=SHOULD"
+      ],
+      "steps": 8,
+      "install": {
+        "copy": "cp -r skills/insight-assess <runtime>/skills/insight-assess",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-assess/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "insight-critique",
+      "description": "Advisory review workflow. Reviews the last plan, code, architecture, or UI output and returns a structured report: Summary, Strengths, Risks, Fixes. Use when the user runs /critique, asks to \"review this\", \"critique this\", or \"what's wrong with this\", or wants focused feedback on a specific output. Also trigger as a quality gate before /execute. Advisory only — never blocks unless a kernel-prime violation is present. For multi-POV adversarial stress-testing with personas, use /insight-adversarial instead.",
+      "visibility": "public",
+      "triggers": [
+        "/critique",
+        "review this",
+        "critique this",
+        "what's wrong with this"
+      ],
+      "nextSkills": [
+        {
+          "skill": "insight-adversarial",
+          "phrase": "/insight-adversarial",
+          "why": "Stress-test the work from multiple adversarial POVs"
+        },
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "Redesign if the verdict is Not Approved"
+        },
+        {
+          "skill": "plan-execute",
+          "phrase": "/plan-execute",
+          "why": "Apply the fixes and proceed if the verdict is Approved or Conditional"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "cop=WARN",
+        "classify=ABORT"
+      ],
+      "rules": [
+        "advisory-only=MUST",
+        "no-pad-strengths=MUST_NOT",
+        "approved-clean-only=MUST_NOT",
+        "single-classification=MUST"
+      ],
+      "steps": 11,
+      "install": {
+        "copy": "cp -r skills/insight-critique <runtime>/skills/insight-critique",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-critique/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "insight-cross-examine",
+      "description": "Context-routed deliberation engine. Takes a subject OR a set, routes by Form × Corpus to a graduated depth, discovers unseen angles & connections (via insight-angles), then runs critique → assess (+ explore, + typed hybrids for sets) and presents a decision surface — as an ask-gate or inline. Trigger on /insight-cross-examine, \"cross-examine this\", \"weigh these options\", \"pick between these and recommend\", \"evaluate these candidates\". Not insight-critique (single-output review) or insight-assess (single-decision eval) — cross-examine orchestrates both across one-or-many with hybrids and contextual routing. Not insight-explore (pure divergence), insight-angles (the angle/connection engine it orchestrates), ask-gate (governs the question, not the subject), or plan-deep-dive (phase-by-phase plan inspection).",
+      "visibility": "public",
+      "triggers": [
+        "/insight-cross-examine",
+        "cross-examine this",
+        "weigh these options",
+        "pick between these and recommend",
+        "evaluate these candidates"
+      ],
+      "nextSkills": [
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "Turn the recommended option or hybrid into a phased plan (if the verdict is PROCEED)"
+        },
+        {
+          "skill": "insight-angles",
+          "phrase": "/insight-angles",
+          "why": "Dig for more unseen angles and connections on the subject"
+        },
+        {
+          "skill": "insight-explore",
+          "phrase": "/insight-explore",
+          "why": "Generate more candidates if the set is too thin or none fit"
+        },
+        {
+          "skill": "insight-adversarial",
+          "phrase": "/insight-adversarial",
+          "why": "Stress-test the leading option from multiple adversarial POVs before committing"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "preflight=WARN",
+        "hybrids=WARN",
+        "present=ABORT"
+      ],
+      "rules": [
+        "depth-guard=MUST",
+        "orchestrate-angles=MUST",
+        "depth-scale=MUST",
+        "advisory-only=MUST_NOT",
+        "no-auto-dive=MUST_NOT",
+        "hybrid-cap=MUST",
+        "surface-connection=MUST",
+        "avoid-premature-closure=SHOULD",
+        "escalate-not-grind=MUST",
+        "fit-redirect=SHOULD",
+        "ground-whole-artifact=MUST",
+        "consistent-dims=MUST",
+        "present-orthogonal=MUST",
+        "commit-verdict=MUST_NOT"
+      ],
+      "steps": 16,
+      "install": {
+        "copy": "cp -r skills/insight-cross-examine <runtime>/skills/insight-cross-examine",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-cross-examine/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "insight-explore",
+      "description": "Brainstorm 3+ possible implementations before committing. Trigger when the user runs /explore or asks to \"brainstorm options\", \"what are the ways to do this\", \"explore approaches\", \"give me alternatives\", or wants divergent thinking before planning or assessment. Use insight-assess to evaluate known options, insight-critique to review an existing output, and plan-create to turn a chosen direction into an implementation plan.",
+      "visibility": "public",
+      "triggers": [
+        "/explore",
+        "brainstorm options",
+        "what are the ways to do this",
+        "explore approaches",
+        "give me alternatives"
+      ],
+      "nextSkills": [
+        {
+          "skill": "insight-assess",
+          "phrase": "/insight-assess",
+          "why": "Evaluate the options you just generated and pick one"
+        },
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "Turn a chosen option into a phased plan"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "option-count=ABORT"
+      ],
+      "rules": [
+        "min-options=MUST",
+        "no-code=MUST_NOT",
+        "distinct-options=MUST"
+      ],
+      "steps": 9,
+      "install": {
+        "copy": "cp -r skills/insight-explore <runtime>/skills/insight-explore",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-explore/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "insight-retro",
+      "description": "Post-implementation retrospective — map blast radius, audit documentation, extract skills, update KIs, document lessons learned. Trigger when the user runs /retro or asks for a \"retrospective\", \"post-mortem\", \"lessons learned\", or \"what changed\" after completing significant implementation work. Use insight-skill-gap when the goal is specifically to identify new or updated skills.",
+      "visibility": "public",
+      "triggers": [
+        "/retro",
+        "retrospective",
+        "post-mortem",
+        "lessons learned",
+        "what changed"
+      ],
+      "nextSkills": [
+        {
+          "skill": "insight-skill-gap",
+          "phrase": "/insight-skill-gap",
+          "why": "Codify recurring patterns into new or updated skills"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "radius-known=ABORT",
+        "report-complete=ABORT"
+      ],
+      "rules": [
+        "check-skill-index=MUST",
+        "propose-format=MUST",
+        "concrete-followup=MUST",
+        "significance-criteria=MUST",
+        "cite-misleading=MUST",
+        "no-fix-inline=MUST_NOT",
+        "propose-high-reuse-now=SHOULD",
+        "streamline-small-blast=SHOULD"
+      ],
+      "steps": 13,
+      "install": {
+        "copy": "cp -r skills/insight-retro <runtime>/skills/insight-retro",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-retro/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "insight-skill-gap",
+      "description": "Scan recent work and identify if new skills should be created or existing ones updated. Trigger when the user runs /skill-gap, asks to \"check for skill gaps\", \"what skills should we add\", \"did we miss anything worth capturing\", or after /retro flags patterns worth codifying. Use insight-retro for a broader post-implementation retrospective.",
+      "visibility": "public",
+      "triggers": [
+        "/skill-gap",
+        "check for skill gaps",
+        "what skills should we add",
+        "did we miss anything worth capturing"
+      ],
+      "nextSkills": [
+        {
+          "skill": "new-skill-creator",
+          "phrase": "/new-skill-creator",
+          "why": "Scaffold the new skill the gap analysis identified"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "documented=ABORT"
+      ],
+      "rules": [
+        "no-dup=MUST",
+        "naming=MUST",
+        "specific-update=MUST",
+        "check-template=MUST",
+        "no-oneoff=MUST_NOT",
+        "high-reuse-now=SHOULD"
+      ],
+      "steps": 8,
+      "install": {
+        "copy": "cp -r skills/insight-skill-gap <runtime>/skills/insight-skill-gap",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-skill-gap/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "investigate",
+      "description": "Gather facts (files, deps, patterns) without making changes. Trigger when the user runs /investigate or asks to \"look into this\", \"explore the codebase\", \"understand how this works\", \"what files are involved\", \"map the dependencies\", or wants read-only fact-gathering before deciding what to do.",
+      "visibility": "public",
+      "triggers": [
+        "/investigate",
+        "look into this",
+        "explore the codebase",
+        "understand how this works",
+        "what files are involved",
+        "map the dependencies"
+      ],
+      "nextSkills": [
+        {
+          "skill": "insight-assess",
+          "phrase": "/insight-assess",
+          "why": "Evaluate options now that the facts are gathered"
+        },
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "Turn the findings into a phased plan"
+        },
+        {
+          "skill": "prime-sweep",
+          "phrase": "/prime-sweep",
+          "why": "When the gathering should be delegated to keep the caller's context clean (≥3 distinct sources OR ≥~10k tokens)"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "cop=WARN"
+      ],
+      "rules": [
+        "read-only=MUST_NOT",
+        "include-paths=MUST"
+      ],
+      "steps": 9,
+      "install": {
+        "copy": "cp -r skills/investigate <runtime>/skills/investigate",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/investigate/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "json-canvas",
+      "description": "Create and edit JSON Canvas files (.canvas) with nodes, edges, groups, and connections. Trigger when the user opens, edits, or asks to create a .canvas file, or says \"make a canvas\", \"build a mind map\", \"draw a flowchart in Obsidian\", \"add nodes to this canvas\". Not for .md notes (use obsidian-markdown) or .base files (use obsidian-bases).",
+      "visibility": "public",
+      "triggers": [
+        "make a canvas",
+        "build a mind map",
+        "draw a flowchart in Obsidian",
+        "add nodes to this canvas"
+      ],
+      "nextSkills": [
+        {
+          "skill": "obsidian-markdown",
+          "phrase": "/obsidian-markdown",
+          "why": "The canvas nodes link to and embed .md notes — author those with valid Obsidian-flavored markdown next."
+        },
+        {
+          "skill": "obsidian-cli",
+          "phrase": "search my vault",
+          "why": "Open and view the freshly built .canvas in a live Obsidian session to inspect it."
+        },
+        {
+          "skill": "obsidian-bases",
+          "phrase": "make a base",
+          "why": "Complement the visual canvas with a queryable database view over the same vault."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/json-canvas <runtime>/skills/json-canvas",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "monorepo-deps",
+      "description": "End-to-end syncpack + manypkg flow for an npm monorepo: check, fix, update, and maintain `.syncpackrc.json`. Trigger on /monorepo-deps, \"update deps\", \"sync deps\", \"check deps\", \"fix syncpackrc\", \"create syncpackrc\", or \"my lock file is out of sync\". Use syncpack-usage / syncpack-cli / syncpack-config for syncpack API and config details, manypkg-usage for manypkg specifics — this skill orchestrates them.",
+      "visibility": "public",
+      "triggers": [
+        "/monorepo-deps",
+        "update deps",
+        "sync deps",
+        "check deps",
+        "fix syncpackrc",
+        "create syncpackrc",
+        "my lock file is out of sync"
+      ],
+      "nextSkills": [
+        {
+          "skill": "verify",
+          "phrase": "/verify",
+          "why": "Run the app to confirm the dep bump didn't break anything user-visible"
+        },
+        {
+          "skill": "github-sync",
+          "phrase": "/github-sync",
+          "why": "Commit the lock + package.json changes and push"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "both-installed=ABORT",
+        "consent=ABORT",
+        "install-succeeded=ABORT",
+        "no-existing=ABORT",
+        "lint-clean=ABORT",
+        "manypkg-clean=ABORT",
+        "lock-sync=ABORT"
+      ],
+      "rules": [
+        "npm-only=MUST",
+        "end-to-end=MUST",
+        "fix-before-update=MUST",
+        "cap-before-update=MUST",
+        "no-clobber=MUST_NOT",
+        "no-commit=MUST_NOT",
+        "status-summary=MUST",
+        "detect-first=MUST",
+        "verify-before-done=MUST",
+        "resync-after-fix=MUST",
+        "no-force-flags=MUST_NOT",
+        "no-auto-fire=MUST_NOT",
+        "no-ci-changes=MUST_NOT",
+        "no-pnpm-yarn=MUST_NOT"
+      ],
+      "steps": 28,
+      "install": {
+        "copy": "cp -r skills/monorepo-deps <runtime>/skills/monorepo-deps",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/monorepo-deps/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "multi-agent-mode",
+      "description": "Activate multi-agent mode: the lead agent still works directly but delegates independent helper slices when useful. Trigger on /multi-agent-mode, \"multi-agent mode\", \"use helper agents\", \"work with subagents\", or \"parallelize if useful\". Use orchestrate-mode instead when the lead agent must dispatch only and not execute.",
+      "visibility": "public",
+      "triggers": [
+        "/multi-agent-mode",
+        "multi-agent mode",
+        "use helper agents",
+        "work with subagents",
+        "parallelize if useful"
+      ],
+      "nextSkills": [
+        {
+          "skill": "extract-signal",
+          "phrase": "/extract-signal",
+          "why": "The canonical methodology that runs under multi-agent mode — spawn primed sub-agents to gather and vet signal."
+        },
+        {
+          "skill": "orchestrate-mode",
+          "phrase": "/orchestrate-mode",
+          "why": "Switch to the dispatch-only sibling mode when the lead should stop executing directly."
+        },
+        {
+          "skill": "caller-options",
+          "phrase": "/caller-options",
+          "why": "Route an individual delegation's venue and mode now that helper-agent fan-out is on the table."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/multi-agent-mode <runtime>/skills/multi-agent-mode",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "new-skill-creator",
+      "description": "Scaffold a new Agent Skill end-to-end (folder, SKILL.md, optional protocol.yon for dual-doc skills, tri-runtime links for Claude Code + Codex + generic .agents/, commit and push). Trigger when the user runs /new-skill-creator or says \"create a skill\", \"make a new skill for X\", \"add a slash command\", \"turn this workflow into a skill\", \"codify this as a skill\". Not for editing existing skills — edit the SKILL.md directly. For migrating an existing single-doc skill to the dual-doc YON pattern, see section 6 below.",
+      "visibility": "public",
+      "triggers": [
+        "/new-skill-creator",
+        "create a skill",
+        "make a new skill for X",
+        "add a slash command",
+        "turn this workflow into a skill",
+        "codify this as a skill"
+      ],
+      "nextSkills": [
+        {
+          "skill": "cold-review",
+          "phrase": "/cold-review",
+          "why": "Review the new skill against its objectives before relying on it"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "no-overwrite=ABORT",
+        "dual-validate=ABORT"
+      ],
+      "rules": [
+        "no-overwrite=MUST_NOT",
+        "confirm=MUST",
+        "kebab=MUST",
+        "boundary=MUST",
+        "under-500=MUST",
+        "three-links=MUST",
+        "self-sufficient=MUST",
+        "no-elevate=MUST"
+      ],
+      "steps": 8,
+      "install": {
+        "copy": "cp -r skills/new-skill-creator <runtime>/skills/new-skill-creator",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/new-skill-creator/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "next-skills",
+      "description": "The Next Skills protocol (NSP). When a participating skill finishes, surface its declared follow-on skills — each with an activation phrase and a one-line why — for the caller to pick, onboarding-style. Trigger via /next-skills, or automatically when a skill carrying the NSP opt-in block completes. Not /caller-options (routes one invocation's venue/mode) or /skills-help (the static library menu) — NSP recommends successor skills after one runs.",
+      "visibility": "public",
+      "triggers": [
+        "/next-skills"
+      ],
+      "nextSkills": [
+        {
+          "skill": "skills-help",
+          "phrase": "/skills-help",
+          "why": "Browse the full static skill library when none of the recommended successors fits."
+        },
+        {
+          "skill": "caller-options",
+          "phrase": "/caller-options",
+          "why": "Sibling protocol hook — route the chosen successor's venue/mode for one invocation."
+        },
+        {
+          "skill": "ask-gate",
+          "phrase": "/ask-gate",
+          "why": "Sibling protocol hook — triage whether to ask the handler before acting on the pick."
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [],
+      "rules": [
+        "offer-only=MUST_NOT",
+        "empty-silent=MUST",
+        "loop-safe=MUST",
+        "degrade=MUST"
+      ],
+      "steps": 3,
+      "install": {
+        "copy": "cp -r skills/next-skills <runtime>/skills/next-skills",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/next-skills/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "obsidian-bases",
+      "description": "Create and edit Obsidian Bases (.base YAML files) with views, filters, formulas, and summaries. Trigger when the user opens or edits a .base file, or says \"make a base\", \"build a database view of my notes\", \"add a filter/formula to this base\", \"create a table/card view\", \"query my vault\". Not for .md notes (obsidian-markdown) or .canvas files (json-canvas).",
+      "visibility": "public",
+      "triggers": [
+        "make a base",
+        "build a database view of my notes",
+        "add a filter/formula to this base",
+        "create a table/card view",
+        "query my vault"
+      ],
+      "nextSkills": [
+        {
+          "skill": "obsidian-markdown",
+          "phrase": "/obsidian-markdown",
+          "why": "A base queries note frontmatter — author/fix the notes' properties so the view populates correctly."
+        },
+        {
+          "skill": "obsidian-cli",
+          "phrase": "search my vault",
+          "why": "Open and refresh the new .base in a running Obsidian to confirm the view renders."
+        },
+        {
+          "skill": "json-canvas",
+          "phrase": "make a canvas",
+          "why": "Pair the tabular base with a visual canvas view over the same vault data."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/obsidian-bases <runtime>/skills/obsidian-bases",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "obsidian-cli",
+      "description": "Drive a running Obsidian instance via the `obsidian` CLI — search vault, open/create/move notes, toggle tasks, edit properties, reload plugins, run JS, capture errors/screenshots. Trigger when the user says \"search my vault\", \"open this note in Obsidian\", \"list notes tagged X\", \"reload my plugin\", \"run this in Obsidian\", \"screenshot the active note\", or any command-line vault operation. Use this (not obsidian-markdown) whenever the action requires a live Obsidian session; use obsidian-markdown for raw .md file edits on disk.",
+      "visibility": "public",
+      "triggers": [
+        "search my vault",
+        "open this note in Obsidian",
+        "list notes tagged X",
+        "reload my plugin",
+        "run this in Obsidian",
+        "screenshot the active note"
+      ],
+      "nextSkills": [
+        {
+          "skill": "obsidian-markdown",
+          "phrase": "/obsidian-markdown",
+          "why": "After opening/creating a note via the live session, write its body in valid Obsidian-flavored markdown"
+        },
+        {
+          "skill": "obsidian-bases",
+          "phrase": "make a base",
+          "why": "Build a .base database view over the notes you just searched or tagged in the vault"
+        },
+        {
+          "skill": "json-canvas",
+          "phrase": "make a canvas",
+          "why": "Lay the opened notes onto a .canvas as connected nodes"
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/obsidian-cli <runtime>/skills/obsidian-cli",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "obsidian-markdown",
+      "description": "Write valid Obsidian-Flavored Markdown — wikilinks, embeds, callouts, frontmatter properties, tags, comments. Trigger when the user creates or edits a .md file inside an Obsidian vault, or says \"write this as an Obsidian note\", \"add a callout\", \"use wikilinks\", \"set frontmatter properties\", \"embed this image/note\". Use obsidian-cli instead when the action needs a running Obsidian (search, open, plugin reload).",
+      "visibility": "public",
+      "triggers": [
+        "write this as an Obsidian note",
+        "add a callout",
+        "use wikilinks",
+        "set frontmatter properties",
+        "embed this image/note"
+      ],
+      "nextSkills": [
+        {
+          "skill": "obsidian-cli",
+          "phrase": "open this note in Obsidian",
+          "why": "Open, search, or reload the note you just authored in a live Obsidian session"
+        },
+        {
+          "skill": "obsidian-bases",
+          "phrase": "make a base",
+          "why": "Query the frontmatter properties you just set with a .base table or card view"
+        },
+        {
+          "skill": "json-canvas",
+          "phrase": "make a canvas",
+          "why": "Wire the new notes together visually on a .canvas"
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/obsidian-markdown <runtime>/skills/obsidian-markdown",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "orchestrate-mode",
+      "description": "Activate orchestrator mode in the current session: the lead agent dispatches isolated worker subagents and does not execute concrete work directly. Trigger on /orchestrate-mode, \"become an orchestrator\", \"orchestrator mode\", \"delegate everything\", or \"do not execute\". Use multi-agent-mode instead when the lead agent should still work directly while delegating helper slices.",
+      "visibility": "public",
+      "triggers": [
+        "/orchestrate-mode",
+        "become an orchestrator",
+        "orchestrator mode",
+        "delegate everything",
+        "do not execute"
+      ],
+      "nextSkills": [
+        {
+          "skill": "handoff",
+          "phrase": "/handoff",
+          "why": "Package a worker slice into a cold-agent brief to dispatch under the orchestrator"
+        },
+        {
+          "skill": "cold-review",
+          "phrase": "/cold-review",
+          "why": "Have fresh agents inspect the artifacts the dispatched workers produced"
+        },
+        {
+          "skill": "verify",
+          "phrase": "/verify",
+          "why": "Gate the assembled worker output against intent before declaring done"
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/orchestrate-mode <runtime>/skills/orchestrate-mode",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "plan-cleanup",
+      "description": "Post-execution cleanup — remove planning artifacts and tech debt left behind after a plan runs. Trigger when the user runs /plan-cleanup, says 'clean up artifacts', 'remove the plan file', or 'no tech debt'. Not /plan-evolve (plans the next version) — plan-cleanup only removes leftovers and adds no new work.",
+      "visibility": "public",
+      "triggers": [
+        "/plan-cleanup",
+        "clean up artifacts",
+        "remove the plan file",
+        "no tech debt"
+      ],
+      "nextSkills": [
+        {
+          "skill": "github-sync",
+          "phrase": "/github-sync",
+          "why": "Commit and push the cleaned tree once artifacts and tech debt are removed"
+        },
+        {
+          "skill": "insight-retro",
+          "phrase": "/retro",
+          "why": "Run a retrospective on the completed work now that leftovers are cleared"
+        },
+        {
+          "skill": "plan-evolve",
+          "phrase": "/plan-evolve",
+          "why": "Treat the shipped work as v1 and plan the next iteration"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "any-found=SKIP"
+      ],
+      "rules": [
+        "list-first=MUST",
+        "verify-artifact=MUST",
+        "scope-bound=MUST_NOT",
+        "respect-skip=MUST_NOT",
+        "terminal-decl=MUST"
+      ],
+      "steps": 7,
+      "install": {
+        "copy": "cp -r skills/plan-cleanup <runtime>/skills/plan-cleanup",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/plan-cleanup/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "plan-create",
+      "description": "Propose a phased, gated implementation plan before any work begins. Trigger when the user runs /plan-create, says \"make a plan\", \"plan this out\", \"design before coding\", \"let's plan first\", \"architect this\", or asks for a phased approach before implementation. Also trigger proactively when a task is complex enough that jumping straight to execution would be risky — multi-file changes, new features, architectural shifts, refactors spanning multiple components, or any task where misalignment early would be expensive to fix later. Output: a structured PLAN.md with phases, changes, risks, and verification criteria. Design only — no implementation code is written during /plan-create. Use plan-phases to restructure an existing plan, plan-execute to run an approved plan, plan-deep-dive to inspect a plan, plan-evolve to evolve shipped work, and plan-cleanup after execution.",
+      "visibility": "public",
+      "triggers": [
+        "/plan-create",
+        "make a plan",
+        "plan this out",
+        "design before coding",
+        "let's plan first",
+        "architect this"
+      ],
+      "nextSkills": [
+        {
+          "skill": "plan-phases",
+          "phrase": "/plan-phases",
+          "why": "Restructure the plan into gated phases"
+        },
+        {
+          "skill": "plan-deep-dive",
+          "phrase": "/plan-deep-dive",
+          "why": "Inspect the plan phase by phase before executing"
+        },
+        {
+          "skill": "plan-execute",
+          "phrase": "/plan-execute",
+          "why": "Execute the approved plan"
+        },
+        {
+          "skill": "prime-expand",
+          "phrase": "/prime-expand",
+          "why": "When the planning target is vague — clarify intent (concrete questions + named sources) before planning"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "gate1=ABORT",
+        "gate2=ABORT",
+        "gate3=WARN",
+        "gate4=ABORT",
+        "final-gate=ABORT"
+      ],
+      "rules": [
+        "design-only=MUST_NOT",
+        "gates-mandatory=MUST",
+        "abort-stop=MUST",
+        "warnings-proceed=MAY",
+        "sidecar-validation=MUST",
+        "global-scope=MAY",
+        "announce-progress=MUST",
+        "executable-output=MUST",
+        "cleanup-step=MUST"
+      ],
+      "steps": 19,
+      "install": {
+        "copy": "cp -r skills/plan-create <runtime>/skills/plan-create",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/plan-create/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "plan-deep-dive",
+      "description": "Phase-by-phase deep inspection of any multi-phase plan — stop at each phase and assess completeness, quality, and future-readiness before advancing. Trigger when the user runs /deep-dive or asks to \"do a deep dive\", \"inspect each phase\", \"look at this more carefully\", or \"check if we're missing anything\" on an existing plan. Use plan-create to create a new plan, plan-execute to run an approved plan, and plan-phases to add gates to a plan.",
+      "visibility": "public",
+      "triggers": [
+        "/deep-dive",
+        "do a deep dive",
+        "inspect each phase",
+        "look at this more carefully",
+        "check if we're missing anything"
+      ],
+      "nextSkills": [
+        {
+          "skill": "plan-execute",
+          "phrase": "/plan-execute",
+          "why": "Proceed to execution if all phases pass"
+        },
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "Redesign if any phase verdict is RETHINK"
+        },
+        {
+          "skill": "prime-sweep",
+          "phrase": "/prime-sweep",
+          "why": "When a phase under deep-dive touches a large unread source surface — prime via delegation before inspecting"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "phases-found=ABORT",
+        "phase-passes=ABORT",
+        "synthesis=ABORT"
+      ],
+      "rules": [
+        "no-batch=MUST",
+        "concrete-fixes=MUST",
+        "horizons=MUST",
+        "user-approves-amendments=MUST",
+        "no-lgtm=MUST_NOT",
+        "check-siblings=SHOULD"
+      ],
+      "steps": 13,
+      "install": {
+        "copy": "cp -r skills/plan-deep-dive <runtime>/skills/plan-deep-dive",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/plan-deep-dive/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "plan-evolve",
+      "description": "Evolve a target to its next version — treat what shipped as v1, plan the next iteration. The target can be a plan, a repo, a system, a document, a feature, or a skill. If a v1 plan artifact exists, evolve it; if not, the current state of the target IS v1. Trigger: 'what would v2 look like', 'evolve this', 'what's next for this', 'next iteration of this', 'plan the next version'. Use plan-deep-dive to inspect the current state, plan-execute to run the new plan, and plan-cleanup to remove artifacts after execution.",
+      "visibility": "public",
+      "triggers": [
+        "what would v2 look like",
+        "evolve this",
+        "what's next for this",
+        "next iteration of this",
+        "plan the next version"
+      ],
+      "nextSkills": [
+        {
+          "skill": "plan-deep-dive",
+          "phrase": "/deep-dive",
+          "why": "Inspect the new plan phase-by-phase before execution"
+        },
+        {
+          "skill": "insight-critique",
+          "phrase": "/critique",
+          "why": "Get focused review of the proposed next-version plan"
+        },
+        {
+          "skill": "plan-execute",
+          "phrase": "/plan-execute",
+          "why": "Execute the new plan once approved"
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/plan-evolve <runtime>/skills/plan-evolve",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "plan-execute",
+      "description": "Apply the last approved plan exactly. Trigger when the user runs /execute or says \"execute the plan\", \"implement this\", \"do it\", or \"go ahead\" after a plan has been approved. Surface judgment calls — do not make them silently. Not /plan-create (designs the plan first) or /plan-deep-dive (inspects a plan without running it) — plan-execute runs an already-approved plan.",
+      "visibility": "public",
+      "triggers": [
+        "/execute",
+        "execute the plan",
+        "implement this",
+        "do it",
+        "go ahead"
+      ],
+      "nextSkills": [
+        {
+          "skill": "verify",
+          "phrase": "/verify",
+          "why": "Verify the change actually works by running it"
+        },
+        {
+          "skill": "insight-retro",
+          "phrase": "/insight-retro",
+          "why": "Run a retrospective on the completed work"
+        },
+        {
+          "skill": "plan-cleanup",
+          "phrase": "/plan-cleanup",
+          "why": "Remove planning artifacts now the plan is done"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "plan-found=ABORT",
+        "plan-valid=ABORT"
+      ],
+      "rules": [
+        "exact-plan=MUST",
+        "gate-suite-before-commit=SHOULD",
+        "stop-on-drift=MUST",
+        "surface-judgment=MUST",
+        "no-add-features=MUST_NOT",
+        "report-progress-on-halt=MUST",
+        "terminal-decl=MUST"
+      ],
+      "steps": 10,
+      "install": {
+        "copy": "cp -r skills/plan-execute <runtime>/skills/plan-execute",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/plan-execute/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "plan-phases",
+      "description": "Restructure an existing plan into phases with /verify gates after each phase and critical steps. Trigger when the user runs /phase-plan or asks to \"add phases to this plan\", \"gate this plan\", \"restructure the plan\", or \"add checkpoints\". Use plan-create for new plans and plan-deep-dive for inspection without restructuring.",
+      "visibility": "public",
+      "triggers": [
+        "/phase-plan",
+        "add phases to this plan",
+        "gate this plan",
+        "restructure the plan",
+        "add checkpoints"
+      ],
+      "nextSkills": [
+        {
+          "skill": "plan-execute",
+          "phrase": "/plan-execute",
+          "why": "Run the now-phased plan"
+        },
+        {
+          "skill": "plan-deep-dive",
+          "phrase": "/plan-deep-dive",
+          "why": "Inspect the phased plan before running it"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "plan-found=ABORT",
+        "phase-quality=ABORT",
+        "gate-coverage=ABORT",
+        "final=ABORT"
+      ],
+      "rules": [
+        "preserve-content=MUST",
+        "preserve-intent=MUST",
+        "same-format=MUST",
+        "no-scope-add=MUST_NOT",
+        "no-ceremonial-gates=MUST_NOT",
+        "gate-after-phase=MUST",
+        "gate-after-risky=MUST",
+        "gate-cross-package=MUST",
+        "split-large-phases=SHOULD"
+      ],
+      "steps": 10,
+      "install": {
+        "copy": "cp -r skills/plan-phases <runtime>/skills/plan-phases",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/plan-phases/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "prime-expand",
+      "description": "Expand a vague gap into concrete questions + named source candidates via a delegated sub-agent — caller sees only the proposed pair for confirm/edit/refuse, never the expansion reasoning. Trigger /prime-expand, \"expand on this\", or auto-fire on handoff receipt with a thin brief. (Not for ambient \"I need to know X\" phrasing — that would collide with /investigate.) Single sub-agent, single turn, ≤3 candidate-source spot-checks only. Pairs with /prime-fetch (single noisy tool call) and /prime-sweep (large source-surface investigation).",
+      "visibility": "public",
+      "triggers": [
+        "/prime-expand",
+        "expand on this"
+      ],
+      "nextSkills": [
+        {
+          "skill": "prime-fetch",
+          "phrase": "/prime-fetch",
+          "why": "When the expansion needs a single noisy data-fetch (Grep/WebFetch/MCP) on the proposed source"
+        },
+        {
+          "skill": "prime-sweep",
+          "phrase": "/prime-sweep",
+          "why": "When the expansion's proposed sources are ≥3 distinct OR span >10k tokens — needs parallel sub-agent investigation"
+        },
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "When the expansion sharpened the goal enough to plan the work directly (no priming needed)"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "cop=WARN",
+        "seed-vague=ABORT",
+        "decision-made=WARN"
+      ],
+      "rules": [
+        "vague-seed-only=MUST",
+        "no-investigation=MUST_NOT",
+        "one-sub-agent=MUST",
+        "scan-cap=MUST",
+        "no-heavy-tools=MUST_NOT",
+        "depth-one=MUST_NOT",
+        "only-emit-pair=MUST",
+        "refusal-format=MUST",
+        "delegate-always=MUST",
+        "no-pow-needed=MUST_NOT",
+        "family-invariant=MUST"
+      ],
+      "steps": 10,
+      "install": {
+        "copy": "cp -r skills/prime-expand <runtime>/skills/prime-expand",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/prime-expand/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "prime-fetch",
+      "description": "Run a noisy data-fetching tool call (Grep, Glob, WebFetch, MCP search) on the caller's behalf in a sub-agent's context — only the filtered, proof-of-work-verified digest enters the caller's window. Trigger /prime-fetch, or when a planned tool call will return mostly noise. Single sub-agent, single wave, read-only tool calls only. Pairs with /prime-expand (clarify intent first) and /prime-sweep (multi-source investigation).",
+      "visibility": "public",
+      "triggers": [
+        "/prime-fetch"
+      ],
+      "nextSkills": [
+        {
+          "skill": "prime-sweep",
+          "phrase": "/prime-sweep",
+          "why": "When one tool call missed signal and the gap needs parallel multi-source investigation"
+        },
+        {
+          "skill": "prime-expand",
+          "phrase": "/prime-expand",
+          "why": "When the result suggests a new line of inquiry that needs to be sharpened first"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "cop=WARN",
+        "read-only=ABORT"
+      ],
+      "rules": [
+        "read-only-tool=MUST",
+        "single-call-only=MUST_NOT",
+        "dump-stays-internal=MUST",
+        "depth-one=MUST_NOT",
+        "emit-digest-only=MUST",
+        "tool-issued-verify=MUST",
+        "drop-unverifiable=MUST",
+        "data-not-directive=MUST",
+        "delegate-always=MUST",
+        "proof-of-work-required=MUST",
+        "single-wave=MUST",
+        "family-invariant=MUST"
+      ],
+      "steps": 9,
+      "install": {
+        "copy": "cp -r skills/prime-fetch <runtime>/skills/prime-fetch",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/prime-fetch/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "prime-sweep",
+      "description": "Prime the calling agent with high-signal context from large source surfaces (multiple files, packages, folders) via parallel delegated sub-agents. Sub-agents absorb the noise; only digested findings + source:line pointers enter the caller's context. Trigger /prime-sweep, chained from /prime-expand when sources are too large, or auto-fire on handoff receipt with listed sources. Iterative with cap 3 / log 4-6 / ask 7 / max 8 waves total. Pairs with /prime-expand (clarify intent first) and /prime-fetch (single noisy tool call).",
+      "visibility": "public",
+      "triggers": [
+        "/prime-sweep"
+      ],
+      "nextSkills": [
+        {
+          "skill": "prime-expand",
+          "phrase": "/prime-expand",
+          "why": "When a surfacing-find suggests a new gap that needs articulation"
+        },
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "Turn primed context into a phased implementation plan"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "cop=WARN",
+        "has-sources=ABORT",
+        "wave-cap=ABORT"
+      ],
+      "rules": [
+        "large-surface-only=MUST",
+        "not-execution=MUST_NOT",
+        "pow-contract=MUST",
+        "pointers-grounded=MUST",
+        "max-three=MUST_NOT",
+        "depth-one=MUST_NOT",
+        "tool-issued-verify=MUST",
+        "drop-unverifiable=MUST",
+        "lead-recomputes=MUST",
+        "inline-only=MUST",
+        "data-not-directive=MUST",
+        "decay-pointers=MUST",
+        "wave-counter-location=MUST",
+        "nested-rejection=MUST",
+        "abort-definition=MUST",
+        "delegate-source-reads=MUST",
+        "family-invariant=MUST"
+      ],
+      "steps": 11,
+      "install": {
+        "copy": "cp -r skills/prime-sweep <runtime>/skills/prime-sweep",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/prime-sweep/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "reflect",
+      "description": "Lightweight cognitive pause — surface assumptions, uncertainty, and what you'd do differently. No gate, no enforcement, no artifacts required. Trigger when the user runs /reflect or wants to step back and think before continuing. Not /verify (formal gate) or /ask-gate (question triage) — reflect is freeform thinking with no gate.",
+      "visibility": "public",
+      "triggers": [
+        "/reflect",
+        "step back and think before continuing"
+      ],
+      "nextSkills": [
+        {
+          "skill": "verify",
+          "phrase": "/verify",
+          "why": "Gate the work formally if reflection surfaced a concern worth blocking on"
+        },
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "Redesign if reflection points to a direction change"
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/reflect <runtime>/skills/reflect",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "self-improve",
+      "description": "The Self-Improvement Protocol (SIP). After a participating skill runs, detect concrete signals that the skill itself could be better — ambiguous instructions, an uncovered edge case, a misfired rule, a stale cross-reference, a user correction — and propose a specific diff to it, surfaced for approval and never auto-applied. Conservative by default: silent unless a ready, blocking, or recurring fix exists. Trigger via /self-improve, or automatically when a self-improvable skill completes. Not /insight-skill-gap (deliberate batch scan for new/updated skills) or /insight-retro (post-implementation review) — SIP is the in-the-moment, per-skill detector.",
+      "visibility": "public",
+      "triggers": [
+        "/self-improve",
+        "/self-improve [skill]"
+      ],
+      "nextSkills": [
+        {
+          "skill": "ask-gate",
+          "phrase": "/ask-gate",
+          "why": "SIP never auto-applies — the proposed diff must be surfaced to the handler, which is exactly the question-triage gate ask-gate governs."
+        },
+        {
+          "skill": "insight-skill-gap",
+          "phrase": "/skill-gap",
+          "why": "When the in-the-moment signal points to a recurring pattern, escalate to the deliberate batch scan for new or updated skills."
+        },
+        {
+          "skill": "new-skill-creator",
+          "phrase": "/new-skill-creator",
+          "why": "If the detected gap is a whole missing capability rather than a tweak, scaffold it as a new skill."
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "conservative-bar=SKIP"
+      ],
+      "rules": [
+        "per-run-detector=MUST",
+        "concrete-diff=MUST",
+        "delegate-new-skill=SHOULD",
+        "no-auto-apply=MUST_NOT",
+        "dedup=MUST",
+        "conservative=MUST",
+        "depth-guard=MUST",
+        "no-reentry=MUST_NOT",
+        "surface-through-ask-gate=SHOULD"
+      ],
+      "steps": 4,
+      "install": {
+        "copy": "cp -r skills/self-improve <runtime>/skills/self-improve",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/self-improve/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "skills-help",
+      "description": "The skills library menu — every skill grouped by family, each with a one-line description and a dual-doc/single-doc marker; pass a family name to drill into one family in full detail. Trigger with /skills-help, \"list my skills\", \"which skill for X\", \"skills menu\", \"what skills do I have\". Not /new-skill-creator (which scaffolds a new skill).",
+      "visibility": "public",
+      "triggers": [
+        "/skills-help",
+        "/skills-help {family}",
+        "list my skills",
+        "which skill for X",
+        "skills menu",
+        "what skills do I have"
+      ],
+      "nextSkills": [
+        {
+          "skill": "new-skill-creator",
+          "phrase": "/new-skill-creator",
+          "why": "When the library menu shows no skill covers the need, create the missing one."
+        },
+        {
+          "skill": "insight-skill-gap",
+          "phrase": "/skill-gap",
+          "why": "After browsing the roster and finding a hole, run the gap analysis to decide what to add or update."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/skills-help <runtime>/skills/skills-help",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "verify",
+      "description": "Formal phase gate — checks intent, plan, and execution artifacts for drift. Requires the intent and execution artifacts (the plan is optional; an absent plan short-circuits to a plan-not-found verdict). Produces structured output. Trigger when the user runs /verify or needs to decide whether to proceed to the next phase. Not /double-check (quick re-check of one claim), /reflect (informal thinking, no gate), or /insight-critique (advisory output review) — verify is the formal gate against intent, plan, and execution.",
+      "visibility": "public",
+      "triggers": [
+        "/verify"
+      ],
+      "nextSkills": [
+        {
+          "skill": "github-sync",
+          "phrase": "/github-sync",
+          "why": "Commit and push when the verdict is clean"
+        },
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "Redesign if the verdict surfaced drifts"
+        },
+        {
+          "skill": "investigate",
+          "phrase": "/investigate",
+          "why": "Dig deeper if the verdict surfaced issues that need fact-gathering"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "intent=ABORT",
+        "execution=ABORT"
+      ],
+      "rules": [
+        "plan-absent=MUST",
+        "route-investigate=SHOULD",
+        "route-replan=SHOULD",
+        "route-sync=SHOULD"
+      ],
+      "steps": 4,
+      "install": {
+        "copy": "cp -r skills/verify <runtime>/skills/verify",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/verify/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "yon-read",
+      "description": "Read, interpret, or explain existing YON content. Trigger on any .yon file, YON snippet (lines with @TAG|...|... patterns), or when the user says \"read this YON\", \"what does this YON mean\", \"explain this @DOC/@RULE/@STEP\", \"summarize this YON\", \"interpret this record\". Do NOT trigger for generic format questions (\"what is YON?\") with no YON content present — and do not trigger when the user wants to *write* YON (use yon-write).",
+      "visibility": "public",
+      "triggers": [
+        "read this YON",
+        "what does this YON mean",
+        "explain this @DOC/@RULE/@STEP",
+        "summarize this YON",
+        "interpret this record"
+      ],
+      "nextSkills": [
+        {
+          "skill": "yon-write",
+          "phrase": "/yon-write",
+          "why": "The natural family complement — after interpreting existing YON, edit, convert, or extend it."
+        },
+        {
+          "skill": "double-check",
+          "phrase": "/double-check",
+          "why": "Re-verify a load-bearing interpretation of the YON before acting on it."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/yon-read <runtime>/skills/yon-read",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "yon-write",
+      "description": "YON Writing & Compilation Mode. Use when creating, generating, converting, or writing YON content. Triggers on: \"write YON\", \"convert to YON\", \"create a .yon file\", \"encode this as YON\", \"YON format\", or any request where the expected output is YON records. Also triggers when unstructured content should be structured into YON even without explicit keyword — e.g., working in a YON project. Use yon-read instead when reading, interpreting, explaining, or summarizing existing YON.",
+      "visibility": "public",
+      "triggers": [
+        "write YON",
+        "convert to YON",
+        "create a .yon file",
+        "encode this as YON",
+        "YON format"
+      ],
+      "nextSkills": [
+        {
+          "skill": "yon-read",
+          "phrase": "/yon-read",
+          "why": "Read back the authored YON to confirm it parses and means what was intended — the family round-trip."
+        },
+        {
+          "skill": "double-check",
+          "phrase": "/double-check",
+          "why": "Targeted re-verification that the newly written YON is syntactically and semantically correct before relying on it."
+        },
+        {
+          "skill": "github-sync",
+          "phrase": "/github-sync",
+          "why": "Commit and push the new .yon file once it is written and validated."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/yon-write <runtime>/skills/yon-write",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    }
+  ]
+}

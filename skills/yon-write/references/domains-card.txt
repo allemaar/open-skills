@@ -1,0 +1,75 @@
+YON Domains & Profiles Card (v2.0)
+https://yon.younndai.com
+
+PROFILES — control which record families appear:
+  core       Basic structure (@DOC, @SEC, @NOTE, @META, @CFG, @MAP)
+  decl       Rules and schemas (+@RULE, @SCHEMA, @DEF, @REF)
+  exec       Workflows (+@STEP, @CHECK, @CATCH, @RETRY, @INPUT, @OUTPUT, @YIELD)
+  audit      Provenance (+@STAMP, @REDACTION, @CONSENT)
+  cognitive  AI thought chains (+@INTENT, @SCOPE, profile=cognitive tags)
+  agent      Multi-agent systems (+@AGENT, @STREAM, @SIGNAL, @SUBSCRIBE, @MERGE, @THROTTLE, @ROUTE)
+  full       All record families enabled
+
+Declare in @DOC: profile=decl
+Feature toggles: with=[...], without=[...]
+
+Examples:
+  @DOC ver=2.0 | id=doc | title="Doc" | profile=decl | with=[workflow]
+  @DOC ver=2.0 | id=doc | title="Doc" | profile=exec | without=[provenance]
+  @DOC ver=2.0 | id=doc | title="Doc" | profile=exec | with=[cognition,memory]
+
+FORMAT MODES — control printing density (lossless, never removes records):
+  canon   Full readability, all optional fields. For humans.
+  min     Reduced quoting, cosmetic whitespace stripped. Default for LLM pipelines.
+  ultra   Maximum density, structural omission. For cost-critical transport.
+
+Declare in @DOC: fmt=min
+
+fmt=ultra rules:
+  - MAY omit profile=exec (default)
+  - MUST NOT omit type suffix (:type) — types are always explicit
+  - MUST NOT omit ver (always required)
+  - MUST NOT omit n:int=N step sequence numbers
+  - MUST NOT omit rid or title
+
+KINDS — what the document represents:
+  doc       General document
+  rule      Constraints / do-nots / policies
+  workflow  Multi-step procedure, triggers, tools
+  skill     Reusable capability + steps + checks
+  sidecar   Repo/project guidance for IDE agents + context
+  spec      Formal definition/contract
+  context   Raw dumps (logs/transcripts/artifacts)
+  memory    Append-only scratchpad / evolving notes
+  note      Everything else
+  prompt    Direct agent prompt / mission file
+
+DOMAINS — industry-specific record families:
+  Declare in @DOC: domain=yon.health
+  Records MAY include domain= to override for that record.
+
+Official domains (yon.* namespace):
+  yon.aerospace       yon.agriculture     yon.automotive
+  yon.compliance      yon.construction    yon.devops
+  yon.dialogue        yon.ecommerce       yon.education
+  yon.energy          yon.environmental   yon.fintech
+  yon.gaming          yon.government      yon.health
+  yon.hospitality     yon.hr              yon.infrastructure
+  yon.insurance       yon.legal           yon.logistics
+  yon.manufacturing   yon.maritime        yon.media
+  yon.pharma          yon.realestate      yon.research
+  yon.security        yon.sessions        yon.telecom
+  yon.transportation
+
+Partner domains: use own namespace (not yon.*), e.g. stripe.payments, google.ai
+  Verified via domains.younndai.com
+
+Community domains: self-published, no registration
+  e.g., com.mycompany-crm
+
+SELF-DESCRIBING DOCUMENTS:
+  If intended for LLMs without built-in YON knowledge:
+  @DOC ver=2.0 | id=doc | title="Doc" | guide="https://yon.younndai.com/yon-guide.txt"
+
+Full spec: https://yon.younndai.com
+Author: Alexandru Mares | MARLINK TRADING SRL | © 2026

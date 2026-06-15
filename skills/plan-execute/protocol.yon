@@ -1,0 +1,67 @@
+@DOC ver=2.0 | id=plan-execute | title="Plan Execution — Apply Approved Plan with Precision" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Execute an approved plan exactly. Surface judgment calls. Declare completion explicitly. No silent decisions, no silent drift." | trigger="user runs /execute, says execute the plan, implement this, do it, or go ahead after a plan has been approved"
+@STAMP ts:ts=2026-06-04T00:00:00Z | src=human | method=manual
+
+# --- Governance ---
+
+@SEC name="Governance"
+@RULE rid=rule:exact-plan | lvl=MUST | when="executing" | then="follow the plan exactly — no scope creep"
+@RULE rid=rule:gate-suite-before-commit | lvl=SHOULD | when="execution produced committable code" | then="run the project's defined gate suite (lint/test/typecheck) as a deliberate pre-commit gate, map each plan step's outcome to its verification, and name any unverified step or skipped gate — never silently pass; honor any project restriction on auto-running builds/tests"
+@RULE rid=rule:stop-on-drift | lvl=MUST | when="environment, codebase, or dependencies differ from plan assumptions" | then="stop immediately, do not self-correct, surface the discrepancy with options"
+@RULE rid=rule:surface-judgment | lvl=MUST | when="any decision is required that is not explicitly named in the plan step" | then="surface it to user before acting; do not proceed without response"
+@RULE rid=rule:no-add-features | lvl=MUST_NOT | when="executing" | then="add features or refactors not in the plan"
+@RULE rid=rule:report-progress-on-halt | lvl=MUST | when="execution halts mid-run" | then="report which steps were completed; do not leave state implicit"
+@RULE rid=rule:terminal-decl | lvl=MUST | when="execution ends" | then="emit a terminal declaration line"
+
+# --- Valid Executable Plan Definition ---
+
+@SEC name="Valid Executable Plan"
+@MAP name=PlanRequirements | pairs=["numbered-steps"->"each step is a discrete, concrete action (not prose intention)","concrete-actions"->"each step names what to do, not what to achieve (e.g. 'Edit src/auth.ts to add JWT validation' not 'add authentication')","verifiable-outcome"->"at least one step or verification entry produces an observable, checkable result"]
+
+# --- Phase 1: Alignment ---
+
+@SEC name="Phase 1 — Alignment"
+@MAP name=PlanLoadOrder | pairs=["1-conversation-context"->"if a plan was produced in this conversation, use it","2-PLAN.md"->"PLAN.md in the project root","3-implementation_plan.md"->"implementation_plan.md in the project root","none"->"no plan found — see gate"]
+
+@STEP rid=step:load-plan | n:int=1 | op=std:fs.read@v1 | args=[priority="conversation context first, then PLAN.md, then implementation_plan.md"] | use=[cfg:PlanLoadOrder] | out=[ref:plan]
+@CHECK rid=check:plan-found | assert="ref:plan is non-empty" | fail=ABORT | msg="No plan found. Run /plan-create first. Do not proceed."
+@CHECK rid=check:plan-valid | assert="ref:plan satisfies all PlanRequirements (numbered-steps, concrete-actions, verifiable-outcome)" | fail=ABORT | msg="Plan does not meet Valid Executable Plan definition. State the specific gap (no numbered steps / no verifiable outcome / etc.) and ask user to revise or invoke /plan-create."
+@STEP rid=step:confirm-mode | n:int=2 | op=std:ai.prompt@v1 | args=[task="Confirm execution mode: no planning, no exploring, no scope additions."] | in=[ref:plan] | out=[ref:execution-mode-confirmed]
+
+# --- Phase 2: Action ---
+
+@SEC name="Phase 2 — Action"
+@STEP rid=step:execute | n:int=3 | op=std:workflow.execute@v1 | args=[task="Execute each step from the plan in order. Track progress against the plan as you go."] | in=[ref:plan,ref:execution-mode-confirmed] | out=[ref:execution-state] | rules=[rid:rule:exact-plan,rid:rule:no-add-features,rid:rule:report-progress-on-halt]
+
+@CATCH target=rid:step:execute | on="drift" | do=rid:step:surface-drift
+@STEP rid=step:surface-drift | op=std:human.review@v1 | args=[template="'Planned: [X]. Found: [Y]. Options: (1) Proceed with [specific substitution] — confirm to approve. (2) Revise the plan. Which do you prefer?'"] | rules=[rid:rule:stop-on-drift] | note="If user approves a deviation, document it inline: 'Proceeding with [substitution] as approved deviation to plan step N' — then continue."
+
+@CATCH target=rid:step:execute | on="judgment-call" | do=rid:step:surface-judgment-call
+@STEP rid=step:surface-judgment-call | op=std:human.review@v1 | args=[template="'Step N requires a decision not specified in the plan: [decision]. Options: [A] / [B]. Which should I use?'"] | rules=[rid:rule:surface-judgment] | note="Do not make implicit decisions. Do not proceed past a judgment call without a user response."
+
+# --- Phase 3: Verification ---
+
+@SEC name="Phase 3 — Verification"
+@STEP rid=step:verify | n:int=4 | op=std:workflow.verify@v1 | args=[task="Run the verification steps specified in the plan. If the work produced committable code, also run the project's defined gate suite (lint/test/typecheck — e.g. turbo run lint test typecheck where present) as a deliberate pre-commit gate, not a speculative auto-run; honor any project restriction on auto-running builds/tests by running only sanctioned gates and naming the rest as deferred. Map each plan step's intended outcome to the specific verification that exercised it. Report: which steps were completed, what verification was run, what the result was, and any unverified step or skipped gate (named explicitly, never silently passed)."] | in=[ref:execution-state] | out=[ref:verification-result]
+@STEP rid=step:user-confirm-no-verif | n:num=4.5 | op=std:human.review@v1 | args=[task="If no verification steps specified in plan, ask user to confirm outcomes explicitly. Do not silently pass."] | in=[ref:plan] | note="Only triggered when plan has no verification steps."
+
+@MAP name=TerminalDeclarations | pairs=["complete"->"Execution complete — all steps verified.","failed"->"Execution failed — [specific reason].","halted"->"Execution halted — [specific reason]. Completed steps: [list]."]
+@STEP rid=step:declare | n:int=5 | op=std:ai.prompt@v1 | args=[task="Emit terminal declaration line per TerminalDeclarations. No execution ends without one."] | in=[ref:verification-result] | use=[cfg:TerminalDeclarations] | rules=[rid:rule:terminal-decl]
+
+# --- Downstream ---
+
+@SEC name="Downstream"
+@MAP name=NextCommand | pairs=["verify-alignment-after-execution"->"/verify","execution-surfaced-scope-gaps"->"/plan-create","cleanup-planning-artifacts"->"/plan-cleanup"]
+
+
+# --- Next Skills ---
+
+@SEC name="Next Skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only; never auto-invoke. Skip silently if the next-skills list is empty."] | in=[] | out=[ref:nsp-offer]
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated

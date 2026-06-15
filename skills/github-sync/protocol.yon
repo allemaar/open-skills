@@ -1,0 +1,74 @@
+@DOC ver=2.0 | id=github-sync | title="GitHub Sync — Cluster, Commit, Push" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Review the session's git changes, cluster them by intent into an ordered commit plan, get explicit user approval over the exact full commit messages, then commit and push to GitHub — staging only approved file paths, with exact-message and attribution-trailer checks before every push." | trigger="user runs /github-sync, says sync to github, commit and push, push this session, wrap up and push, save this session to git. Not for commit-only (no push) or partial staging."
+@STAMP ts:ts=2026-05-18T00:00:00Z | src=human | method=manual
+
+# --- Step 1: Gather Changes ---
+
+@SEC name="Step 1 — Gather Changes"
+@STEP rid=step:gather | n:int=1 | op=std:shell.exec@v1 | args=[cmds="git diff --stat HEAD; git diff HEAD; git status; git log --oneline -5",note="run in parallel; git log gives commit-style reference"] | out=[ref:changes]
+
+# --- Step 2: Build the Change Assessment ---
+
+@SEC name="Step 2 — Build the Change Assessment"
+@MAP name=ExcludedAlways | pairs=["worktree-submodule-markers"->"e.g. .claude/worktrees/*","generated-artifacts"->"not requested for commit","unrelated-edits"->"local edits outside this sync's intent","ambiguous-files"->"intent unclear","sensitive"->".env files, binaries, credentials, debug artifacts"]
+@STEP rid=step:assess | n:int=2 | op=std:ai.prompt@v1 | args=[task="From the diff and conversation history, identify what changed and which changes are intended for sync. Cluster changes by intent, operation, app/package, and blast radius. Default to split commits when changes are meaningfully independent; use one commit only when changes are tightly coupled, and state why. Route everything in ExcludedAlways into a separate Excluded Changes list — never staged."] | in=[ref:changes] | use=[cfg:ExcludedAlways] | out=[ref:assessment]
+
+# --- Step 3: Propose an Ordered Commit Plan ---
+
+@SEC name="Step 3 — Propose an Ordered Commit Plan"
+@MAP name=ForbiddenAttributionText | pairs=["co-authored-by"->"Co-Authored-By trailer","signed-off-by"->"Signed-off-by trailer","generated-by"->"Generated-by attribution","assisted-by"->"Assisted-by attribution","generated-with-ai"->"generated with AI attribution","assistant-attribution"->"assistant attribution","tool-attribution"->"tool attribution","ownership"->"similar ownership or attribution trailer"]
+@STEP rid=step:propose-plan | n:int=3 | op=std:ai.prompt@v1 | args=[task="Present a complete ordered commit plan before asking for approval, using the Commit Plan format in SKILL.md (per commit: message, why this group, files to stage, verification, and Full commit message block; plus a final Excluded Changes list). The Full commit message block is the exact message to be committed: include the full body if there will be one, or only the subject if subject-only. Commit messages match recent repo style, subject lines concise (<=72 chars when practical), NO attribution trailer. Before asking for approval, scan every full message block for ForbiddenAttributionText and STOP if any appears. The Verification line states what was run, what should run before/after, or that this sync is message-only. Then ask: 'Ready to commit and push this plan?'"] | in=[ref:assessment] | out=[ref:commit-plan] | use=[cfg:ForbiddenAttributionText] | rules=[rid:rule:no-vague-groups,rid:rule:no-attribution,rid:rule:no-hidden-message-lines]
+@CHECK rid=check:proposed-messages-clean | assert="every proposed Full commit message block contains no ForbiddenAttributionText and no similar attribution or ownership trailer" | fail=ABORT | msg="Proposed commit message contains attribution or ownership text. Remove it before requesting approval." | use=[cfg:ForbiddenAttributionText]
+
+# --- Step 4: Wait for Approval ---
+
+@SEC name="Step 4 — Wait for Approval"
+@MAP name=DriftConditions | pairs=["branch-change"->"current branch changed","files-differ"->"changed files differ from the approved plan","new-dirty"->"new dirty files appeared","order-change"->"commit order changed","message-change"->"any commit subject, body, or trailer line differs from the approved Full commit message block","staged-mismatch"->"staged files do not match the approved file list","attribution-appears"->"attribution text appears anywhere","push-fails"->"push fails"]
+@STEP rid=step:wait-approval | n:int=4 | op=std:human.review@v1 | args=[task="Do NOT proceed until the user explicitly says yes. Approval applies only to the exact commit plan shown, including the exact Full commit message blocks."] | in=[ref:commit-plan] | out=[ref:approval] | rules=[rid:rule:no-commit-without-approval]
+@CHECK rid=check:approved | assert="user explicitly approved the exact commit plan shown, including exact Full commit message blocks" | fail=ABORT | msg="No explicit approval. Do not commit."
+@CHECK rid=check:no-drift | assert="no DriftConditions hold between approval and push" | fail=ABORT | msg="Material drift detected. Stop and ask for a revised plan." | use=[cfg:DriftConditions]
+
+# --- Step 5: Commit and Push ---
+
+@SEC name="Step 5 — Commit and Push"
+@STEP rid=step:stage | n:int=5 | op=std:shell.exec@v1 | args=[task="For each commit in approved order, stage ONLY the listed file paths — no blind git add. When deriving staging paths from Git output, use unquoted or NUL-safe path output such as git -c core.quotePath=false ls-files ...; default quoted paths can break Unicode or space-containing paths when passed back to git add. Then run git diff --cached --name-status and confirm the cached list exactly matches that commit's Files to stage. If it does not match, STOP — unstage or revise only with explicit user approval."] | in=[ref:approval] | out=[ref:staged] | rules=[rid:rule:no-blind-add,rid:rule:no-unlisted-files,rid:rule:path-output-literal]
+@CHECK rid=check:staged-match | assert="git diff --cached --name-status exactly matches the approved Files to stage for this commit" | fail=ABORT | msg="Staged files mismatch. Unstage or revise only with explicit user approval."
+@STEP rid=step:commit | n:int=6 | op=std:shell.exec@v1 | args=[task="Commit with only the exact approved Full commit message block. Do not invent, shorten, expand, template, or append any subject, body, or trailer line that was not visible in the approved plan. Then run git log -1 --format=%B and verify the message exactly matches the approved Full commit message block and contains no ForbiddenAttributionText or similar attribution or ownership trailer."] | in=[ref:staged] | out=[ref:committed] | use=[cfg:ForbiddenAttributionText] | rules=[rid:rule:no-attribution,rid:rule:no-hidden-message-lines]
+@CHECK rid=check:message-exact | assert="git log -1 --format=%B exactly matches the approved Full commit message block for this commit" | fail=ABORT | msg="Committed message differs from approved full message. Do not push. Amend with only the clean approved message and re-check."
+@CHECK rid=check:attribution-clean | assert="git log -1 --format=%B shows no ForbiddenAttributionText and no attribution or ownership trailer of any kind" | fail=ABORT | msg="Attribution or ownership trailer present. Do not push. Remove it with git commit --amend using the clean approved message, then re-run exact-message and attribution checks. Repeat until exact and clean." | use=[cfg:ForbiddenAttributionText]
+@STEP rid=step:push | n:int=7 | op=std:shell.exec@v1 | args=[task="After all approved commits are created and all messages are clean, run git status --short --branch and confirm the remaining dirty state matches Excluded Changes plus expected post-commit state. Then git push."] | in=[ref:committed] | out=[ref:pushed] | rules=[rid:rule:no-force-push]
+@CATCH target=rid:step:push | on="push-fails" | do=rid:step:report-failure
+@STEP rid=step:report-failure | op=std:ai.prompt@v1 | args=[task="Report the push error and stop — do not retry automatically."] | in=[ref:pushed]
+
+# --- Step 6: Confirm ---
+
+@SEC name="Step 6 — Confirm"
+@STEP rid=step:confirm | n:int=8 | op=std:ai.prompt@v1 | args=[task="Emit the confirmation block per SKILL.md: committed short hashes + subjects, pushed branch -> remote, remaining unstaged changes, verification (tests/builds run or intentionally skipped), Done."] | in=[ref:pushed] | out=[ref:confirmation]
+
+# --- Rules ---
+
+@SEC name="Rules"
+@RULE rid=rule:no-commit-without-approval | lvl=MUST_NOT | when="any commit" | then="commit without explicit user approval"
+@RULE rid=rule:no-blind-add | lvl=MUST_NOT | when="staging" | then="assume all dirty changes belong in one commit, or run a blind git add ."
+@RULE rid=rule:no-vague-groups | lvl=MUST_NOT | when="naming commit groups" | then="use vague groups such as misc, updates, or session changes"
+@RULE rid=rule:no-unlisted-files | lvl=MUST_NOT | when="staging" | then="stage files not listed in the approved commit plan, or .env files, binaries, or debug artifacts"
+@RULE rid=rule:path-output-literal | lvl=SHOULD | when="deriving staging path lists from git output" | then="use git -c core.quotePath=false or NUL-safe path feeds so Unicode and space-containing paths are passed back to git literally"
+@RULE rid=rule:no-hidden-message-lines | lvl=MUST_NOT | when="committing" | then="commit a subject, body, or trailer line that was not shown in the approved Full commit message block"
+@RULE rid=rule:no-force-push | lvl=MUST_NOT | when="pushing" | then="force-push"
+@RULE rid=rule:no-attribution | lvl=MUST_NOT | when="writing or committing a message" | then="add Co-Authored-By, Signed-off-by, Generated-by, Assisted-by, assistant/tool/AI attribution, or similar attribution or ownership trailers. If any appears in the proposed message, generated command, commit template, editor buffer, or final message: STOP and remove it before continuing. If a commit was already created with one, amend it away before any push."
+@RULE rid=rule:verify-clean-before-push | lvl=MUST | when="before pushing any commit" | then="the exact-message check must confirm the committed message matches the approved Full commit message block and the attribution-trailer check must confirm the commit message is clean"
+@RULE rid=rule:message-only-default | lvl=MAY | when="stating verification" | then="treat message-only verification as the default unless the user requested tests/builds or they were already part of the session"
+@RULE rid=rule:nothing-to-commit | lvl=MUST | when="there is nothing to commit" | then="say so and stop"
+
+# --- Behavior Checks (documentation) ---
+
+@SEC name="Behavior Checks"
+@MAP name=BehaviorChecks | pairs=["single-coupled"->"one tightly coupled change -> one commit with a clear coupling reason","independent"->"independent app/package/docs/config changes -> multiple commits by intent","unrelated-dirty"->"unrelated dirty files -> listed only under Excluded Changes, never staged","staged-mismatch"->"caught by git diff --cached --name-status before commit","hidden-message-body"->"full commit subject and body are shown to the user before approval","attribution-contamination"->"stop, amend/remove, re-check before continuing","drift-after-approval"->"new dirty files, branch drift, or message drift after approval -> stop and ask for a revised plan"]
+
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=9 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:codex" | method=generated

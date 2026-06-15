@@ -1,0 +1,53 @@
+@DOC ver=2.0 | id=insight-explore | title="Divergent Brainstorm — 3+ Implementation Options" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Generate 3+ distinct implementation options for a problem, then converge on a recommendation. Produces options, not plans." | trigger="user runs /explore, asks to brainstorm options, explore approaches, give alternatives, or wants divergent thinking before planning"
+@STAMP ts:ts=2026-05-09T00:00:00Z | src=human | method=manual
+
+# --- Governance ---
+
+@SEC name="Governance"
+@RULE rid=rule:min-options | lvl=MUST | when="generating options" | then="produce at least 2 distinct options; target 3"
+@RULE rid=rule:no-code | lvl=MUST_NOT | when="exploring" | then="write code or make changes — ideation only"
+@RULE rid=rule:distinct-options | lvl=MUST | when="presenting options" | then="each option must differ in approach, not just in surface detail"
+
+# --- Phase 1: Divergence ---
+
+@SEC name="Phase 1 — Divergence"
+@STEP rid=step:constraints | n:int=1 | op=std:ai.prompt@v1 | args=[task="Analyze problem constraints. What are we optimizing for? Hard requirements vs preferences?"] | out=[ref:constraints] | note="Step 1 — surface what the options must satisfy."
+
+@STEP rid=step:option-standard | n:int=2 | op=std:ai.prompt@v1 | args=[task="Option A — The Standard Pattern. The obvious, well-trodden approach most engineers would reach for first."] | in=[ref:constraints] | out=[ref:option-A]
+@STEP rid=step:option-performance | n:int=3 | op=std:ai.prompt@v1 | args=[task="Option B — The Performance Way. Optimized for speed, scale, or efficiency. Possibly more complex."] | in=[ref:constraints] | out=[ref:option-B]
+@STEP rid=step:option-minimal | n:int=4 | op=std:ai.prompt@v1 | args=[task="Option C — The Minimalist. YAGNI — smallest footprint that still solves the problem."] | in=[ref:constraints] | out=[ref:option-C]
+@NOTE text="Additional options may be added if the problem space warrants — e.g., event-driven, type-safe, or zero-dependency variants."
+@CHECK rid=check:option-count | assert="distinct options >= 2" | fail=ABORT | msg="Fewer than 2 distinct options produced. Expand the search before converging."
+
+# --- Phase 2: Convergence ---
+
+@SEC name="Phase 2 — Convergence"
+@MAP name=ComparisonAxes | pairs=["DX"->"developer experience, API ergonomics, debuggability","Robustness"->"error handling, edge case coverage, failure modes","Timeline-fit"->"how long does each take to implement and validate","Alignment"->"matches existing patterns and coding standards in the repo"]
+
+@STEP rid=step:compare | n:int=5 | op=std:ai.prompt@v1 | args=[task="Compare all options across the four axes in ComparisonAxes."] | in=[ref:option-A,ref:option-B,ref:option-C,ref:constraints] | use=[cfg:ComparisonAxes] | out=[ref:comparison] | note="Convergence — score each option against the four axes."
+
+# --- Phase 3: Recommendation ---
+
+@SEC name="Phase 3 — Recommendation"
+@STEP rid=step:winner | n:int=6 | op=std:ai.prompt@v1 | args=[task="Pick a Winner. Provide 1–2 sentence reason referencing the comparison."] | in=[ref:comparison] | out=[ref:recommendation]
+@STEP rid=step:next-step | n:int=7 | op=std:ai.prompt@v1 | args=[task="Ask the user: Shall I /plan-create this?"] | in=[ref:recommendation] | note="Always offer the natural next step — never auto-invoke."
+
+# --- Downstream ---
+
+@SEC name="Downstream"
+@MAP name=NextCommand | pairs=["evaluate-winner-in-depth"->"/assess","design-the-chosen-approach"->"/plan-create"]
+
+
+# --- Next Skills ---
+
+@SEC name="Next Skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only; never auto-invoke. Skip silently if the next-skills list is empty."] | in=[] | out=[ref:nsp-offer]
+
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated

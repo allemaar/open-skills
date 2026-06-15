@@ -1,0 +1,50 @@
+# Machine-executable mirror of SKILL.md. Canonical source: this skill's SKILL.md.
+@DOC ver=2.0 | id=extract-signal | title="Elastic signal-extraction methodology" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Turn a noisy source surface into a vetted signal in the requested form, without contaminating the context that must stay clean." | trigger="user runs /extract-signal, or asks to gather + vet + present a signal about X as form Y"
+@STAMP ts:ts=2026-06-04T00:00:00Z | src=human | method=manual
+
+# --- Principle ---
+@SEC name="Principle"
+@RULE rid=rule:relocation | lvl=MUST | when="handling noisy work" | then="relocate it to a context that can absorb it (a spawned sub-agent, or this skill's own disposable window when it is itself a sub-agent); only the signal reaches the clean context; never size-cap the gathering"
+
+# --- Phase 1: Infer the request ---
+@SEC name="Phase 1 — Infer"
+@STEP rid=step:infer | n:int=1 | op=std:ai.prompt@v1 | args=[task="Infer from the call: what signal, what form, what stakes, which mode, and where output goes. Accept explicit overrides; never require a rigid input form."] | out=[ref:signal-req]
+
+# --- Phase 2: Mode and output ---
+@SEC name="Phase 2 — Mode and output"
+@RULE rid=rule:agentic-default | lvl=MUST | when="a normal call and extract-signal is not itself the running agent" | then="spawn a freshly-primed sub-agent that does the work and returns the signal; output inline to the caller unless a file is specified"
+@RULE rid=rule:in-session | lvl=MUST | when="extract-signal is the running agent (in-session, new-session, or itself a dispatched sub-agent)" | then="do the work inline; output inline by default or to a file if specified"
+@RULE rid=rule:depth | lvl=MUST_NOT | when="running inside a sub-agent" | then="spawn further sub-agents — the disposable window is the isolation (depth-1 guardrail)"
+
+# --- Phase 3: Compose and run (elastic) ---
+@SEC name="Phase 3 — Compose and run"
+@STEP rid=step:compose | n:int=2 | op=std:ai.prompt@v1 | args=[task="Compose the technique set to fit the task, then run it: gather via prime-sweep / prime-fetch / prime-expand; diverge via insight-explore when candidates are needed first; vet via insight-critique then insight-assess; take a cold-review-style second opinion."] | in=[ref:signal-req] | out=[ref:findings]
+@RULE rid=rule:no-fixed-seq | lvl=MUST_NOT | when="composing techniques" | then="run a fixed sequence regardless of the signal requested"
+@STEP rid=step:vet | n:int=3 | op=std:ai.prompt@v1 | args=[task="Vet the findings proportionally to stakes."] | in=[ref:findings] | out=[ref:vetted]
+@RULE rid=rule:vet-to-stakes | lvl=MUST | when="vetting" | then="scale depth with stakes; full critique + assess + cold opinion for material signal; reach for the cold opinion whenever the lead has been deep in the material"
+
+# --- Phase 4: Failure and contradiction ---
+@SEC name="Phase 4 — Failure and contradiction"
+@CHECK rid=check:empty | assert="gather produced signal" | fail=WARN | msg="No signal found — report what was searched; never fabricate signal to fill the form"
+@RULE rid=rule:contradiction | lvl=MUST | when="insight-assess and the cold opinion disagree" | then="surface the split with both positions; do not average to a false consensus"
+@RULE rid=rule:blocker | lvl=MUST | when="extraction hits a decision only the caller or handler can make" | then="surface it and pause that line; do not guess past it"
+
+# --- Phase 5: Present ---
+@SEC name="Phase 5 — Present"
+@STEP rid=step:present | n:int=4 | op=std:io.emit@v1 | args=[surface="caller-or-file",format="requested-signal-form"] | in=[ref:vetted] | out=[ref:presented]
+@RULE rid=rule:provenance | lvl=MUST | when="presenting the signal" | then="attach the signal in the requested form + source:line provenance for load-bearing claims + confidence + residual gaps + which techniques ran"
+@RULE rid=rule:sensitivity | lvl=MUST | when="presenting the signal" | then="tag the signal's sensitivity; if the destination is lower-trust or public relative to that sensitivity, withhold the sensitive parts and flag; never over-expose internal detail to a public or external destination"
+
+# --- Bounds ---
+@SEC name="Bounds"
+@RULE rid=rule:concurrency | lvl=MUST | when="agentic or full-agent mode spawns workers" | then="cap at 3 parallel sub-agents, depth-1"
+@RULE rid=rule:terminate | lvl=SHOULD | when="gathering" | then="stop at the gather tool's wave cap or when added waves return no new signal; report what was capped"
+
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=5 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-14T00:00:00Z | src="agent:claude-code" | method=generated

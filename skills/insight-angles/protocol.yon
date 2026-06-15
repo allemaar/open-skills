@@ -1,0 +1,77 @@
+@DOC ver=2.0 | id=insight-angles | title="Angle & Connection Discovery — Cold Lens-Based Multi-Pass Engine" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Classify a subject, pick lenses (15-family roster + derived dynamic lenses), run layered passes — cold fan-out by default (one fresh leaf sub-agent per lens) for independence — then surface frames, typed connections, hidden assumptions, candidate-expansions, and second-order effects scored by novelty × relevance, and synthesize" | trigger="user runs /insight-angles, asks to find unseen angles, surface connections / hidden assumptions, reframe a subject, or 'what are we not seeing'"
+@STAMP ts:ts=2026-06-04T00:00:00Z | src=human | method=manual
+
+# --- Governance ---
+
+@SEC name="Governance"
+@RULE rid=rule:surface-or-none | lvl=MUST | when="emitting the angle map" | then="surface at least one genuine connection or unseen angle, or explicitly state none was found — never silently emit an empty map and never manufacture insight"
+@RULE rid=rule:dynamic-lenses | lvl=MUST | when="picking lenses" | then="derive dynamic subject-specific lenses from the three DynamicLensSources and validate them — the roster is a seed, not a ceiling"
+@RULE rid=rule:adaptive-venue | lvl=MUST | when="selecting venue (cold fan-out vs inline)" | then="decide case-by-case from VenueSignals (context/corpus/task). If certainty is near-max, proceed and state the venue; otherwise HIL-ask. Honor explicit overrides ('use agents'→cold, 'inline'→inline). Always inline under a *-RESOLVED marker."
+@RULE rid=rule:leaf-agents | lvl=MUST | when="spawning cold lens-agents" | then="each is a leaf — runs one lens, returns angles/connections, spawns nothing further (no sub-skills, no nested fan-out)"
+@RULE rid=rule:layers-compound | lvl=MUST | when="running layer N>1" | then="inform it with the prior layer's findings (threaded by the orchestrator into each agent's brief) — layers compound, not independent re-runs"
+@RULE rid=rule:stay-in-lane | lvl=MUST | when="generating angles" | then="stay in perspective/connection space — a frame is not a flaw (/insight-adversarial) and not a solution option (/insight-explore)"
+@RULE rid=rule:assessable-links | lvl=MUST | when="listing connections" | then="give each a type + why it matters; assessable, not merely associative"
+@RULE rid=rule:novelty-vs-trends | lvl=MUST | when="scoring novelty" | then="judge novelty relative to current trends in the subject's domain, not in the abstract"
+@RULE rid=rule:log-selection | lvl=MUST | when="picking lenses" | then="state which lenses were picked (roster + dynamic) and which were skipped, with reasons"
+@RULE rid=rule:no-auto-dive | lvl=MUST_NOT | when="exceeding default depth (extra layers, or cold fan-out beyond ~6 agents)" | then="proceed without explicit handler consent; state the rough cost and offer"
+@RULE rid=rule:no-execution | lvl=MUST_NOT | when="discovering angles" | then="make changes, write code, or execute — ideation only"
+@RULE rid=rule:marker-quick | lvl=MUST | when="running under a *-RESOLVED marker (orchestrated by another skill)" | then="run quick mode (inline single pass) — never spawn further sub-skills; the marker is the depth guard"
+@RULE rid=rule:prefer-nonobvious | lvl=SHOULD | when="widening" | then="prefer the non-obvious; flag high-novelty / low-relevance items rather than dropping them; do not restate the framing already in play"
+
+# --- Configuration ---
+
+@SEC name="Configuration"
+@MAP name=LensRoster | pairs=["Reframe"->"inversion; via-negativa; pre/pro-mortem; meta-frame; first-principles; counterfactual","Analogy"->"cross-domain; structural-isomorphism; biological/evolutionary; historical-parallel","Temporal"->"precedent; path-dependency; future-back; cyclicality; why-now; lifecycle","Perspective"->"absent-stakeholder; adversary; payer-vs-beneficiary; future-maintainer; novice-vs-expert","Systems"->"feedback-loops; incentives; externalities; 2nd-3rd-order; stocks-flows; bottlenecks","Constraint"->"relax; tighten-10x; swap; binding-constraint; fixed-vs-assumed-fixed","Epistemic"->"load-bearing-assumption; weakest-evidence; what-would-change-our-mind; unknown-unknowns; information-asymmetry; observability","Zoom"->"in; out; across; boundary-interface","Formal"->"invariants; symmetries; limits-edge-cases; conservation; formal-model","Power"->"who-holds/gains/loses-power; gatekeepers; coalitions; feasible-vs-optimal","Human"->"cognitive-biases; status/identity/fear/desire; friction-defaults; rewarded-behavior","Economic"->"cost-structure; value-capture; opportunity-cost; marginal-vs-fixed; who-pays","Values"->"harm-bearer; value-tradeoffs; encoded-values; rights-vs-utility; intergenerational","Aesthetic"->"simplicity; conceptual-integrity; symmetry; elegant-version; what-to-remove","Narrative"->"story-told; hero-villain; the-spin; meta-narrative; positioning","Activation"->"first-win; time-to-first-value; hook/aha-moment; activation-arc; drop-off-friction; juice"]
+@MAP name=LensSelection | pairs=["strategy"->"Reframe,Perspective,Systems,Constraint,Power,Temporal","architecture"->"Zoom,Systems,Constraint,Epistemic,Formal,Temporal,Aesthetic","product"->"Perspective,Human,Economic,Systems,Reframe,Values,Activation","writing-naming"->"Reframe,Analogy,Perspective,Narrative,Aesthetic","research"->"Epistemic,Analogy,Reframe,Temporal,Formal","process-workflow"->"Zoom,Systems,Constraint,Human","policy-governance"->"Systems,Values,Power,Perspective,Temporal","design-ux"->"Human,Aesthetic,Perspective,Constraint,Values,Activation","code-implementation"->"Zoom,Formal,Constraint,Epistemic,Aesthetic","default"->"Reframe,Perspective,Systems,Epistemic,Temporal,Aesthetic"]
+@MAP name=DynamicLensSources | pairs=["domain-native"->"what an expert in the subject's home discipline always asks here","foreign-transplant"->"what a deliberately distant discipline asks that nobody here is","live-trend"->"the recent shift / live debate in this space that reframes it","validate"->"keep only if it generates a question the roster families do not"]
+@MAP name=ConnectionTypes | pairs=["analogical"->"shared pattern across domains","causal"->"A drives/enables/blocks B","structural"->"A,B share a shape","tension"->"A,B pull opposite — a productive paradox","emergent"->"A+B → C neither has alone","dependency"->"A secretly rests on B","resource"->"A,B compete for / share something","temporal"->"A unlocks/precedes B"]
+@MAP name=ScoreAxes | pairs=["novelty"->"obvious | fresh | surprising (relative to current trends)","relevance"->"decision-relevant & actionable?","so-what"->"what changes if it is true"]
+@MAP name=DepthModes | pairs=["quick"->"inline single pass; forced under a *-RESOLVED marker; cheap","standard"->"cold fan-out, one fresh leaf agent per picked lens, 1 layer + synthesis","deep"->"cold fan-out across 2-3 layers, orchestrator threads prior-layer findings; HIL-gated"]
+@MAP name=VenueSignals | pairs=["cold-when"->"high ambiguity, high stakes, novel subject, many lenses (anchoring risk), independence matters","inline-when"->"well-bounded, low stakes, few lenses, cost-constrained, runtime lacks isolated sub-agents, or under a *-RESOLVED marker","override"->"'use agents'/'cold' → cold; 'inline'/'quick' → inline","confidence-gate"->"if venue certainty is near-max, proceed and state it; else HIL-ask"]
+
+# --- Phase 1: Frame ---
+
+@SEC name="Phase 1 — Frame"
+@STEP rid=step:frame | n:int=1 | op=std:ai.prompt@v1 | args=[task="State the subject concisely and the currently-dominant framing (the one to escape). Load light context only — ideation, not investigation."] | out=[ref:framing]
+@CHECK rid=check:framed | assert="ref:framing has a clear subject and names the dominant framing" | fail=ABORT | msg="Cannot discover angles without a clear subject. Ask the user to clarify before proceeding."
+
+# --- Phase 2: Classify ---
+
+@SEC name="Phase 2 — Classify"
+@STEP rid=step:classify | n:int=2 | op=std:ai.prompt@v1 | args=[task="Characterize the subject: domain, subject-type (strategy/architecture/product/writing-naming/research/process-workflow/policy-governance/design-ux/code-implementation/...), maturity, and current trends in that domain. Drives lens selection and calibrates novelty."] | in=[ref:framing] | out=[ref:classification]
+
+# --- Phase 3: Pick lenses ---
+
+@SEC name="Phase 3 — Pick lenses"
+@STEP rid=step:pick | n:int=3 | op=std:ai.prompt@v1 | args=[task="Using LensSelection for the subject-type, pick applicable roster families/operators. THEN derive dynamic lenses from DynamicLensSources and validate each. State picked (roster + dynamic) + skipped (+ why)."] | in=[ref:classification] | use=[cfg:LensRoster,cfg:LensSelection,cfg:DynamicLensSources] | out=[ref:lenses] | rules=[rid:rule:dynamic-lenses,rid:rule:log-selection]
+
+# --- Phase 4: Layered passes (cold by default) ---
+
+@SEC name="Phase 4 — Layered passes"
+@NOTE text="Venue is selected adaptively per VenueSignals (cold vs inline by context/corpus/task; HIL only when certainty isn't near-max; honor overrides). Standard/deep run each lens as a cold leaf sub-agent (independence = the cold-review effect); quick runs inline (forced under a *-RESOLVED marker). Deeper than default = HIL-gated."
+@STEP rid=step:layer1 | n:int=4 | op=std:ai.prompt@v1 | args=[task="Layer 1 — run the core picked lenses. In standard/deep, fan out one cold leaf sub-agent per lens with a primed brief (subject + its one lens); inline in quick. Produce angles + typed connections, each scored on ScoreAxes; orchestrator collects."] | in=[ref:lenses] | use=[cfg:DepthModes,cfg:VenueSignals,cfg:ConnectionTypes,cfg:ScoreAxes] | out=[ref:layer1] | rules=[rid:rule:adaptive-venue,rid:rule:leaf-agents,rid:rule:stay-in-lane,rid:rule:assessable-links,rid:rule:novelty-vs-trends,rid:rule:marker-quick]
+@STEP rid=step:layer-n | n:int=5 | op=std:ai.prompt@v1 | args=[task="Layer 2+ (deep, per DepthModes) — add 2-4 more lenses (roster or dynamic), informed by the prior layer: the orchestrator threads prior findings into each new agent's brief; re-read prior angles through new lenses; revise scores if warranted. Beyond default depth, STOP and offer to dive deeper (HIL-gated)."] | in=[ref:layer1,ref:lenses] | use=[cfg:DepthModes,cfg:ConnectionTypes,cfg:ScoreAxes] | out=[ref:layers] | rules=[rid:rule:layers-compound,rid:rule:leaf-agents,rid:rule:no-auto-dive,rid:rule:marker-quick]
+
+# --- Phase 5: Connect ---
+
+@SEC name="Phase 5 — Connect"
+@STEP rid=step:connect | n:int=6 | op=std:ai.prompt@v1 | args=[task="Consolidate typed connections across all layers — especially cross-layer links a single lens-agent could not see. Each: type + link + why-it-matters + what-it-enables."] | in=[ref:layer1,ref:layers] | use=[cfg:ConnectionTypes] | out=[ref:connections] | rules=[rid:rule:assessable-links]
+
+# --- Phase 6: Score & Synthesize ---
+
+@SEC name="Phase 6 — Score & Synthesize"
+@STEP rid=step:synthesize | n:int=7 | op=std:ai.prompt@v1 | args=[task="Finalize novelty × relevance. Emit the angle map (selected lenses incl. dynamic + skipped/why; angles by lens, scored; typed connections; hidden assumptions with most-fragile flagged; candidate-expansions; second-order; layer trail) and the synthesis: strongest unseen angle, most important connection, most-fragile assumption. If nothing non-obvious surfaced, say so explicitly."] | in=[ref:layer1,ref:layers,ref:connections] | use=[cfg:ScoreAxes] | out=[ref:angle-map] | rules=[rid:rule:surface-or-none,rid:rule:prefer-nonobvious]
+@CHECK rid=check:map | assert="ref:angle-map surfaces >=1 connection or unseen angle (or explicit 'none found'), with a synthesis" | fail=ABORT | msg="Angle discovery is incomplete without an angle map and synthesis (or an explicit 'nothing non-obvious found')."
+
+# --- Next Skills ---
+
+@SEC name="Next Skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only; never auto-invoke. Skip silently if the next-skills list is empty."] | in=[] | out=[ref:nsp-offer]
+
+# --- Self-improvement (specialized: roster discovery) ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), specialized for roster discovery: (a) if a DYNAMIC lens this run produced a high novelty × relevance angle the roster lacked, draft a diff adding it to LensRoster + LensSelection; (b) if a roster lens consistently yields nothing for a subject-type, propose pruning/remapping; (c) any other concrete blocking-or-recurring weakness in THIS skill. Surface via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-05T00:00:00Z | src="agent:claude-code" | method=generated

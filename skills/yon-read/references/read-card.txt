@@ -1,0 +1,134 @@
+YON Reading Card (v2.0) — Extended Reference
+https://yon.younndai.com
+
+This card supplements SKILL.md with details NOT covered there.
+For basic syntax, tag overview, and interpretation protocol, see SKILL.md first.
+
+---
+
+DOCUMENT HEADER — FULL FIELD LIST:
+@DOC ver=2.0 | id=<slug> | title="<Title>"
+Required: ver, id, title.
+Optional: kind, domain, mode (struct|text|chat|hybrid), profile, fmt, lang, region,
+          direction (ltr|rtl), classification, handling, jurisdiction, data_residency,
+          embargo_until, retention, retention_authority, expires, parent, audience,
+          license, redact, guide, with=[...], without=[...]
+
+Defaults: kind=doc, mode=struct, profile=exec, fmt=canon
+
+Profile modifiers:
+  @DOC ... | profile=decl | with=[workflow]        — decl + workflow tags
+  @DOC ... | profile=exec | without=[provenance]   — exec minus provenance
+  @DOC ... | profile=exec | with=[cognition,memory] — exec + cognition
+
+---
+
+VALUES — EDGE CASES:
+- Bare regex: [A-Za-z0-9_./:@+#-]+
+- Values containing | MUST be quoted: regex="a|b|c"
+- Empty values: key=""
+- Parsers MUST NOT infer types from bare values. A bare 123 is string "123".
+- Disambiguation: unquoted block:data = reference token. Quoted "block:data" = literal string.
+
+---
+
+CONTINUATION LINES:
+A record MAY span multiple physical lines by indenting:
+  @THOUGHT rid=t:1 | confidence:float=0.7
+    | content="The error rate spiked at 14:00. This correlates with the deployment."
+Leading whitespace is consumed during concatenation.
+
+---
+
+BLOCK EDGE CASES:
+- @END without @BEGIN: mid-stream entry. Parser warns, preserves @END, uses boundary to identify.
+- @BEGIN without @END: truncated. Parser emits E006 (Unterminated Block).
+- Raw content outside blocks: preserved, not discarded. Parser may warn.
+- Inside blocks, ALL content is raw payload. No continuation line logic applies.
+- sha256= field on @BEGIN enables integrity verification.
+- bytes:bytes= for binary blocks (instead of boundary).
+- Default MIME types: json→application/json, csv→text/csv, py→text/x-python, sql→text/x-sql,
+  md→text/markdown, yaml→text/yaml, log→text/plain, yon→text/x-yon, unknown→text/plain
+
+---
+
+LAYER 3 — COGNITION (profile=cognitive or higher):
+
+Thinking:
+@THOUGHT    rid, type (deliberation|analysis|synthesis|...), content. Opt: confidence, parent, merges, effort, visibility
+@HYPOTHESIS rid, claim. Opt: confidence, based_on, visibility
+@OBSERVATION rid, note. Opt: from, visibility
+@REFLECTION rid, revises, because. Opt: new_confidence
+@DECISION   rid, selected. Opt: alternatives, rationale, trace, confidence, visibility
+@PRUNE      target. Opt: mode, because
+@INTROSPECT rid, query. Opt: scope, finding
+@ESSENCE    rid, trait, type, weight. Opt: affects, source, visibility
+
+Perception:
+@PERCEPT    rid, type, src. Opt: confidence, labels
+@FOCUS      targets. Opt: reason, salience
+
+Goals:
+@GOAL       rid, name. Opt: parent, status, priority, deadline, version, origin
+
+Memory Pipeline (PULSE → IMPRINT → MEMORY → SHARD):
+@PULSE      rid, src, content. Opt: type, ts
+@IMPRINT    rid, validates, trust. Opt: confidence, scope, validators
+@MEMORY     rid, type, content. Opt: trust, confidence, scope, ttl, resonance, decay, lifecycle, version
+@LEARN      rid, prior, evidence, posterior
+@SHARD      rid, sources, summary. Opt: trust, confidence, loss_notes, compression
+@MARK       rid, refs, title. Opt: tags
+
+Affect:
+@AFFECT     All optional: urgency, uncertainty, engagement, curiosity, frustration, satisfaction, caution, visibility
+
+---
+
+LAYER 4 — AGENTS (profile=agent or higher):
+
+Signaling:
+@AGENT      rid, name. Opt: type, model, caps, personality, context_window, version, streams
+@CAPS       rid, agent, ops
+@SIGNAL     from, type. Opt: target, msg, ts
+@THROTTLE   from, to. Opt: reason, recommended_delay_ms, rate, severity
+@SUBSCRIBE  agent. Opt: streams, topics, filter
+@ROUTE      rid, group, strategy
+@MERGE      rid, streams. Opt: strategy (interleaved|priority|round_robin), conflict
+@STREAM     rid, owner, type (persistent|session|ephemeral|broadcast). Opt: description, ttl, max_rate
+
+Temporal:
+@TIMELINE   rid, span. Opt: start, granularity
+@EVENT      rid, timeline, at, activity. Opt: duration
+
+Collaboration:
+@WORKSPACE  rid, agents, artifact
+@EDIT       rid, workspace, by, patch
+
+Composition:
+@CALL       rid, ref. Opt: args, out
+
+Governance:
+@TENET      rid, level, content. Opt: precedence, decay
+@ESCALATE   rid, reason. Opt: severity, harm_class, timeout_ms, fallback, requires, context
+@HALT       rid, scope, reason. Opt: allow_reads, requires_approval_to_resume
+@DEREGISTER agent, reason. Opt: handoff, effective
+
+Reactive (EXPERIMENTAL):
+@ON         rid, event, do. Opt: match
+@EMIT       event. Opt: payload
+@LOOP       rid, while, do. Opt: increment, max_iterations
+
+---
+
+ERROR CODES (common):
+E001 Validation failed    E002 Timeout exceeded     E003 Permission denied
+E004 Resource not found   E006 Unterminated block   E101 Dependency cycle
+E102 Op not implemented
+
+---
+
+Total tags: 72 (34 Core + 18 Cognition + 17 Agents + 3 Reactive)
+Unknown tags are always preserved for forward compatibility.
+
+Full spec: https://yon.younndai.com
+Author: Alexandru Mares | MARLINK TRADING SRL | © 2026

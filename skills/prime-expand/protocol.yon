@@ -1,0 +1,81 @@
+@DOC ver=2.0 | id=prime-expand | title="Prime Expand — Sub-Agent Seed Expansion to Sharp Priming Target" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Expand a vague gap statement into a concrete priming target — sharp question(s) + validated source candidates — via one delegated sub-agent. The sub-agent absorbs expansion reasoning; the lead receives only the proposed {question, sources[]} pair for caller confirmation. Family invariant: caller context stays clean." | trigger="user runs /prime-expand, says expand on this, or auto-fire on handoff receipt with a thin brief — explicitly NOT ambient I-need-to-know-X phrasing, which collides with /investigate"
+@STAMP ts:ts=2026-05-24T00:00:00Z | src=human | method=manual
+
+# --- Boundary ---
+
+@SEC name="Boundary"
+@RULE rid=rule:vague-seed-only | lvl=MUST | when="invoked" | then="receive a vague or partial gap statement — sharp questions with named sources should bypass this skill and go straight to /prime-fetch or /prime-sweep"
+@RULE rid=rule:no-investigation | lvl=MUST_NOT | when="running" | then="do actual source investigation — this skill produces intent, not findings; investigation belongs to /prime-fetch or /prime-sweep"
+@MAP name=SiblingBoundary | pairs=["prime-fetch"->"single noisy tool call (Grep/WebFetch/MCP) proxied through a sub-agent so raw dump stays out of caller context","prime-sweep"->"parallel multi-source investigation with proof-of-work and sufficiency gate","investigate"->"single-agent fact-gathering for the user, not for an agent's context"]
+
+# --- Caller Options ---
+
+@SEC name="Caller Options"
+@STEP rid=step:cop | n:int=0 | op=std:ai.prompt@v1 | args=[task="Run the Caller Options protocol (caller-options/protocol.yon): triage for material optionality. Venue is inline only; no modes are declared. Skip if a resolved-invocation marker is present."] | out=[ref:cop-choice]
+@CHECK rid=check:cop | assert="ref:cop-choice is resolved before the skill's own steps run" | fail=WARN | msg="Caller Options should resolve venue before execution."
+
+# --- Step 1: Receive the Seed Gap ---
+
+@SEC name="Step 1 — Receive the Seed Gap"
+@STEP rid=step:receive-seed | n:int=1 | op=std:ai.prompt@v1 | args=[task="Capture the seed gap verbatim. Confirm the seed is vague enough to warrant expansion — a sharp question with named sources should bypass /prime-expand."] | out=[ref:seed]
+@CHECK rid=check:seed-vague | assert="seed is a vague gap, topic, or worry — not an already-sharp question+sources pair" | fail=ABORT | msg="Seed is already sharp; pass directly to /prime-fetch or /prime-sweep instead of running /prime-expand."
+
+# --- Step 2: Build Context Snapshot ---
+
+@SEC name="Step 2 — Build Context Snapshot"
+@MAP name=SnapshotFields | pairs=["cwd"->"current working directory","project-type"->"language/framework/repo type if known","recent-files"->"last few files mentioned in this turn","current-task"->"the caller's current task or objective if known"]
+@STEP rid=step:build-snapshot | n:int=2 | op=std:ai.prompt@v1 | args=[task="Assemble a small context snapshot per SnapshotFields. This is the only bridge between the caller's history and the sub-agent — the sub-agent must not see the caller's full conversation."] | in=[ref:seed] | use=[cfg:SnapshotFields] | out=[ref:snapshot]
+
+# --- Step 3: Brief and Spawn Sub-Agent ---
+
+@SEC name="Step 3 — Brief and Spawn Sub-Agent"
+@RULE rid=rule:one-sub-agent | lvl=MUST | when="dispatching" | then="spawn exactly one sub-agent — no parallel, no iteration"
+@RULE rid=rule:scan-cap | lvl=MUST | when="sub-agent reads sources" | then="cap at ≤3 candidate-source spot-checks of ≤200 lines each — Glob and Read only"
+@RULE rid=rule:no-heavy-tools | lvl=MUST_NOT | when="sub-agent runs" | then="use Grep, WebFetch, Bash, MCP tool calls, or any tool that produces large output — those belong to /prime-fetch or /prime-sweep"
+@RULE rid=rule:depth-one | lvl=MUST_NOT | when="sub-agent runs" | then="spawn further sub-agents — depth-1 cap"
+@STEP rid=step:brief-spawn | n:int=3 | op=std:ai.prompt@v1 | args=[task="Brief one sub-agent with: seed gap verbatim, context snapshot, scan permissions (Glob/Read ≤3 files ≤200 lines), output contract requiring only the proposed pair. Spawn the sub-agent with a fresh context window."] | in=[ref:seed,ref:snapshot] | out=[ref:sub-agent-handle] | rules=[rid:rule:one-sub-agent,rid:rule:scan-cap,rid:rule:no-heavy-tools,rid:rule:depth-one]
+
+# --- Step 4: Sub-Agent Expands ---
+
+@SEC name="Step 4 — Sub-Agent Expands"
+@STEP rid=step:expand | n:int=4 | op=std:ai.prompt@v1 | args=[task="Sub-agent (in its own window): parse seed for subject, scope, missing specifics; generate 1-3 concrete declarative questions; propose ≥1 source candidate per question (file path, URL, doc reference, conversation pointer); spot-check each candidate exists via Glob/Read; discard candidates whose sources don't exist or don't look relevant."] | in=[ref:sub-agent-handle] | out=[ref:expansion-internal] | note="The expansion-internal reference lives in the sub-agent's context — never visible to the lead."
+
+# --- Step 5: Sub-Agent Emits Proposed Pair ---
+
+@SEC name="Step 5 — Sub-Agent Emits Proposed Pair"
+@RULE rid=rule:only-emit-pair | lvl=MUST | when="sub-agent completes" | then="emit ONLY the proposed pair {seed, questions[], sources[]} — sub-agent reasoning stays in the sub-agent's window"
+@RULE rid=rule:refusal-format | lvl=MUST | when="sub-agent cannot produce ≥1 question with ≥1 validated source" | then="emit a refusal line: 'Refused: cannot expand — <one-line reason>'"
+@STEP rid=step:emit-pair | n:int=5 | op=std:ai.prompt@v1 | args=[task="Sub-agent emits the proposed pair (or refusal) to the lead. Lead receives only this structured output."] | in=[ref:expansion-internal] | out=[ref:proposed-pair] | rules=[rid:rule:only-emit-pair,rid:rule:refusal-format]
+
+# --- Step 6: Surface for Confirm / Edit / Refuse ---
+
+@SEC name="Step 6 — Surface for Confirm/Edit/Refuse"
+@MAP name=CallerResponses | pairs=["confirm"->"emit {question, sources[]} to the caller for direct use or for chaining into /prime-fetch or /prime-sweep","edit"->"caller revises questions or sources; lead re-emits the revised pair","refuse"->"caller proceeds without priming; skill exits"]
+@STEP rid=step:surface | n:int=6 | op=std:ai.prompt@v1 | args=[task="Lead presents the proposed pair to the caller/user and waits for confirm/edit/refuse. Lead does not modify the proposed pair itself."] | in=[ref:proposed-pair] | use=[cfg:CallerResponses] | out=[ref:caller-decision]
+@CHECK rid=check:decision-made | assert="ref:caller-decision is one of confirm | edit | refuse" | fail=WARN | msg="Caller must choose confirm, edit, or refuse — no implicit accept."
+
+# --- Step 7: Emit or Re-Iterate ---
+
+@SEC name="Step 7 — Emit or Re-Iterate"
+@STEP rid=step:final-emit | n:int=7 | op=std:ai.prompt@v1 | args=[task="On confirm: emit {question, sources[]} as final output, suggest /prime-fetch or /prime-sweep via NSP, skill exits. On edit: re-emit the revised pair, return to step 6. On refuse: skill exits with no output."] | in=[ref:caller-decision,ref:proposed-pair] | out=[ref:final-pair]
+
+# --- Rules ---
+
+@SEC name="Rules"
+@RULE rid=rule:delegate-always | lvl=MUST | when="invoked" | then="delegate expansion to one sub-agent — lead never reads sources directly"
+@RULE rid=rule:no-pow-needed | lvl=MUST_NOT | when="emitting the proposed pair" | then="require proof-of-work citations — this skill produces intent, not factual findings"
+@RULE rid=rule:family-invariant | lvl=MUST | when="any /prime-* skill runs" | then="keep the caller's context clean — sub-agent absorbs reasoning, lead emits only finalized intent or findings"
+
+# --- Next Skills ---
+
+@SEC name="Next Skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only; never auto-invoke. Skip silently if the next-skills list is empty."] | in=[] | out=[ref:nsp-offer]
+
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated

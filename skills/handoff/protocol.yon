@@ -1,0 +1,32 @@
+@DOC ver=2.0 | id=handoff | title="/handoff" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Generate a structured cold-agent handoff brief (YAML frontmatter + Obsidian markdown + YON blocks) that any fresh LLM session can pick up and execute autonomously" | audience=agent
+@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated
+
+@NOTE text="Produces a brief as a vault file (canonical) plus a chat surface, and a copy-paste activation phrase for the receiving session. The file is canonical, not the chat. Companion: /handoff-execute consumes the brief and gates on @SOURCES.required. Use /orchestrate-mode instead to keep the CURRENT session as coordinator (no artifact)."
+
+@SEC name="Workflow"
+@STEP rid=step:path | n:int=1 | op=std:cmd.parse@v1 | args=[task="Determine the invocation path: one-shot complete (all required args present), one-shot partial (ask only for missing required), interactive (full Q&A), or multi (count=N → run N independent briefs + a numbered index). Orchestrator-subtask decomposition/validation is handled per profiles/orchestrator.md once the orchestrator profile is selected."] | out=[ref:path]
+@STEP rid=step:profile | n:int=2 | op=std:human.review@v1 | in=[ref:path] | args=[task="Select the profile: agent (dispatch a self-contained task), orchestrator (split into parallel sub-tasks), or new-session (carry in-flight state to a fresh session). Auto-suggest orchestrator for multi-step/parallelizable work, but default to agent (smaller blast radius). Load profiles/<profile>.md for the body shape."] | out=[ref:profile]
+@STEP rid=step:fields | n:int=3 | op=std:human.review@v1 | in=[ref:path,ref:profile] | args=[task="Collect required fields (how much to ask is governed by ref:path — one-shot-complete skips Q&A, partial asks only for gaps, interactive asks all): task (<=1000 chars), where (absolute paths in scope), evidence (pointer to the error/commit/file/line that prompted this), acceptance (one sentence), verify (verifiable shell commands), sources_required (file paths/wikilinks the cold agent MUST read before planning). For new-session, auto-collect from current session state. Optional: sources_optional, forbidden_actions, time-budget-min (default 60), output_location."] | out=[ref:fields] | rules=[rid:rule:verifiable,rid:rule:sources-gate,rid:rule:no-undersized]
+@CHECK rid=check:verify | assert="ref:fields contains at least one verifiable shell command in verify" | fail=ABORT | msg="A handoff needs a measurable acceptance command. If the task is not measurable enough, reconsider its scope rather than dispatching it."
+@CHECK rid=check:sources | assert="sources_required is non-empty OR the user explicitly confirmed 'no sources required'" | fail=WARN | msg="Empty @SOURCES.required drops the brief into advisory mode (no source-ingestion gate, only a warning). Name required sources or confirm 'no sources required' to proceed."
+@STEP rid=step:project | n:int=4 | op=std:cmd.run@v1 | args=[task="Detect the project: basename of the git toplevel, falling back to 'unsorted' outside a git repo."] | out=[ref:project]
+@STEP rid=step:slug | n:int=5 | op=std:cmd.run@v1 | in=[ref:fields] | args=[task="Generate a lowercase-kebab slug from the task description, max 40 chars."] | out=[ref:slug]
+@STEP rid=step:write | n:int=6 | op=std:fs.write@v1 | in=[ref:fields,ref:profile,ref:project,ref:slug] | args=[task="Write the brief to $VAULT/Handoffs/<project>/<YYYY-MM-DD>-<slug>.md (mkdir -p first). Frontmatter conforms to the vault schema; the body is profile-specific per profiles/<profile>.md and includes the @SOURCES block."] | out=[ref:brief-file] | rules=[rid:rule:mkdir,rid:rule:abs-paths,rid:rule:wikilinks,rid:rule:no-runtime-names]
+@STEP rid=step:chat | n:int=7 | op=std:io.emit@v1 | in=[ref:brief-file] | args=[task="Render the chat surface: the full brief if under 500 lines, else a 30-line summary plus the saved path. For multi-handoff, render only the numbered index."] | out=[ref:chat-surface] | rules=[rid:rule:file-canonical]
+@STEP rid=step:activation | n:int=8 | op=std:io.emit@v1 | in=[ref:brief-file] | args=[task="Emit a copyable activation phrase in a fenced block — the single line the receiving session pastes: /handoff-execute \"<absolute-vault-path>\" — plus the degraded-runtime prose fallback. Use the exact absolute path with forward slashes, always quoted (vault paths may contain spaces)."] | out=[ref:activation]
+
+@SEC name="Rules"
+@RULE rid=rule:verifiable | lvl=MUST | when="the task lacks a verifiable acceptance command" | then="push back — a handoff without a measurable acceptance command should not be dispatched; reconsider the scope"
+@RULE rid=rule:sources-gate | lvl=MUST | when="the user supplies an empty sources_required list" | then="push back and re-prompt; only write an empty @SOURCES.required (advisory mode) after an explicit 'no sources required' confirmation"
+@RULE rid=rule:no-undersized | lvl=MUST_NOT | when="the task is under-specified" | then="write a brief smaller than the field schema requires — push back instead"
+@RULE rid=rule:abs-paths | lvl=MUST | when="referencing target files in code repos" | then="use absolute paths"
+@RULE rid=rule:wikilinks | lvl=MUST | when="referencing in-vault files" | then="use wikilinks [[file]] (absolute paths for code-repo references)"
+@RULE rid=rule:mkdir | lvl=MUST | when="writing the brief file" | then="mkdir -p the target directory first"
+@RULE rid=rule:no-runtime-names | lvl=MUST_NOT | when="writing the brief body" | then="prescribe runtime-specific skill or tool names — describe outcomes, not procedures; tag genuinely runtime-specific steps explicitly"
+@RULE rid=rule:file-canonical | lvl=MUST_NOT | when="emitting output" | then="assume chat-only output — the vault file is canonical"
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill, draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated

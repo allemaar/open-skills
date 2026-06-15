@@ -1,0 +1,92 @@
+@DOC ver=2.0 | id=insight-cross-examine | title="Context-Routed Deliberation — Discover Angles, Expose Connections, Assess, Recommend" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Take a subject or a set, route by Form × Corpus to a graduated depth, discover unseen angles & connections (via insight-angles), run critique → assess (+ explore, + typed hybrids), and present a decision surface with its insight trail — as an ask-gate or inline, never auto-diving without handler consent" | trigger="user runs /insight-cross-examine, asks to cross-examine / weigh options / pick between candidates / evaluate a set and recommend"
+@STAMP ts:ts=2026-06-04T00:00:00Z | src=human | method=manual
+
+# --- Governance ---
+
+@SEC name="Governance"
+@RULE rid=rule:depth-guard | lvl=MUST | when="invoking insight-angles, insight-critique, insight-assess, or insight-explore as sub-steps" | then="run them inline under a depth-1 CX-RESOLVED marker; suppress their NSP/SIP/gate surfacing; collect raw findings only. The marker is the recursion guard."
+@RULE rid=rule:orchestrate-angles | lvl=MUST | when="discovering angles/connections" | then="orchestrate /insight-angles inline depth-guarded; never reimplement a parallel angle engine inside this skill"
+@RULE rid=rule:depth-scale | lvl=MUST | when="running any phase, Angle Discovery and Coverage included" | then="scale work to the depth level — L1 light, L2 brief, L3+ full; never run heavy discovery/coverage on an L1 case"
+@RULE rid=rule:advisory-only | lvl=MUST_NOT | when="cross-examining" | then="make changes, write code, or execute — evaluation only"
+@RULE rid=rule:no-auto-dive | lvl=MUST_NOT | when="escalating depth (more than 3 hybrids, L4→L5, fan-out, extra re-assess loops)" | then="proceed without explicit handler consent; state the rough token cost and wait"
+@RULE rid=rule:hybrid-cap | lvl=MUST | when="synthesizing hybrids" | then="surface at most 3 coherent hybrids; classify each by type; log-and-truncate the rest; never manufacture hybrids to fill type categories"
+@RULE rid=rule:surface-connection | lvl=MUST | when="delivering the decision surface" | then="surface at least one connection or unseen angle, or explicitly state none was found — never silently omit"
+@RULE rid=rule:avoid-premature-closure | lvl=SHOULD | when="critique/assess converges suspiciously fast (all options in one score band AND zero High/Medium risks AND explore not yet run), OR the handler signals they're exploring angles, OR the subject is high-ambiguity" | then="run a light explore/angle pass before hardening the recommendation"
+@RULE rid=rule:escalate-not-grind | lvl=MUST | when="Gate 0 trips (over-large or ill-fit)" | then="warn + escalate to the handler with reason + suggested alternative skill; proceed only if the handler overrides"
+@RULE rid=rule:fit-redirect | lvl=SHOULD | when="subject is a factual lookup, a question-quality issue, pure divergence, or angle-surfacing with no decision" | then="redirect to /investigate, /ask-gate, /insight-explore, or /insight-angles respectively rather than running the battery"
+@RULE rid=rule:ground-whole-artifact | lvl=MUST | when="the subject is a decision about a multi-file artifact (a dual-doc skill = front-matter + SKILL.md + protocol.yon, or any file with siblings)" | then="enumerate and read ALL its constituent files before concluding — the prompt often names only a subset, and a partial read can flip the verdict"
+@RULE rid=rule:consistent-dims | lvl=MUST | when="comparing items in a set" | then="use the same critique/assess dimensions across all items"
+@RULE rid=rule:present-orthogonal | lvl=MUST | when="choosing the present mode" | then="decide by fire-context (standalone→gate via ask-gate; marker/agent-caller→inline), independent of depth level; honor --inline/--gate override; keep the gate question lean"
+@RULE rid=rule:commit-verdict | lvl=MUST_NOT | when="delivering the decision surface" | then="hedge without a committed recommendation"
+
+# --- Gate 0: Stop-first (pre-flight, before any heavy processing) ---
+
+@SEC name="Gate 0 — Stop-first"
+@NOTE text="Runs before the router and before any sub-skill fires, so an over-large set or a mis-aimed invocation never triggers the battery. Escalation warning, NOT a hard stop — proceed on handler override."
+@STEP rid=step:preflight | n:int=0 | op=std:ai.prompt@v1 | args=[task="Stop-first pre-flight. (a) Fit — is this a decision/evaluation over a subject or set, not a factual lookup (→/investigate), a question-quality issue (→/ask-gate), pure divergence (→/insight-explore), or angle-surfacing with no decision (→/insight-angles)? (b) Size — set ≤ ~8–10 items, subject not requiring outsized source-gathering? (c) Frameable — is there a coherent subject to route? (d) Grounded — if the subject is a multi-file artifact (dual-doc skill, or a file with siblings), are ALL its constituent files enumerated and read, not just the subset named in the prompt?"] | out=[ref:preflight] | rules=[rid:rule:ground-whole-artifact]
+@CHECK rid=check:preflight | assert="fit=true AND corpus within budget AND frameable" | fail=WARN | msg="Stop-first: warn the handler — name the reason (ill-fit → suggest the right skill; over-large → name the size, offer sampling/fan-out; unframeable → ask to clarify) and let them decide. Proceed best-effort only on explicit override."
+
+# --- Phase 0: Contextual router ---
+
+@SEC name="Phase 0 — Contextual router"
+@STEP rid=step:form | n:int=1 | op=std:ai.prompt@v1 | args=[task="Classify Form: single | comparison | list-small | set-large | open-question."] | in=[ref:preflight] | out=[ref:form]
+@STEP rid=step:corpus | n:int=2 | op=std:ai.prompt@v1 | args=[task="Classify Corpus (how well-represented/contextualized the subject is): over-large | thin | adequate | rich."] | in=[ref:preflight] | out=[ref:corpus]
+
+@MAP name=DepthDial | pairs=["L0"->"refuse/escalate (Gate 0; overridable)","L1"->"light: one quick assess; Angle Discovery skipped or one line; no explore/hybrids","L2"->"standard: brief Angle Discovery → critique → assess","L3"->"expanded: full Angle Discovery → critique → assess → explore → re-assess","L4"->"comparative: full Angle Discovery → per-item critique+assess + typed hybrids","L5"->"deep: re-assess loops, adversarial, fan-out — never auto, HIL-gated"]
+@MAP name=DepthMatrix | pairs=["single:over-large"->"L0","single:thin"->"L3","single:adequate"->"L2","single:rich"->"L1","comparison:over-large"->"L0","comparison:thin"->"L3","comparison:adequate"->"L4","comparison:rich"->"L2","list-small:over-large"->"L0","list-small:thin"->"L4","list-small:adequate"->"L4","list-small:rich"->"L4","set-large:over-large"->"L0","set-large:thin"->"L3","set-large:adequate"->"L4","set-large:rich"->"L4","open-question:over-large"->"L0","open-question:thin"->"L3","open-question:adequate"->"L3","open-question:rich"->"L3"]
+
+@STEP rid=step:depth | n:int=3 | op=std:ai.prompt@v1 | args=[task="Read the depth level off DepthMatrix using Form:Corpus, then expand it via DepthDial. L0 is handled by Gate 0; L5 is reached only via explicit escalation."] | in=[ref:form,ref:corpus] | use=[cfg:DepthMatrix,cfg:DepthDial] | out=[ref:depth]
+
+# --- Phase 1: Angle Discovery (between routing and battery) ---
+
+@SEC name="Phase 1 — Angle Discovery"
+@NOTE text="Surface what is not yet visible BEFORE assessment hardens around the known options. Orchestrate /insight-angles; do not reimplement it. Scale to depth: L1 skip/one-line, L2 brief, L3+ full."
+@STEP rid=step:angle-discovery | n:int=4 | op=std:ai.prompt@v1 | args=[task="Orchestrate /insight-angles inline, depth-guarded and depth-scaled, on the subject/set. Collect: frames, latent-connections, missing-angles, hidden-assumptions, candidate-expansions, second-order effects. Feed candidate-expansions into the option set so critique/assess evaluate them. For open-question form, these candidate-expansions ARE the initial candidates — do not double-run a separate explore."] | in=[ref:depth] | out=[ref:angles] | rules=[rid:rule:depth-guard,rid:rule:orchestrate-angles,rid:rule:depth-scale,rid:rule:ground-whole-artifact]
+
+# --- Phase 2: Run the battery (depth-driven, depth-guarded) ---
+
+@SEC name="Phase 2 — Battery"
+@STEP rid=step:critique | n:int=5 | op=std:ai.prompt@v1 | args=[task="If level >= L2 (skip for L1): run /insight-critique on the subject (incl. candidate-expansions) inline, depth-guarded. Collect Summary/Strengths/Risks/Fixes + verdict."] | in=[ref:depth,ref:angles] | out=[ref:critique] | rules=[rid:rule:depth-guard]
+@STEP rid=step:assess | n:int=6 | op=std:ai.prompt@v1 | args=[task="Run /insight-assess on the subject/options inline, depth-guarded. Collect pros/cons, quality, impact + verdict (PROCEED / PROCEED WITH CAVEATS / RECONSIDER / REJECT)."] | in=[ref:depth,ref:critique,ref:angles] | out=[ref:assess] | rules=[rid:rule:depth-guard,rid:rule:consistent-dims]
+@STEP rid=step:explore | n:int=7 | op=std:ai.prompt@v1 | args=[task="Run /insight-explore inline, depth-guarded, when level = L3 OR the option space is thin OR premature-closure is suspected (see rule:avoid-premature-closure) OR the handler signals exploring. Skip if Angle Discovery already produced the candidates (open-question)."] | in=[ref:depth,ref:assess,ref:angles] | out=[ref:explore] | rules=[rid:rule:depth-guard,rid:rule:avoid-premature-closure]
+@STEP rid=step:reassess | n:int=8 | op=std:ai.prompt@v1 | args=[task="If explore ran: re-run assess on the expanded option set."] | in=[ref:explore] | out=[ref:reassess] | rules=[rid:rule:depth-guard,rid:rule:consistent-dims]
+
+# --- Phase 3: Sets & typed hybrids ---
+
+@SEC name="Phase 3 — Sets & typed hybrids"
+@STEP rid=step:per-item | n:int=9 | op=std:ai.prompt@v1 | args=[task="For comparison / list-small / set-large forms: run critique+assess per item, depth-guarded, with the SAME dimensions across all items. For set-large, OFFER fan-out across parallel sub-agents — never auto-spawn (token burn requires consent)."] | in=[ref:form,ref:depth] | out=[ref:per-item] | rules=[rid:rule:depth-guard,rid:rule:consistent-dims,rid:rule:no-auto-dive]
+@MAP name=HybridTypes | pairs=["complementary"->"A covers B's weakness","sequential"->"A unlocks B later","layered"->"A handles strategy, B handles implementation","reframed"->"A and B imply a better C","constraint-splitting"->"use A under one condition, B under another"]
+@STEP rid=step:hybrids | n:int=10 | op=std:ai.prompt@v1 | args=[task="When the option space has >= 2 combinable elements, synthesize coherent hybrids and CLASSIFY each by HybridTypes. Hybrids are first-class options alongside the individuals."] | in=[ref:per-item,ref:angles] | use=[cfg:HybridTypes] | out=[ref:hybrids] | rules=[rid:rule:hybrid-cap]
+@CHECK rid=check:hybrids | assert="at most 3 hybrids surfaced, each type-classified, AND any truncation is logged" | fail=WARN | msg="Cap hybrids at 3; classify each by type; log the dropped combinations rather than silently truncating."
+
+# --- Phase 4: Coverage check (adaptive critic) ---
+
+@SEC name="Phase 4 — Coverage check"
+@MAP name=CoverageAngles | pairs=["practical"->"can it actually be done","strategic"->"does it serve the larger goal","adversarial"->"how does it fail or get attacked","human"->"user/handler experience","systems"->"second-order / downstream effects","opportunity"->"what it opens up","failure-mode"->"how it breaks"]
+@STEP rid=step:coverage-map | n:int=11 | op=std:ai.prompt@v1 | args=[task="Adaptive completeness pass: from CoverageAngles, SELECT the angles that fit this subject and state which were covered and which were intentionally skipped WITH the reason. This is a critic, not a fixed all-green checklist — the honest skip is the deliverable."] | in=[ref:assess,ref:reassess,ref:angles] | use=[cfg:CoverageAngles] | out=[ref:coverage] | rules=[rid:rule:depth-scale]
+
+# --- Phase 5: Depth escalation (HIL-gated) ---
+
+@SEC name="Phase 5 — Depth escalation"
+@STEP rid=step:offer-deeper | n:int=12 | op=std:ai.prompt@v1 | args=[task="Offer — never auto-execute — any depth escalation: more than 3 hybrids, L4→L5, fan-out across a large set, or extra re-assess loops. State the rough token cost and wait for explicit handler consent."] | in=[ref:hybrids,ref:coverage] | out=[ref:escalation] | rules=[rid:rule:no-auto-dive]
+
+# --- Phase 6: Present (gate or inline) ---
+
+@SEC name="Phase 6 — Present"
+@MAP name=PresentMode | pairs=["standalone-user-call"->"gate: form a LEAN decision question (options + recommendation only) and hand it to /ask-gate (AGP)","marker-present-or-agent-caller"->"inline: return the full decision surface as a structured block","flag:--gate"->"gate","flag:--inline"->"inline"]
+@MAP name=DecisionSurface | pairs=["recommendation"->"the committed pick (always)","alternatives"->"top 2–3 (always)","riskiest-assumption"->"the assumption most likely to be wrong (always)","what-would-change-it"->"what evidence would flip the recommendation (always)","strongest-angle"->"the strongest unseen angle discovered (L3+)","key-connection"->"the most important connection found (L3+)","go-deeper"->"optional offer, only when it adds value"]
+@STEP rid=step:present | n:int=13 | op=std:ai.prompt@v1 | args=[task="Render the decision surface per DecisionSurface (scale the trail to depth — L1/L2 keep it short). Choose the mode per PresentMode by fire-context (honor --gate/--inline). The gate path hands a LEAN formed question to /ask-gate (insight trail goes in surrounding prose, not the AskUserQuestion fields); it does NOT call AskUserQuestion directly."] | in=[ref:assess,ref:reassess,ref:hybrids,ref:coverage,ref:angles,ref:escalation] | use=[cfg:PresentMode,cfg:DecisionSurface] | out=[ref:decision-surface] | rules=[rid:rule:present-orthogonal,rid:rule:commit-verdict,rid:rule:surface-connection]
+@CHECK rid=check:present | assert="ref:decision-surface includes a committed recommendation AND at least one connection/unseen angle (or an explicit 'none found') delivered to the caller" | fail=ABORT | msg="Cross-examine is incomplete without a delivered decision surface carrying a recommendation and its insight trail."
+
+# --- Next Skills ---
+
+@SEC name="Next Skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only; never auto-invoke. Skip silently if the next-skills list is empty."] | in=[] | out=[ref:nsp-offer]
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-14T00:00:00Z | src="agent:claude-code" | method=generated

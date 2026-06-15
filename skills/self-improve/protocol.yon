@@ -1,0 +1,61 @@
+@DOC ver=2.0 | id=self-improve | title="Self-Improvement Protocol — Per-Skill, Signal-Triggered Improvement Proposals" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="After a participating skill runs, detect concrete signals that the skill itself could be better (ambiguity, uncovered edge case, forced deviation, misfired rule, stale cross-reference, user correction) and propose a specific diff to it. Conservative: surface only when a signal is concrete and blocking-or-recurring and a fix is ready; silent otherwise. Dedup against an already-proposed queue. Surface via /ask-gate; never auto-apply." | trigger="a self-improvable skill completes; or user runs /self-improve [skill]"
+@STAMP ts:ts=2026-06-04T00:00:00Z | src=human | method=manual
+
+# --- Boundary ---
+
+@SEC name="Boundary"
+@RULE rid=rule:per-run-detector | lvl=MUST | when="invoked" | then="act as the in-the-moment, per-skill improvement detector for the run that just completed — do not run a deliberate batch skill-gap scan (that is /insight-skill-gap) or a full post-implementation retrospective (that is /insight-retro)"
+@MAP rid=map:sibling-boundary | pairs=["insight-skill-gap"->"deliberate batch scan of recent work for new/updated skills","insight-retro"->"full post-implementation retrospective","skills-audit"->"library health: descriptions, cross-refs, runtime parity","self-improve"->"per-run, signal-triggered proposal to improve the skill that just ran"]
+@MAP rid=map:lifecycle | pairs=["caller-options"->"before a skill — routes venue/mode","ask-gate"->"the question moment — triages/quality-gates handler questions","next-skills"->"after a skill — recommends successor skills","self-improve"->"after a skill — proposes improvements to the skill that just ran; surfaces through ask-gate"]
+
+# --- Signal taxonomy ---
+
+@SEC name="Signal taxonomy"
+@MAP rid=map:signals | pairs=["ambiguity"->"skill instructions unclear; agent had to guess the interpretation","edge-case"->"run hit a case the skill steps/gates do not cover, forcing improvisation","forced-deviation"->"a good result required departing from the skill's prescribed steps","misfired-rule"->"a gate/check over- or under-fired (ABORT that should be WARN, WARN that should be ABORT, false-positive halt)","stale-xref"->"a path/skill/file the skill names has moved, been renamed, or no longer exists","user-correction"->"handler correction that exposes a skill gap, not just a task-specific fix"]
+@NOTE text="Vibes ('this could be cleaner') are NOT signals. Only concrete signals tied to this run qualify."
+
+# --- Phase 1: Watch ---
+
+@SEC name="Phase 1 — Watch"
+@STEP rid=step:watch | n:int=1 | op=std:ai.prompt@v1 | args=[task="During and at the end of the participating skill's run, note any signal from map:signals. Passive observation — no extra work, just attention to where the skill fought the agent."] | use=[cfg:map:signals] | out=[ref:signals]
+
+# --- Phase 2: Triage (anti-nag + dedup) ---
+
+@SEC name="Phase 2 — Triage"
+@STEP rid=step:triage | n:int=2 | op=std:ai.prompt@v1 | args=[task="Apply the conservative bar: continue ONLY IF a signal is concrete (tied to a specific taxonomy signal) AND material — it cost something THIS run (forced a deviation, a guess, a halt, or produced a wrong output) OR recurred within THIS session (same signal seen >=2x this session) — AND a specific fix is ready to write. Otherwise stay silent. Then dedup against the within-session already-proposed set: if this same improvement was surfaced earlier this session and not acted on, do not re-surface it. Cross-session dedup is a v2 backlog item (no persistent store yet)."] | in=[ref:signals] | out=[ref:qualified-signal]
+@CHECK rid=check:conservative-bar | assert="a qualified signal is concrete, material-this-run OR recurred-this-session, has a ready fix, and is not in the within-session already-proposed set" | fail=SKIP | msg="No signal clears the conservative bar (or it is a within-session duplicate). Stay silent — a missed minor improvement is cheaper than nag fatigue."
+
+# --- Phase 3: Draft ---
+
+@SEC name="Phase 3 — Draft"
+@STEP rid=step:draft | n:int=3 | op=std:ai.prompt@v1 | args=[task="Produce a specific diff, not prose hand-waving: the target file (SKILL.md and/or protocol.yon, or a directive), the exact lines to add/change, and a one-line rationale tying the change to the signal. If the run instead reveals a NEW skill is warranted (recurring multi-step pattern with no home), delegate the authoring question to /insight-skill-gap rather than drafting a skill here."] | in=[ref:qualified-signal] | out=[ref:proposal]
+@RULE rid=rule:concrete-diff | lvl=MUST | when="drafting a proposal" | then="produce a specific diff (target file + exact lines + rationale), never a vague suggestion"
+@RULE rid=rule:delegate-new-skill | lvl=SHOULD | when="the signal implies a new skill rather than a fix to an existing one" | then="delegate to /insight-skill-gap instead of drafting from scratch"
+
+# --- Phase 4: Surface ---
+
+@SEC name="Phase 4 — Surface"
+@STEP rid=step:surface | n:int=4 | op=std:human.review@v1 | args=[task="Route the proposal through /ask-gate (the proposal is itself a handler question) under a SIP-RESOLVED depth:1 marker (see rule:no-reentry), recommended action first: approve / edit / decline. On approve, apply via the normal Edit path and — for dual-doc skills — keep SKILL.md and protocol.yon in sync and bump the @STAMP. On decline or no-action, record in the within-session already-proposed set so it is not raised again this session."] | in=[ref:proposal] | out=[ref:outcome]
+@RULE rid=rule:no-auto-apply | lvl=MUST_NOT | when="a proposal is drafted" | then="auto-apply it — surface for approval via /ask-gate; application goes through the normal Edit path with explicit handler approval (the real guarantee is this rule + the human gate, not an assumed harness classifier)"
+@RULE rid=rule:dedup | lvl=MUST | when="a proposal is declined or not acted on" | then="record it in the within-session already-proposed set and suppress repeats within this session (cross-session persistence is a v2 backlog item)"
+
+# --- Depth & safety ---
+
+@SEC name="Depth & safety"
+@RULE rid=rule:conservative | lvl=MUST | when="unsure whether a signal clears the bar" | then="stay silent — the conservative threshold is the contract, not a suggestion"
+@RULE rid=rule:depth-guard | lvl=MUST | when="invoking /ask-gate or /insight-skill-gap as part of SIP's own run" | then="prepend a SIP-RESOLVED marker carrying depth:1 — they run inline under it and neither their own step:sip nor any nested SIP re-enters the gate; the marker is the recursion guard (no harness signal detects the nesting)"
+@RULE rid=rule:no-reentry | lvl=MUST_NOT | when="already running under a SIP-RESOLVED marker" | then="re-enter SIP — run inline and surface nothing; this closes the SIP -> ask-gate -> SIP loop"
+@RULE rid=rule:surface-through-ask-gate | lvl=SHOULD | when="surfacing a proposal to the handler" | then="route it through /ask-gate, recommended action first"
+
+# --- Opt-in contract ---
+
+@SEC name="Opt-in contract"
+@MAP rid=map:opt-in | pairs=["front-matter"->"self-improvable: true (canonical) — capable procedural skills opt in; routers/mode-setters/reference cards omit it","prose-pointer"->"a closing 'Self-improvement.' block at the end of SKILL.md","protocol-step"->"a closing @STEP rid=step:sip as the last step (dual-doc only), after step:nsp where present"]
+
+# --- Platform mapping ---
+
+@SEC name="Platform mapping"
+@MAP rid=map:platform | pairs=["claude-code"->"surface via /ask-gate -> AskUserQuestion","codex/agents"->"present proposal + recommended action as prose and wait","watch/triage/draft"->"runtime-agnostic"]
+
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated

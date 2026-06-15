@@ -1,0 +1,155 @@
+YON Writing Card (v2.0) — Extended Reference
+https://yon.younndai.com
+
+This card supplements SKILL.md with details NOT covered there.
+For core output rules, required fields, conversion patterns, and the encoding principle, see SKILL.md first.
+
+---
+
+@DOC HEADER — FULL OPTIONAL FIELDS:
+Beyond ver, id, title (required), @DOC accepts:
+  kind, domain, mode (struct|text|chat|hybrid), profile, fmt,
+  lang (BCP 47), region (ISO 3166-1), direction (ltr|rtl),
+  classification (public|internal|confidential|restricted),
+  handling, jurisdiction, data_residency, embargo_until:ts,
+  retention (7y|90d|indefinite), retention_authority, expires:ts,
+  parent, audience (public|internal|partner|regulator), license, redact:bool,
+  guide (URL to generation guide for self-bootstrapping),
+  with=[...], without=[...]
+
+Defaults: kind=doc, mode=struct, profile=exec, fmt=canon
+
+Field order (normative): ver, id, title, kind, domain, mode, profile, fmt, then remaining alphabetically.
+
+---
+
+fmt=ultra RULES:
+- MAY omit profile=exec (default)
+- MUST NOT omit :type suffix, ver, n:int=N, rid, or title
+- Shorthand allowed: @BEGIN tag#id ... @END tag#id
+
+---
+
+BLOCK ENCODING — FULL RULES:
+TAG is uppercase: JSON, CODE, CSV, LOGS, PROMPT, MAP, EX, DIFF, HTML, TEMPLATE, RAW
+mime= REQUIRED on every @BEGIN
+boundary= REQUIRED (8+ chars [A-Za-z0-9_-]{8,}) unless bytes:bytes= present
+@END MUST repeat TAG and boundary exactly
+id= REQUIRED when multiple blocks or when referenced via block:<id>
+Blocks MUST NOT nest. Content is raw payload.
+
+Default MIME types by TAG:
+  json→application/json  csv→text/csv  ts→text/typescript  py→text/x-python
+  sql→text/x-sql  md→text/markdown  yaml→text/yaml  log→text/plain
+  yon→text/x-yon  unknown→text/plain
+
+Shorthand (fmt=ultra only): @BEGIN json#config ... @END json#config
+
+---
+
+ALIAS (@DEF) RULES:
+Only alias terms repeating 5+ times. Pattern: $[A-Z]{2,4}
+First use includes hybrid anchor: $AD(AlertDialog). Subsequent uses: $AD
+Never alias paths, URLs, or anchors.
+Undefined $-prefixed identifiers → parser error E001.
+
+---
+
+WORKFLOW — EXTENDED PATTERNS:
+
+Operation versioning:
+  @STEP op=std:fs.read@v1    — explicit version
+  @STEP op=std:fs.read       — latest available
+  @STEP op=custom:tool@v3    — custom namespace
+  No silent downgrade: if @v3 requested but only @v2 exists → E004
+
+Input/Output declarations:
+  @INPUT rid=in:src | name="source" | type=block | required:bool=true | schema=rid:sch:code
+  @OUTPUT rid=out:result | name="result" | type=block
+
+Yield (streaming partial results):
+  @YIELD rid=y:1 | step=rid:step:process | value=block:partial | progress:float=0.5
+
+Session durability:
+  @SESSION rid=sid:main | durability=durable | ttl_hours:int=24
+  @CHECKPOINT rid=cp:1 | session=sid:main | label="after_parse" | includes=[block:parsed]
+  @RECOVER rid=rec:1 | from=rid:cp:1 | reason="Step 3 failed"
+
+---
+
+CHANGE CONTROL — MERGE SEMANTICS:
+1. Effective state determined by document order (line position), not timestamp.
+2. @PATCH applies from its line onward — subsequent reads see patched value.
+3. @VOID deactivates target from its line onward.
+4. Missing target → E004.
+5. ts field is audit metadata, NOT the resolution key.
+
+---
+
+PRIVACY TAGS:
+
+@REDACTION target=rid:patient-ssn | reason="PII:SSN" | method=mask
+  Methods: mask (→[REDACTED:{reason}]), strip (remove entirely), hash (one-way hash)
+  Passive (default): metadata only. Active (redact:bool=true on @DOC): parser applies during parse.
+  Sub-block precision: start:int=42 | end:int=67
+
+@CONSENT party="id:jane-doe" | scope="treatment" | granted:ts="2026-01-30T12:00:00Z"
+  Must have granted or revoked (or both). Revocation: revoked:ts + revoke_reason
+  Lifecycle: revocable:bool, expires:ts
+
+---
+
+CROSS-DOMAIN TAGS:
+
+@IDENTITY rid=id:jane-doe | type=person | name="Jane Doe" | email="jane@example.com"
+  Types: person, organization, device, service, agent
+
+@LOCATION rid=loc:memorial | type=facility | name="Memorial Hospital" | lat:float=40.71 | lon:float=-74.00
+  Types: facility, address, region, coordinates, virtual
+
+---
+
+COGNITIVE TAGS (profile=cognitive+) — WRITING GUIDE:
+
+Thought chains build traceable reasoning:
+  @THOUGHT rid=t:1 | type=deliberation | confidence:float=0.7 | content="Error rate spiked..."
+  @HYPOTHESIS rid=h:1 | based_on=rid:t:1 | confidence:float=0.6 | claim="Memory leak from deploy"
+  @DECISION rid=d:1 | trace=[rid:t:1,rid:h:1] | selected=rollback | confidence:float=0.8
+
+Memory pipeline: @PULSE (raw input) → @IMPRINT (validated, requires trust score) → @MEMORY (stored) → @SHARD (compressed)
+  trust = source reliability. confidence = content certainty. Do not conflate.
+
+---
+
+AGENT TAGS (profile=agent+) — WRITING GUIDE:
+
+Agent declaration:
+  @AGENT rid=agent:reviewer | name="Code Reviewer" | type=ai | model=claude-4
+  @STREAM rid=stream:review | type=collaboration | agents=[agent:reviewer,agent:author]
+
+Dialogue:
+  @TURN from=agent:reviewer | to=agent:author | rid=turn:1 | content="Check lines 42-67"
+  @ACK from=agent:author | ref=rid:turn:1 | status=accepted
+
+Governance:
+  @TENET rid=tenet:safety | level=L0 | content="Never execute destructive ops without confirmation"
+  @ESCALATE rid=esc:1 | reason="Confidence below threshold" | severity=high
+
+---
+
+VALIDATION CHECKLIST (extended):
+1. Exactly one @DOC, first non-comment record
+2. All @BEGIN have matching @END (same TAG and boundary)
+3. All @BEGIN include mime=
+4. All blocks include boundary= (unless bytes:bytes present)
+5. No duplicate keys within a single record line
+6. @MAP uses pairs=[...] with both sides quoted
+7. Links/paths byte-preserved
+8. Canonical separator ` | ` consistent
+9. Accept CRLF input; output LF
+10. @RULE lvl=MUST|MUST_NOT are individual records (never merged)
+
+RESULT CONTRACT: Valid YON v2.0, parseable without an LLM, roundtrip-safe.
+
+Full spec: https://yon.younndai.com
+Author: Alexandru Mares | MARLINK TRADING SRL | © 2026

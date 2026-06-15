@@ -1,0 +1,9 @@
+# Normalize line endings to LF for all text. Keeps the generated machine surfaces
+# (catalog.yon, catalog.json, llms.txt, skills.graph.yon) byte-identical across
+# operating systems, so `node tools/spine.mjs --check` never false-triggers on a
+# Windows (core.autocrlf=true / CRLF) checkout, and the SKILL.md sources the
+# generator reads stay stable.
+* text=auto eol=lf
+
+# Binary assets — never touched by EOL normalization.
+*.png binary

@@ -1,0 +1,62 @@
+@DOC ver=2.0 | id=insight-critique | title="Advisory Critique — Summary/Strengths/Risks/Fixes" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Produce an advisory structured review of the user's last plan, code, architecture, or UI output without blocking work" | trigger="user runs /critique, asks to review/critique/poke holes in a specific output, or quality gate before /execute"
+@STAMP ts:ts=2026-05-18T00:00:00Z | src=human | method=manual
+
+# --- Governance ---
+
+@SEC name="Governance"
+@RULE rid=rule:advisory-only | lvl=MUST | when="rendering verdict" | then="never block or halt user work unless a kernel-prime violation is detected"
+@RULE rid=rule:no-pad-strengths | lvl=MUST_NOT | when="enumerating Strengths" | then="pad to soften the critique. If few strengths exist, say so explicitly"
+@RULE rid=rule:approved-clean-only | lvl=MUST_NOT | when="setting verdict" | then="mark Approved when any risk is rated Medium or above"
+@RULE rid=rule:single-classification | lvl=MUST | when="classifying the subject" | then="pick exactly one of Code, Plan, Architecture, UI"
+
+# --- Caller Options ---
+
+@SEC name="Caller Options"
+@STEP rid=step:cop | n:int=0 | op=std:ai.prompt@v1 | args=[task="Run the Caller Options protocol (caller-options/protocol.yon): triage for material optionality across declared venues and modes; surface to the caller unless one path dominates; bind the chosen mode and venue. Skip if a resolved-invocation marker is present."] | out=[ref:cop-choice]
+@CHECK rid=check:cop | assert="ref:cop-choice is resolved before the skill's own steps run" | fail=WARN | msg="Caller Options should resolve venue and mode before execution."
+
+# --- Phase 1: Classify ---
+
+@SEC name="Phase 1 — Classify"
+@STEP rid=step:classify | n:int=1 | op=std:ai.prompt@v1 | args=[task="Identify what is being critiqued. Pick exactly one: Code, Plan, Architecture, UI."] | out=[ref:subject-class] | rules=[rid:rule:single-classification] | note="If the subject is ambiguous, ask for clarification before proceeding."
+@CHECK rid=check:classify | assert="ref:subject-class is in [Code,Plan,Architecture,UI]" | fail=ABORT | msg="Subject classification missing or ambiguous. Ask the user to clarify before continuing."
+
+# --- Phase 2: Analysis ---
+
+@SEC name="Phase 2 — Analysis"
+@NOTE text="Passes 1–3 are independent. Pass 4 (Fixes) depends on Pass 3 (Risks)."
+
+@STEP rid=step:summary | n:int=2 | op=std:ai.prompt@v1 | args=[task="State purpose, scope, and approach concisely. What is this?"] | in=[ref:subject-class] | out=[ref:summary] | note="Pass 1 — Summary."
+@STEP rid=step:strengths | n:int=3 | op=std:ai.prompt@v1 | args=[task="What is well-designed, sound, or admirable? Be specific. Do not pad."] | in=[ref:subject-class] | out=[ref:strengths] | rules=[rid:rule:no-pad-strengths] | note="Pass 2 — Strengths."
+@STEP rid=step:risks | n:int=4 | op=std:ai.prompt@v1 | args=[task="Identify what is fragile, dangerous, underspecified, or likely to fail. Rank each by severity: High, Medium, or Low."] | in=[ref:subject-class] | out=[ref:risks] | note="Pass 3 — Risks. Required for Fixes."
+@STEP rid=step:fixes | n:int=5 | op=std:ai.prompt@v1 | args=[task="For each risk, propose a concrete actionable change. Distinguish must-fix from nice-to-fix."] | in=[ref:risks] | out=[ref:fixes] | note="Pass 4 — Fixes. Depends on ref:risks."
+
+# --- Phase 3: Render Report ---
+
+@SEC name="Phase 3 — Render Report"
+@STEP rid=step:render | n:int=6 | op=std:ai.prompt@v1 | args=[format="four labeled sections: Summary, Strengths, Risks, Fixes, followed by verdict line"] | in=[ref:summary,ref:strengths,ref:risks,ref:fixes] | out=[ref:report] | note="Render the structured report with all four sections."
+
+@MAP name=VerdictDecision | pairs=["all-risks-Low-or-cosmetic"->"✅ Approved","risks-present-but-fixable"->"⚠️ Conditional — apply fixes then /execute","High-risks-present"->"🚫 Not Approved — /plan-create or redesign required"]
+
+@STEP rid=step:verdict | n:int=7 | op=std:ai.prompt@v1 | args=[task="Set verdict using VerdictDecision map based on highest risk severity."] | in=[ref:risks] | use=[cfg:VerdictDecision] | out=[ref:verdict] | rules=[rid:rule:advisory-only,rid:rule:approved-clean-only] | note="Verdict is advisory. Never blocks."
+
+# --- Downstream Suggestions ---
+
+@SEC name="Downstream"
+@MAP name=NextCommand | pairs=["redesign-needed"->"/plan-create","small-clear-fixes"->"/execute (apply targeted fixes)","verdict-approved"->"/execute"]
+@STEP rid=step:downstream | n:int=8 | op=std:ai.prompt@v1 | args=[task="Suggest the natural next command using NextCommand map based on verdict and fix complexity."] | in=[ref:verdict,ref:fixes] | use=[cfg:NextCommand] | note="Suggest only — never auto-invoke."
+
+
+# --- Next Skills ---
+
+@SEC name="Next Skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only; never auto-invoke. Skip silently if the next-skills list is empty."] | in=[] | out=[ref:nsp-offer]
+
+
+# --- Self-improvement ---
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated
