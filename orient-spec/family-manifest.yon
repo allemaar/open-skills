@@ -20,6 +20,7 @@
 @SEC name="Footer render contract"
 @RULE rid=rule:footer-faces | lvl=MUST | when="rendering the family footer" | then="give a human a one-line text footer always; the --family visual map is opt-in; an agent reads suggested_next plus reason_code; an automator ignores it"
 @RULE rid=rule:footer-evidence | lvl=MUST | when="choosing suggested_next" | then="derive reason_code from the same sweep evidence and never a static for-X-use-Y table; route an unwritten decision OUT to a durable-capture skill"
+@RULE rid=rule:footer-installed | lvl=MUST | when="the footer suggests a next skill" | then="suggest only an installed skill whose roster status is shipped and otherwise fall back to a prose hint or plan-create and never an unbuilt sibling"
 @RULE rid=rule:one-file | lvl=MUST | when="adding or cutting or renaming a family skill" | then="edit this manifest only because every skill reads it so no N-by-N cross-reference update is needed"
 
 @STAMP ts:ts=2026-06-21T00:00:00Z | src="agent:claude-code" | method=generated

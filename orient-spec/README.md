@@ -13,6 +13,7 @@ A small family of **orientation** skills: a handler (human *or* an agent orienti
 | [`orient-record.yon`](orient-record.yon) | The structured record schema (envelope, subject, the per-field provenance rider, and the per-slice shapes) + the invariant rules and gates. **Reserved-tag emission, no custom tags, no domain.** |
 | [`orient-contract.md`](orient-contract.md) | The text-render + visual-render contracts (banner → block → trust trailer; one visual per slice + a mandatory ASCII fallback; tree-when-on-a-branch). |
 | [`family-manifest.yon`](family-manifest.yon) | The single source of truth for the footer: the skill roster, each skill's `gate_field` + `trigger`, and the evidence-derived `reason_code` routing. One-file edit to add/cut/rename a skill. |
+| [`family-behaviors.md`](family-behaviors.md) | The cross-cutting family behaviors over the frozen record: the concrete footer render (four faces), the staleness short-circuit, the neutral typed signal, the anti-Goodhart disclosure, and handoff-feeder routing. No schema bump — all ride existing fields/enums. |
 | [`subagent-protocol.md`](subagent-protocol.md) | How a skill spawns its bounded, read-only, depth-1 subagent and receives only the bundle. |
 
 ## Validate it yourself
@@ -28,4 +29,4 @@ npx @younndai/yon-parser validate orient-spec/examples/orient-record.example.yon
 
 `orient-*` (public, here) reads only universal surfaces — git, plan/TODO files, the file tree, the conversation. `yas-orient-*` (private) is independently implemented and reads its own declared artifacts, but conforms to this same record so the two interoperate with **no shared code and no separate domain**. (YAS is the private system that owns those artifacts; its internals are intentionally not described here.)
 
-> **Status:** the `orient-*` skills are *specified* by this contract but **not yet shipped** in this repo — `orient-spec/` is the design they will be built against. A worked, validatable example record ships at [`examples/orient-record.example.yon`](examples/orient-record.example.yon).
+> **Status:** [`orient-status`](../skills/orient-status/) and [`orient-map`](../skills/orient-map/) are **shipped** against this contract; `orient-gaps` is rostered but not yet built. A worked, validatable example record ships at [`examples/orient-record.example.yon`](examples/orient-record.example.yon).
