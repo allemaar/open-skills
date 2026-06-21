@@ -18,5 +18,9 @@
 @MAP name=changes | pairs=["c1"->"orient-record fixes","c2"->"family-manifest fixes"]
 @MAP name=no_change_zones | pairs=["z1"->"subagent-protocol","z2"->"README"]
 @CFG id=resume | set=[next_action="re-validate then quick verify",counter_case="if a fix broke validation revert that edit",dropped_alt="ship without the fix pass",resume_confidence=high]
-@MAP name=provenance | pairs=["snapshot.on_branch"->"git-attested:high:git-rev-parse","subject.name"->"git-attested:high:dir-name","forecast.eta"->"inferred:low:commit-cadence"]
+@CFG id=gaps | set=[stall_status=stalled]
+@MAP name=open_forks | pairs=["f1"->"schema_version bump decision"]
+@MAP name=loose_ends | pairs=["l1"->"3 uncommitted files"]
+@MAP name=silent_gaps | pairs=["s1"->"new skill has no honesty fixture yet"]
+@MAP name=provenance | pairs=["snapshot.on_branch"->"git-attested:high:git-rev-parse","subject.name"->"git-attested:high:dir-name","forecast.eta"->"inferred:low:commit-cadence","gaps.loose_ends"->"git-attested:high:git-status","gaps.open_forks"->"inferred:med:no-decision-record"]
 @STAMP ts:ts=2026-06-22T00:00:00Z | src=human

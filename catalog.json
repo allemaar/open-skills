@@ -12,8 +12,8 @@
     "~/.codex/skills",
     "~/.agents/skills"
   ],
-  "count": 47,
-  "dualDoc": 33,
+  "count": 48,
+  "dualDoc": 34,
   "install": "Copy a skill folder into your runtime skills dir (copy-default, not symlink), then validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.",
   "skills": [
     {
@@ -1432,6 +1432,54 @@
       "install": {
         "copy": "cp -r skills/orchestrate-mode <runtime>/skills/orchestrate-mode",
         "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "orient-gaps",
+      "description": "Surfaces what's STUCK and what's MISSING on any subject — blockers (on you vs on others), open forks, loose ends, and inferred silent gaps — computed fresh via a bounded read-only subagent. `--audit` raises claim-vs-evidence + gamed-signal disclosure. Not /orient-status (position + ETA), /orient-map (shape + delta), or /investigate (deep facts) — orient-gaps shows the STALL surface.",
+      "visibility": "public",
+      "triggers": [
+        "/orient-gaps",
+        "what's stuck",
+        "what's not done",
+        "what's missing here",
+        "can I trust this",
+        "what are the blockers",
+        "audit this orientation"
+      ],
+      "nextSkills": [
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "Turn the surfaced blockers and loose ends into a phased plan to clear them"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "scope=ABORT",
+        "silent-gaps=WARN",
+        "fail-closed=ABORT"
+      ],
+      "rules": [
+        "two-tier=MUST",
+        "silent-gaps-honest=MUST",
+        "blocker-attribution=MUST",
+        "audit-disclosure=MUST",
+        "intent-gates=MUST",
+        "fail-closed=MUST",
+        "trust-trailer=MUST",
+        "ephemeral=MUST",
+        "bounded-sweep=MUST",
+        "list-encoding=MUST",
+        "footer-installed=MUST"
+      ],
+      "steps": 7,
+      "install": {
+        "copy": "cp -r skills/orient-gaps <runtime>/skills/orient-gaps",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/orient-gaps/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."

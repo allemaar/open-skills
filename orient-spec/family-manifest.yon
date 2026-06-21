@@ -5,16 +5,17 @@
 @NOTE text="Two cross-cutting non-skills are NOT routable: identity is the one-line banner prepended to every output; confidence is the per-field tier layer on every field."
 
 @SEC name="Roster"
-@NOTE text="STATUS: orient-status and orient-map are shipped; orient-gaps is rostered but NOT YET SHIPPED. The footer suggests only an installed (status=shipped) skill — until orient-gaps ships, route its reason_code to a prose hint or to plan-create, never to an unbuilt /orient-gaps."
+@NOTE text="STATUS: orient-status, orient-map, and orient-gaps are all shipped. The footer suggests only an installed (status=shipped) skill; an unwritten-decision reason_code still routes OUT to /lyt-handoff or /lyt-decision only when those are installed, else a prose hint."
 @CFG id=skill.orient-status | set=[does="status quo — position / whats-left / ETA band",gate_field=gate_status,trigger="where are we / status / how far / ETA",modes="resume",tier=skill,status=shipped]
 @CFG id=skill.orient-map | set=[does="the shape — done to here to next path / tree on a branch / delta since last look",gate_field=gate_status,primary_field=on_branch,trigger="show the map / what changed / how deep down a branch",modes="none",tier=skill,status=shipped]
-@CFG id=skill.orient-gaps | set=[does="the stall surface — blockers / open forks / loose-ends / silent gaps",gate_field=gate_status,trigger="what is stuck / not solid / not done / can I trust it",modes="audit",tier=skill,status=planned]
+@CFG id=skill.orient-gaps | set=[does="the stall surface — blockers / open forks / loose-ends / silent gaps",gate_field=gate_status,trigger="what is stuck / not solid / not done / can I trust it",modes="audit",tier=skill,status=shipped]
 
 @SEC name="Modes — views over a skill's sweep, not skills"
 @MAP name=modes | pairs=["orient-status --resume"->"came back lost the thread: resume-pointer + one next move + counter-case","orient-gaps --audit"->"do not trust the orientation: claim-vs-evidence + gamed-signal disclosure"]
 
 @SEC name="Reason-code routing — evidence-derived suggested_next"
 @NOTE text="family_suggested_next is a union: a skill-ref, a mode-ref, or an internal-action. stay+elicit and staleness-short-circuit are internal actions (not skills) — intentional, not routable successors."
+@NOTE text="A skill never suggests ITSELF: when the evidence-derived reason_code routes to the emitting skill (e.g. orient-gaps finds blockers_present, which routes to orient-gaps), fall through to the next best installed skill — plan-create to act on the blockers — never a self-loop."
 @MAP name=routing | pairs=["blockers_present"->"orient-gaps","claim_evidence_mismatch"->"orient-gaps --audit","intent_absent"->"stay+elicit","lost_thread"->"orient-status --resume","subject_unchanged"->"staleness-short-circuit","unwritten_decision"->"/lyt-handoff or /lyt-decision"]
 
 @SEC name="Footer render contract"

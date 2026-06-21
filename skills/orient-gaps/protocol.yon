@@ -1,0 +1,42 @@
+@DOC ver=2.0 | id=orient-gaps | title="/orient-gaps" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Compute a fresh ephemeral read of what is stuck and what is missing — blockers (on-me vs on-other), open forks, loose ends, and inferred silent gaps — via a bounded read-only subagent; --audit raises claim-vs-evidence and gamed-signal disclosure. Emit the gaps slice conformant to orient-spec/orient-record.yon." | audience=agent
+@STAMP ts:ts=2026-06-22T00:00:00Z | src="agent:claude-code" | method=generated
+@NOTE text="Emits the gaps slice of the shared orientation record (orient-spec/orient-record.yon): the envelope @CFG id=orient, @CFG id=subject (carries intent_status), @CFG id=gaps (stall_status), with blocked_on_me blocked_on_other open_forks loose_ends silent_gaps audit_mismatches gamed_signals as sidecar @MAP; per-field provenance as @MAP. The stall surface and silent gaps are two tiers of one sweep; --audit raises the audit tier. Reserved tags only; validate --profile exec; never run yon format on an instance. Enum membership and these @RULE/@CHECK gates are emitter obligations, not parser-enforced under exec."
+
+@SEC name="Inputs"
+@INPUT rid=in:scope | name="scope" | type=artifact | required:bool=true
+@INPUT rid=in:intent | name="intent" | type=artifact | required:bool=false
+@INPUT rid=in:mode | name="mode" | type=artifact | required:bool=false
+
+@SEC name="Rules"
+@RULE rid=rule:two-tier | lvl=MUST | when="computing the bundle" | then="compute the stall surface (blockers and open_forks and loose_ends) and the silent gaps from one sweep, and raise the audit tier (audit_mismatches and gamed_signals) only when mode is audit"
+@RULE rid=rule:silent-gaps-honest | lvl=MUST | when="emitting the gaps slice" | then="emit silent_gaps explicitly as the honest-negative and mark each inferred or guessed, and never silently omit it nor present a silent gap as a confirmed fact"
+@RULE rid=rule:blocker-attribution | lvl=MUST | when="classifying a blocker" | then="attribute blocked_on_me versus blocked_on_other from evidence and never assume, and collapse an empty stall surface to a one-line success state rather than a failure"
+@RULE rid=rule:audit-disclosure | lvl=MUST | when="mode is audit" | then="raise a claim with no corroborating evidence as an audit_mismatch and tier-tag a metric inflated past its evidence weight as a gamed_signal at the guessed tier so a hollow signal reads as hollow"
+@RULE rid=rule:intent-gates | lvl=MUST | when="intent is absent or ungrounded" | then="gate every goal-relative gap as needs-goal and cap its provenance tier to guessed, and never fabricate a goal or invent gaps off it"
+@RULE rid=rule:fail-closed | lvl=MUST | when="evidence is zero or barren" | then="set gate_status to degraded or indeterminate with a sentinel value and never a plausible ready or blocked"
+@RULE rid=rule:trust-trailer | lvl=MUST | when="emitting the markdown read" | then="end with the trust trailer naming the single load-bearing guess on a lean-here line"
+@RULE rid=rule:ephemeral | lvl=MUST | when="emitting any record" | then="set ephemeral true and a fresh computed_at, persist no derived snapshot, and rely on a caller-supplied or harness-held reference point"
+@RULE rid=rule:bounded-sweep | lvl=MUST | when="gathering evidence" | then="delegate to one read-only depth-1 subagent with a budget and a hard timeout and a stop-condition, and return only the bundle with a re-runnable proof on every attested gap"
+@RULE rid=rule:list-encoding | lvl=MUST | when="emitting a list field" | then="emit blocked_on_me and blocked_on_other and open_forks and loose_ends and silent_gaps and audit_mismatches and gamed_signals as sidecar @MAP, and never a bare bracket-list inside a set and never run yon format on the instance"
+@RULE rid=rule:footer-installed | lvl=MUST | when="the family footer suggests a next skill" | then="suggest only an installed skill and otherwise fall back to a prose hint or plan-create"
+
+@SEC name="Steps"
+@STEP rid=step:bind-intent | n:int=1 | op=std:data.transform@v1 | args=[task="Bind the intent input and set intent_status to stated or inferred or absent. Do not prompt the caller."] | in=[rid:in:intent] | out=[ref:intent-status]
+@STEP rid=step:sweep | n:int=2 | op=std:data.search@v1 | args=[task="Spawn one bounded read-only depth-1 subagent over scope using the cheap-first ladder git then plan then conversation; collect uncommitted and untracked files and unmerged branches and conflicts and blocking TODO markers and dropped threads; budget 8 to 12 calls, timeout 60 to 90 seconds, stop at the first confident tier; return only signal with proof per the SKILL.md return fields."] | in=[rid:in:scope] | out=[ref:evidence]
+@STEP rid=step:compute-stall | n:int=3 | op=std:data.transform@v1 | args=[task="Compute the stall tier and the silent-gaps tier: attribute blocked_on_me versus blocked_on_other from evidence; collect open_forks and loose_ends; infer silent_gaps as the honest-negative marked inferred or guessed; set stall_status; tag every field with a provenance tier; gate goal-relative gaps when intent-status is absent; set the fail-closed gate_status on zero evidence."] | in=[ref:evidence,ref:intent-status] | out=[ref:record]
+@STEP rid=step:audit | n:int=4 | op=std:data.transform@v1 | args=[task="When mode is audit raise the audit tier: collect audit_mismatches (a claim with no corroborating evidence) and gamed_signals (a metric inflated past its evidence weight, tier-tagged guessed); otherwise pass the record through unchanged."] | in=[ref:record,rid:in:mode] | out=[ref:record-final]
+@STEP rid=step:emit | n:int=5 | op=std:io.emit@v1 | args=[surface="caller",task="Emit the triple bundle conformant to orient-record: the @CFG id=orient envelope, @CFG id=subject identity, the @CFG id=gaps slice with the stall and audit list fields as sidecar @MAP, per-field provenance @MAP, the markdown read with the silent-gaps honest-negative and the trust trailer, the visual stall board plus its mandatory ASCII fallback, and the installed-only family footer."] | in=[ref:record-final] | out=[ref:bundle]
+
+@SEC name="Gates"
+@CHECK rid=chk:scope | assert="rid:in:scope != null" | fail=ABORT | msg="No scope to check — name the project, repo, folder, or task."
+@CHECK rid=chk:silent-gaps | assert="the gaps slice emits silent_gaps or an explicit none-surfaced honest-negative" | fail=WARN | msg="Silent gaps must be emitted explicitly, never silently omitted."
+@CHECK rid=chk:fail-closed | assert="evidence is not barren or gate_status is degraded or indeterminate" | fail=ABORT | msg="Barren evidence must fail closed, never a plausible ready or stalled verdict."
+
+@SEC name="Next skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only and never auto-invoke."] | in=[] | out=[ref:nsp-offer]
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol: if this run surfaced a concrete blocking-or-recurring weakness in this skill, propose a specific fix via ask-gate for handler approval. Conservative, silent otherwise, never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-22T00:00:00Z | src="agent:claude-code" | method=generated

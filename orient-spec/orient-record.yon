@@ -6,7 +6,7 @@
 @NOTE text="Nothing is stored. Every record is recomputed each call; computed_at plus ephemeral true are load-bearing. The only persisted reference point (intent line plus last-look anchor) is caller-supplied or harness-held, never written to disk by default."
 @NOTE text="EMISSION uses RESERVED tags ONLY — no custom tags, no new domain (decided 2026-06-21, spike d; custom tags like @SNAPSHOT are rejected by the parser). A skill emits the record as: the envelope @CFG id=orient; @CFG id=subject; one @CFG per slice; tree nodes as @CFG id=node.<x>; edges and the per-field provenance rider as @MAP. Proven: a trajectory-tree instance validates under exec."
 @NOTE text="The rec:<name> records below are SHAPE descriptors (field=type). An emitted instance uses @CFG id=<name> with field=value. trajectory is named to avoid the reserved @MAP tag."
-@NOTE text="DEFERRED: the orient-gaps stall slice (blockers, open forks, loose-ends, silent-gaps, --audit) is a fast-follow and intentionally has no @CFG slice yet; the gate_status value stalled and the orient-gaps routing in family-manifest are forward-declared for it. v1 slices are snapshot, remaining, forecast, trajectory, delta, resume."
+@NOTE text="REALIZED (2026-06-22, P4): the orient-gaps stall slice rec:gaps is now defined below, completing the forward declaration the gate_status=stalled value and the family-manifest orient-gaps routing anticipated. This is a forward-declared slice being filled in — schema_version stays orient-record/1 (it completes /1's design rather than adding an unanticipated field; the FROZEN envelope and subject key-sets are unchanged). v1 slices are snapshot, remaining, forecast, trajectory, delta, resume, gaps."
 @NOTE text="ENFORCEMENT: enum membership and the @RULE/@CHECK gates are EMITTER obligations, NOT executed by yon validate --profile exec (it checks structure, not values; gate_status=banana and barren-plus-ready both validate clean). The enforcement surface is the emitting skill plus a conformance test. An automator must not treat a green validate as proof the gate held."
 @NOTE text="VERSION: schema_version current value = orient-record/1; emitters stamp it literally. The envelope and subject field-key sets are FROZEN for a given schema_version (additive changes bump it). Private yas- riders extend without bumping the public version. @DOC ver is the YON format version, not this schema version."
 
@@ -56,6 +56,10 @@
 @SEC name="Slice — resume pointer (orient-status --resume)"
 @NOTE text="The one-move terminator for the --resume mode: exactly one next action plus its counter-case plus the single dropped alternative. Renders as the LAST section per orient-contract."
 @CFG id=rec:resume | set=[next_action=str,counter_case=str,dropped_alt=str,resume_confidence=enum.conf_level]
+
+@SEC name="Slice — stall surface (orient-gaps; --audit raises the audit tier)"
+@NOTE text="Two tiers of one sweep. Stall tier: what blocks progress (blocked_on_me vs blocked_on_other), open_forks (unresolved decisions), loose_ends (uncommitted or untracked work). silent_gaps is the inferred honest-negative — what is plausibly missing but unproven (per rule:honest-negative, never silently omitted). --audit tier adds audit_mismatches (a claim with no corroborating evidence) and gamed_signals (a metric inflated past its evidence weight — the anti-Goodhart disclosure). All list fields emit as sidecar @MAP. stall_status reuses the gate_status enum (stalled when blocked). Generic names only; yas-orient-gaps maps private blockers into these."
+@CFG id=rec:gaps | set=[stall_status=enum.gate_status,blocked_on_me=list,blocked_on_other=list,open_forks=list,loose_ends=list,silent_gaps=list,audit_mismatches=list,gamed_signals=list]
 
 @SEC name="Invariants"
 @RULE rid=rule:no-fabricated-pct | lvl=MUST_NOT | when="rendering progress or completion with an unknown denominator" | then="emit a fabricated percentage or a confident phase"
