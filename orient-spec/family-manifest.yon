@@ -1,0 +1,25 @@
+@DOC ver=2.0 | id=family-manifest | title="orient- family manifest — single source of truth for the footer" | kind=spec | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Declare the orient- family roster, each skill's gate_field and trigger and one-line does, the modes, and the evidence-derived reason_code routing the footer emits. Adding, cutting, or renaming a skill is a one-file edit here." | audience=agent
+@STAMP ts:ts=2026-06-21T00:00:00Z | src="agent:claude-code" | method=generated
+@NOTE text="Apache-2.0. Reserved-tag emission (no custom tags, no domain), conformant to orient-record. Every orient- bundle reads this manifest to fill family used / suggested_next / reason_code / all; the footer renders it (human text always, --family visual opt-in, agent reads the enum, automator ignores it)."
+@NOTE text="Two cross-cutting non-skills are NOT routable: identity is the one-line banner prepended to every output; confidence is the per-field tier layer on every field."
+
+@SEC name="Roster"
+@NOTE text="STATUS: orient-status is shipped; orient-map and orient-gaps are rostered but NOT YET SHIPPED. The footer suggests only an installed (status=shipped) skill — until a sibling ships, route its reason_code to a prose hint or to plan-create, never to an unbuilt /orient-gaps or /orient-map."
+@CFG id=skill.orient-status | set=[does="status quo — position / whats-left / ETA band",gate_field=gate_status,trigger="where are we / status / how far / ETA",modes="resume",tier=skill,status=shipped]
+@CFG id=skill.orient-map | set=[does="the shape — done to here to next path / tree on a branch / delta since last look",gate_field=gate_status,primary_field=on_branch,trigger="show the map / what changed / how deep down a branch",modes="none",tier=skill,status=planned]
+@CFG id=skill.orient-gaps | set=[does="the stall surface — blockers / open forks / loose-ends / silent gaps",gate_field=gate_status,trigger="what is stuck / not solid / not done / can I trust it",modes="audit",tier=skill,status=planned]
+
+@SEC name="Modes — views over a skill's sweep, not skills"
+@MAP name=modes | pairs=["orient-status --resume"->"came back lost the thread: resume-pointer + one next move + counter-case","orient-gaps --audit"->"do not trust the orientation: claim-vs-evidence + gamed-signal disclosure"]
+
+@SEC name="Reason-code routing — evidence-derived suggested_next"
+@NOTE text="family_suggested_next is a union: a skill-ref, a mode-ref, or an internal-action. stay+elicit and staleness-short-circuit are internal actions (not skills) — intentional, not routable successors."
+@MAP name=routing | pairs=["blockers_present"->"orient-gaps","claim_evidence_mismatch"->"orient-gaps --audit","intent_absent"->"stay+elicit","lost_thread"->"orient-status --resume","subject_unchanged"->"staleness-short-circuit","unwritten_decision"->"/lyt-handoff or /lyt-decision"]
+
+@SEC name="Footer render contract"
+@RULE rid=rule:footer-faces | lvl=MUST | when="rendering the family footer" | then="give a human a one-line text footer always; the --family visual map is opt-in; an agent reads suggested_next plus reason_code; an automator ignores it"
+@RULE rid=rule:footer-evidence | lvl=MUST | when="choosing suggested_next" | then="derive reason_code from the same sweep evidence and never a static for-X-use-Y table; route an unwritten decision OUT to a durable-capture skill"
+@RULE rid=rule:one-file | lvl=MUST | when="adding or cutting or renaming a family skill" | then="edit this manifest only because every skill reads it so no N-by-N cross-reference update is needed"
+
+@STAMP ts:ts=2026-06-21T00:00:00Z | src="agent:claude-code" | method=generated

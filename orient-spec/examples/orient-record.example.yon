@@ -1,0 +1,22 @@
+@DOC ver=2.0 | id=orient-record-example | title="Example emitted orientation record (orient-status on a git repo)" | kind=context | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="A worked, validatable instance of orient-record showing the reserved-tag emission with a sidecar @MAP for every list field (never an in-set bracket-list)." | audience=agent
+@STAMP ts:ts=2026-06-22T00:00:00Z | src="agent:claude-code" | method=manual
+@NOTE text="Apache-2.0. Conforms to orient-spec/orient-record.yon (schema_version orient-record/1). Every list field is a sidecar @MAP — never a bare in-set bracket-list."
+
+@CFG id=orient | set=[schema_version=orient-record/1,computed_at:ts=2026-06-22T00:00:00Z,ephemeral:bool=true,tool=orient-status,tier=orient,scope=open-skills,evidence_mode=git-only,gate_status=stalled,gate_score:int=40,gate_blocking_field=open_forks,gate_confidence_floor=inferred,family_used=orient-status,family_suggested_next=orient-gaps,family_reason_code=blockers_present,overall_trust=med,degraded:bool=false]
+@CFG id=subject | set=[name=open-skills,kind=monorepo,purpose="public skills pack",purpose_source=readme,intent_status=stated]
+@CFG id=snapshot | set=[status=in-progress,stage=P1,stage_idx:int=1,frontier=orient-status,on_branch:bool=true,branch=feat/orient,dirty:int=3,ahead:int=2,behind:int=0]
+@CFG id=remaining | set=[open_count:int=4,done_count:int=1,fraction_done:flt=0.2,denominator_trust=inferred,remainder_caveat="visible-only count",next_open=author-protocol]
+@MAP name=open_set | pairs=["o1"->"P2 orient-map","o2"->"P3 footer","o3"->"routing gate","o4"->"P4 orient-gaps"]
+@CFG id=forecast | set=[kind=prediction,provenance=extrapolated,eta_low=1d,eta_high=3d,eta_unit=calendar-days,confidence=low,unschedulable:bool=false]
+@CFG id=trajectory | set=[layout=tree,on_branch:bool=true,trunk_ref=main,cursor_node=n3,fork_node=n2,ahead:int=2,behind:int=0]
+@CFG id=node.n1 | set=[kind=done,label=P0-contract,lane=trunk]
+@CFG id=node.n2 | set=[kind=fork,label=cold-vet,lane=trunk]
+@CFG id=node.n3 | set=[kind=here,label=fix-pass,lane=branch]
+@MAP name=edges | pairs=["n1"->"n2","n2"->"n3"]
+@CFG id=delta | set=[anchor_kind=git,anchor_ref=HEAD@2h,anchor_confidence=approx,window=2h]
+@MAP name=changes | pairs=["c1"->"orient-record fixes","c2"->"family-manifest fixes"]
+@MAP name=no_change_zones | pairs=["z1"->"subagent-protocol","z2"->"README"]
+@CFG id=resume | set=[next_action="re-validate then quick verify",counter_case="if a fix broke validation revert that edit",dropped_alt="ship without the fix pass",resume_confidence=high]
+@MAP name=provenance | pairs=["snapshot.on_branch"->"git-attested:high:git-rev-parse","subject.name"->"git-attested:high:dir-name","forecast.eta"->"inferred:low:commit-cadence"]
+@STAMP ts:ts=2026-06-22T00:00:00Z | src=human

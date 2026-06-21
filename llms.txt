@@ -1,6 +1,6 @@
 # open-skills
 
-> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Each skill is a folder under skills/ with a SKILL.md (plain-language what/when) and, for 31 of 45, a protocol.yon — a declarative, machine-validatable contract of its steps, rules, and gates. Apache-2.0. Read before you trust: nothing executes that you cannot read first.
+> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Each skill is a folder under skills/ with a SKILL.md (plain-language what/when) and, for 32 of 46, a protocol.yon — a declarative, machine-validatable contract of its steps, rules, and gates. Apache-2.0. Read before you trust: nothing executes that you cannot read first.
 
 ## About YON
 The protocol.yon files are written in YON (https://github.com/YounndAI/yon), a stream-first data format for AI-agent workflows with a public spec (https://github.com/YounndAI/yon-spec) and an Apache-2.0 reference parser (@younndai/yon-parser). YON is what makes each skill auditable: its rules (MUST / MUST_NOT) and gates (ABORT / WARN) are named, typed objects, not prose.
@@ -44,6 +44,7 @@ That is the whole install: copy a readable folder, validate its declarative cont
 - obsidian-cli [md-only] — Drive a running Obsidian instance via the `obsidian` CLI — search vault, open/create/move notes, toggle tasks, edit properties, reload plugins, run JS, capture errors/screenshots. — triggers: search my vault, open this note in Obsidian, list notes tagged X, reload my plugin
 - obsidian-markdown [md-only] — Write valid Obsidian-Flavored Markdown — wikilinks, embeds, callouts, frontmatter properties, tags, comments. — triggers: write this as an Obsidian note, add a callout, use wikilinks, set frontmatter properties
 - orchestrate-mode [md-only] — Activate orchestrator mode in the current session: the lead agent dispatches isolated worker subagents and does not execute concrete work directly. — triggers: /orchestrate-mode, become an orchestrator, orchestrator mode, delegate everything
+- orient-status [protocol.yon] — Quick "where are we" read on any subject (repo, folder, plan, task) — current position, what's left, and a banded ETA, computed fresh via a bounded read-only subagent. — triggers: /orient-status, where are we on this, status quo and eta, how far along
 - plan-cleanup [protocol.yon] — Post-execution cleanup — remove planning artifacts and tech debt left behind after a plan runs. — triggers: /plan-cleanup, clean up artifacts, remove the plan file, no tech debt
 - plan-create [protocol.yon] — Propose a phased, gated implementation plan before any work begins. — triggers: /plan-create, make a plan, plan this out, design before coding
 - plan-deep-dive [protocol.yon] — Phase-by-phase deep inspection of any multi-phase plan — stop at each phase and assess completeness, quality, and future-readiness before advancing. — triggers: /deep-dive, do a deep dive, inspect each phase, look at this more carefully

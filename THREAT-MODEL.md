@@ -22,7 +22,7 @@ These are supply-chain risks. They are the same shape as installing an unread de
 The design answers the threats with **inspectability**, not with a sandbox.
 
 - **Everything is readable text.** Every skill is a folder of Markdown and YON. No build step, no minified blob, no binary. You can read every line before you grant trust, and diff every line on update.
-- **The enforceable part is a declarative protocol.** Of the 45 skills here, 31 ship a [`protocol.yon`](CONFORMANCE.md). In those files the control flow, the rules (`MUST` / `MUST_NOT`), and the gates (`ABORT` / `WARN`) are named, typed records — not prose you hope the model follows. Behavior you can name is behavior you can audit.
+- **The enforceable part is a declarative protocol.** Of the 46 skills here, 32 ship a [`protocol.yon`](CONFORMANCE.md). In those files the control flow, the rules (`MUST` / `MUST_NOT`), and the gates (`ABORT` / `WARN`) are named, typed records — not prose you hope the model follows. Behavior you can name is behavior you can audit.
 - **You can validate it yourself, with a tool that is not ours.** Each `protocol.yon` validates against the public YON™ parser:
 
   ```bash
@@ -31,7 +31,7 @@ The design answers the threats with **inspectability**, not with a sandbox.
   ```
 
   The trust does not route through the author. It routes through a public specification and an Apache-2.0 reference parser.
-- **Conformance is enforced in CI.** Every `protocol.yon` is validated on every push; [`CONFORMANCE.md`](CONFORMANCE.md) tracks the result. The badge is green only when all 31 validate. A protocol that stops parsing breaks the build, in the open.
+- **Conformance is enforced in CI.** Every `protocol.yon` is validated on every push; [`CONFORMANCE.md`](CONFORMANCE.md) tracks the result. The badge is green only when all 32 validate. A protocol that stops parsing breaks the build, in the open.
 - **The install path is inspectable too.** Installing is itself a supply-chain step, so the installer is not exempt from the rule. [`install.mjs`](install.mjs) is a single zero-dependency file you read before you run it; it only copies a skill folder and validates its `protocol.yon` against the pinned public parser — there is no opaque `npx`-published step that runs code you have not seen. It copies by default (a frozen snapshot, so a later upstream change cannot drift underneath you), and it **refuses to overwrite a symlinked or junctioned skill** rather than risk a recursive delete traversing the link into the source tree.
 
 ## What this does NOT claim
@@ -40,7 +40,7 @@ Inspectability is a real defense with precise edges. Naming the edges is part of
 
 - **YON is an audit primitive, not a sandbox.** A `protocol.yon` makes a skill's intent legible. It does not execute in a jail and does not constrain what your agent runtime can do. The protection is that you can *see* the intent before you trust it — not that an unread intent is contained.
 - **Validation proves structure, not safety.** A `protocol.yon` that validates is well-formed. It is not therefore benign. A well-formed protocol can still describe a harmful step. Validation narrows what you must read; it does not replace reading.
-- **14 of 45 skills are Markdown-only.** They carry no `protocol.yon`, so their behavior is prose. They are useful skills, but they get no more enforceable-control-flow guarantee than any other prose skill. Read them as such.
+- **14 of 46 skills are Markdown-only.** They carry no `protocol.yon`, so their behavior is prose. They are useful skills, but they get no more enforceable-control-flow guarantee than any other prose skill. Read them as such.
 - **This is one author's vetted set.** The skills here were scrubbed of personal data and reviewed before release. A fork is not. Trust is yours to grant, per skill, per version.
 
 The honest summary: open-skills removes the excuse not to read, and gives the enforceable parts a checkable shape. It does not remove the responsibility to read.

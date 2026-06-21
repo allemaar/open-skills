@@ -1,0 +1,82 @@
+@DOC ver=2.0 | id=orient-record | title="Orientation Record — shared schema for the orient- family" | kind=spec | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Define the generic public orientation-record that every orient-* skill emits a slice of; yas-orient-* conforms and may privately extend. One computed ephemeral bundle = this YON record plus a markdown render plus a visual render." | audience=agent
+@STAMP ts:ts=2026-06-21T00:00:00Z | src="agent:claude-code" | method=generated
+@NOTE text="Apache-2.0. Reusable, inspectable, declarative. This is a SCHEMA reference (record shapes plus invariants), NOT an instance."
+@NOTE text="Public and generic: field names carry NO YAS artifact shapes (no handoff, arc, state, or decisions names). yas-orient-* maps private sources INTO these generic slices and MAY add private riders."
+@NOTE text="Nothing is stored. Every record is recomputed each call; computed_at plus ephemeral true are load-bearing. The only persisted reference point (intent line plus last-look anchor) is caller-supplied or harness-held, never written to disk by default."
+@NOTE text="EMISSION uses RESERVED tags ONLY — no custom tags, no new domain (decided 2026-06-21, spike d; custom tags like @SNAPSHOT are rejected by the parser). A skill emits the record as: the envelope @CFG id=orient; @CFG id=subject; one @CFG per slice; tree nodes as @CFG id=node.<x>; edges and the per-field provenance rider as @MAP. Proven: a trajectory-tree instance validates under exec."
+@NOTE text="The rec:<name> records below are SHAPE descriptors (field=type). An emitted instance uses @CFG id=<name> with field=value. trajectory is named to avoid the reserved @MAP tag."
+@NOTE text="DEFERRED: the orient-gaps stall slice (blockers, open forks, loose-ends, silent-gaps, --audit) is a fast-follow and intentionally has no @CFG slice yet; the gate_status value stalled and the orient-gaps routing in family-manifest are forward-declared for it. v1 slices are snapshot, remaining, forecast, trajectory, delta, resume."
+@NOTE text="ENFORCEMENT: enum membership and the @RULE/@CHECK gates are EMITTER obligations, NOT executed by yon validate --profile exec (it checks structure, not values; gate_status=banana and barren-plus-ready both validate clean). The enforcement surface is the emitting skill plus a conformance test. An automator must not treat a green validate as proof the gate held."
+@NOTE text="VERSION: schema_version current value = orient-record/1; emitters stamp it literally. The envelope and subject field-key sets are FROZEN for a given schema_version (additive changes bump it). Private yas- riders extend without bumping the public version. @DOC ver is the YON format version, not this schema version."
+
+@SEC name="Enumerations"
+@SCHEMA key=tier | opts=[orient,yas] | default=orient
+@SCHEMA key=evidence_mode | opts=[git-rich,git-only,artifact-only,convo-only,barren] | default=barren
+@SCHEMA key=gate_status | opts=[ready,blocked,stalled,degraded,indeterminate] | default=indeterminate
+@SCHEMA key=overall_trust | opts=[high,med,low] | default=low
+@SCHEMA key=conf_tier | opts=[ratified,git-attested,artifact-stated,inferred,guessed] | default=guessed
+@SCHEMA key=conf_level | opts=[high,med,low] | default=low
+@SCHEMA key=subject_kind | opts=[cli,library,monorepo,web-app,paper,vault,folder,conversation-only,unknown] | default=unknown
+@SCHEMA key=purpose_source | opts=[intent,readme,inferred,guessed] | default=guessed
+@SCHEMA key=intent_status | opts=[stated,inferred,absent] | default=absent
+@SCHEMA key=map_layout | opts=[path,tree,dag] | default=path
+@SCHEMA key=reason_code | opts=[blockers_present,claim_evidence_mismatch,intent_absent,lost_thread,subject_unchanged,unwritten_decision] | default=intent_absent
+
+@SEC name="Envelope — one per call"
+@NOTE text="The per-call envelope: the frame plus honesty preamble. Exactly one per orientation call; every slice attaches to it. gate_* is the fail-closed automator gate (flattened from gate, depth-1); family_* drives the footer."
+@CFG id=rec:envelope | set=[schema_version=str,computed_at=ts,ephemeral=bool,tool=str,tier=enum.tier,scope=str,evidence_mode=enum.evidence_mode,gate_status=enum.gate_status,gate_score=int,gate_blocking_field=str,gate_confidence_floor=enum.conf_tier,family_used=str,family_suggested_next=str,family_reason_code=enum.reason_code,family_all=list,overall_trust=enum.overall_trust,degraded=bool,degrade_reason=str]
+
+@SEC name="Subject identity"
+@NOTE text="The one-line identity banner prepended to every output. parent_subject set means the subject is a breadcrumb or branch off a parent, which drives the tree render in the trajectory slice."
+@CFG id=rec:subject | set=[name=str,kind=enum.subject_kind,purpose=str,purpose_source=enum.purpose_source,intent_status=enum.intent_status,parent_subject=str]
+
+@SEC name="Provenance rider — on every field"
+@NOTE text="The universal per-field provenance rider; EVERY field any slice emits carries one. tier ratified is human-signed (yas-only) and outranks git-attested; guessed has no corroborating evidence and an agent treats it as a hypothesis, never a fact."
+@CFG id=rec:conf | set=[field=str,tier=enum.conf_tier,conf=enum.conf_level,source=str,method=str,note=str]
+
+@SEC name="Slice — position snapshot (orient-status)"
+@CFG id=rec:snapshot | set=[status=str,stage=str,stage_idx=int,frontier=str,on_branch=bool,branch=str,dirty=int,ahead=int,behind=int]
+
+@SEC name="Slice — remaining work (orient-status)"
+@CFG id=rec:remaining | set=[open_count=int,open_set=list,done_count=int,fraction_done=flt,denominator_trust=str,remainder_caveat=str,next_open=str]
+
+@SEC name="Slice — forecast (orient-status, the one non-observed output)"
+@NOTE text="ETA is the ONLY forward prediction with no ground truth. It MUST be a band, never a point estimate, and carry explicit estimate-not-observed provenance."
+@CFG id=rec:forecast | set=[kind=str,provenance=str,eta_low=str,eta_high=str,eta_unit=str,confidence=enum.conf_level,unschedulable=bool,unschedulable_ref=str]
+
+@SEC name="Slice — trajectory map (orient-map; renders a tree when on_branch)"
+@NOTE text="The done to here to next path; renders a TREE when on_branch. Named trajectory to avoid the reserved @MAP tag. The harness owns the raw file tree; this owns the diff-of-trees and the branch stack."
+@CFG id=rec:trajectory | set=[layout=enum.map_layout,on_branch=bool,trunk_ref=str,cursor_node=str,fork_node=str,ahead=int,behind=int,nodes=list,edges=list]
+
+@SEC name="Slice — delta since last look (orient-map; orient-status --resume)"
+@NOTE text="Delta needs a reference endpoint (the last-look anchor), caller-supplied or git-inferred, never stored. no_change_zones is a MANDATORY honest-negative."
+@CFG id=rec:delta | set=[anchor_kind=str,anchor_ref=str,anchor_confidence=str,window=str,changes=list,no_change_zones=list,missed_while_away=list]
+
+@SEC name="Slice — resume pointer (orient-status --resume)"
+@NOTE text="The one-move terminator for the --resume mode: exactly one next action plus its counter-case plus the single dropped alternative. Renders as the LAST section per orient-contract."
+@CFG id=rec:resume | set=[next_action=str,counter_case=str,dropped_alt=str,resume_confidence=enum.conf_level]
+
+@SEC name="Invariants"
+@RULE rid=rule:no-fabricated-pct | lvl=MUST_NOT | when="rendering progress or completion with an unknown denominator" | then="emit a fabricated percentage or a confident phase"
+@RULE rid=rule:open-ended-remainder | lvl=MUST | when="the denominator is unknown" | then="render an open-ended remainder instead of a percentage or a confident phase"
+@RULE rid=rule:eta-band | lvl=MUST | when="emitting a forecast" | then="express ETA as a band from eta_low to eta_high with estimate-not-observed provenance, never a point estimate"
+@RULE rid=rule:intent-gates | lvl=MUST | when="intent_status is absent" | then="render every intent-dependent field as needs-goal and cap its provenance tier to guessed; never emit a confident tree from the void"
+@RULE rid=rule:honest-negative | lvl=MUST | when="a slice could imply completeness such as delta or gaps" | then="emit the honest negative such as no_change_zones or residual blind-spots explicitly, never silently omit it"
+@RULE rid=rule:gateable-attested | lvl=MUST | when="a field is contractually gateable" | then="permit gating only on an attested field (git-attested or ratified); inferred and guessed fields are advisory and non-gateable"
+@RULE rid=rule:fail-closed | lvl=MUST | when="the evidence count for a gateable field is zero" | then="set gate_status to indeterminate or degraded with a sentinel value, never a plausible zero or false"
+@RULE rid=rule:generic-names | lvl=MUST | when="naming any public field" | then="use generic names only with no YAS artifact shape names; yas-orient-* maps private sources into these generic slices"
+@RULE rid=rule:ephemeral | lvl=MUST | when="emitting any record" | then="set ephemeral true and a fresh computed_at, persist no derived snapshot, and rely on a caller-supplied or harness-held reference point"
+@RULE rid=rule:list-encoding | lvl=MUST | when="emitting a field typed list (open_set nodes edges changes no_change_zones missed_while_away family_all)" | then="emit it as a sidecar @MAP name=field or as repeated @CFG rows, never a bare bracket-list inside a set value because a bare in-set bracket-list corrupts the record silently and still validates"
+
+@SEC name="Gates"
+@CHECK rid=chk:has-inputs | assert="envelope carries scope and evidence_mode" | fail=ABORT | msg="No scope or evidence_mode — the subagent sweep has no substrate to read."
+@CHECK rid=chk:eta-no-point | assert="forecast eta_low differs from eta_high or confidence is high" | fail=WARN | msg="ETA is a point estimate — band it or justify high confidence."
+@CHECK rid=chk:fail-closed | assert="evidence_mode is not barren or gate_status is indeterminate or degraded" | fail=ABORT | msg="Barren evidence must fail closed (indeterminate or degraded), never a plausible ready or blocked verdict."
+
+@SEC name="Emission encoding — reserved tags, no domain"
+@NOTE text="How a skill emits an instance of this record. All reserved tags; validates under exec; identical for orient-* and yas-orient-* so the two tiers interoperate without a domain. A worked example ships at orient-spec/examples/orient-record.example.yon."
+@NOTE text="LIST FIELDS (open_set nodes edges changes no_change_zones missed_while_away family_all) emit ONLY as a sidecar @MAP name=field or as repeated @CFG rows — NEVER a bare bracket-list inside a set value (it silently corrupts and still validates). Do NOT run yon format on an emitted instance: format mode CANON is destructive on set-internal lists. The parse-format-parse round-trip gate at tools/orient-roundtrip.mjs guards the example instance."
+@MAP name=emission-encoding | pairs=["envelope"->"@CFG id=orient","subject"->"@CFG id=subject","each slice"->"@CFG id=<slice>","tree node"->"@CFG id=node.<x>","any list field"->"@MAP name=field sidecar never in-set bracket-list","edges"->"@MAP name=edges","provenance rider"->"@MAP name=provenance"]
+
+@STAMP ts:ts=2026-06-21T00:00:00Z | src="agent:claude-code" | method=generated
