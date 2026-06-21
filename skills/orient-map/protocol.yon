@@ -1,0 +1,43 @@
+@DOC ver=2.0 | id=orient-map | title="/orient-map" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Compute a fresh ephemeral read of the work's shape — the delta since the last-look anchor plus the done-to-here-to-next trajectory as a path on trunk or a tree on a branch — via a bounded read-only subagent. Own the topology fields for the family. Emit a record conformant to orient-spec/orient-record.yon." | audience=agent
+@STAMP ts:ts=2026-06-22T00:00:00Z | src="agent:claude-code" | method=generated
+@NOTE text="Emits the trajectory and delta slices of the shared orientation record (orient-spec/orient-record.yon): the envelope @CFG id=orient, @CFG id=subject (carries parent_subject for the branch breadcrumb and intent_status), @CFG id=trajectory, tree nodes as @CFG id=node.<x>, @CFG id=delta; list fields (nodes edges changes no_change_zones) as sidecar @MAP; per-field provenance as @MAP. Reserved tags only; validate --profile exec; never run yon format on an instance. Enum membership and these @RULE/@CHECK gates are emitter obligations, not parser-enforced under exec."
+
+@SEC name="Inputs"
+@INPUT rid=in:scope | name="scope" | type=artifact | required:bool=true
+@INPUT rid=in:anchor | name="anchor" | type=artifact | required:bool=false
+@INPUT rid=in:intent | name="intent" | type=artifact | required:bool=false
+
+@SEC name="Rules"
+@RULE rid=rule:delta-first | lvl=MUST | when="rendering the bundle" | then="lead with the delta since the last-look anchor and demote the raw file tree because the editor already owns the directory listing"
+@RULE rid=rule:tree-on-branch | lvl=MUST | when="rendering the trajectory" | then="render a path on the trunk and a tree on a branch with the branch-stack depth, and set on_branch to unknown when no base exists rather than assuming trunk"
+@RULE rid=rule:topology-authority | lvl=MUST | when="emitting the trajectory slice" | then="own and emit on_branch and cursor_node and fork_node and ahead and behind and trunk_ref so sibling slices do not recompute topology, and on a branch refuse to forecast the trunk eta"
+@RULE rid=rule:no-phantom-delta | lvl=MUST | when="computing the delta" | then="compute the delta off the attested git or mtime substrate only and never off prose so an agent never receives a phantom delta"
+@RULE rid=rule:honest-negative | lvl=MUST | when="emitting the delta slice" | then="emit no_change_zones explicitly because silently omitting the parts that did not move implies false completeness, and on a branch emit missed_while_away for the trunk commits since the fork"
+@RULE rid=rule:intent-gates | lvl=MUST | when="intent is absent or ungrounded" | then="gate every intent-dependent node as needs-goal and cap its provenance tier to guessed, and never emit a confident tree from the void"
+@RULE rid=rule:fail-closed | lvl=MUST | when="evidence is zero or barren" | then="set gate_status to degraded or indeterminate with a sentinel value and draw a no-substrate card rather than a plausible verdict or a structural tree"
+@RULE rid=rule:trust-trailer | lvl=MUST | when="emitting the markdown read" | then="end with the trust trailer naming the single load-bearing guess on a lean-here line"
+@RULE rid=rule:ephemeral | lvl=MUST | when="emitting any record" | then="set ephemeral true and a fresh computed_at, persist no derived snapshot, and rely on a caller-supplied or git-inferred anchor never written to disk"
+@RULE rid=rule:bounded-sweep | lvl=MUST | when="gathering evidence" | then="delegate to one read-only depth-1 subagent with a budget and a hard timeout and a stop-condition, and return only the bundle with a re-runnable proof on every attested field"
+@RULE rid=rule:list-encoding | lvl=MUST | when="emitting a list field" | then="emit nodes and edges and changes and no_change_zones as sidecar @MAP and tree nodes as @CFG id=node.x, and never a bare bracket-list inside a set and never run yon format on the instance"
+@RULE rid=rule:footer-installed | lvl=MUST | when="the family footer suggests a next skill" | then="suggest only an installed skill and otherwise fall back to a prose hint or orient-status or plan-create"
+
+@SEC name="Steps"
+@STEP rid=step:bind-anchor | n:int=1 | op=std:data.transform@v1 | args=[task="Bind the anchor and intent inputs and set anchor_kind and intent_status. Infer the anchor from git when not supplied and never write it to disk. Do not prompt the caller."] | in=[rid:in:anchor,rid:in:intent] | out=[ref:anchor-bound]
+@STEP rid=step:sweep | n:int=2 | op=std:data.search@v1 | args=[task="Spawn one bounded read-only depth-1 subagent over scope using the cheap-first ladder git then plan then conversation; read merge-base and ahead-behind and the commit subjects and the diff name-status since the anchor; budget 8 to 12 calls, timeout 60 to 90 seconds, stop at the first confident tier; return only signal with proof per the SKILL.md return fields."] | in=[rid:in:scope,ref:anchor-bound] | out=[ref:evidence]
+@STEP rid=step:detect-topology | n:int=3 | op=std:data.transform@v1 | args=[task="Compute the trajectory slice from the evidence: set on_branch and cursor_node and fork_node and ahead and behind and trunk_ref; set on_branch to unknown when no base exists; tag every node with a provenance tier and gate intent-dependent nodes when intent-status is absent."] | in=[ref:evidence,ref:anchor-bound] | out=[ref:trajectory]
+@STEP rid=step:compute-delta | n:int=4 | op=std:data.transform@v1 | args=[task="Compute the delta slice off the attested substrate only: the changes since the anchor, the mandatory no_change_zones honest-negative, and on a branch the missed_while_away trunk commits since the fork; tier-tag a trivial change guessed and a real diff git-attested; on zero evidence set the fail-closed gate_status with a degrade_reason and draw the no-substrate card."] | in=[ref:evidence,ref:trajectory] | out=[ref:record]
+@STEP rid=step:emit | n:int=5 | op=std:io.emit@v1 | args=[surface="caller",task="Emit the triple bundle conformant to orient-record: the @CFG id=orient envelope, @CFG id=subject identity with parent_subject on a branch, the trajectory slice with tree nodes as @CFG id=node.x, the delta slice, list fields as sidecar @MAP, per-field provenance @MAP, the markdown read with the delta headline and the trust trailer, the visual plus its mandatory ASCII trajectory fallback, and the installed-only family footer."] | in=[ref:record] | out=[ref:bundle]
+
+@SEC name="Gates"
+@CHECK rid=chk:scope | assert="rid:in:scope != null" | fail=ABORT | msg="No scope to map — name the project, repo, folder, or task."
+@CHECK rid=chk:topology-honest | assert="on_branch is true or false or unknown and never assumed-trunk when no base exists" | fail=WARN | msg="on_branch must be unknown when no base exists, not silently assumed-trunk."
+@CHECK rid=chk:fail-closed | assert="evidence is not barren or gate_status is degraded or indeterminate" | fail=ABORT | msg="Barren evidence must fail closed with a no-substrate card, never a plausible trajectory."
+
+@SEC name="Next skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only and never auto-invoke."] | in=[] | out=[ref:nsp-offer]
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol: if this run surfaced a concrete blocking-or-recurring weakness in this skill, propose a specific fix via ask-gate for handler approval. Conservative, silent otherwise, never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-22T00:00:00Z | src="agent:claude-code" | method=generated

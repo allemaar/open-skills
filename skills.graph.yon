@@ -33,6 +33,7 @@
 @META id=obsidian-cli | out="obsidian-markdown; obsidian-bases; json-canvas" | degree=3 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=obsidian-markdown | out="obsidian-cli; obsidian-bases; json-canvas" | degree=3 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=orchestrate-mode | out="handoff; cold-review; verify" | degree=3 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
+@META id=orient-map | out="orient-status" | degree=1 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=orient-status | out="plan-create" | degree=1 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=plan-cleanup | out="github-sync; insight-retro; plan-evolve" | degree=3 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=plan-create | out="plan-phases; plan-deep-dive; plan-execute; prime-expand" | degree=4 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
@@ -50,4 +51,4 @@
 @META id=yon-read | out="yon-write; double-check" | degree=2 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=yon-write | out="yon-read; double-check; github-sync" | degree=3 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @SEC name="stats"
-@NOTE text="nodes=46 edges=120 coverage=46/46 terminal=0"
+@NOTE text="nodes=47 edges=121 coverage=47/47 terminal=0"

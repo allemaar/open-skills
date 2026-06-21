@@ -12,8 +12,8 @@
     "~/.codex/skills",
     "~/.agents/skills"
   ],
-  "count": 46,
-  "dualDoc": 32,
+  "count": 47,
+  "dualDoc": 33,
   "install": "Copy a skill folder into your runtime skills dir (copy-default, not symlink), then validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.",
   "skills": [
     {
@@ -1432,6 +1432,54 @@
       "install": {
         "copy": "cp -r skills/orchestrate-mode <runtime>/skills/orchestrate-mode",
         "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "orient-map",
+      "description": "Delta-first \"show me the shape\" read on any subject — what changed since your last look, plus done → here → next as a path on trunk or a TREE on a branch, computed fresh via a bounded read-only subagent. Not /orient-status (position + remaining + ETA), an IDE file-tree, or /plan-deep-dive — orient-map shows the SHAPE and the DELTA.",
+      "visibility": "public",
+      "triggers": [
+        "/orient-map",
+        "show me the map",
+        "what changed since last look",
+        "how deep down this branch am I",
+        "what's the shape of this",
+        "map done to here to next"
+      ],
+      "nextSkills": [
+        {
+          "skill": "orient-status",
+          "phrase": "/orient-status",
+          "why": "Once the shape is clear, get the position + remaining + banded ETA on the node you're standing on"
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "scope=ABORT",
+        "topology-honest=WARN",
+        "fail-closed=ABORT"
+      ],
+      "rules": [
+        "delta-first=MUST",
+        "tree-on-branch=MUST",
+        "topology-authority=MUST",
+        "no-phantom-delta=MUST",
+        "honest-negative=MUST",
+        "intent-gates=MUST",
+        "fail-closed=MUST",
+        "trust-trailer=MUST",
+        "ephemeral=MUST",
+        "bounded-sweep=MUST",
+        "list-encoding=MUST",
+        "footer-installed=MUST"
+      ],
+      "steps": 7,
+      "install": {
+        "copy": "cp -r skills/orient-map <runtime>/skills/orient-map",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/orient-map/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
