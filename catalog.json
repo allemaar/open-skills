@@ -1570,7 +1570,9 @@
         "bounded-sweep=MUST",
         "list-encoding=MUST",
         "footer-installed=MUST",
-        "resume-terminator=MUST"
+        "resume-terminator=MUST",
+        "render-face=MUST",
+        "widget-parity=MUST"
       ],
       "steps": 7,
       "install": {
