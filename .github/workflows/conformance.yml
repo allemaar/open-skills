@@ -32,3 +32,5 @@ jobs:
           yon validate skills.graph.yon --profile full
       - name: Gate-fires proof (the guards actually reject bad input)
         run: node tools/gate-fires.mjs
+      - name: Orient-record round-trip (the orient- example survives parse→format→parse)
+        run: node tools/orient-roundtrip.mjs

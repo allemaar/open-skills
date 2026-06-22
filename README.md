@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="#install">Install</a> · <a href="#use-it">Usage</a> · <a href="#validate-it-yourself">Validate</a> · <a href="skills/">Skills</a> · <a href="LICENSE">Apache 2.0</a> · <a href="https://allemaar.com">allemaar.com</a>
+  <a href="#install">Install</a> · <a href="#use-it">Usage</a> · <a href="#validate-it-yourself">Validate</a> · <a href="skills/">Skills</a> · <a href="CHANGELOG.md">Changelog</a> · <a href="LICENSE">Apache 2.0</a> · <a href="https://allemaar.com">allemaar.com</a>
 </p>
 
 <p align="center">
@@ -134,6 +134,7 @@ A few skills that pay off on their own, no setup:
 |---|---|
 | [`cold-review`](skills/cold-review/) | Summons fresh-context reviewer agents to audit your work — evidence-based findings, severity tiers, a score, and a verdict. |
 | [`investigate`](skills/investigate/) | Read-only fact-gathering before you change anything — maps files, deps, and patterns. |
+| [`orient-status`](skills/orient-status/) | A fresh "where are we" on any repo, plan, or task — position, what's left, and a banded ETA; `--resume` rebuilds context after a gap. |
 | [`insight-angles`](skills/insight-angles/) | Points lenses at a subject to surface the frames, connections, and assumptions you can't see. |
 | [`insight-cross-examine`](skills/insight-cross-examine/) | Routes a decision through angle-discovery → critique → assess → recommend, and hands back a decision surface. |
 | [`plan-create`](skills/plan-create/) | A phased, gated implementation plan before any code is written. |
@@ -143,7 +144,7 @@ A few skills that pay off on their own, no setup:
 | [`yon-read`](skills/yon-read/) | Reads, interprets, and explains any YON you point it at — the protocols in this pack included. |
 | [`yon-write`](skills/yon-write/) | Drafts and converts content into valid YON — the fastest way to author your own `protocol.yon`. |
 
-Browse [`skills/`](skills/) for the full set of 48 — planning, insight & decision, priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, and YON authoring.
+Browse [`skills/`](skills/) for the full set of 48 — planning, insight & decision, orientation, priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, and YON authoring.
 
 ---
 
