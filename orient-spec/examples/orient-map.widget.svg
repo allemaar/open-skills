@@ -1,6 +1,8 @@
-<svg width="100%" viewBox="0 0 680 200" role="img" xmlns="http://www.w3.org/2000/svg">
+<svg width="100%" viewBox="0 0 680 224" role="img" xmlns="http://www.w3.org/2000/svg">
   <title>orient-map reference — open-skills on a branch</title>
-  <desc>Done to here to next as a tree: P0-contract and cold-vet attested on the trunk, the cursor fix-pass attested on a branch off cold-vet, two ahead, zero behind, one commit missed on main, rejoin to main inferred. Tier: filled diamond attested, half diamond inferred.</desc>
+  <desc>You-are-here breadcrumb: open-skills sits in the open-source push. Then done to here to next as a tree: P0-contract and cold-vet attested on the trunk, the cursor fix-pass attested on a branch off cold-vet, two ahead, zero behind, one commit missed on main, rejoin to main inferred. Tier: filled diamond attested, half diamond inferred.</desc>
+
+  <text class="ts" x="60" y="20">in: open-source push  &#9656;  open-skills</text>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/>

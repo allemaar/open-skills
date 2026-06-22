@@ -1,7 +1,8 @@
 orient-map reference — the ASCII twin of orient-map.widget.svg.
 Information-complete fallback for orient-record.example.yon (the only render in a no-SVG channel).
 
-🧭 open-skills — public skills pack.   ↳ within: main          [identity: ◆ git]
+🧭 open-skills — public skills pack.   ↳ in: open-source push ▸ open-skills   [identity: ◆ git]
+   ↳ within: main  (branch instance)                          ◐ parent inferred
 ## Δ since HEAD@2h — 2 commits, 2 files                        ◆ git diff --name-status
   ~ orient-record fixes, family-manifest fixes  (real diff)   ◆
   · subagent-protocol, README                   (no change)   ◌ unchanged

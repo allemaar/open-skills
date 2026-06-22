@@ -82,6 +82,15 @@ Interactivity (`mcp__visualize__show_widget`'s `sendPrompt(text)`) turns a widge
 - **R4 — never unprompted.** A `sendPrompt` fires only on an explicit human click; **hard-off in auto/loop**.
 - **R5 — compose, don't execute.** A click composes a chat message for the human to send or confirm — it never performs a side-effect directly.
 
+## 8. The "you are here" breadcrumb (universal identity-banner element)
+
+Every `orient-*` skill's identity banner (per [`orient-contract.md`](orient-contract.md) §1) carries an optional **"you are here" breadcrumb** — a single sparse trail line showing where the subject sits in the bigger picture, so a reader who lands cold knows the surrounding frame without a second map. It rides the **frozen** `subject.parent_subject` field (no `schema_version` bump — the field already exists in [`orient-record.yon`](orient-record.yon) `rec:subject`).
+
+- **Render** — `↳ in: {parent_subject}` as a trailing line on the banner, or a short multi-hop trail with the current subject emphasized (`grandparent ▸ parent ▸ **{here}**`; siblings optional / dim). One line in the text/ASCII banner; a small `<text>` row / breadcrumb element in the widget — **never a second map** (the trajectory slice owns topology; this is one orienting line).
+- **Honesty floor** (`rule:honest-negative` applied to identity) — **omitted entirely when `parent_subject` is absent**; never fabricate a parent. No parent on record ⇒ no breadcrumb; the banner stands alone.
+- **Both faces** — present in BOTH the text/ASCII banner and the widget banner; the §3 branch breadcrumb (`↳ within: {trunk_ref}`) is **one instance** of this universal element, not a separate mechanism.
+- **Faces discipline** — the human sees the trail line; the agent reads `subject.parent_subject` directly off the record; the automator ignores it.
+
 ## Cross-cutting invariants
 
 - **Faces discipline** (`rule:footer-faces`) applies to *every* behavior above: human gets prose, the agent reads the enum, the automator ignores it.

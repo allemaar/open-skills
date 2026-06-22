@@ -7,9 +7,14 @@ Every `orient-*` skill returns **one computed, ephemeral bundle with three faces
 ## 1. Text-render contract
 
 **Fixed structure, in order:**
-1. **🧭 Identity banner** (line 1, always) — `🧭 {name} — {kind}, {purpose-clause}.  [identity: {glyph} {weakest-tier}]`. Subject-identity is a required preamble, never a standalone skill.
+1. **🧭 Identity banner** (line 1, always) — `🧭 {name} — {kind}, {purpose-clause}.  [identity: {glyph} {weakest-tier}]`. Subject-identity is a required preamble, never a standalone skill. It carries the optional **"you are here" breadcrumb** (below) as a trailing sparse trail when the subject sits inside a bigger picture.
 2. **The slice block** — a headline + a micro-table/list for the info-type this skill owns.
 3. **Trust trailer** (bottom, always) — the per-field tier rollup + one `⚠️ lean your scrutiny here` line naming the load-bearing guess.
+
+**The "you are here" breadcrumb (universal identity-banner element).** A single sparse trail line that shows where the subject sits in the bigger picture — `↳ in: {parent_subject}`, or a short multi-hop trail with the current subject emphasized (`grandparent ▸ parent ▸ **{here}**`; siblings optional / dim). It is keyed **only** on the record's existing `subject.parent_subject` (no schema change) and rides BOTH faces (text and visual). HARD RULES:
+- **Sparse** — one line / a small trail, NEVER a second map. The map is the trajectory slice's job; the breadcrumb is one orienting line.
+- **Omitted entirely when `parent_subject` is absent** — never fabricate a parent (the honesty floor). No `parent_subject`, no breadcrumb line; the banner stands alone.
+- **Present in both faces** — a short trail in the text/ASCII banner, a small `<text>` row / breadcrumb element in the widget (no extra map). The §3 branch case (`↳ within: {trunk_ref}`) is **one instance** of this universal element, not a separate mechanism.
 
 **Rules:**
 - **Headline-first.** Each block opens with ONE bolded ≤18-word sentence (`**Now:** …`, `**{open} open · {fraction}**`, `## Δ since {anchor}`). The headline string is identical across all three faces — shared ground truth.
@@ -50,7 +55,7 @@ The single rule: render a **spine** normally, a **TREE** when on a branch / side
 - **Load-bearing fields** (owned by the trajectory slice, handed to every other slice so none recompute topology): `on_branch`, `cursor_node`/`here`, `fork_node` (the fork/merge-base point), `ahead`, `behind`, `trunk_ref` (the trunk branch). These are the exact field names in `rec:trajectory`.
 - **Spine (on-trunk):** one horizontal track, done → `here` → next, left to right.
 - **Tree (on a branch):** the trunk stays a faint horizontal line; at `fork_node` a `└─▶` drops to an indented lane carrying the side-quest's nodes; the cursor sits on the branch lane; a dotted return-arrow shows where it rejoins. ETA refuses to forecast the trunk from a branch (`trunk eta: n/a — not on this path`).
-- **Identity exception:** identity never becomes a tree (it is a point); on a branch its card gains a `↳ within: {parent_subject}` breadcrumb only.
+- **Identity exception:** identity never becomes a tree (it is a point); on a branch its card gains a breadcrumb only — the **universal "you are here" breadcrumb** of §1 (`↳ in: {parent_subject}`), here in its branch instance `↳ within: {trunk_ref}` ("within the trunk this branch forked from"). Same single sparse line, never a second map; omitted when `parent_subject` is absent.
 
 ## 4. Bundle invariants (cross-face)
 

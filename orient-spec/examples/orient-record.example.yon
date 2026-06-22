@@ -4,7 +4,7 @@
 @NOTE text="Apache-2.0. Conforms to orient-spec/orient-record.yon (schema_version orient-record/1). Every list field is a sidecar @MAP — never a bare in-set bracket-list."
 
 @CFG id=orient | set=[schema_version=orient-record/1,computed_at:ts=2026-06-22T00:00:00Z,ephemeral:bool=true,tool=orient-status,tier=orient,scope=open-skills,evidence_mode=git-only,gate_status=stalled,gate_score:int=40,gate_blocking_field=open_forks,gate_confidence_floor=inferred,family_used=orient-status,family_suggested_next=orient-gaps,family_reason_code=blockers_present,overall_trust=med,degraded:bool=false]
-@CFG id=subject | set=[name=open-skills,kind=monorepo,purpose="public skills pack",purpose_source=readme,intent_status=stated]
+@CFG id=subject | set=[name=open-skills,kind=monorepo,purpose="public skills pack",purpose_source=readme,intent_status=stated,parent_subject="open-source push"]
 @CFG id=snapshot | set=[status=in-progress,stage=P1,stage_idx:int=1,frontier=orient-status,on_branch:bool=true,branch=feat/orient,dirty:int=3,ahead:int=2,behind:int=0]
 @CFG id=remaining | set=[open_count:int=4,done_count:int=1,fraction_done:flt=0.2,denominator_trust=inferred,remainder_caveat="visible-only count",next_open=author-protocol]
 @MAP name=open_set | pairs=["o1"->"P2 orient-map","o2"->"P3 footer","o3"->"routing gate","o4"->"P4 orient-gaps"]

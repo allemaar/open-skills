@@ -52,7 +52,7 @@ Computes a fresh, honest read of **what is stuck and what is missing** — block
 
 5. **Tag every field with a provenance tier** — `◆ git-attested` · `◐ inferred` · `◌ guessed` — and **fail closed**: set **`gate_status`** (enum: `ready | blocked | stalled | degraded | indeterminate`) to `degraded`/`indeterminate` with a **sentinel** — never a plausible `ready` — on barren evidence. **An empty stall surface is a success state** (collapse to one line: *"nothing stuck — clean"*), NOT a failure.
 
-6. **Emit the triple bundle + the family footer.** See *Record emission* below for the YON face; the markdown read follows the worked examples; the **visual face is optional (a stall board / sieve — the hole is the deliverable) but its ASCII twin is mandatory and always emitted**. Token discipline: empty buckets are dropped; a clean result collapses to one line. The footer is one evidence-derived line — and **only ever suggests a skill that is actually installed** (a `blockers_present` reason_code routes to `/plan-create`; an `unwritten_decision` routes OUT to `/lyt-handoff`/`/lyt-decision` per the family handoff-feeder, when installed).
+6. **Emit the triple bundle + the family footer.** See *Record emission* below for the YON face; the markdown read follows the worked examples; the **visual face is rendered per the [render-face contract](../../orient-spec/family-behaviors.md) §6 (Claude Code only)**: for a human on Claude Code with the visualize tool present on an explicit invocation, build the **gaps widget** from the kit — call `mcp__visualize__read_me` once, then emit via `mcp__visualize__show_widget` an **HTML stall board** (per [`orient-contract.md`](../../orient-spec/orient-contract.md) §2 "gaps = a stall board / sieve — the hole is the deliverable"): a **4-lane grid** (blocked · open-forks · loose-ends · silent-gaps), each item carrying a muted **effort `S`/`M`/`L`** tag, **empty lanes shown as `— clear`** (the honest-negative, never omitted), the **"you are here" breadcrumb on top** (`↳ in: {parent_subject}`, omitted when absent), `◆◐◌` tier glyphs as redundant **non-color** encoding, and the legend `◆ attested · ◐ inferred · ◌ guessed · effort S·M·L · — honest-negative`. HTML chrome: colors only via CSS vars (no hardcoded hex), no `position:fixed`, and a visually-hidden `<h2 class="sr-only">` one-sentence summary for a11y. An **agent** consumer gets the YON record only; any **other runtime / no tool / indeterminate `handler_type`** gets the ASCII twin (fail-closed). The **information-complete ASCII stall-board twin is always emitted** — it is the only render in a no-SVG channel and carries every lane item the widget does. Token discipline: a clean result collapses to one line. The footer is one evidence-derived line — and **only ever suggests a skill that is actually installed** (a `blockers_present` reason_code routes to `/plan-create`; an `unwritten_decision` routes OUT to `/lyt-handoff`/`/lyt-decision` per the family handoff-feeder, when installed).
 
 ## Record emission (the YON face — reserved tags only)
 
@@ -60,7 +60,7 @@ The structured face is the `gaps` slice of [`orient-spec/orient-record.yon`](../
 
 ```
 @CFG id=orient | set=[schema_version=orient-record/1,computed_at:ts=…,ephemeral:bool=true,tool=orient-gaps,tier=orient,scope=…,evidence_mode=git-only,gate_status=stalled,gate_blocking_field=loose_ends,gate_confidence_floor=git-attested,family_used=orient-gaps,family_suggested_next=plan-create,family_reason_code=blockers_present,overall_trust=med,degraded:bool=false]
-@CFG id=subject | set=[name=…,kind=monorepo,purpose=…,purpose_source=readme,intent_status=stated]
+@CFG id=subject | set=[name=…,kind=monorepo,purpose=…,purpose_source=readme,intent_status=stated,parent_subject=…]   # parent_subject drives the ↳ in: breadcrumb; omit the field (and the breadcrumb) when absent
 @CFG id=gaps | set=[stall_status=stalled]
 @MAP name=blocked_on_me | pairs=["b1"->"…"]
 @MAP name=open_forks | pairs=["f1"->"…"]
@@ -75,23 +75,24 @@ A full worked instance ships at [`orient-spec/examples/orient-record.example.yon
 
 ## Output — worked examples (markdown face)
 
-**Rich tier (a repo with real stalls):**
+**Rich tier (a repo with real stalls — the ASCII stall-board twin):**
 ```
-🧭 open-skills — public skills repo.                      [identity: ◆ git]
+🧭 open-skills — public skills repo.   ↳ in: open-source push   [identity: ◆ git]
 ## Stuck — 1 blocker · 1 open fork · 2 loose ends         ◆ git + plan
-| gap            | what                          | from        |
-| blocked-on-you | P4 awaiting cold-vet          | ◐ plan TODO |
-| open fork      | schema_version bump decision  | ◐ no record |
-| loose ends     | 3 uncommitted, 1 untracked   | ◆ git status|
-**Silent gaps:** new skill has no honesty fixture yet.    ◐ inferred (no test file)
+┌─ blocked ──────────────┬─ open-forks ───────────────┐
+│ ◐ P4 awaiting cold-vet [M] │ ◐ schema_version bump  [S] │
+├─ loose-ends ───────────┼─ silent-gaps ──────────────┤
+│ ◆ 3 uncommitted, 1 untracked [L] │ ◐ no honesty fixture yet [M] │
+└────────────────────────┴────────────────────────────┘
 **→ Next:** clear the blocker, then commit the loose ends.
 Trust: ◆◐ · ⚠️ lean here: the blocker + fork are inferred (plan TODO / no record); only the loose ends are git-attested · next → /plan-create
+legend: ◆ attested · ◐ inferred · ◌ guessed · effort S·M·L · — clear (honest-negative)
 ```
 
-**Clean tier (nothing stuck — the success collapse):**
+**Clean tier (nothing stuck — the success collapse; the widget shows every lane `— clear`):**
 ```
 🧭 some-cli — a git repo on `main`, clean tree.           [identity: ◆ git]
-**Nothing stuck — clean.** No blockers, no open forks, no loose ends.   ◆ git
+**Nothing stuck — clean.** blocked: — clear · open-forks: — clear · loose-ends: — clear   ◆ git
 **Silent gaps:** none surfaced (coarse — git + plan only).  ◐ honest negative
 Trust: ◆ · [gate: ready]
 ```
@@ -127,6 +128,9 @@ The ASCII stall board + the trust trailer with the `⚠️ lean your scrutiny he
 - `--audit` MUST tier-tag a gamed signal `◌` so a hollow metric reads as hollow (the anti-Goodhart disclosure).
 - MUST emit a record conformant to `orient-spec/orient-record.yon` (reserved tags; list fields as sidecar `@MAP`; never `yon format` an instance).
 - MUST emit the ASCII stall board + the trust trailer with the `⚠️ lean here` load-bearing-guess line; the visual's ASCII twin is mandatory.
+- MUST carry the **"you are here" breadcrumb** (`↳ in: {parent_subject}`) on the identity banner in both faces when `subject.parent_subject` is present — and **omit it entirely when absent** (never fabricate a parent); per `orient-contract.md` §1 and `family-behaviors.md` §8.
+- MUST render the visual face per the render-face contract (Claude Code only, via `mcp__visualize__show_widget`): **agent → YON record only**; **human + Claude + tool + explicit invocation → stall-board widget + ASCII twin**; **other runtime / no tool / indeterminate `handler_type` → ASCII twin (fail-closed)**. The gaps widget is an **HTML stall board** — a 4-lane grid (blocked · open-forks · loose-ends · silent-gaps), each item a muted **effort `S`/`M`/`L`** tag, **empty lanes `— clear`** (honest-negative, never omitted), the breadcrumb on top.
+- MUST keep the widget and ASCII twin projections of **one node-structure** (same lane items + `◆◐◌` tier glyphs as redundant **non-color** encoding), HTML-chrome-compliant (colors only via CSS vars — no hardcoded hex; no `position:fixed`; a visually-hidden `<h2 class="sr-only">` summary for a11y), legend `◆ attested · ◐ inferred · ◌ guessed · effort S·M·L · — honest-negative`, **verified by `tools/orient-roundtrip.mjs`**. The widget MUST be **sparse — no per-node prose**.
 - MUST delegate gathering to a bounded, read-only, depth-1 subagent and return **only** the bundle (no raw search noise), with a re-runnable proof on every attested gap.
 - The family footer MUST only suggest an **installed** skill.
 
