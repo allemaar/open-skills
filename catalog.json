@@ -3,7 +3,7 @@
   "name": "open-skills",
   "homepage": "https://allemaar.com",
   "repository": "https://github.com/allemaar/open-skills",
-  "generated": "2026-06-21",
+  "generated": "2026-06-22",
   "generator": "tools/spine.mjs",
   "license": "Apache-2.0",
   "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL.",
@@ -1522,7 +1522,9 @@
         "ephemeral=MUST",
         "bounded-sweep=MUST",
         "list-encoding=MUST",
-        "footer-installed=MUST"
+        "footer-installed=MUST",
+        "render-face=MUST",
+        "widget-parity=MUST"
       ],
       "steps": 7,
       "install": {
