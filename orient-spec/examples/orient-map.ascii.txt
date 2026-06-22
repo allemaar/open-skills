@@ -1,0 +1,18 @@
+orient-map reference — the ASCII twin of orient-map.widget.svg.
+Information-complete fallback for orient-record.example.yon (the only render in a no-SVG channel).
+
+🧭 open-skills — public skills pack.   ↳ within: main          [identity: ◆ git]
+## Δ since HEAD@2h — 2 commits, 2 files                        ◆ git diff --name-status
+  ~ orient-record fixes, family-manifest fixes  (real diff)   ◆
+  · subagent-protocol, README                   (no change)   ◌ unchanged
+  ↟ missed while away: 1 commit on main since the fork        ◆ trunk diff since fork
+
+main ──●──────────●··········································      ◆ trunk faint
+    P0-contract  cold-vet
+       (done)     (fork) └─▶ ●━━━📍 fix-pass                   ◆ ahead 2 · behind 0
+                              (here)
+                          ╌╌▶ rejoins main (inferred)          ◐ branch not yet merged
+trunk eta: n/a — not on this path.
+**→ Next:** finish the fix pass, then re-validate.
+Trust: ◆◆◌ · ⚠️ lean here: the rejoin point (inferred — branch not yet merged) · next → /orient-gaps
+legend: ◆ attested · ◐ inferred · ◌ guessed · ● node · 📍 here

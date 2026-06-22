@@ -17,6 +17,7 @@
 @CFG id=delta | set=[anchor_kind=git,anchor_ref=HEAD@2h,anchor_confidence=approx,window=2h]
 @MAP name=changes | pairs=["c1"->"orient-record fixes","c2"->"family-manifest fixes"]
 @MAP name=no_change_zones | pairs=["z1"->"subagent-protocol","z2"->"README"]
+@MAP name=missed_while_away | pairs=["m1"->"1 commit on main since the fork"]
 @CFG id=resume | set=[next_action="re-validate then quick verify",counter_case="if a fix broke validation revert that edit",dropped_alt="ship without the fix pass",resume_confidence=high]
 @CFG id=gaps | set=[stall_status=stalled]
 @MAP name=open_forks | pairs=["f1"->"schema_version bump decision"]

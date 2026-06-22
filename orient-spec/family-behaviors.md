@@ -13,13 +13,13 @@ Every output ends with the footer, computed from [`family-manifest.yon`](family-
 - **Agent** — reads `suggested_next` + the `reason_code` enum directly; no prose needed.
 - **Automator** — ignores the footer entirely.
 
-Installed-only (`rule:footer-installed`): the footer suggests **only a shipped skill**. Until a sibling ships, route its `reason_code` to a prose hint or `/plan-create` — never to an unbuilt `/orient-gaps`. `reason_code` is **evidence-derived** (`rule:footer-evidence`), never a static for-X-use-Y table.
+Installed-only (`rule:footer-installed`): the footer suggests **only a shipped skill** — route a `reason_code` whose target is not installed to a prose hint or `/plan-create`, never to an unbuilt sibling. `reason_code` is **evidence-derived** (`rule:footer-evidence`), never a static for-X-use-Y table.
 
 ASCII `--family` map (information-complete fallback):
 ```
-family:  [orient-status]✓ ──▶ orient-map   ·   orient-gaps (planned)
-          used                  suggested        not installed — prose hint only
-legend:  ✓ used · ──▶ suggested-next · (planned) not installed
+family:  [orient-status]✓ ──▶ orient-gaps   ·   orient-map
+          used                  suggested        (also shipped)
+legend:  ✓ used · ──▶ suggested-next · all three shipped
 ```
 
 ## 2. Staleness short-circuit (F2 half)
@@ -46,7 +46,7 @@ Evidence weight is **disclosed, never gamed**:
 
 - A whitespace-only / trivial change is tier-tagged `◌` (guessed-weight); a substantive diff `◆` (attested). The *tier* travels in the per-field `conf_tier` provenance rider; the glyph is its human render.
 - A metric that can be inflated (commit count, raw "activity") is shown **with its evidence tier**, so a hollow signal reads as hollow. The disclosure is the deliverable — there is no single gameable score.
-- This surfaces most sharply in `orient-gaps --audit` (claim-vs-evidence) once that skill ships; until then every `orient-*` skill still tier-tags its evidence so the disclosure is present.
+- This surfaces most sharply in `orient-gaps --audit` (claim-vs-evidence); every `orient-*` skill also tier-tags its evidence so the disclosure is always present.
 
 ## 5. Handoff-feeder routing
 
@@ -54,6 +54,33 @@ When the sweep finds an **unwritten decision** or an open fork with no durable r
 
 - Set `reason_code = unwritten_decision`; `family_suggested_next` routes **OUT** to a durable-capture skill — `/lyt-handoff` (hand the thread to the next session) or `/lyt-decision` (lock the choice).
 - These are **not** `orient-*` skills: orientation **surfaces** the gap; capture lives elsewhere. Per `rule:footer-installed`, route to them only if installed, else a prose hint.
+
+## 6. Render-face decision (which face per consumer)
+
+The bundle is **one record, three faces**; *which* face renders is a function of the consumer, the runtime, and whether the read is nominal — NOT a fixed "always show the dashboard". Keyed on `handler_type` — a **render-time input, not a persisted record field** (sourced caller-supplied else inferred: visualize-tool-present + interactive ⇒ `human`; a subagent/automator context ⇒ `agent`/`automator`; **neither supplied nor confidently inferred ⇒ fail-closed to the ASCII twin**, DR3). It is the same consumer-role signal the footer faces already select on, so there is no `schema_version` bump.
+
+| Consumer / context | Face rendered |
+|---|---|
+| `handler_type = agent` | **YON record only** — no widget, no rich render (a widget is wasted tokens it cannot read) |
+| `handler_type = human` · Claude Code · `mcp__visualize__show_widget` present · **explicit invocation** | **widget + ASCII twin** (full) |
+| `handler_type = human` · auto/loop tick · **nominal** (no gap/drift/branch) | **collapsed one-line text** — dark-cockpit (render on exception, not every tick) |
+| `handler_type = human` · other runtime / no visualize tool | **ASCII twin** (information-complete) |
+| `handler_type = automator` | ignores the visual entirely (faces discipline) |
+| `handler_type` **indeterminate** (no caller arg, inference inconclusive) | **ASCII twin — fail-closed default** (never guess the widget) |
+
+- **Dark-cockpit (render on exception).** A board that always renders trains the eye to ignore it, so the one red state no longer stands out. For **auto/loop** callers, collapse to one line when nominal and expand only on a gap/drift/branch. An **explicit handler invocation always renders full** — the handler asked, the handler sees. (For the explicitly-invoked `orient-*` slash-commands the collapsed face is a near-empty case today; it is the contract for future loop callers.)
+- **Polish ⊥ confidence (couple them).** Render-fidelity tracks evidence tier: a mostly-`◌` read renders **visibly degraded** (the `NO SUBSTRATE` card) and low-confidence elements are non-interactive. A polished widget must never imply more certainty than the evidence carries.
+- **Widget-disabled escape.** A contract switch forces any skill to the ASCII twin regardless of consumer — the safety valve when a render is broken; no code change needed.
+
+## 7. Interactivity rails (the `sendPrompt` ceiling)
+
+Interactivity (`mcp__visualize__show_widget`'s `sendPrompt(text)`) turns a widget into a control surface — high DX, high honesty hazard. Five non-negotiable rails (`rule:interactivity-rails`):
+
+- **R1 — human + tool only.** No interactive element exists unless `handler_type = human` ∧ the visualize tool is present; else the face is static.
+- **R2 — installed / real actions only.** A control may invoke only an action that genuinely exists (extends `rule:footer-installed` from suggestions to clicks).
+- **R3 — confidence-gated.** Low-confidence (`◌`) elements are non-interactive and visibly degraded.
+- **R4 — never unprompted.** A `sendPrompt` fires only on an explicit human click; **hard-off in auto/loop**.
+- **R5 — compose, don't execute.** A click composes a chat message for the human to send or confirm — it never performs a side-effect directly.
 
 ## Cross-cutting invariants
 
