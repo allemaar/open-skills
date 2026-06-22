@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="#install">Install</a> · <a href="#use-it">Usage</a> · <a href="#validate-it-yourself">Validate</a> · <a href="skills/">Skills</a> · <a href="CHANGELOG.md">Changelog</a> · <a href="LICENSE">Apache 2.0</a> · <a href="https://allemaar.com">allemaar.com</a>
+  <a href="#install">Install</a> · <a href="#use-it">Usage</a> · <a href="#validate-it-yourself">Validate</a> · <a href="skills/">Skills</a> · <a href="#the-orient--family">Orient</a> · <a href="CHANGELOG.md">Changelog</a> · <a href="LICENSE">Apache 2.0</a> · <a href="https://allemaar.com">allemaar.com</a>
 </p>
 
 <p align="center">
@@ -144,7 +144,21 @@ A few skills that pay off on their own, no setup:
 | [`yon-read`](skills/yon-read/) | Reads, interprets, and explains any YON you point it at — the protocols in this pack included. |
 | [`yon-write`](skills/yon-write/) | Drafts and converts content into valid YON — the fastest way to author your own `protocol.yon`. |
 
-Browse [`skills/`](skills/) for the full set of 48 — planning, insight & decision, orientation, priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, and YON authoring.
+Browse [`skills/`](skills/) for the full set of 48 — planning, insight & decision, [orientation](#the-orient--family), priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, and YON authoring.
+
+---
+
+## The orient- family
+
+When you sit down to a repo, a plan, or a task and ask *"where are we?"* — that's orientation. The `orient-` skills answer it. Each spins up a bounded, read-only subagent, computes a fresh read, and hands back one ephemeral bundle — a structured YON record, a markdown read, and a small visual — then forgets it. Nothing is stored; every call recomputes from current reality.
+
+| Skill | Asks | Hands back |
+|---|---|---|
+| [`orient-status`](skills/orient-status/) | where are we? | position, what's left, and a banded ETA; `--resume` rebuilds context after a gap |
+| [`orient-map`](skills/orient-map/) | show me the shape | what changed since your last look, plus done → here → next as a path (or a tree on a branch) |
+| [`orient-gaps`](skills/orient-gaps/) | what's stuck? | blockers, open forks, loose ends, and inferred silent gaps; `--audit` adds claim-vs-evidence disclosure |
+
+All three emit slices of **one shared orientation record** — the record schema, the render contract, and the family rules live in [`orient-spec/`](orient-spec/), so the skills agree on shape without sharing code. On Claude Code the bundle also renders as a sparse visual widget; an information-complete ASCII twin is always emitted, so no runtime is left without the full read.
 
 ---
 
