@@ -1,0 +1,37 @@
+@DOC ver=2.0 | id=budget-check | title="/budget-check" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Decide go / no-go / unknown before an expensive multi-agent wave by checking the active usage block against a threshold via ccusage; fail closed (never a fabricated go) and surface the verdict for the caller to act on." | audience=agent
+@STAMP ts:ts=2026-06-26T00:00:00Z | src="agent:claude-code" | method=generated
+
+@NOTE text="Wraps tools/budget-check.mjs (which runs `ccusage blocks --json`): ceiling is --token-limit N or the historical-peak non-active block (ccusage max), verdict is go under the threshold, no-go at or over it, unknown with no usage data or no ceiling. A RUNTIME gate that reads the caller's local usage — it has no data in CI and is not a CI guard. It encodes NO standing policy and amends NO directive: a skill the caller invokes at the decision point, not a rule that fires. Exit 0 go / 1 no-go / 2 unknown."
+
+@SEC name="Inputs"
+@INPUT rid=in:threshold | name="threshold" | type=artifact | required:bool=false
+@INPUT rid=in:token-limit | name="token-limit" | type=artifact | required:bool=false
+
+@SEC name="Rules"
+@RULE rid=rule:fail-closed-unknown | lvl=MUST | when="ccusage returns no data or there is no active block or no ceiling to measure against" | then="return verdict unknown and say the gate cannot vouch, and never return a convenient go from missing data"
+@RULE rid=rule:gate-at-threshold | lvl=MUST | when="the active block usage is at or over the threshold percent of the ceiling" | then="return verdict no-go and report secondsUntilWindowClears and the min-3600 poll interval"
+@RULE rid=rule:no-fabrication | lvl=MUST_NOT | when="computing the verdict" | then="invent a ceiling or a usage percent or a window time that is not read from real ccusage output"
+@RULE rid=rule:advisory-not-policy | lvl=MUST | when="surfacing the verdict" | then="present go or no-go or unknown for the caller to act on and never amend a standing directive or install a global rule, because the gate lives at the call site not as policy"
+@RULE rid=rule:bounded-call | lvl=MUST | when="invoking ccusage" | then="run tools/budget-check.mjs as a single bounded call with a hard timeout and never an unbounded retry loop"
+
+@SEC name="Steps"
+@STEP rid=step:run | n:int=1 | op=std:cmd.run@v1 | args=[cmd="node tools/budget-check.mjs --json",task="Run the budget-check tool with the optional threshold and token-limit; it returns the verdict JSON (verdict, pct, used, ceiling, ceilingSource, secondsUntilWindowClears, suggestedWaitSeconds) and exits 0 go / 1 no-go / 2 unknown. A single bounded call."] | in=[rid:in:threshold,rid:in:token-limit] | out=[ref:verdict]
+@STEP rid=step:interpret | n:int=2 | op=std:data.transform@v1 | args=[task="Read the verdict JSON and exit code into a decision: go under the threshold, no-go at or over it with the window-clears time and poll interval, unknown when the tool could not measure; never upgrade unknown to go."] | in=[ref:verdict] | out=[ref:decision]
+@STEP rid=step:gate | n:int=3 | op=std:io.emit@v1 | args=[surface="caller",task="Surface the decision: on go say the wave may launch; on no-go name the percent and the wait or trim options and let the caller choose; on unknown say the gate cannot vouch and the caller should decide on other grounds. Do not launch the wave or amend any directive from here."] | in=[ref:decision] | out=[rid:out:result]
+
+@SEC name="Gates"
+@CHECK rid=chk:verdict | assert="ref:decision verdict is one of go or no-go or unknown" | fail=ABORT | msg="The gate produced no clear verdict — treat as unknown and decide on other grounds."
+@CHECK rid=chk:fail-closed | assert="when ccusage data is absent the verdict is unknown and never go" | fail=ABORT | msg="Missing usage data must fail closed to unknown, never a fabricated go."
+
+@SEC name="Output"
+@OUTPUT rid=out:result | name="result" | type=struct | note="fields: verdict (constrained by schema:verdict), pct, used, ceiling, secondsUntilWindowClears, suggestedWaitSeconds"
+@SCHEMA key=verdict | opts=[go,no-go,unknown] | default=unknown
+
+@SEC name="Next skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only and never auto-invoke."] | in=[] | out=[ref:nsp-offer]
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol: if this run surfaced a concrete blocking-or-recurring weakness in this skill, propose a specific fix via ask-gate for handler approval. Conservative, silent otherwise, never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-26T00:00:00Z | src="agent:claude-code" | method=generated

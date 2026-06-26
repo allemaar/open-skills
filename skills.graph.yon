@@ -5,6 +5,7 @@
 @SEC name="nodes"
 @META id=ask-gate | out="insight-cross-examine; insight-assess; reflect" | degree=3 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=audit-coupled-constant | out="cold-review; insight-critique" | degree=2 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
+@META id=budget-check | out="orchestrate-mode; multi-agent-mode; reflect" | degree=3 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=caller-options | out="multi-agent-mode; orchestrate-mode; ask-gate" | degree=3 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=cold-review | out="plan-create; insight-cross-examine; github-sync; double-check" | degree=4 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=defuddle | out="insight-cross-examine; prime-sweep; obsidian-markdown" | degree=3 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
@@ -52,4 +53,4 @@
 @META id=yon-read | out="yon-write; double-check" | degree=2 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=yon-write | out="yon-read; double-check; github-sync" | degree=3 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @SEC name="stats"
-@NOTE text="nodes=48 edges=122 coverage=48/48 terminal=0"
+@NOTE text="nodes=49 edges=125 coverage=49/49 terminal=0"

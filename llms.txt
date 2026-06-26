@@ -1,6 +1,6 @@
 # open-skills
 
-> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Each skill is a folder under skills/ with a SKILL.md (plain-language what/when) and, for 34 of 48, a protocol.yon — a declarative, machine-validatable contract of its steps, rules, and gates. Apache-2.0. Read before you trust: nothing executes that you cannot read first.
+> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Each skill is a folder under skills/ with a SKILL.md (plain-language what/when) and, for 35 of 49, a protocol.yon — a declarative, machine-validatable contract of its steps, rules, and gates. Apache-2.0. Read before you trust: nothing executes that you cannot read first.
 
 ## About YON
 The protocol.yon files are written in YON (https://github.com/YounndAI/yon), a stream-first data format for AI-agent workflows with a public spec (https://github.com/YounndAI/yon-spec) and an Apache-2.0 reference parser (@younndai/yon-parser). YON is what makes each skill auditable: its rules (MUST / MUST_NOT) and gates (ABORT / WARN) are named, typed objects, not prose.
@@ -16,6 +16,7 @@ That is the whole install: copy a readable folder, validate its declarative cont
 ## Skills
 - ask-gate [protocol.yon] — The Ask-Gate Protocol (AGP). — triggers: /ask-gate
 - audit-coupled-constant [md-only] — Audit every site of a constant whose value is duplicated across multiple call sites (retry budgets, timeouts, page sizes, magic numbers, feature flags). — triggers: /audit-coupled-constant, audit budget consistency, find all sites of this value, check coupled invariant
+- budget-check [protocol.yon] — Pre-wave usage gate. — triggers: /budget-check
 - caller-options [protocol.yon] — The Caller Options protocol (COP). — triggers: /caller-options
 - cold-review [protocol.yon] — Run outside-agent review of actual work artifacts against objectives, with classification, fresh reviewer lenses, evidence-based findings, scoring, and thresholds. — triggers: /cold-review, cold review this, get outside review, have fresh agents inspect this work
 - defuddle [md-only] — Extract clean markdown from web pages via Defuddle CLI (strips nav/ads/clutter, saves tokens). — triggers: read this article, fetch this page, summarize this blog post, pull this doc
