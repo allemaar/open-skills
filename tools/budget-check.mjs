@@ -24,7 +24,9 @@ import { execSync } from 'node:child_process';
 const argv = process.argv.slice(2);
 const flag = (name, def) => {
   const i = argv.indexOf(name);
-  return i >= 0 && argv[i + 1] !== undefined ? argv[i + 1] : def;
+  const v = i >= 0 ? argv[i + 1] : undefined;
+  // a "value" that is actually the next flag (or absent) means no value was given → use the default
+  return v !== undefined && !v.startsWith('--') ? v : def;
 };
 const THRESHOLD = Number(flag('--threshold', '95'));
 const TOKEN_LIMIT = flag('--token-limit', null);

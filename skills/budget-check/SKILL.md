@@ -37,7 +37,7 @@ node tools/budget-check.mjs --token-limit 200000000   # explicit ceiling instead
 node tools/budget-check.mjs --json           # machine-readable verdict
 ```
 
-- **Ceiling** = `--token-limit <N>` if you pass one, else the largest historical (non-active) block's total tokens — ccusage's own `max` notion, i.e. "your usual peak window."
+- **Ceiling** = `--token-limit <N>` if you pass one, else the largest historical (non-active) block's total tokens — ccusage's own `max` notion, i.e. "your usual peak window." Without `--token-limit`, the gate measures against *your own historical peak* — a relative signal ("am I near my personal worst window"), not your real plan budget. **For a true budget gate, pass `--token-limit <N>` with your plan's actual token ceiling.**
 - **Verdict** = `go` when the active block is under the threshold, `no-go` at or over it, `unknown` when there is no usage data, no active block, or no ceiling to measure against.
 - **Exit code** = `0` go · `1` no-go · `2` unknown — so a dispatch script can gate on it directly.
 - On **no-go** it also reports `secondsUntilWindowClears` and a `min(3600, …)` poll interval, so you know how long until the window resets.
@@ -47,7 +47,7 @@ node tools/budget-check.mjs --json           # machine-readable verdict
 1. **Before a wave** (a fan-out of subagents, a `prime-sweep`, an orchestrated run), call `/budget-check`.
 2. **GO** → launch the wave.
 3. **NO-GO** → trim the wave (fewer concurrent workers), wait for the window to clear (the reported interval), or proceed deliberately — your call, surfaced not forced.
-4. **UNKNOWN** → the gate cannot vouch; decide on other grounds and say so.
+4. **UNKNOWN** → the gate cannot vouch; decide on other grounds and say so. A common, fixable cause is no inferable ceiling (a fresh environment with no historical block) — pass `--token-limit <N>` with your plan's real token budget to get a meaningful gate.
 
 This is a **runtime** tool — it reads *your* local usage logs, so it has nothing to measure in CI. The value is at the live pre-wave decision point, never in a pipeline.
 

@@ -16,7 +16,7 @@
 @RULE rid=rule:bounded-call | lvl=MUST | when="invoking ccusage" | then="run tools/budget-check.mjs as a single bounded call with a hard timeout and never an unbounded retry loop"
 
 @SEC name="Steps"
-@STEP rid=step:run | n:int=1 | op=std:cmd.run@v1 | args=[cmd="node tools/budget-check.mjs --json",task="Run the budget-check tool with the optional threshold and token-limit; it returns the verdict JSON (verdict, pct, used, ceiling, ceilingSource, secondsUntilWindowClears, suggestedWaitSeconds) and exits 0 go / 1 no-go / 2 unknown. A single bounded call."] | in=[rid:in:threshold,rid:in:token-limit] | out=[ref:verdict]
+@STEP rid=step:run | n:int=1 | op=std:cmd.run@v1 | args=[cmd="node tools/budget-check.mjs --json",task="Build the command as: node tools/budget-check.mjs --json, AND append --threshold <N> and/or --token-limit <N> when the caller supplied the threshold or token-limit input (omit the flag when not supplied). It returns the verdict JSON (verdict, pct, used, ceiling, ceilingSource, inferredCeiling, secondsUntilWindowClears, suggestedWaitSeconds) and exits 0 go / 1 no-go / 2 unknown. A single bounded call."] | in=[rid:in:threshold,rid:in:token-limit] | out=[ref:verdict]
 @STEP rid=step:interpret | n:int=2 | op=std:data.transform@v1 | args=[task="Read the verdict JSON and exit code into a decision: go under the threshold, no-go at or over it with the window-clears time and poll interval, unknown when the tool could not measure; never upgrade unknown to go."] | in=[ref:verdict] | out=[ref:decision]
 @STEP rid=step:gate | n:int=3 | op=std:io.emit@v1 | args=[surface="caller",task="Surface the decision: on go say the wave may launch; on no-go name the percent and the wait or trim options and let the caller choose; on unknown say the gate cannot vouch and the caller should decide on other grounds. Do not launch the wave or amend any directive from here."] | in=[ref:decision] | out=[rid:out:result]
 
@@ -25,7 +25,7 @@
 @CHECK rid=chk:fail-closed | assert="when ccusage data is absent the verdict is unknown and never go" | fail=ABORT | msg="Missing usage data must fail closed to unknown, never a fabricated go."
 
 @SEC name="Output"
-@OUTPUT rid=out:result | name="result" | type=struct | note="fields: verdict (constrained by schema:verdict), pct, used, ceiling, secondsUntilWindowClears, suggestedWaitSeconds"
+@OUTPUT rid=out:result | name="result" | type=struct | note="fields: verdict (constrained by schema:verdict), pct, threshold, used, ceiling, ceilingSource, inferredCeiling, secondsUntilWindowClears, suggestedWaitSeconds"
 @SCHEMA key=verdict | opts=[go,no-go,unknown] | default=unknown
 
 @SEC name="Next skills"
