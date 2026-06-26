@@ -39,6 +39,20 @@ const scenarios = [
   { gate: "public YON parser", expect: "accept",
     defect: "POSITIVE CONTROL — a real, shipped skill protocol (`skills/verify/protocol.yon`)",
     cmd: `${PARSER} validate skills/verify/protocol.yon --profile exec` },
+  // The orient value gate closes a gap the parser CANNOT see: a record can be structurally valid YON
+  // (parser accepts) yet carry an out-of-enum or fail-open VALUE. The first pair below IS that gap.
+  { gate: "public YON parser", expect: "accept",
+    defect: "THE GAP — `orient-spec/examples/bad/enum-banana.yon` is structurally valid YON, so the parser passes it; it cannot see the bad value",
+    cmd: `${PARSER} validate orient-spec/examples/bad/enum-banana.yon --profile exec` },
+  { gate: "orient value gate", expect: "reject",
+    defect: "the SAME file: `gate_status=banana` is not a member of the gate_status enum — the value the parser waved through",
+    cmd: `node tools/orient-validate.mjs orient-spec/examples/bad/enum-banana.yon` },
+  { gate: "orient value gate", expect: "reject",
+    defect: "`evidence_mode=barren` paired with `gate_status=ready` — a fail-open verdict (structurally valid, value-illegal)",
+    cmd: `node tools/orient-validate.mjs orient-spec/examples/bad/fail-open.yon` },
+  { gate: "orient value gate", expect: "accept",
+    defect: "POSITIVE CONTROL — the conformant `orient-spec/examples/orient-record.example.yon`",
+    cmd: `node tools/orient-validate.mjs orient-spec/examples/orient-record.example.yon` },
 ];
 
 function run(cmd) {
@@ -99,6 +113,9 @@ ${rows.map((r) =>
 - **\`yon-dag.mjs\`** catches defects the parser cannot: a protocol can be *syntactically valid*
   yet have a dataflow hole (a consumed ref nothing produces) or an undefined rule reference.
   Those are exactly the inconsistencies prose can hide.
+- The **orient value gate** (\`tools/orient-validate.mjs\`) catches what the parser structurally
+  cannot: the first pair above shows the *same file* passing \`yon validate\` yet rejected by the
+  value gate for an out-of-enum / fail-open *value*. Structurally valid is not the same as honest.
 - The **positive control** passes, so the gates distinguish good from bad — they are not
   trivially red.
 

@@ -61,8 +61,14 @@ function parseSchema(src) {
   const enums = {};            // enumKey -> Set(opts)
   const fieldEnum = {};        // id -> { field -> enumKey }
   let conf = null;             // the provenance-rider enum fields (tier, conf)
+  const unmappedShapes = [];   // rec:<x> shapes that DECLARE enum fields but have no SHAPE_TO_ID entry
+  let schemaVersion = null;    // the schema's own current schema_version literal (its FROZEN-key anchor)
 
   for (const line of src.split(/\r?\n/)) {
+    if (schemaVersion === null) {
+      const v = line.match(/schema_version current value\s*=\s*(\S+?)[;\s]/);
+      if (v) schemaVersion = v[1];
+    }
     const en = line.match(/@SCHEMA\s+key=(\w+)\s*\|\s*opts=\[([^\]]*)\]/);
     if (en) { enums[en[1]] = new Set(splitTop(en[2]).map((o) => o.trim())); continue; }
 
@@ -77,8 +83,9 @@ function parseSchema(src) {
     if (shape === 'conf') { conf = map; continue; }     // provenance rider, applied to @MAP provenance
     const id = SHAPE_TO_ID[shape];
     if (id) fieldEnum[id] = map;
+    else if (Object.keys(map).length) unmappedShapes.push(shape);  // enum-bearing but unmapped → would be skipped
   }
-  return { enums, fieldEnum, conf };
+  return { enums, fieldEnum, conf, unmappedShapes, schemaVersion };
 }
 
 // Extract the body between `key=[ … ]` with bracket-depth + quote awareness, so a trailing ` | seg`
@@ -108,15 +115,21 @@ function parseInstance(src) {
   for (const line of src.split(/\r?\n/)) {
     const cfgId = line.match(/@CFG\s+id=([^\s|]+)/);
     if (cfgId) {
+      const id = cfgId[1];
+      if (id in cfgs) parseErrors.push(`duplicate @CFG id=${id} — exactly one per record (last-wins masking is forbidden)`);
       const body = bracketBody(line, 'set');
-      if (body === null) { parseErrors.push(`@CFG id=${cfgId[1]}: unparseable set=[…] (unbalanced brackets)`); continue; }
+      if (body === null) { parseErrors.push(`@CFG id=${id}: unparseable set=[…] (unbalanced brackets)`); continue; }
       const fields = {};
+      const seen = new Set();
       for (const entry of splitTop(body)) {
         const eq = entry.indexOf('=');
         if (eq < 0) continue;
-        fields[bareKey(entry.slice(0, eq))] = unquote(entry.slice(eq + 1));
+        const k = bareKey(entry.slice(0, eq));
+        if (seen.has(k)) parseErrors.push(`@CFG id=${id}: duplicate key "${k}" in set (last-wins masking is forbidden)`);
+        seen.add(k);
+        fields[k] = unquote(entry.slice(eq + 1));
       }
-      cfgs[cfgId[1]] = fields;
+      if (!(id in cfgs)) cfgs[id] = fields;   // keep the FIRST occurrence; the duplicate is already flagged
       continue;
     }
     if (/@MAP\s+name=provenance\b/.test(line)) {
@@ -133,11 +146,16 @@ function parseInstance(src) {
 
 export function validate(instancePath, schemaPath = SCHEMA) {
   const errors = [], warnings = [];
-  const { enums, fieldEnum, conf } = parseSchema(readFileSync(schemaPath, 'utf8'));
+  const { enums, fieldEnum, conf, unmappedShapes, schemaVersion } = parseSchema(readFileSync(schemaPath, 'utf8'));
   const { cfgs, provenance, parseErrors } = parseInstance(readFileSync(instancePath, 'utf8'));
   const env = cfgs.orient;
 
-  // 0. A recognized @CFG/@MAP line whose brackets would not parse is a hard error, never skipped.
+  // 0a. Tool-integrity: a schema slice that declares enum fields but is unmapped would be silently
+  //     SKIPPED — fail LOUD so the gate cannot rot when the schema grows a slice (update SHAPE_TO_ID).
+  for (const shape of unmappedShapes)
+    errors.push(`tool out of date: schema slice rec:${shape} declares enum fields but is not in SHAPE_TO_ID — its values would be unchecked; update tools/orient-validate.mjs`);
+
+  // 0b. A recognized @CFG/@MAP line whose brackets won't parse, a duplicate id, or a duplicate key is a hard error.
   errors.push(...parseErrors);
 
   // 1. The envelope must exist and carry its fail-closed core (chk:has-inputs).
@@ -145,9 +163,15 @@ export function validate(instancePath, schemaPath = SCHEMA) {
     errors.push('no envelope — expected `@CFG id=orient` (the per-call frame)');
   } else {
     for (const k of REQUIRED.orient) if (!(k in env)) errors.push(`envelope missing required field "${k}"`);
-    if (env.scope !== undefined && env.scope === '') errors.push('envelope.scope is empty (chk:has-inputs)');
+    if (typeof env.scope === 'string' && env.scope.trim() === '') errors.push('envelope.scope is empty (chk:has-inputs)');
+    // schema_version must match the version this validator models (its FROZEN key-sets) — else it cannot vouch.
+    if (schemaVersion && env.schema_version && env.schema_version !== schemaVersion)
+      errors.push(`schema_version "${env.schema_version}" != "${schemaVersion}" (the version this validator models) — its FROZEN field-key sets may have drifted; update the validator`);
   }
-  if (cfgs.subject) for (const k of REQUIRED.subject) if (!(k in cfgs.subject)) errors.push(`subject missing required field "${k}"`);
+
+  // The subject slice is required (it carries the gate denominator); an absent slice must not bypass its fields.
+  if (!cfgs.subject) errors.push('no subject — expected `@CFG id=subject` (the identity slice)');
+  else for (const k of REQUIRED.subject) if (!(k in cfgs.subject)) errors.push(`subject missing required field "${k}"`);
 
   // 2. Enum membership on every enum-typed @CFG field (the check `yon validate` skips).
   for (const [id, fields] of Object.entries(cfgs)) {
@@ -162,14 +186,16 @@ export function validate(instancePath, schemaPath = SCHEMA) {
     }
   }
 
-  // 3. Provenance rider: every "field"->"tier:conf:method" carries a valid conf_tier + conf_level.
+  // 3. Provenance rider: every "field"->"tier:conf:method" carries all three parts + a valid conf_tier & conf_level.
   if (conf) {
     for (const { field, value } of provenance) {
-      const [tier, level] = value.split(':');
+      const parts = value.split(':');
+      if (parts.length < 3) { errors.push(`provenance["${field}"] = "${value}" is malformed — expected tier:conf:method`); continue; }
+      const [tier, level] = parts;
       const tierOpts = enums[conf.tier], levelOpts = enums[conf.conf];
       if (tierOpts && !tierOpts.has(tier))
         errors.push(`provenance["${field}"] tier "${tier}" is not a valid ${conf.tier} (allowed: ${[...tierOpts].join(', ')})`);
-      if (level !== undefined && levelOpts && !levelOpts.has(level))
+      if (levelOpts && !levelOpts.has(level))
         errors.push(`provenance["${field}"] confidence "${level}" is not a valid ${conf.conf} (allowed: ${[...levelOpts].join(', ')})`);
     }
   }
@@ -209,17 +235,22 @@ const EX = path.join(ROOT, 'orient-spec', 'examples', 'orient-record.example.yon
 const BAD = path.join(ROOT, 'orient-spec', 'examples', 'bad');
 const cases = [
   { file: EX, expect: 'accept', why: 'the worked, conformant example' },
-  { file: path.join(BAD, 'enum-banana.yon'), expect: 'reject', why: 'gate_status=banana — an enum the parser cannot catch' },
-  { file: path.join(BAD, 'fail-open.yon'), expect: 'reject', why: 'evidence_mode=barren + gate_status=ready — fail-open the parser cannot catch' },
+  { file: path.join(BAD, 'enum-banana.yon'), expect: 'reject', expectError: /not a valid gate_status/, why: 'gate_status=banana — an enum the parser cannot catch' },
+  { file: path.join(BAD, 'fail-open.yon'), expect: 'reject', expectError: /fail-closed violated/, why: 'evidence_mode=barren + gate_status=ready — fail-open the parser cannot catch' },
 ];
 let failed = false;
 console.log('orient-validate self-test (value gate vs orient-spec/orient-record.yon):');
 for (const c of cases) {
   if (!existsSync(c.file)) { console.error(`  FAIL — missing fixture ${path.relative(ROOT, c.file)}`); failed = true; continue; }
-  const got = validate(c.file).ok ? 'accept' : 'reject';
-  const pass = got === c.expect;
+  const r = validate(c.file);
+  const got = r.ok ? 'accept' : 'reject';
+  // Assert the REASON, not just the verdict: a fixture rejected for the wrong reason (e.g. an enum
+  // rename turned the fail-open into an enum miss) silently stops exercising the gate it was built to prove.
+  const reasonOk = !c.expectError || r.errors.some((e) => c.expectError.test(e));
+  const pass = got === c.expect && reasonOk;
   if (!pass) failed = true;
-  console.log(`  ${pass ? '✓' : '✗'} expected ${c.expect}, got ${got} — ${c.why}`);
+  const note = c.expect === 'reject' && got === 'reject' && !reasonOk ? ` (rejected, but NOT via ${c.expectError} — fixture desynced from the schema)` : '';
+  console.log(`  ${pass ? '✓' : '✗'} expected ${c.expect}, got ${got} — ${c.why}${note}`);
 }
 if (failed) { console.error('orient-validate: FAIL — the value gate did not behave as specified.'); process.exit(1); }
 console.log('orient-validate: OK — example accepted; both bad fixtures rejected. The value gate is alive.');

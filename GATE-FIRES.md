@@ -18,6 +18,10 @@ control proving a real skill still passes.
 | yon-dag (semantic graph) | a mid-flow step consumes `ref:ghost` that no step ever produces (dataflow hole) | reject | `1` | ✅ rejected | `[ERROR] L2 ref:ghost — consumed mid/late-flow but never produced by any out=[...]` |
 | yon-dag (semantic graph) | a step cites `rid:rule:ghost` with no matching `@RULE` (undefined rule reference) | reject | `1` | ✅ rejected | `[ERROR] L6 rid:rule:ghost — referenced in rules=[...] but no @RULE rid=rule:ghost defined` |
 | public YON parser | POSITIVE CONTROL — a real, shipped skill protocol (`skills/verify/protocol.yon`) | accept | `0` | ✅ accepted | `✓ skills/verify/protocol.yon: Valid` |
+| public YON parser | THE GAP — `orient-spec/examples/bad/enum-banana.yon` is structurally valid YON, so the parser passes it; it cannot see the bad value | accept | `0` | ✅ accepted | `✓ orient-spec/examples/bad/enum-banana.yon: Valid` |
+| orient value gate | the SAME file: `gate_status=banana` is not a member of the gate_status enum — the value the parser waved through | reject | `1` | ✅ rejected | `✗ orient.gate_status = "banana" is not a valid gate_status (allowed: ready, blocked, stalled, degraded, indeterminate)` |
+| orient value gate | `evidence_mode=barren` paired with `gate_status=ready` — a fail-open verdict (structurally valid, value-illegal) | reject | `1` | ✅ rejected | `` |
+| orient value gate | POSITIVE CONTROL — the conformant `orient-spec/examples/orient-record.example.yon` | accept | `0` | ✅ accepted | `` |
 
 ## What this demonstrates
 
@@ -26,6 +30,9 @@ control proving a real skill still passes.
 - **`yon-dag.mjs`** catches defects the parser cannot: a protocol can be *syntactically valid*
   yet have a dataflow hole (a consumed ref nothing produces) or an undefined rule reference.
   Those are exactly the inconsistencies prose can hide.
+- The **orient value gate** (`tools/orient-validate.mjs`) catches what the parser structurally
+  cannot: the first pair above shows the *same file* passing `yon validate` yet rejected by the
+  value gate for an out-of-enum / fail-open *value*. Structurally valid is not the same as honest.
 - The **positive control** passes, so the gates distinguish good from bad — they are not
   trivially red.
 
