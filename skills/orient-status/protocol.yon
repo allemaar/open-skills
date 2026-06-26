@@ -1,7 +1,7 @@
 @DOC ver=2.0 | id=orient-status | title="/orient-status" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Compute a fresh ephemeral read of where the work stands — position, remaining, banded ETA — via a bounded read-only subagent; --resume re-frames for cold re-entry. Emit a record conformant to orient-spec/orient-record.yon." | audience=agent
 @STAMP ts:ts=2026-06-22T00:00:00Z | src="agent:claude-code" | method=generated
-@NOTE text="Emits a slice of the shared orientation record (orient-spec/orient-record.yon): the envelope @CFG id=orient, @CFG id=subject (carries intent_status, the gate denominator), @CFG id=snapshot, @CFG id=remaining, @CFG id=forecast, and @CFG id=resume in --resume mode; list fields as sidecar @MAP; per-field provenance as @MAP. Reserved tags only; validate --profile exec; never run yon format on an instance. Enum membership and these @RULE/@CHECK gates are emitter obligations, not parser-enforced under exec."
+@NOTE text="Emits a slice of the shared orientation record (orient-spec/orient-record.yon): the envelope @CFG id=orient, @CFG id=subject (carries intent_status, the gate denominator), @CFG id=snapshot, @CFG id=remaining, @CFG id=forecast, and @CFG id=resume in --resume mode; list fields as sidecar @MAP; per-field provenance as @MAP. Reserved tags only; validate --profile exec; never run yon format on an instance. Enum membership and these @RULE/@CHECK gates are emitter obligations enforced pre-emit by the value gate tools/orient-validate.mjs (enum membership plus the fail-closed cross-field gate), which yon validate --profile exec does not check."
 
 @SEC name="Inputs"
 @INPUT rid=in:scope | name="scope" | type=artifact | required:bool=true
@@ -33,6 +33,7 @@
 @CHECK rid=chk:scope | assert="rid:in:scope != null" | fail=ABORT | msg="No scope to orient on — name the project, repo, folder, or task."
 @CHECK rid=chk:eta-band | assert="the forecast eta is a band or unknown and never a point estimate" | fail=WARN | msg="ETA must be a band or unknown, not a point estimate."
 @CHECK rid=chk:fail-closed | assert="evidence is not barren or gate_status is degraded or indeterminate" | fail=ABORT | msg="Barren evidence must fail closed, never a plausible ready verdict."
+@CHECK rid=chk:value-gate | assert="tools/orient-validate.mjs accepts the emitted instance (every enum value is in range and the fail-closed cross-field gate holds)" | fail=ABORT | msg="Emitted record failed the orient value gate — an enum value is out of range or a barren read claims a verdict; fix before emit."
 
 @SEC name="Next skills"
 @STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only and never auto-invoke."] | in=[] | out=[ref:nsp-offer]

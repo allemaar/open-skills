@@ -3,7 +3,7 @@
   "name": "open-skills",
   "homepage": "https://allemaar.com",
   "repository": "https://github.com/allemaar/open-skills",
-  "generated": "2026-06-22",
+  "generated": "2026-06-26",
   "generator": "tools/spine.mjs",
   "license": "Apache-2.0",
   "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL.",
@@ -1461,7 +1461,8 @@
       "gates": [
         "scope=ABORT",
         "silent-gaps=WARN",
-        "fail-closed=ABORT"
+        "fail-closed=ABORT",
+        "value-gate=ABORT"
       ],
       "rules": [
         "two-tier=MUST",
@@ -1510,7 +1511,8 @@
       "gates": [
         "scope=ABORT",
         "topology-honest=WARN",
-        "fail-closed=ABORT"
+        "fail-closed=ABORT",
+        "value-gate=ABORT"
       ],
       "rules": [
         "delta-first=MUST",
@@ -1560,7 +1562,8 @@
       "gates": [
         "scope=ABORT",
         "eta-band=WARN",
-        "fail-closed=ABORT"
+        "fail-closed=ABORT",
+        "value-gate=ABORT"
       ],
       "rules": [
         "intent-gates=MUST",

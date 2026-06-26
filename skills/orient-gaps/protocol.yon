@@ -1,7 +1,7 @@
 @DOC ver=2.0 | id=orient-gaps | title="/orient-gaps" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Compute a fresh ephemeral read of what is stuck and what is missing — blockers (on-me vs on-other), open forks, loose ends, and inferred silent gaps — via a bounded read-only subagent; --audit raises claim-vs-evidence and gamed-signal disclosure. Emit the gaps slice conformant to orient-spec/orient-record.yon." | audience=agent
 @STAMP ts:ts=2026-06-22T00:00:00Z | src="agent:claude-code" | method=generated
-@NOTE text="Emits the gaps slice of the shared orientation record (orient-spec/orient-record.yon): the envelope @CFG id=orient, @CFG id=subject (carries intent_status), @CFG id=gaps (stall_status), with blocked_on_me blocked_on_other open_forks loose_ends silent_gaps audit_mismatches gamed_signals as sidecar @MAP; per-field provenance as @MAP. The stall surface and silent gaps are two tiers of one sweep; --audit raises the audit tier. Reserved tags only; validate --profile exec; never run yon format on an instance. Enum membership and these @RULE/@CHECK gates are emitter obligations, not parser-enforced under exec."
+@NOTE text="Emits the gaps slice of the shared orientation record (orient-spec/orient-record.yon): the envelope @CFG id=orient, @CFG id=subject (carries intent_status), @CFG id=gaps (stall_status), with blocked_on_me blocked_on_other open_forks loose_ends silent_gaps audit_mismatches gamed_signals as sidecar @MAP; per-field provenance as @MAP. The stall surface and silent gaps are two tiers of one sweep; --audit raises the audit tier. Reserved tags only; validate --profile exec; never run yon format on an instance. Enum membership and these @RULE/@CHECK gates are emitter obligations enforced pre-emit by the value gate tools/orient-validate.mjs (enum membership plus the fail-closed cross-field gate), which yon validate --profile exec does not check."
 
 @SEC name="Inputs"
 @INPUT rid=in:scope | name="scope" | type=artifact | required:bool=true
@@ -34,6 +34,7 @@
 @CHECK rid=chk:scope | assert="rid:in:scope != null" | fail=ABORT | msg="No scope to check — name the project, repo, folder, or task."
 @CHECK rid=chk:silent-gaps | assert="the gaps slice emits silent_gaps or an explicit none-surfaced honest-negative" | fail=WARN | msg="Silent gaps must be emitted explicitly, never silently omitted."
 @CHECK rid=chk:fail-closed | assert="evidence is not barren or gate_status is degraded or indeterminate" | fail=ABORT | msg="Barren evidence must fail closed, never a plausible ready or stalled verdict."
+@CHECK rid=chk:value-gate | assert="tools/orient-validate.mjs accepts the emitted instance (every enum value is in range and the fail-closed cross-field gate holds)" | fail=ABORT | msg="Emitted record failed the orient value gate — an enum value is out of range or a barren read claims a verdict; fix before emit."
 
 @SEC name="Next skills"
 @STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only and never auto-invoke."] | in=[] | out=[ref:nsp-offer]
