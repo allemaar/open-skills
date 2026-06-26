@@ -1,0 +1,32 @@
+{
+  "name": "open-skills",
+  "owner": {
+    "name": "Alexandru Mares (allemaar)",
+    "url": "https://allemaar.com"
+  },
+  "description": "Reusable, inspectable skills for AI coding agents — each a SKILL.md you can read and a protocol.yon you can validate. Review, planning, deliberation, orchestration, priming, and more. Apache-2.0.",
+  "plugins": [
+    {
+      "name": "open-skills",
+      "source": "./",
+      "displayName": "open-skills",
+      "description": "Reusable skills for AI coding agents. Every skill ships a SKILL.md (plain-language protocol); 34 of 48 also ship a declarative protocol.yon (named, typed steps, MUST/MUST_NOT rules, and ABORT/WARN gates) validated by @younndai/yon-parser. Read before you trust — nothing executes on faith.",
+      "author": {
+        "name": "Alexandru Mares",
+        "url": "https://allemaar.com"
+      },
+      "homepage": "https://github.com/allemaar/open-skills",
+      "repository": "https://github.com/allemaar/open-skills",
+      "license": "Apache-2.0",
+      "keywords": [
+        "skills",
+        "agent-workflows",
+        "yon",
+        "deliberation",
+        "review",
+        "planning",
+        "inspectable"
+      ]
+    }
+  ]
+}
