@@ -29,6 +29,8 @@ A skill is instructions your agent runs with your machine's access. These you ca
 
 This is a pack of reusable skills for AI coding agents (Claude Code, Codex, and any runtime that reads the open Agent Skills format). They're the skills I run my own agents on — review, planning, priming, deliberation — published so you can read every line before you trust them. It's a living set: I add skills here as I build the ones I need.
 
+**Composable, not a framework.** Install one or install fifty — each stands on its own as an install decision, none require the rest, and your agent keeps room to think between them. Take what earns its place and ignore the rest.
+
 ## The idea: two files per skill
 
 Each skill is a folder under [`skills/`](skills/) with up to two files:
@@ -45,6 +47,19 @@ Markdown explains the skill. **YON makes it inspectable and enforceable** — th
 ---
 
 ## Install
+
+Pick your path: a one-line plugin install if you just want the skills working, or clone-and-copy if you want to read them before you trust them. The second is the whole point of this pack — the first is just here if you want to try the skills before reading all of them.
+
+### Fastest on Claude Code — the plugin marketplace
+
+```text
+/plugin marketplace add allemaar/open-skills
+/plugin install open-skills@open-skills
+```
+
+This registers the repo as a Claude Code plugin marketplace and installs the pack (the plugin and the marketplace are both named `open-skills`, hence `open-skills@open-skills`); the skills are then namespaced (`/open-skills:cold-review`, `/open-skills:investigate`, …). Update in place with `/plugin marketplace update open-skills`. It's still skills your agent runs with your access — so read the ones you'll lean on; that's what the rest of this page is for.
+
+### Read-first — clone and copy (any runtime)
 
 No build step, no dependency on me. Clone the repo and copy the skill folders your agent reads — a frozen copy is the default, and the safest:
 
@@ -72,6 +87,8 @@ node install.mjs --list          # see what's installable
 It copies (never symlinks), skips an already-installed skill unless you pass `--force`, and — true to the wedge — *refuses* to overwrite a symlinked or junctioned skill rather than delete through the link into the repo. The installer is itself inspectable; read it first.
 
 Want a skill to track the repo as you pull updates? Symlink instead of copying — POSIX `ln -s "$PWD/skills/cold-review" ~/.claude/skills/cold-review`, or a Windows junction `cmd /c mklink /J "%USERPROFILE%\.claude\skills\cold-review" "%CD%\skills\cold-review"`. One caveat worth knowing: a symlinked/junctioned skill dir means a recursive delete of your skills folder can traverse the link into this repo — copies don't have that edge.
+
+**Other ways to fetch.** The [Vercel `skills` CLI](https://github.com/vercel-labs/skills) installs straight from GitHub with no manual clone — `npx skills add allemaar/open-skills --skill cold-review` (drop `--skill` for the whole pack, or add `--list` to see them first; `npx skills update` later). One copy into the shared `~/.agents/skills` dir serves every runtime that reads it — Codex, Cursor, Copilot, OpenCode. And for a single skill without the full repo, `git sparse-checkout` set to `skills/cold-review` pulls only that folder. Every path ends the same way: a skill folder in your runtime's `skills/` dir that you can open and read.
 
 **For agents.** This pack is built to be installed *by* an agent, not just a human. Enumerate every skill from [`catalog.json`](catalog.json) (name, description, triggers, gates, per-skill install + validate commands), or read [`llms.txt`](llms.txt) for a dense manifest plus a step-by-step *"For agents — how to install"* recipe (detect runtime dir → copy the folder → validate its `protocol.yon`). Copy-default, no opaque installer — the install path is itself inspectable.
 
@@ -128,7 +145,7 @@ The edges of that promise are stated plainly in [`THREAT-MODEL.md`](THREAT-MODEL
 
 ## Start here
 
-A few skills that pay off on their own, no setup:
+Most skills are slash commands you invoke when you want them (`/cold-review …`); a couple — `orchestrate-mode`, `multi-agent-mode` — are persistent session modes, and several fire on their own when their trigger shows up. Each skill's `SKILL.md` says which. A few that pay off on their own, no setup:
 
 | Skill | What it does |
 |---|---|
