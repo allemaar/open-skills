@@ -1,6 +1,6 @@
 # open-skills
 
-> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Each skill is a folder under skills/ with a SKILL.md (plain-language what/when) and, for 35 of 49, a protocol.yon — a declarative, machine-validatable contract of its steps, rules, and gates. Apache-2.0. Read before you trust: nothing executes that you cannot read first.
+> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Each skill is a folder under skills/ with a SKILL.md (plain-language what/when) and, for 36 of 50, a protocol.yon — a declarative, machine-validatable contract of its steps, rules, and gates. Apache-2.0. Read before you trust: nothing executes that you cannot read first.
 
 ## About YON
 The protocol.yon files are written in YON (https://github.com/YounndAI/yon), a stream-first data format for AI-agent workflows with a public spec (https://github.com/YounndAI/yon-spec) and an Apache-2.0 reference parser (@younndai/yon-parser). YON is what makes each skill auditable: its rules (MUST / MUST_NOT) and gates (ABORT / WARN) are named, typed objects, not prose.
@@ -21,6 +21,7 @@ That is the whole install: copy a readable folder, validate its declarative cont
 - cold-review [protocol.yon] — Run outside-agent review of actual work artifacts against objectives, with classification, fresh reviewer lenses, evidence-based findings, scoring, and thresholds. — triggers: /cold-review, cold review this, get outside review, have fresh agents inspect this work
 - defuddle [md-only] — Extract clean markdown from web pages via Defuddle CLI (strips nav/ads/clutter, saves tokens). — triggers: read this article, fetch this page, summarize this blog post, pull this doc
 - design-an-interface [md-only] — Generate multiple radically different interface designs for a module, then compare and synthesize. — triggers: /design-an-interface, design an API, explore interface options, compare module shapes
+- diff-recap [protocol.yon] — Turn a git diff into a PR-pasteable recap — one row per changed file whose path, status, and line counts are transcribed verbatim from `git diff --numstat` (true by construction; the model writes only the labels), emitted as an inline annotated widget plus a mandatory ASCII twin and a `diff-recap/1` record whose totals equal the sum of the rows. — triggers: /diff-recap, recap this diff, summarize these changes for a PR, what changed in this branch
 - double-check [protocol.yon] — Targeted re-verification of a specific claim, output, or decision. — triggers: /double-check, verify this, re-check this, are you sure about this
 - extract-signal [protocol.yon] — An elastic signal-extraction methodology run under /multi-agent-mode. — triggers: /extract-signal, extract the signal on X and present it as Y, gather + vet + report the signal about X
 - github-sync [protocol.yon] — Review the session's git changes, summarize them for approval, then commit and push to GitHub. — triggers: /github-sync, sync to github, commit and push, push this session

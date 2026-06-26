@@ -1,0 +1,11 @@
+@DOC ver=2.0 | id=diff-recap-bad-fabricated | title="BAD fixture — total_added inflated past the sum of the rows" | kind=context | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Structurally valid YON that the parser accepts, but value-broken: total_added=999 while the per-file added sum to 155. The diff-recap value gate must REJECT it (the true-by-construction defeat the parser cannot see)." | audience=agent
+@STAMP ts:ts=2026-06-26T00:00:00Z | src="agent:claude-code" | method=manual
+@NOTE text="Apache-2.0. Deliberately broken: the headline drifted from the rows. Expected: yon validate accepts (structure ok); tools/diff-recap-check.mjs rejects with a sum mismatch."
+@CFG id=recap | set=[schema_version=diff-recap/1,computed_at:ts=2026-06-26T00:00:00Z,ephemeral:bool=true,tool=diff-recap,range="HEAD",repo=".",total_files:int=4,total_added:int=999,total_removed:int=7,attested:bool=true,gate_status=clean,overall_trust=high]
+@CFG id=subject | set=[name="acme-api",kind=repo,purpose="add per-route rate limiting",intent_status=stated]
+@CFG id=file.f1 | set=[path="src/rate-limit.ts",status=A,added:int=88,removed:int=0,group=feature,label="new token-bucket limiter"]
+@CFG id=file.f2 | set=[path="src/server.ts",status=M,added:int=24,removed:int=6,group=feature,label="wire the limiter in"]
+@CFG id=file.f3 | set=[path="test/rate-limit.test.ts",status=A,added:int=40,removed:int=0,group=tests,label="limiter unit tests"]
+@CFG id=file.f4 | set=[path="README.md",status=M,added:int=3,removed:int=1,group=docs,label="document the env var"]
+@MAP name=groups | pairs=["feature"->"limiter + wiring","tests"->"unit tests","docs"->"env-var note"]

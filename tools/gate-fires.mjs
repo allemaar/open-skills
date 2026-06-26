@@ -53,6 +53,24 @@ const scenarios = [
   { gate: "orient value gate", expect: "accept",
     defect: "POSITIVE CONTROL — the conformant `orient-spec/examples/orient-record.example.yon`",
     cmd: `node tools/orient-validate.mjs orient-spec/examples/orient-record.example.yon` },
+  // The diff-recap value gate closes the same class of gap for diff-recap records: a record can be
+  // structurally valid YON yet state totals that DON'T equal the sum of its rows (defeating the
+  // "true by construction" claim), or claim a clean recap from a non-git source.
+  { gate: "public YON parser", expect: "accept",
+    defect: "THE GAP — `skills/diff-recap/examples/bad/fabricated-counts.yon` is structurally valid YON, so the parser passes it; it cannot see total_added=999 while the rows sum to 155",
+    cmd: `${PARSER} validate skills/diff-recap/examples/bad/fabricated-counts.yon --profile exec` },
+  { gate: "diff-recap value gate", expect: "reject",
+    defect: "the SAME file: the headline total drifted from the sum of the rows — the true-by-construction defeat",
+    cmd: `node tools/diff-recap-check.mjs skills/diff-recap/examples/bad/fabricated-counts.yon` },
+  { gate: "diff-recap value gate", expect: "reject",
+    defect: "`gate_status=clean` with `attested=false` — a clean recap claimed from no git source (fail-open)",
+    cmd: `node tools/diff-recap-check.mjs skills/diff-recap/examples/bad/fail-open.yon` },
+  { gate: "diff-recap value gate (--numstat)", expect: "reject",
+    defect: "`skills/diff-recap/examples/bad/numstat-mismatch.yon` is internally consistent (sums match) but a row names a file absent from the git numstat — only the per-file attestation catches it",
+    cmd: `node tools/diff-recap-check.mjs skills/diff-recap/examples/bad/numstat-mismatch.yon --numstat skills/diff-recap/examples/diff-recap.numstat` },
+  { gate: "diff-recap value gate", expect: "accept",
+    defect: "POSITIVE CONTROL — the conformant `skills/diff-recap/examples/diff-recap.example.yon` (rows match the git numstat)",
+    cmd: `node tools/diff-recap-check.mjs skills/diff-recap/examples/diff-recap.example.yon --numstat skills/diff-recap/examples/diff-recap.numstat` },
 ];
 
 function run(cmd) {

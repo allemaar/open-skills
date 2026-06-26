@@ -1,0 +1,42 @@
+@DOC ver=2.0 | id=diff-recap | title="/diff-recap" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Turn a git diff into a PR-pasteable recap: one row per changed file whose path, status, and line counts are transcribed verbatim from git diff --numstat and --name-status (true by construction) plus a model-written label, emitted as a diff-recap/1 record with an inline widget and a mandatory ASCII twin. The model authors ONLY labels; every count is git-attested and the totals equal the sum of the rows." | audience=agent
+@STAMP ts:ts=2026-06-26T00:00:00Z | src="agent:claude-code" | method=generated
+@NOTE text="Emits a diff-recap/1 record (schema at skills/diff-recap/recap-schema.yon): envelope @CFG id=recap, identity @CFG id=subject, one @CFG id=file.<n> per changed file (path,status,added,removed,group,label), list field groups and per-field provenance as sidecar @MAP. Reserved tags only; validate --profile exec; never run yon format on an instance (CANON mode is destructive on set-internal lists and the corruption still validates clean). The per-file path/status/added/removed and the envelope totals are TRANSCRIBED from git diff --numstat / --name-status — the model authors only label and group. Enum membership, the Sigma per-file == totals true-by-construction invariant, and the fail-closed/attested gates are emitter obligations the parser cannot see; they are enforced pre-emit by the value gate tools/diff-recap-check.mjs."
+
+@SEC name="Inputs"
+@INPUT rid=in:range | name="range" | type=artifact | required:bool=false
+@INPUT rid=in:repo | name="repo" | type=artifact | required:bool=false
+@INPUT rid=in:intent | name="intent" | type=artifact | required:bool=false
+
+@SEC name="Rules"
+@RULE rid=rule:true-by-construction | lvl=MUST | when="filling per-file numbers" | then="transcribe path and status and added and removed from git diff --name-status and --numstat verbatim and never count by hand, so the structured numbers cannot drift from the real diff"
+@RULE rid=rule:model-writes-labels | lvl=MUST | when="authoring a file row" | then="the only model-authored fields are label and group; path and status and added and removed are git-attested and carry the git-attested provenance tier"
+@RULE rid=rule:sum-consistency | lvl=MUST | when="emitting the envelope totals" | then="set total_files and total_added and total_removed to the exact counts and sums of the per-file rows so the headline equals the sum of the attested rows"
+@RULE rid=rule:attested-gate | lvl=MUST | when="setting gate_status" | then="gate_status clean requires attested true from a git source; a non-git or partially attested source caps gate_status at partial and never claims clean"
+@RULE rid=rule:fail-closed | lvl=MUST | when="git is absent or the diff is empty" | then="set gate_status barren and attested false and draw the NO DIFF card rather than a plausible recap with fabricated rows"
+@RULE rid=rule:ascii-twin | lvl=MUST | when="emitting any visual" | then="always emit the information-complete ASCII twin because it is the only render in a no-SVG channel and it carries every file row and every total the widget does"
+@RULE rid=rule:pr-pasteable | lvl=MUST | when="emitting the markdown read" | then="keep the ASCII twin and the recap summary self-contained and harness-decoupled so they paste into a pull-request description verbatim"
+@RULE rid=rule:render-face | lvl=MUST | when="choosing the visual face" | then="render per the three render-face branches (the decision shared with the orient- family, origin orient-spec/family-behaviors.md; diff-recap adopts only the branching, not the family footer or breadcrumb): an agent consumer gets the yon record only, a human on claude-code with the visualize tool present on an explicit invocation gets the widget plus the ascii twin, any other runtime or no tool or an indeterminate handler_type fails closed to the ascii twin; the widget is claude-code-only via mcp__visualize__show_widget built from the kit after calling mcp__visualize__read_me once"
+@RULE rid=rule:widget-parity | lvl=MUST | when="emitting a widget" | then="the widget and the ascii twin are projections of one row-structure carrying the same file rows and totals, with no hardcoded color and no position-fixed and role-img with non-empty title and desc and the fixed 680 viewBox"
+@RULE rid=rule:list-encoding | lvl=MUST | when="emitting a list field" | then="emit file rows as @CFG id=file.<n> and groups and provenance as sidecar @MAP and never a bare bracket-list inside a set and never run yon format on the instance"
+@RULE rid=rule:ephemeral | lvl=MUST | when="emitting any record" | then="set ephemeral true and a fresh computed_at and persist no derived snapshot"
+
+@SEC name="Steps"
+@STEP rid=step:bind-range | n:int=1 | op=std:data.transform@v1 | args=[task="Bind the range and repo and intent inputs; default range to the working tree against HEAD when not supplied; infer repo as the cwd; set intent_status from whether a PR goal was given. Do not prompt the caller."] | in=[rid:in:range,rid:in:repo,rid:in:intent] | out=[ref:range-bound]
+@STEP rid=step:gather | n:int=2 | op=std:cmd.run@v1 | args=[task="Run git diff --name-status and git diff --numstat over the bound range; transcribe per file the status and added and removed verbatim; a binary file reports dashes in numstat so record added and removed as zero and mark the row binary in its label; if git is absent or the diff is empty return barren."] | in=[ref:range-bound] | out=[ref:diffstat] | rules=[rid:rule:true-by-construction]
+@STEP rid=step:group-and-label | n:int=3 | op=std:data.transform@v1 | args=[task="Group the files by area and author one concise label per file and one summary per group; the label and group are the only model-written fields; cap labels to descriptive when intent is ungrounded and never invent a rationale."] | in=[ref:diffstat] | out=[ref:rows] | rules=[rid:rule:model-writes-labels]
+@STEP rid=step:emit | n:int=4 | op=std:io.emit@v1 | args=[task="Compute total_files and total_added and total_removed as the exact counts and sums of the rows; set attested and the fail-closed gate_status; emit the diff-recap/1 record (envelope @CFG id=recap, identity @CFG id=subject, one @CFG id=file.<n> per row, sidecar @MAP groups and provenance), the PR-pasteable markdown summary, and the visual face per rule:render-face with the mandatory ASCII twin; on barren draw the NO DIFF card rather than fabricated rows."] | in=[ref:rows] | out=[ref:bundle] | rules=[rid:rule:sum-consistency,rid:rule:fail-closed,rid:rule:render-face,rid:rule:widget-parity]
+
+@SEC name="Gates"
+@CHECK rid=chk:range | assert="rid:in:range is bound or defaulted to the working tree against HEAD" | fail=WARN | msg="No range given — defaulting to the working tree against HEAD."
+@CHECK rid=chk:sum-consistency | assert="the sum of the per-file added equals total_added and the sum of removed equals total_removed and the file-row count equals total_files" | fail=ABORT | msg="The recap totals do not equal the sum of the per-file rows — the headline drifted from the diff; fix before emit."
+@CHECK rid=chk:fail-closed | assert="git is present and the diff is non-empty, or gate_status is barren and attested is false" | fail=ABORT | msg="Barren evidence must fail closed with the NO DIFF card, never a fabricated recap."
+@CHECK rid=chk:value-gate | assert="tools/diff-recap-check.mjs accepts the emitted instance (sum-consistency holds, every enum value is in range, and the fail-closed and attested gates hold)" | fail=ABORT | msg="Emitted record failed the diff-recap value gate — a total drifted from the rows, an enum value is out of range, or a barren read claims a verdict; fix before emit."
+
+@SEC name="Next skills"
+@STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: surface the next-skills front-matter recommendations for the caller to pick. Offer only and never auto-invoke."] | in=[] | out=[ref:nsp-offer]
+
+@SEC name="Self-improvement"
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol: if this run surfaced a concrete blocking-or-recurring weakness in this skill, propose a specific fix via ask-gate for handler approval. Conservative, silent otherwise, never auto-apply."] | in=[] | out=[ref:sip-offer]
+
+@STAMP ts:ts=2026-06-26T00:00:00Z | src="agent:claude-code" | method=generated

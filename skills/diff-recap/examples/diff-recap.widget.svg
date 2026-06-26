@@ -1,0 +1,33 @@
+<svg width="100%" viewBox="0 0 680 300" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>diff-recap reference — a small rate-limit PR</title>
+  <desc>acme-api, add per-route rate limiting. 4 files, plus 155 and minus 7, all git-attested. feature: src/rate-limit.ts added 88 status A, src/server.ts plus 24 minus 6 status M. tests: test/rate-limit.test.ts plus 40 status A. docs: README.md plus 3 minus 1 status M. Sum of the rows equals the headline by construction; the model wrote only the labels. Tier: filled diamond attested.</desc>
+
+  <text class="th" x="24" y="24">acme-api — add per-route rate limiting</text>
+  <text class="ts" x="656" y="24" text-anchor="end">range: HEAD  ◆ git --numstat</text>
+  <text class="th" x="24" y="50">4 files · +155 / −7</text>
+  <line x1="24" y1="62" x2="656" y2="62" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+
+  <text class="ts" x="24" y="84">feature  +112 / −6</text>
+  <text class="ts" x="40" y="106">◆ A  src/rate-limit.ts</text>
+  <line x1="300" y1="102" x2="388" y2="102" stroke="var(--color-border-primary)" stroke-width="3"/>
+  <text class="ts" x="400" y="106">+88 / −0   new token-bucket limiter (per-route)</text>
+  <text class="ts" x="40" y="130">◆ M  src/server.ts</text>
+  <line x1="300" y1="126" x2="324" y2="126" stroke="var(--color-border-primary)" stroke-width="3"/>
+  <line x1="326" y1="126" x2="332" y2="126" stroke="var(--color-border-tertiary)" stroke-width="3"/>
+  <text class="ts" x="400" y="130">+24 / −6   wire limiter in; drop old fixed counter</text>
+
+  <text class="ts" x="24" y="160">tests  +40 / −0</text>
+  <text class="ts" x="40" y="182">◆ A  test/rate-limit.test.ts</text>
+  <line x1="300" y1="178" x2="340" y2="178" stroke="var(--color-border-primary)" stroke-width="3"/>
+  <text class="ts" x="400" y="182">+40 / −0   burst, refill, per-route isolation</text>
+
+  <text class="ts" x="24" y="212">docs  +3 / −1</text>
+  <text class="ts" x="40" y="234">◆ M  README.md</text>
+  <line x1="300" y1="230" x2="306" y2="230" stroke="var(--color-border-primary)" stroke-width="3"/>
+  <line x1="308" y1="230" x2="312" y2="230" stroke="var(--color-border-tertiary)" stroke-width="3"/>
+  <text class="ts" x="400" y="234">+3 / −1   document the RATE_LIMIT env var</text>
+
+  <line x1="24" y1="252" x2="656" y2="252" stroke="var(--color-border-tertiary)" stroke-width="0.5"/>
+  <text class="ts" x="24" y="272">Σ rows = +155 / −7 == headline ✓  (true by construction · model wrote only labels)</text>
+  <text class="ts" x="24" y="292">tier: ◆ attested · + added · ~ modified · − deleted · status A/M/D/R · gate: clean</text>
+</svg>

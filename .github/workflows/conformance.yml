@@ -38,6 +38,8 @@ jobs:
         run: node tools/orient-roundtrip.mjs
       - name: Orient value gate (enum membership + fail-closed gates yon validate can't enforce)
         run: node tools/orient-validate.mjs
+      - name: Diff-recap value gate (Σ per-file == totals; fail-closed; yon validate can't enforce)
+        run: node tools/diff-recap-check.mjs
       - name: Leak guard (no machine-specific / absolute paths in the public pack)
         run: node tools/leak-guard.mjs
       - name: Consistency guard (skill counts agree; CHANGELOG releases ↔ git tags)

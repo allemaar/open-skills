@@ -22,6 +22,11 @@ control proving a real skill still passes.
 | orient value gate | the SAME file: `gate_status=banana` is not a member of the gate_status enum — the value the parser waved through | reject | `1` | ✅ rejected | `✗ orient.gate_status = "banana" is not a valid gate_status (allowed: ready, blocked, stalled, degraded, indeterminate)` |
 | orient value gate | `evidence_mode=barren` paired with `gate_status=ready` — a fail-open verdict (structurally valid, value-illegal) | reject | `1` | ✅ rejected | `` |
 | orient value gate | POSITIVE CONTROL — the conformant `orient-spec/examples/orient-record.example.yon` | accept | `0` | ✅ accepted | `` |
+| public YON parser | THE GAP — `skills/diff-recap/examples/bad/fabricated-counts.yon` is structurally valid YON, so the parser passes it; it cannot see total_added=999 while the rows sum to 155 | accept | `0` | ✅ accepted | `✓ skills/diff-recap/examples/bad/fabricated-counts.yon: Valid` |
+| diff-recap value gate | the SAME file: the headline total drifted from the sum of the rows — the true-by-construction defeat | reject | `1` | ✅ rejected | `` |
+| diff-recap value gate | `gate_status=clean` with `attested=false` — a clean recap claimed from no git source (fail-open) | reject | `1` | ✅ rejected | `` |
+| diff-recap value gate (--numstat) | `skills/diff-recap/examples/bad/numstat-mismatch.yon` is internally consistent (sums match) but a row names a file absent from the git numstat — only the per-file attestation catches it | reject | `1` | ✅ rejected | `` |
+| diff-recap value gate | POSITIVE CONTROL — the conformant `skills/diff-recap/examples/diff-recap.example.yon` (rows match the git numstat) | accept | `0` | ✅ accepted | `` |
 
 ## What this demonstrates
 

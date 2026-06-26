@@ -1,0 +1,18 @@
+diff-recap reference — the ASCII twin of diff-recap.widget.svg.
+Information-complete; PR-pasteable; the only render in a no-SVG channel.
+
+📋 acme-api — add per-route rate limiting.    range: HEAD     [counts: ◆ git --numstat]
+## 4 files · +155 / −7                                          ◆ git diff --numstat
+
+feature   +112 / −6
+  + src/rate-limit.ts         +88 / −0    new token-bucket limiter (per-route)      ◆ A
+  ~ src/server.ts             +24 / −6    wire limiter in; drop old fixed counter   ◆ M
+tests     +40 / −0
+  + test/rate-limit.test.ts   +40 / −0    burst, refill, per-route isolation        ◆ A
+docs      +3 / −1
+  ~ README.md                 +3  / −1    document the RATE_LIMIT env var           ◆ M
+
+Σ rows = +155 / −7  ==  headline  ✓  (true by construction — totals are the sum of the rows)
+**→ PR summary:** per-route token-bucket rate limiter + unit tests + env-var doc.
+Trust: ◆◆◆ every count git-attested · the model wrote only the labels · gate: clean
+legend: ◆ attested · + added · ~ modified · − deleted · status A/M/D/R

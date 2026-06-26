@@ -10,6 +10,7 @@
 @META id=cold-review | out="plan-create; insight-cross-examine; github-sync; double-check" | degree=4 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=defuddle | out="insight-cross-examine; prime-sweep; obsidian-markdown" | degree=3 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=design-an-interface | out="plan-create; improve-codebase-architecture" | degree=2 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
+@META id=diff-recap | out="cold-review; handoff" | degree=2 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=double-check | out="verify; github-sync; insight-adversarial" | degree=3 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=extract-signal | out="insight-assess; plan-create; handoff" | degree=3 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=github-sync | out="insight-retro; handoff" | degree=2 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
@@ -53,4 +54,4 @@
 @META id=yon-read | out="yon-write; double-check" | degree=2 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @META id=yon-write | out="yon-read; double-check; github-sync" | degree=3 | license="Apache-2.0" | src="github.com/allemaar/open-skills"
 @SEC name="stats"
-@NOTE text="nodes=49 edges=125 coverage=49/49 terminal=0"
+@NOTE text="nodes=50 edges=127 coverage=50/50 terminal=0"

@@ -12,8 +12,8 @@
     "~/.codex/skills",
     "~/.agents/skills"
   ],
-  "count": 49,
-  "dualDoc": 35,
+  "count": 50,
+  "dualDoc": 36,
   "install": "Copy a skill folder into your runtime skills dir (copy-default, not symlink), then validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.",
   "skills": [
     {
@@ -327,6 +327,58 @@
       "install": {
         "copy": "cp -r skills/design-an-interface <runtime>/skills/design-an-interface",
         "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "diff-recap",
+      "description": "Turn a git diff into a PR-pasteable recap — one row per changed file whose path, status, and line counts are transcribed verbatim from `git diff --numstat` (true by construction; the model writes only the labels), emitted as an inline annotated widget plus a mandatory ASCII twin and a `diff-recap/1` record whose totals equal the sum of the rows. Fills the PR-summary gap the orient- family does not cover. Not /orient-map (shape + delta of the work) or /orient-status (position + ETA) — diff-recap recaps a concrete change-set. Zero external dependency: it renders inline, never to a hosted service.",
+      "visibility": "public",
+      "triggers": [
+        "/diff-recap",
+        "recap this diff",
+        "summarize these changes for a PR",
+        "what changed in this branch",
+        "write a PR summary"
+      ],
+      "nextSkills": [
+        {
+          "skill": "cold-review",
+          "phrase": "/cold-review",
+          "why": "Before you open the PR, hand the recapped change-set to a fresh-context reviewer."
+        },
+        {
+          "skill": "handoff",
+          "phrase": "/handoff",
+          "why": "Turn the recap into an inter-session brief — it already carries the attested change-summary the next agent needs."
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "range=WARN",
+        "sum-consistency=ABORT",
+        "fail-closed=ABORT",
+        "value-gate=ABORT"
+      ],
+      "rules": [
+        "true-by-construction=MUST",
+        "model-writes-labels=MUST",
+        "sum-consistency=MUST",
+        "attested-gate=MUST",
+        "fail-closed=MUST",
+        "ascii-twin=MUST",
+        "pr-pasteable=MUST",
+        "render-face=MUST",
+        "widget-parity=MUST",
+        "list-encoding=MUST",
+        "ephemeral=MUST"
+      ],
+      "steps": 6,
+      "install": {
+        "copy": "cp -r skills/diff-recap <runtime>/skills/diff-recap",
+        "validate": "npx @younndai/yon-parser validate <runtime>/skills/diff-recap/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
