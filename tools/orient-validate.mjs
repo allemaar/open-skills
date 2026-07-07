@@ -29,6 +29,7 @@ const SCHEMA = path.join(ROOT, 'orient-spec', 'orient-record.yon');
 const SHAPE_TO_ID = {
   envelope: 'orient', subject: 'subject', snapshot: 'snapshot', remaining: 'remaining',
   forecast: 'forecast', trajectory: 'trajectory', delta: 'delta', resume: 'resume', gaps: 'gaps',
+  roadmap: 'roadmap',
 };
 // The fail-closed identity+gate fields a record cannot honestly omit (a subset of the FROZEN
 // key-sets — optional fields like degrade_reason are legitimately absent, so we require only the core).

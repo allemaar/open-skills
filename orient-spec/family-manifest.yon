@@ -1,14 +1,15 @@
 @DOC ver=2.0 | id=family-manifest | title="orient- family manifest — single source of truth for the footer" | kind=spec | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Declare the orient- family roster, each skill's gate_field and trigger and one-line does, the modes, and the evidence-derived reason_code routing the footer emits. Adding, cutting, or renaming a skill is a one-file edit here." | audience=agent
-@STAMP ts:ts=2026-06-21T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-07T00:00:00Z | src="agent:claude-code" | method=generated
 @NOTE text="Apache-2.0. Reserved-tag emission (no custom tags, no domain), conformant to orient-record. Every orient- bundle reads this manifest to fill family used / suggested_next / reason_code / all; the footer renders it (human text always, --family visual opt-in, agent reads the enum, automator ignores it)."
 @NOTE text="Two cross-cutting non-skills are NOT routable: identity is the one-line banner prepended to every output; confidence is the per-field tier layer on every field."
 
 @SEC name="Roster"
-@NOTE text="STATUS: orient-status, orient-map, and orient-gaps are all shipped. The footer suggests only an installed (status=shipped) skill; an unwritten-decision reason_code still routes OUT to /lyt-handoff or /lyt-decision only when those are installed, else a prose hint."
+@NOTE text="STATUS: orient-status, orient-map, orient-gaps, and orient-roadmap are all shipped. The footer suggests only an installed (status=shipped) skill; an unwritten-decision reason_code still routes OUT to /lyt-handoff or /lyt-decision only when those are installed, else a prose hint."
 @CFG id=skill.orient-status | set=[does="status quo — position / whats-left / ETA band",gate_field=gate_status,trigger="where are we / status / how far / ETA",modes="resume",tier=skill,status=shipped]
 @CFG id=skill.orient-map | set=[does="the shape — done to here to next path / tree on a branch / delta since last look",gate_field=gate_status,primary_field=on_branch,trigger="show the map / what changed / how deep down a branch",modes="none",tier=skill,status=shipped]
 @CFG id=skill.orient-gaps | set=[does="the stall surface — blockers / open forks / loose-ends / silent gaps",gate_field=gate_status,trigger="what is stuck / not solid / not done / can I trust it",modes="audit",tier=skill,status=shipped]
+@CFG id=skill.orient-roadmap | set=[does="the horizons — increment arc / now-shipping / gates / next-increment clusters / runway lanes / deferred",gate_field=gate_status,primary_field=arc_current,trigger="show the roadmap / the runway / what's next / the plan",modes="none",tier=skill,status=shipped]
 
 @SEC name="Modes — views over a skill's sweep, not skills"
 @MAP name=modes | pairs=["orient-status --resume"->"came back lost the thread: resume-pointer + one next move + counter-case","orient-gaps --audit"->"do not trust the orientation: claim-vs-evidence + gamed-signal disclosure"]
@@ -33,4 +34,4 @@
 @RULE rid=rule:widget-disabled | lvl=MUST | when="a render is broken or the host lacks a defined css var" | then="a single contract switch degrades the skill to the ascii twin with no code change"
 @RULE rid=rule:interactivity-rails | lvl=MUST | when="a widget offers an interactive sendPrompt control" | then="R1 exist only when handler_type is human and the visualize tool is present otherwise static, R2 invoke only an installed real action, R3 low-confidence elements are non-interactive and degraded, R4 never fire unprompted and hard-off in auto-loop, R5 compose a chat message and never execute a side-effect"
 
-@STAMP ts:ts=2026-06-22T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-07T00:00:00Z | src="agent:claude-code" | method=generated

@@ -1,12 +1,13 @@
 @DOC ver=2.0 | id=orient-record | title="Orientation Record — shared schema for the orient- family" | kind=spec | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Define the generic public orientation-record that every orient-* skill emits a slice of; yas-orient-* conforms and may privately extend. One computed ephemeral bundle = this YON record plus a markdown render plus a visual render." | audience=agent
-@STAMP ts:ts=2026-06-21T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-07T00:00:00Z | src="agent:claude-code" | method=generated
 @NOTE text="Apache-2.0. Reusable, inspectable, declarative. This is a SCHEMA reference (record shapes plus invariants), NOT an instance."
 @NOTE text="Public and generic: field names carry NO YAS artifact shapes (no handoff, arc, state, or decisions names). yas-orient-* maps private sources INTO these generic slices and MAY add private riders."
 @NOTE text="Nothing is stored. Every record is recomputed each call; computed_at plus ephemeral true are load-bearing. The only persisted reference point (intent line plus last-look anchor) is caller-supplied or harness-held, never written to disk by default."
 @NOTE text="EMISSION uses RESERVED tags ONLY — no custom tags, no new domain (decided 2026-06-21, spike d; custom tags like @SNAPSHOT are rejected by the parser). A skill emits the record as: the envelope @CFG id=orient; @CFG id=subject; one @CFG per slice; tree nodes as @CFG id=node.<x>; edges and the per-field provenance rider as @MAP. Proven: a trajectory-tree instance validates under exec."
 @NOTE text="The rec:<name> records below are SHAPE descriptors (field=type). An emitted instance uses @CFG id=<name> with field=value. trajectory is named to avoid the reserved @MAP tag."
-@NOTE text="REALIZED (2026-06-22, P4): the orient-gaps stall slice rec:gaps is now defined below, completing the forward declaration the gate_status=stalled value and the family-manifest orient-gaps routing anticipated. This is a forward-declared slice being filled in — schema_version stays orient-record/1 (it completes /1's design rather than adding an unanticipated field; the FROZEN envelope and subject key-sets are unchanged). v1 slices are snapshot, remaining, forecast, trajectory, delta, resume, gaps."
+@NOTE text="REALIZED (2026-06-22, P4): the orient-gaps stall slice rec:gaps is now defined below, completing the forward declaration the gate_status=stalled value and the family-manifest orient-gaps routing anticipated. This is a forward-declared slice being filled in — schema_version stays orient-record/1 (it completes /1's design rather than adding an unanticipated field; the FROZEN envelope and subject key-sets are unchanged). v1 slices are snapshot, remaining, forecast, trajectory, delta, resume, gaps, roadmap."
+@NOTE text="REALIZED (2026-07-07): the orient-roadmap horizon slice rec:roadmap is now defined below (the increment arc, now-shipping, gates, next-increment clusters, the runway of stage boxes, and the cleanup/deferred lanes). Same additive-under-/1 posture as gaps: it adds a new payload slice and new increment-node kinds but does NOT touch the FROZEN envelope or subject key-sets, so schema_version stays orient-record/1. Its increment nodes reuse @CFG id=node.<x> (kind=increment, a free str), its enums are increment_status, gate_kind, lane_disposition, and every list field emits as a sidecar @MAP."
 @NOTE text="ENFORCEMENT: enum membership and the @RULE/@CHECK gates are EMITTER obligations, NOT executed by yon validate --profile exec (it checks structure, not values; gate_status=banana and barren-plus-ready both validate clean). The enforcement surface is the emitting skill plus a conformance test. An automator must not treat a green validate as proof the gate held."
 @NOTE text="VERSION: schema_version current value = orient-record/1; emitters stamp it literally. The envelope and subject field-key sets are FROZEN for a given schema_version (additive changes bump it). Private yas- riders extend without bumping the public version. @DOC ver is the YON format version, not this schema version."
 
@@ -22,6 +23,9 @@
 @SCHEMA key=intent_status | opts=[stated,inferred,absent] | default=absent
 @SCHEMA key=map_layout | opts=[path,tree,dag] | default=path
 @SCHEMA key=reason_code | opts=[blockers_present,claim_evidence_mismatch,intent_absent,lost_thread,subject_unchanged,unwritten_decision] | default=intent_absent
+@SCHEMA key=increment_status | opts=[built,current,next,future] | default=future
+@SCHEMA key=gate_kind | opts=[now,gated-next,future] | default=future
+@SCHEMA key=lane_disposition | opts=[cleanup-now,deferred] | default=deferred
 
 @SEC name="Envelope — one per call"
 @NOTE text="The per-call envelope: the frame plus honesty preamble. Exactly one per orientation call; every slice attaches to it. gate_* is the fail-closed automator gate (flattened from gate, depth-1); family_* drives the footer."
@@ -61,6 +65,10 @@
 @NOTE text="Two tiers of one sweep. Stall tier: what blocks progress (blocked_on_me vs blocked_on_other), open_forks (unresolved decisions), loose_ends (uncommitted or untracked work). silent_gaps is the inferred honest-negative — what is plausibly missing but unproven (per rule:honest-negative, never silently omitted). --audit tier adds audit_mismatches (a claim with no corroborating evidence) and gamed_signals (a metric inflated past its evidence weight — the anti-Goodhart disclosure). All list fields emit as sidecar @MAP. stall_status reuses the gate_status enum (stalled when blocked). Generic names only; yas-orient-gaps maps private blockers into these."
 @CFG id=rec:gaps | set=[stall_status=enum.gate_status,blocked_on_me=list,blocked_on_other=list,open_forks=list,loose_ends=list,silent_gaps=list,audit_mismatches=list,gamed_signals=list]
 
+@SEC name="Slice — multi-horizon roadmap (orient-roadmap; arc spine + runway + horizons)"
+@NOTE text="The forward horizon board: the increment spine (3-node arc, one current), what is BUILT now, the GATES, the NEXT increment's clusters (paramount = starred), the RUNWAY of stage boxes (now to gated-next to future), and the cleanup/deferred lanes. All list fields emit as sidecar @MAP. star and dashed are RENDER hints (paramount / deferred) carried on the item label, NOT new tiers. The increment nodes reuse @CFG id=node.<x> with kind=increment (a free str, not an enum) and an istatus carrying the increment_status enum; the arrows between them reuse @MAP name=edges. Generic names only; yas-orient-roadmap maps the arc's declared phase spine plus push gates plus deferred @GOALs into these."
+@CFG id=rec:roadmap | set=[north_star=str,arc_current=str,arc_idx=int,arc_count=int,now_count=int,next_count=int,runway_span=str,paramount_ref=str,cleanup_now_count=int,deferred_count=int]
+
 @SEC name="Invariants"
 @RULE rid=rule:no-fabricated-pct | lvl=MUST_NOT | when="rendering progress or completion with an unknown denominator" | then="emit a fabricated percentage or a confident phase"
 @RULE rid=rule:open-ended-remainder | lvl=MUST | when="the denominator is unknown" | then="render an open-ended remainder instead of a percentage or a confident phase"
@@ -83,4 +91,4 @@
 @NOTE text="LIST FIELDS (open_set nodes edges changes no_change_zones missed_while_away family_all) emit ONLY as a sidecar @MAP name=field or as repeated @CFG rows — NEVER a bare bracket-list inside a set value (it silently corrupts and still validates). Do NOT run yon format on an emitted instance: format mode CANON is destructive on set-internal lists. The parse-format-parse round-trip gate at tools/orient-roundtrip.mjs guards the example instance."
 @MAP name=emission-encoding | pairs=["envelope"->"@CFG id=orient","subject"->"@CFG id=subject","each slice"->"@CFG id=<slice>","tree node"->"@CFG id=node.<x>","any list field"->"@MAP name=field sidecar never in-set bracket-list","edges"->"@MAP name=edges","provenance rider"->"@MAP name=provenance"]
 
-@STAMP ts:ts=2026-06-21T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-07T00:00:00Z | src="agent:claude-code" | method=generated
