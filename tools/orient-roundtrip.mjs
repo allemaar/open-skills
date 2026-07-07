@@ -11,7 +11,7 @@
 import { execSync } from 'node:child_process';
 import { readFileSync, existsSync } from 'node:fs';
 
-const FILES = ['orient-spec/examples/orient-record.example.yon'];
+const FILES = ['orient-spec/examples/orient-record.example.yon', 'orient-spec/examples/orient-roadmap.example.yon'];
 const PARSER = 'npx -y @younndai/yon-parser@latest';
 let failed = false;
 

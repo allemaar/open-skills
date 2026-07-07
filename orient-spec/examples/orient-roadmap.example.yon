@@ -16,5 +16,5 @@
 @MAP name=runway_stages | pairs=["r1"->"now: author","r2"->"gated-next: cold-review","r3"->"future: publish"]
 @MAP name=cleanup_now | pairs=["u1"->"⚠ stale STAMP dates"]
 @MAP name=deferred | pairs=["d1"->"◌ deterministic renderer (deferred)","d2"->"◌ ci wiring (deferred)"]
-@MAP name=provenance | pairs=["roadmap.arc_current"->"artifact-stated:med:plan-md","roadmap.built_items"->"git-attested:high:git-log","roadmap.gates"->"git-attested:high:ci-config","roadmap.next_items"->"inferred:med:plan-md","roadmap.runway_stages"->"inferred:med:plan-md","roadmap.paramount_ref"->"inferred:med:plan-md","roadmap.deferred"->"artifact-stated:med:deferred-goal"]
+@MAP name=provenance | pairs=["roadmap.arc_current"->"artifact-stated:med:plan-md","roadmap.built_items"->"git-attested:high:git-log","roadmap.gates"->"git-attested:high:ci-config","roadmap.next_items"->"inferred:med:plan-md","roadmap.runway_stages"->"inferred:med:plan-md","roadmap.paramount_ref"->"inferred:med:plan-md","roadmap.deferred"->"artifact-stated:med:deferred-goal","roadmap.cleanup_now"->"artifact-stated:med:arc-state"]
 @STAMP ts:ts=2026-07-07T00:00:00Z | src=human

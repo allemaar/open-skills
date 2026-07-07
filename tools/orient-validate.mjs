@@ -29,7 +29,7 @@ const SCHEMA = path.join(ROOT, 'orient-spec', 'orient-record.yon');
 const SHAPE_TO_ID = {
   envelope: 'orient', subject: 'subject', snapshot: 'snapshot', remaining: 'remaining',
   forecast: 'forecast', trajectory: 'trajectory', delta: 'delta', resume: 'resume', gaps: 'gaps',
-  roadmap: 'roadmap',
+  roadmap: 'roadmap', // reserved-forward: rec:roadmap has no enum-typed set field yet, so this entry is currently INERT (guards nothing). The roadmap enums ride on node.istatus + label prefixes = emitter obligations — see orient-record.yon rec:roadmap @NOTE.
 };
 // The fail-closed identity+gate fields a record cannot honestly omit (a subset of the FROZEN
 // key-sets — optional fields like degrade_reason are legitimately absent, so we require only the core).

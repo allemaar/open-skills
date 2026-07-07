@@ -13,7 +13,9 @@
     <text class="ts" x="40" y="40">in: open-source push  ·  north star: one orient family, three faces, machine-checked</text>
   </g>
 
-  <!-- Band 1: THE ARC — 3 increment nodes, current the hero -->
+  <!-- Band 1: THE ARC — 3 increment nodes, current the hero. Trailing glyph = TIER
+       (all 3 share provenance roadmap.arc_current=artifact-stated → all ◆); role
+       (built/current/next) is carried by fill-ramp + radius, never by the tier glyph. -->
   <g transform="translate(0,56)">
     <text class="ts" x="40" y="12">The arc</text>
     <g class="c-gray"><circle cx="120" cy="40" r="9"/></g>
@@ -25,7 +27,7 @@
     <text class="ts" x="310" y="86" text-anchor="middle">current</text>
     <path d="M325,40 L487,40" fill="none" stroke="var(--color-border-primary)" stroke-width="0.5" marker-end="url(#arrow)"/>
     <g class="c-gray"><circle cx="500" cy="40" r="9"/></g>
-    <text class="ts" x="500" y="68" text-anchor="middle">roadmap ◌</text>
+    <text class="ts" x="500" y="68" text-anchor="middle">roadmap ◆</text>
     <text class="ts" x="500" y="82" text-anchor="middle">next</text>
   </g>
 
@@ -51,11 +53,13 @@
     <text class="ts" x="220" y="40">widget parity ◐   ascii floor ◐</text>
   </g>
 
-  <!-- Band 5: THE RUNWAY — 3 stage boxes now to gated-next to future -->
+  <!-- Band 5: THE RUNWAY — 3 stage boxes now to gated-next to future. Trailing glyph
+       = TIER (all stages share roadmap.runway_stages=inferred → all ◐); gate-kind
+       (now/gated-next/future) is carried by dash + fade, never by the tier glyph. -->
   <g transform="translate(0,310)">
     <text class="ts" x="40" y="12">The runway</text>
     <rect x="40" y="22" width="180" height="34" rx="3" fill="none" stroke="var(--color-border-primary)" stroke-width="0.5"/>
-    <text class="ts" x="130" y="43" text-anchor="middle">now: author ◆</text>
+    <text class="ts" x="130" y="43" text-anchor="middle">now: author ◐</text>
     <path d="M221,39 L259,39" fill="none" stroke="var(--color-border-primary)" stroke-width="0.5" marker-end="url(#arrow)"/>
     <rect x="260" y="22" width="200" height="34" rx="3" fill="none" stroke="var(--color-border-primary)" stroke-width="0.5"/>
     <text class="ts" x="360" y="43" text-anchor="middle">gated-next: cold-review ◐</text>
@@ -64,16 +68,18 @@
     <text class="ts" x="590" y="43" text-anchor="middle" opacity="0.7">future: publish ◐</text>
   </g>
 
-  <!-- Band 6: CLEANUP-NOW / DEFERRED — chips, deferred dashed + faded -->
+  <!-- Band 6: CLEANUP-NOW / DEFERRED — chips. Trailing glyph = TIER (cleanup_now and
+       deferred both provenance artifact-stated → ◆); the DEFERRED role is carried by
+       dashed + faded chrome, never by the tier glyph. -->
   <g transform="translate(0,376)">
     <text class="ts" x="40" y="12">Cleanup-now</text>
     <rect x="40" y="22" width="220" height="30" rx="3" fill="none" stroke="var(--color-border-primary)" stroke-width="0.5"/>
     <text class="ts" x="150" y="41" text-anchor="middle">stale STAMP dates ◆</text>
     <text class="ts" x="40" y="76">Deferred</text>
     <rect x="40" y="86" width="240" height="30" rx="3" fill="none" stroke="var(--color-border-tertiary)" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.6"/>
-    <text class="ts" x="160" y="105" text-anchor="middle" opacity="0.6">deterministic renderer ◌</text>
+    <text class="ts" x="160" y="105" text-anchor="middle" opacity="0.6">deterministic renderer ◆</text>
     <rect x="300" y="86" width="180" height="30" rx="3" fill="none" stroke="var(--color-border-tertiary)" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.6"/>
-    <text class="ts" x="390" y="105" text-anchor="middle" opacity="0.6">ci wiring ◌</text>
+    <text class="ts" x="390" y="105" text-anchor="middle" opacity="0.6">ci wiring ◆</text>
   </g>
 
   <!-- Band 7: learn-once legend -->
