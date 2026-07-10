@@ -8,3 +8,9 @@ skills/*/.claude/
 skills/*/.codex/
 skills/*/.agents/
 **/settings.local.json
+
+# Repo-root agent-runtime dirs (Claude Code recreates .claude/worktrees on worktree ops).
+# Local-only, never tracked — same leak class as the nested guard above.
+/.claude/
+/.codex/
+/.agents/
