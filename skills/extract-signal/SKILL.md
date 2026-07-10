@@ -2,7 +2,6 @@
 name: extract-signal
 description: >
   An elastic signal-extraction methodology run under /multi-agent-mode. INFERS from the call what signal, what form, what stakes, and where output goes. Default is agentic — a normal call spawns a freshly-primed sub-agent that gathers, vets, and returns the signal; when extract-signal IS the agent (in-session / new-session) it works inline with output inline by default (or to a file if specified). Composes techniques per task: gather (/prime-sweep, /prime-fetch, /prime-expand), diverge (/insight-explore), vet (/insight-critique → /insight-assess), cold second opinion (/cold-review-style). Vetting scales with stakes; the presented signal carries provenance and is sensitivity-matched to its destination. Trigger on /extract-signal, "extract the signal on X and present it as Y", "gather + vet + report the signal about X". Not the prime-* / insight-* / cold-review skills it composes; not /multi-agent-mode (the mode it runs under).
-disable-model-invocation: true
 visibility: public
 self-improvable: true
 triggers:
