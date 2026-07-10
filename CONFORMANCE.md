@@ -1,6 +1,6 @@
 # YON Conformance
 
-**36 / 36** skills that ship a `protocol.yon` pass YON conformance validation, checked with the public [`@younndai/yon-parser`](https://www.npmjs.com/package/@younndai/yon-parser) using the `exec` profile. 14 skills are Markdown-only.
+**37 / 37** skills that ship a `protocol.yon` pass YON conformance validation, checked with the public [`@younndai/yon-parser`](https://www.npmjs.com/package/@younndai/yon-parser) using the `exec` profile. 14 skills are Markdown-only.
 
 > Run it yourself: `npx @younndai/yon-parser validate skills/<skill>/protocol.yon --profile exec`.
 > Regenerate this table: `node tools/conformance.mjs`. Enforced in CI on every push.
@@ -41,6 +41,7 @@
 | `orchestrate-mode` | — | — (md-only) |
 | `orient-gaps` | exec | ✅ valid |
 | `orient-map` | exec | ✅ valid |
+| `orient-roadmap` | exec | ✅ valid |
 | `orient-status` | exec | ✅ valid |
 | `plan-cleanup` | exec | ✅ valid |
 | `plan-create` | exec | ✅ valid |

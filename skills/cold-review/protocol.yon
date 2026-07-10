@@ -39,7 +39,7 @@
 # --- Step 4: Brief Reviewers ---
 
 @SEC name="Step 4 — Brief Reviewers"
-@RULE rid=rule:narrow-evidence-brief | lvl=MUST | when="briefing each reviewer" | then="give a narrow, evidence-based brief — review only supplied artifacts and source evidence; do not pass the lead agent's conclusions as ground truth"
+@RULE rid=rule:narrow-evidence-brief | lvl=MUST | when="briefing each reviewer" | then="give a narrow, evidence-based brief — review only supplied artifacts and source evidence; do not pass the lead agent's conclusions as ground truth; instruct reviewers to pose each checked claim as a question against the source (re-open, not recall)"
 @RULE rid=rule:reviewers-read-only | lvl=MUST_NOT | when="reviewers run" | then="let reviewers modify files or propose broad rewrites unless needed to fix a concrete issue — cold-review reviews only"
 @MAP name=LensGroups | pairs=["backend-code"->"Correctness Reviewer, Architecture Reviewer, Security Reviewer, Test Coverage Reviewer, Performance Reviewer","frontend-ui"->"UX Reviewer, Visual/Layout Reviewer, Accessibility Reviewer, Responsive States Reviewer, Product Friction Reviewer","plan-spec"->"Scope Reviewer, Pragmatist, Sequencing Reviewer, Assumption Reviewer, Executability Reviewer","agent-skill-workflow"->"Trigger Auditor, Runtime Portability Reviewer, Agent Runtime Reviewer, Process Auditor, Failure-Mode Reviewer"]
 @STEP rid=step:brief | n:int=4 | op=std:ai.prompt@v1 | args=[task="Brief each reviewer using the reviewer prompt template in SKILL.md, assigning one lens per reviewer from LensGroups for the classified target type. Each reviewer returns: findings grouped Critical/Major/Minor/Interesting; evidence for every finding with file paths, commands, screenshots, or artifact references; missing evidence or uncertainty; a suggested 0-100 score with rationale."] | in=[ref:classification,ref:reviewer-plan] | use=[cfg:LensGroups] | out=[ref:reviewer-reports] | rules=[rid:rule:narrow-evidence-brief,rid:rule:reviewers-read-only]
@@ -48,7 +48,7 @@
 
 @SEC name="Step 5 — Synthesize"
 @MAP name=ScoringThresholds | pairs=["90-100"->"clean — only minor notes or polish","75-89"->"acceptable with concerns — fix important issues before high-stakes use","60-74"->"risky — major issues need resolution","below-60"->"blocked — do not proceed without rework or redesign"]
-@STEP rid=step:synthesize | n:int=5 | op=std:ai.prompt@v1 | args=[task="Synthesize all reviewer reports into ONE final report using the report format in SKILL.md — do not paste raw reports unless the user asks. Assign a numeric score and threshold verdict per ScoringThresholds."] | in=[ref:reviewer-reports] | use=[cfg:ScoringThresholds] | out=[ref:final-report] | rules=[rid:rule:evidence-required,rid:rule:severity-tiers,rid:rule:score-and-verdict]
+@STEP rid=step:synthesize | n:int=5 | op=std:ai.prompt@v1 | args=[task="Synthesize all reviewer reports into ONE final report using the report format in SKILL.md — do not paste raw reports unless the user asks. Before returning, self-verify the synthesis: re-open the evidence behind each load-bearing finding and confirm it against source; drop or downgrade any finding whose evidence doesn't survive a fresh read. Assign a numeric score and threshold verdict per ScoringThresholds."] | in=[ref:reviewer-reports] | use=[cfg:ScoringThresholds] | out=[ref:final-report] | rules=[rid:rule:evidence-required,rid:rule:severity-tiers,rid:rule:score-and-verdict,rid:rule:self-verify-synthesis]
 @CHECK rid=check:critical-caps-verdict | assert="if any Critical finding exists, verdict is capped at risky or blocked regardless of numeric score" | fail=WARN | msg="Critical finding present — cap the verdict at risky or blocked."
 
 # --- Rules ---
@@ -57,7 +57,8 @@
 @RULE rid=rule:concrete-not-memory | lvl=MUST | when="reviewing" | then="review concrete artifacts and evidence, not memory alone"
 @RULE rid=rule:classify-first | lvl=MUST | when="choosing lenses" | then="classify the work before selecting reviewer lenses"
 @RULE rid=rule:fresh-agents | lvl=MUST | when="runtime supports subagents and work size warrants it" | then="use fresh reviewer agents"
-@RULE rid=rule:evidence-required | lvl=MUST | when="recording any finding" | then="require evidence — file paths, commands, screenshots, or artifact references"
+@RULE rid=rule:evidence-required | lvl=MUST | when="recording any finding" | then="require evidence — file paths, commands, screenshots, or artifact references; re-open (not recall) the evidence for each load-bearing finding at synthesis"
+@RULE rid=rule:self-verify-synthesis | lvl=MUST | when="synthesizing the final report" | then="re-open the evidence behind each load-bearing finding and confirm it against source before returning; drop or downgrade any that doesn't survive a fresh read — a cold review must pass its own active re-check (critical-thinking arc D24/D25)"
 @RULE rid=rule:severity-tiers | lvl=MUST | when="reporting findings" | then="separate Critical, Major, Minor, and Interesting findings"
 @RULE rid=rule:score-and-verdict | lvl=MUST | when="producing the final report" | then="include a numeric 0-100 score and a threshold verdict"
 @RULE rid=rule:not-verification | lvl=MUST_NOT | when="closing the review" | then="confuse critique with verification — a high score does not replace tests, builds, or /verify when those are required"
@@ -68,4 +69,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=6 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-02T00:00:00Z | src="agent:claude-code" | method=generated

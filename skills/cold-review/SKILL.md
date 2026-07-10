@@ -1,7 +1,7 @@
 ---
 name: cold-review
 description: >
-  Run outside-agent review of actual work artifacts against objectives, with classification, fresh reviewer lenses, evidence-based findings, scoring, and thresholds. Trigger on /cold-review, "cold review this", "get outside review", "have fresh agents inspect this work", or "review this with fresh context". Use verify for self-gating intent/plan/execution; use insight-adversarial for persona critique of ideas or plans.
+  Run outside-agent review of actual work artifacts against objectives, with classification, fresh reviewer lenses, evidence-based findings (re-opened at synthesis, not recalled), scoring, and thresholds; the review self-verifies its own findings before returning. Trigger on /cold-review, "cold review this", "get outside review", "have fresh agents inspect this work", or "review this with fresh context". Use verify for self-gating intent/plan/execution; use insight-adversarial for persona critique of ideas or plans.
 caller-options:
   venue: [inline]
   modes: [narrow, medium, broad]
@@ -80,6 +80,7 @@ Constraints:
 Your review lens:
 Artifacts/evidence to inspect:
 Do not modify files. Do not propose broad rewrites unless needed to fix a concrete issue.
+When you check a claim, pose it as a question against the source ("Is X true, per the evidence?"), not a statement to confirm; re-open the source, do not rely on recall.
 
 Return:
 - Findings grouped by Critical, Major, Minor, Interesting
@@ -99,6 +100,8 @@ Suggested lens groups:
 ## Step 5 — Synthesize
 
 The lead agent synthesizes reviewer reports into one final report. Do not paste raw reports unless asked.
+
+**Self-verify the synthesis (before returning).** Re-open the evidence behind each load-bearing finding and confirm it against source; drop or downgrade any finding whose evidence doesn't survive a fresh read. A cold review must pass its own active re-check — a reviewer's confident finding is not exempt from the self-report unreliability it exists to catch.
 
 ```text
 Cold Review Report
@@ -128,7 +131,7 @@ Scoring thresholds: **90-100** clean (minor notes only) · **75-89** acceptable 
 - MUST classify the work before choosing reviewer lenses.
 - MUST use fresh reviewer agents when available and appropriate for the work size.
 - MUST label degraded same-session reviews clearly.
-- MUST require evidence for every finding.
+- MUST require evidence for every finding, and MUST re-open (not recall) the evidence for each load-bearing finding at synthesis.
 - MUST separate Critical, Major, Minor, and Interesting findings.
 - MUST include a numeric score and threshold verdict.
 - MUST NOT let reviewers modify files; this skill reviews only.

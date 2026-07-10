@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=verify | title="/verify" | kind=workflow | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Formal gate: verify alignment between intent, plan, and execution artifacts before proceeding" | audience=agent
-@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-07T00:00:00Z | src="agent:claude-code" | method=generated
 
 @NOTE text="Hard gate on two artifacts — intent and execution, both required (fail=ABORT). The plan is optional: when absent, verify short-circuits to the report with status=plan-not-found (see rule:plan-absent). Use /reflect for a softer pause with no artifact requirements."
 
@@ -12,7 +12,7 @@
 @SEC name="Preconditions"
 @CHECK rid=check:intent | assert="rid:in:intent != null" | fail=ABORT | msg="No intent artifact. Cannot verify alignment — provide the original goal, or use /reflect for a softer pause."
 @CHECK rid=check:execution | assert="rid:in:execution != null" | fail=ABORT | msg="No execution artifact. There is nothing to verify yet."
-@RULE rid=rule:plan-absent | lvl=MUST | when="rid:in:plan is absent" | then="skip steps 2 and 3, jump to step:report, and set status=plan-not-found"
+@RULE rid=rule:plan-absent | lvl=MUST | when="rid:in:plan is absent" | then="skip steps 2 and 3, still run step:source-recheck (phase 4), then step:report, and set status=plan-not-found"
 
 @SEC name="Phase 1: Intent Check"
 @STEP rid=step:intent | n:int=1 | op=std:ai.prompt@v1 | timeout_ms:int=30000 | in=[rid:in:intent] | args=[task="Using the intent artifact as ground truth: what was the original goal? Has the current direction drifted from it? Name any specific drift with evidence from the artifact."] | out=[ref:intent-finding]
@@ -23,15 +23,20 @@
 @SEC name="Phase 3: Execution Check"
 @STEP rid=step:exe | n:int=3 | op=std:ai.prompt@v1 | timeout_ms:int=30000 | in=[rid:in:plan,rid:in:execution] | args=[task="Using the plan and execution artifacts: does the execution match the plan? Check for skipped steps, deviations, unplanned changes, incomplete work. Cite specific evidence."] | out=[ref:exe-finding]
 
-@SEC name="Phase 4: Report"
-@STEP rid=step:report | n:int=4 | op=std:ai.prompt@v1 | timeout_ms:int=15000 | in=[ref:intent-finding,ref:plan-finding,ref:exe-finding] | args=[task="Produce a structured report with these fields: clean (bool), gaps (list), drifts (list), issues (list), status (see schema:status). If clean=true, cite evidence. Do not claim clean without substantive analysis of all prior phases."] | out=[rid:out:report]
+@SEC name="Phase 4: Source Re-check (active, per-claim)"
+@STEP rid=step:source-recheck | n:int=4 | op=std:ai.prompt@v1 | timeout_ms:int=45000 | in=[rid:in:execution] | args=[task="For every load-bearing factual claim in the execution/output, re-open the source that would confirm or refute it and check it directly; revise if wrong. A claim not re-checked against its source is 'unverified', never passing. Self-report of having checked is NOT evidence — only a fresh read counts. Pose each claim as a question ('Is X true, per the source?'), not a statement to confirm. When the claim is about a COMMITTED, BUILT, or PUBLISHED artifact, the 'source' is the CONSUMED form — the committed blob (git show <ref>:<path>), the built dist/tarball, or the published version — NOT the mutable working tree (a dirty tree or a stale dist can pass a claim while the shipped state is broken); see rule:verify-consumed-artifact."] | out=[ref:recheck-finding]
+@RULE rid=rule:active-per-claim | lvl=MUST | when="verifying" | then="verification is active and per-claim — re-open each load-bearing claim's source; a passive alignment pass or an agent's self-report of having checked does not satisfy it (critical-thinking arc D22/D25)"
+@RULE rid=rule:verify-consumed-artifact | lvl=MUST | when="a load-bearing claim is about a committed, built, or published artifact" | then="re-check against the CONSUMED form of the artifact — the committed blob (git show <ref>:<path>), the built output (dist / packed tarball), or the published version — NOT the mutable working copy. A dirty/uncommitted working tree or a stale dist can pass a claim while the committed HEAD / shipped artifact is broken; grepping the working tree is not verifying the commit. This is the discriminator instinct (cf. review.discriminator): the signal EXCLUSIVE to 'committed' is git show HEAD:, not a working-tree read. EXCEPTION: when uncommitted working-tree state IS itself the artifact under verification (WIP the handler explicitly asked to check, an unbuilt draft), the working copy is the correct source — this rule targets the case where a distinct consumed form exists. (LYT 2026-07-07: /verify returned clean on a working-tree grep while the committed HEAD shipped two CLI verbs dead — an uncommitted registration edit; the integration cold-review caught it. Same family as tsc-green-not-verified, injected-fakes-hide-default-path, and served-route-shadows-source.)"
+
+@SEC name="Phase 5: Report"
+@STEP rid=step:report | n:int=5 | op=std:ai.prompt@v1 | timeout_ms:int=15000 | in=[ref:intent-finding,ref:plan-finding,ref:exe-finding,ref:recheck-finding] | args=[task="Produce a structured report with these fields: clean (bool), gaps (list), drifts (list), issues (list), status (see schema:status). If clean=true, cite evidence, and every load-bearing claim must have passed the phase-4 source re-check (else status=unverified). Do not claim clean without substantive analysis of all prior phases."] | out=[rid:out:report]
 @OUTPUT rid=out:report | name="report" | type=struct | note="fields: clean:bool, gaps:list, drifts:list, issues:list, status (constrained by schema:status)"
-@SCHEMA key=status | opts=[clean,gaps-found,plan-not-found,incomplete] | default=incomplete
-@NOTE text="On the plan-absent short-circuit (rule:plan-absent), step:report runs with only ref:intent-finding — plan-finding and exe-finding are not produced because steps 2 and 3 are skipped — and emits the verdict with status=plan-not-found."
+@SCHEMA key=status | opts=[clean,gaps-found,plan-not-found,incomplete,unverified] | default=incomplete
+@NOTE text="On the plan-absent short-circuit (rule:plan-absent), steps 2 and 3 are skipped but step:source-recheck (phase 4) still runs; step:report runs with ref:intent-finding + ref:recheck-finding and emits the verdict with status=plan-not-found."
 
 @SEC name="Routing"
 @RULE rid=rule:route-investigate | lvl=SHOULD | when="the report's issues list is non-empty" | then="suggest /investigate to dig into the issues"
 @RULE rid=rule:route-replan | lvl=SHOULD | when="the report's drifts list is non-empty" | then="suggest /plan-create to redesign against the intent"
 @RULE rid=rule:route-sync | lvl=SHOULD | when="the report's clean field is true" | then="suggest /github-sync to commit and push"
 
-@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-07T00:00:00Z | src="agent:claude-code" | method=generated

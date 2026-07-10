@@ -40,7 +40,7 @@ Each skill is a folder under [`skills/`](skills/) with up to two files:
 | **`SKILL.md`** | human + agent | what the skill does and when to use it, in plain language |
 | **`protocol.yon`** | the runtime | the same skill's steps, rules, and gates as a **declarative protocol** it can enforce and *you* can audit |
 
-Markdown explains the skill. **YON makes it inspectable and enforceable** — the control flow, the rules (`MUST` / `MUST_NOT`), and the gates (`ABORT` / `WARN`) are named, typed objects, not prose you hope the model follows. Of the 50 skills here, **36 ship a `protocol.yon`**; 14 are Markdown-only.
+Markdown explains the skill. **YON makes it inspectable and enforceable** — the control flow, the rules (`MUST` / `MUST_NOT`), and the gates (`ABORT` / `WARN`) are named, typed objects, not prose you hope the model follows. Of the 51 skills here, **37 ship a `protocol.yon`**; 14 are Markdown-only.
 
 "Enforceable" is a claim you can check: [`GATE-FIRES.md`](GATE-FIRES.md) shows the public parser and the semantic linter *rejecting* deliberately-broken skills — regenerated in CI on every push, so it can't be staged.
 
@@ -161,7 +161,7 @@ Most skills are slash commands you invoke when you want them (`/cold-review …`
 | [`yon-read`](skills/yon-read/) | Reads, interprets, and explains any YON you point it at — the protocols in this pack included. |
 | [`yon-write`](skills/yon-write/) | Drafts and converts content into valid YON — the fastest way to author your own `protocol.yon`. |
 
-Browse [`skills/`](skills/) for the full set of 50 — planning, insight & decision, [orientation](#the-orient--family), priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, diff recap, and YON authoring.
+Browse [`skills/`](skills/) for the full set of 51 — planning, insight & decision, [orientation](#the-orient--family), priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, diff recap, and YON authoring.
 
 ---
 
@@ -174,8 +174,9 @@ When you sit down to a repo, a plan, or a task and ask *"where are we?"* — tha
 | [`orient-status`](skills/orient-status/) | where are we? | position, what's left, and a banded ETA; `--resume` rebuilds context after a gap |
 | [`orient-map`](skills/orient-map/) | show me the shape | what changed since your last look, plus done → here → next as a path (or a tree on a branch) |
 | [`orient-gaps`](skills/orient-gaps/) | what's stuck? | blockers, open forks, loose ends, and inferred silent gaps; `--audit` adds claim-vs-evidence disclosure |
+| [`orient-roadmap`](skills/orient-roadmap/) | show me the roadmap | the increment arc (built → current → next), the gates, the next increment's clusters, and the runway of now → gated-next → future stages plus the deferred lanes |
 
-All three emit slices of **one shared orientation record** — the record schema, the render contract, and the family rules live in [`orient-spec/`](orient-spec/), so the skills agree on shape without sharing code. On Claude Code the bundle also renders as a sparse visual widget; an information-complete ASCII twin is always emitted, so no runtime is left without the full read.
+All four emit slices of **one shared orientation record** — the record schema, the render contract, and the family rules live in [`orient-spec/`](orient-spec/), so the skills agree on shape without sharing code. On Claude Code the bundle also renders as a sparse visual widget; an information-complete ASCII twin is always emitted, so no runtime is left without the full read.
 
 ---
 
