@@ -23,11 +23,13 @@ Where open-skills is published, and how to get it. One row per channel — kept 
 
 | Channel | Method | Status | Notes |
 |---|---|---|---|
-| **awesome-claude-code** (`hesreallyhim/awesome-claude-code`) | PR adding an entry | ⬜ planned | highest-signal list; PR content drafted |
-| **claudemarketplaces.com** | directory submission (web form) | ⬜ planned | plugin-marketplace directory |
-| **awesome-skills.com** | directory submission | ⬜ planned | |
-| **awesomeclaude.ai** | directory submission | ⬜ planned | |
+| **awesome-claude-code** (`hesreallyhim/awesome-claude-code`) | **web issue form only** — no PR, no `gh`, human submitter required | ⏸️ hold | recs currently paused by maintainer; norm is "get users first"; form-ready one-liner prepared |
+| **claudemarketplaces.com** | directory submission (web) | ⬜ planned | plugin-marketplace directory |
+| **awesome-skills.com** | directory submission (web) | ⬜ planned | |
+| **awesomeclaude.ai** | directory submission (web) | ⬜ planned | |
 | **Show HN** | post, from proof (gate-fires + a real skill) | ⬜ planned | one-shot; spend from proof, not day-zero |
+
+> **All "to submit" rows are human-driven web actions** — agents can't (and per some lists' rules, must not) file them. The shared norm across these lists: **submit after traction, not as launch promo.** Descriptions must be plain (state what it does; no sales pitch, no emoji, one line).
 
 ## Log
 
