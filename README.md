@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="#install">Install</a> · <a href="#use-it">Usage</a> · <a href="#validate-it-yourself">Validate</a> · <a href="skills/">Skills</a> · <a href="#the-orient--family">Orient</a> · <a href="CHANGELOG.md">Changelog</a> · <a href="LICENSE">Apache 2.0</a> · <a href="https://allemaar.com">allemaar.com</a>
+  <a href="#install">Install</a> · <a href="#updating">Update</a> · <a href="#use-it">Usage</a> · <a href="#validate-it-yourself">Validate</a> · <a href="skills/">Skills</a> · <a href="#the-orient--family">Orient</a> · <a href="CHANGELOG.md">Changelog</a> · <a href="LICENSE">Apache 2.0</a> · <a href="https://allemaar.com">allemaar.com</a>
 </p>
 
 <p align="center">
@@ -113,7 +113,41 @@ Two things to know if you do. **On Windows use `mklink /J`** — under Git-Bash/
 
 Every fetch above ends the same way: a skill folder in your runtime's `skills/` dir that you can open and read.
 
-**For agents.** This pack is built to be installed *by* an agent, not just a human. Enumerate every skill from [`catalog.json`](catalog.json) (name, description, triggers, gates, per-skill install + validate commands), or read [`llms.txt`](llms.txt) for a dense manifest plus a step-by-step *"For agents — how to install"* recipe (detect runtime dir → copy the folder → validate its `protocol.yon`). Copy-default, no opaque installer — the install path is itself inspectable.
+### Updating
+
+| How you got it | How you update |
+|---|---|
+| **Plugin marketplace** | `/plugin marketplace update open-skills` |
+| **`cp -r` or `install.mjs`** | `git pull` in your clone → **diff** (below) → re-copy, or `node install.mjs --force <skill>` |
+| **Vercel `skills` CLI** | `npx skills update` |
+| **Symlinked (any source)** | Nothing to do — it updated when you pulled. No diff moment; [that's the trade](#read-first--clone-and-copy-any-runtime) |
+
+If you copied, your skill is frozen until you re-copy it — and that re-copy is your one moment to read what you are accepting. So diff first, from your clone:
+
+```bash
+# copied with cp -r — a plain diff, nothing to skip:
+git diff --no-index ~/.claude/skills/cold-review skills/cold-review
+
+# copied with install.mjs — it stamped a provenance block (repo, ref, tree SHA) into
+# your copy, so skip those lines: they are expected, not drift:
+git diff --no-index -I '^(metadata:|  (github-|local-path))' \
+  ~/.claude/skills/cold-review skills/cold-review
+```
+
+Know what `-I` costs you: it also hides a `metadata:` block appearing *upstream*, and that block is an unsigned claim other tooling acts on ([why that matters](THREAT-MODEL.md#the-attack-surface)). No skill in this repo ships one, and `install.mjs` prints a note if it ever finds one instead of stamping — treat that note as a reason to look. Drop the `-I` any time you want to see everything.
+
+Silence means identical; anything printed is behavior you have not read yet. Check each dir you installed into — `install.mjs` copies into every one it finds unless you passed `--runtime`. To sweep everything you installed at once:
+
+```bash
+for d in ~/.claude/skills/*/; do n=$(basename "$d"); [ -d "skills/$n" ] &&
+  git diff --no-index -I '^(metadata:|  (github-|local-path))' "$d" "skills/$n"; done
+```
+
+[`THREAT-MODEL.md`](THREAT-MODEL.md#audit-a-skill-before-you-install-it) has the full audit workflow, and what `gh skill` can and cannot tell you.
+
+### For agents
+
+This pack is built to be installed *by* an agent, not just a human. Enumerate every skill from [`catalog.json`](catalog.json) (name, description, triggers, gates, per-skill install + validate commands), or read [`llms.txt`](llms.txt) for a dense manifest plus a step-by-step *"For agents — how to install"* recipe (detect runtime dir → copy the folder → validate its `protocol.yon`). Copy-default, no opaque installer — the install path is itself inspectable.
 
 ---
 
@@ -137,7 +171,7 @@ That's the trust model in three lines: a named gate (`check:target-exists`, `fai
 
 ```bash
 npx @younndai/yon-parser validate skills/cold-review/protocol.yon --profile exec
-# ✓ protocol.yon: Valid
+# ✓ skills/cold-review/protocol.yon: Valid
 ```
 
 **4 — Run it.** In your agent:
@@ -162,13 +196,7 @@ The skill classified the work, sized the reviewer pool, briefed fresh agents on 
 
 Every `protocol.yon` validates against the public YON parser. The whole trust model is: the protocol is a declarative document you can parse, diff, and check — not arbitrary code you run on faith. Every skill's status is tracked in [`CONFORMANCE.md`](CONFORMANCE.md) and enforced in CI — the badge above is green only when all of them validate, alongside a cross-reference linter, a YON-DAG semantic check (dangling refs, unreachable steps), an orient value gate that rejects out-of-enum or fail-open orientation records the structural validator passes, and several more guards — leak scan, spine-sync, gate-fires, and the orient round-trip (the full list is in [`conformance.yml`](.github/workflows/conformance.yml)).
 
-The edges of that promise are stated plainly in [`THREAT-MODEL.md`](THREAT-MODEL.md): a skill runs with your agent's permissions, so installing one is a supply-chain decision. Inspectability removes the excuse not to read. It does not remove the need to. Validation proves a protocol is well-formed, not that it is benign — so the workflow is **read, validate, diff on update.** That diff is one command, and it needs nothing from us: `git pull` in your clone, then
-
-```bash
-git diff --no-index -I '^(metadata:|  (github-|local-path))' ~/.claude/skills/cold-review skills/cold-review
-```
-
-Silence means identical. (The `-I` skips the `metadata:` provenance block `install.mjs` writes into your copy.) [`THREAT-MODEL.md`](THREAT-MODEL.md#audit-a-skill-before-you-install-it) has the whole workflow, including a loop for checking every skill you installed.
+The edges of that promise are stated plainly in [`THREAT-MODEL.md`](THREAT-MODEL.md): a skill runs with your agent's permissions, so installing one is a supply-chain decision. Inspectability removes the excuse not to read. It does not remove the need to. Validation proves a protocol is well-formed, not that it is benign — so the workflow is **read, validate, diff on update.** That diff is one command and it needs nothing from us — see [Updating](#updating).
 
 ---
 

@@ -36,7 +36,11 @@ import { execSync, execFileSync } from "node:child_process";
 const PARSER = "@younndai/yon-parser@2"; // pinned to major 2; CI tracks latest 2.0.x
 const NAME_RE = /^[a-z0-9][a-z0-9-]*$/; // a skill name is also a path segment — keep it one
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
-const RUNTIMES = { // name -> skills dir; "detect by existence" per llms.txt
+// name -> skills dir. NOTE the asymmetry with llms.txt's agent recipe, which tells an
+// agent to pick the ONE dir its runtime reads: targetRuntimes() below instead installs
+// into every dir that exists, because a human running this usually wants exactly that.
+// `--runtime` narrows it to one. Both behaviours are documented in the README.
+const RUNTIMES = {
   claude: path.join(os.homedir(), ".claude", "skills"),
   codex: path.join(os.homedir(), ".codex", "skills"),
   agents: path.join(os.homedir(), ".agents", "skills"),

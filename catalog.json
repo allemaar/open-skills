@@ -9,8 +9,8 @@
   "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL.",
   "runtimeDirs": [
     "~/.claude/skills",
-    "~/.codex/skills",
-    "~/.agents/skills"
+    "~/.agents/skills",
+    "~/.codex/skills"
   ],
   "count": 51,
   "dualDoc": 37,
@@ -55,8 +55,8 @@
       ],
       "steps": 4,
       "install": {
-        "copy": "cp -r skills/ask-gate <runtime>/skills/ask-gate",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/ask-gate/protocol.yon --profile exec"
+        "copy": "cp -r skills/ask-gate <skills-dir>/ask-gate",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/ask-gate/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -90,7 +90,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/audit-coupled-constant <runtime>/skills/audit-coupled-constant",
+        "copy": "cp -r skills/audit-coupled-constant <skills-dir>/audit-coupled-constant",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -135,8 +135,8 @@
       ],
       "steps": 5,
       "install": {
-        "copy": "cp -r skills/budget-check <runtime>/skills/budget-check",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/budget-check/protocol.yon --profile exec"
+        "copy": "cp -r skills/budget-check <skills-dir>/budget-check",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/budget-check/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -186,8 +186,8 @@
       ],
       "steps": 6,
       "install": {
-        "copy": "cp -r skills/caller-options <runtime>/skills/caller-options",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/caller-options/protocol.yon --profile exec"
+        "copy": "cp -r skills/caller-options <skills-dir>/caller-options",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/caller-options/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -250,8 +250,8 @@
       ],
       "steps": 7,
       "install": {
-        "copy": "cp -r skills/cold-review <runtime>/skills/cold-review",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/cold-review/protocol.yon --profile exec"
+        "copy": "cp -r skills/cold-review <skills-dir>/cold-review",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/cold-review/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -289,7 +289,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/defuddle <runtime>/skills/defuddle",
+        "copy": "cp -r skills/defuddle <skills-dir>/defuddle",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -326,7 +326,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/design-an-interface <runtime>/skills/design-an-interface",
+        "copy": "cp -r skills/design-an-interface <skills-dir>/design-an-interface",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -378,8 +378,8 @@
       ],
       "steps": 6,
       "install": {
-        "copy": "cp -r skills/diff-recap <runtime>/skills/diff-recap",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/diff-recap/protocol.yon --profile exec"
+        "copy": "cp -r skills/diff-recap <skills-dir>/diff-recap",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/diff-recap/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -429,8 +429,8 @@
       ],
       "steps": 7,
       "install": {
-        "copy": "cp -r skills/double-check <runtime>/skills/double-check",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/double-check/protocol.yon --profile exec"
+        "copy": "cp -r skills/double-check <skills-dir>/double-check",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/double-check/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -482,8 +482,8 @@
       ],
       "steps": 5,
       "install": {
-        "copy": "cp -r skills/extract-signal <runtime>/skills/extract-signal",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/extract-signal/protocol.yon --profile exec"
+        "copy": "cp -r skills/extract-signal <skills-dir>/extract-signal",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/extract-signal/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -537,8 +537,8 @@
       ],
       "steps": 10,
       "install": {
-        "copy": "cp -r skills/github-sync <runtime>/skills/github-sync",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/github-sync/protocol.yon --profile exec"
+        "copy": "cp -r skills/github-sync <skills-dir>/github-sync",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/github-sync/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -591,8 +591,8 @@
       ],
       "steps": 9,
       "install": {
-        "copy": "cp -r skills/handoff <runtime>/skills/handoff",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/handoff/protocol.yon --profile exec"
+        "copy": "cp -r skills/handoff <skills-dir>/handoff",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/handoff/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -655,8 +655,8 @@
       ],
       "steps": 11,
       "install": {
-        "copy": "cp -r skills/handoff-execute <runtime>/skills/handoff-execute",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/handoff-execute/protocol.yon --profile exec"
+        "copy": "cp -r skills/handoff-execute <skills-dir>/handoff-execute",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/handoff-execute/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -700,8 +700,8 @@
       ],
       "steps": 9,
       "install": {
-        "copy": "cp -r skills/improve-codebase-architecture <runtime>/skills/improve-codebase-architecture",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/improve-codebase-architecture/protocol.yon --profile exec"
+        "copy": "cp -r skills/improve-codebase-architecture <skills-dir>/improve-codebase-architecture",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/improve-codebase-architecture/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -755,8 +755,8 @@
       ],
       "steps": 9,
       "install": {
-        "copy": "cp -r skills/insight-adversarial <runtime>/skills/insight-adversarial",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-adversarial/protocol.yon --profile exec"
+        "copy": "cp -r skills/insight-adversarial <skills-dir>/insight-adversarial",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-adversarial/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -813,8 +813,8 @@
       ],
       "steps": 9,
       "install": {
-        "copy": "cp -r skills/insight-angles <runtime>/skills/insight-angles",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-angles/protocol.yon --profile exec"
+        "copy": "cp -r skills/insight-angles <skills-dir>/insight-angles",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-angles/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -866,8 +866,8 @@
       ],
       "steps": 8,
       "install": {
-        "copy": "cp -r skills/insight-assess <runtime>/skills/insight-assess",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-assess/protocol.yon --profile exec"
+        "copy": "cp -r skills/insight-assess <skills-dir>/insight-assess",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-assess/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -913,8 +913,8 @@
       ],
       "steps": 11,
       "install": {
-        "copy": "cp -r skills/insight-critique <runtime>/skills/insight-critique",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-critique/protocol.yon --profile exec"
+        "copy": "cp -r skills/insight-critique <skills-dir>/insight-critique",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-critique/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -977,8 +977,8 @@
       ],
       "steps": 16,
       "install": {
-        "copy": "cp -r skills/insight-cross-examine <runtime>/skills/insight-cross-examine",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-cross-examine/protocol.yon --profile exec"
+        "copy": "cp -r skills/insight-cross-examine <skills-dir>/insight-cross-examine",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-cross-examine/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1018,8 +1018,8 @@
       ],
       "steps": 9,
       "install": {
-        "copy": "cp -r skills/insight-explore <runtime>/skills/insight-explore",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-explore/protocol.yon --profile exec"
+        "copy": "cp -r skills/insight-explore <skills-dir>/insight-explore",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-explore/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1060,8 +1060,8 @@
       ],
       "steps": 13,
       "install": {
-        "copy": "cp -r skills/insight-retro <runtime>/skills/insight-retro",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-retro/protocol.yon --profile exec"
+        "copy": "cp -r skills/insight-retro <skills-dir>/insight-retro",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-retro/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1098,8 +1098,8 @@
       ],
       "steps": 8,
       "install": {
-        "copy": "cp -r skills/insight-skill-gap <runtime>/skills/insight-skill-gap",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/insight-skill-gap/protocol.yon --profile exec"
+        "copy": "cp -r skills/insight-skill-gap <skills-dir>/insight-skill-gap",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-skill-gap/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1144,8 +1144,8 @@
       ],
       "steps": 9,
       "install": {
-        "copy": "cp -r skills/investigate <runtime>/skills/investigate",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/investigate/protocol.yon --profile exec"
+        "copy": "cp -r skills/investigate <skills-dir>/investigate",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/investigate/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1183,7 +1183,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/json-canvas <runtime>/skills/json-canvas",
+        "copy": "cp -r skills/json-canvas <skills-dir>/json-canvas",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -1243,8 +1243,8 @@
       ],
       "steps": 28,
       "install": {
-        "copy": "cp -r skills/monorepo-deps <runtime>/skills/monorepo-deps",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/monorepo-deps/protocol.yon --profile exec"
+        "copy": "cp -r skills/monorepo-deps <skills-dir>/monorepo-deps",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/monorepo-deps/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1283,7 +1283,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/multi-agent-mode <runtime>/skills/multi-agent-mode",
+        "copy": "cp -r skills/multi-agent-mode <skills-dir>/multi-agent-mode",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -1326,8 +1326,8 @@
       ],
       "steps": 8,
       "install": {
-        "copy": "cp -r skills/new-skill-creator <runtime>/skills/new-skill-creator",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/new-skill-creator/protocol.yon --profile exec"
+        "copy": "cp -r skills/new-skill-creator <skills-dir>/new-skill-creator",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/new-skill-creator/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1367,8 +1367,8 @@
       ],
       "steps": 3,
       "install": {
-        "copy": "cp -r skills/next-skills <runtime>/skills/next-skills",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/next-skills/protocol.yon --profile exec"
+        "copy": "cp -r skills/next-skills <skills-dir>/next-skills",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/next-skills/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1407,7 +1407,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/obsidian-bases <runtime>/skills/obsidian-bases",
+        "copy": "cp -r skills/obsidian-bases <skills-dir>/obsidian-bases",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -1448,7 +1448,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/obsidian-cli <runtime>/skills/obsidian-cli",
+        "copy": "cp -r skills/obsidian-cli <skills-dir>/obsidian-cli",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -1488,7 +1488,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/obsidian-markdown <runtime>/skills/obsidian-markdown",
+        "copy": "cp -r skills/obsidian-markdown <skills-dir>/obsidian-markdown",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -1528,7 +1528,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/orchestrate-mode <runtime>/skills/orchestrate-mode",
+        "copy": "cp -r skills/orchestrate-mode <skills-dir>/orchestrate-mode",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -1579,8 +1579,8 @@
       ],
       "steps": 7,
       "install": {
-        "copy": "cp -r skills/orient-gaps <runtime>/skills/orient-gaps",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/orient-gaps/protocol.yon --profile exec"
+        "copy": "cp -r skills/orient-gaps <skills-dir>/orient-gaps",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/orient-gaps/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1630,8 +1630,8 @@
       ],
       "steps": 7,
       "install": {
-        "copy": "cp -r skills/orient-map <runtime>/skills/orient-map",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/orient-map/protocol.yon --profile exec"
+        "copy": "cp -r skills/orient-map <skills-dir>/orient-map",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/orient-map/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1680,8 +1680,8 @@
       ],
       "steps": 6,
       "install": {
-        "copy": "cp -r skills/orient-roadmap <runtime>/skills/orient-roadmap",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/orient-roadmap/protocol.yon --profile exec"
+        "copy": "cp -r skills/orient-roadmap <skills-dir>/orient-roadmap",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/orient-roadmap/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1729,8 +1729,8 @@
       ],
       "steps": 7,
       "install": {
-        "copy": "cp -r skills/orient-status <runtime>/skills/orient-status",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/orient-status/protocol.yon --profile exec"
+        "copy": "cp -r skills/orient-status <skills-dir>/orient-status",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/orient-status/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1776,8 +1776,8 @@
       ],
       "steps": 7,
       "install": {
-        "copy": "cp -r skills/plan-cleanup <runtime>/skills/plan-cleanup",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/plan-cleanup/protocol.yon --profile exec"
+        "copy": "cp -r skills/plan-cleanup <skills-dir>/plan-cleanup",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-cleanup/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1838,8 +1838,8 @@
       ],
       "steps": 19,
       "install": {
-        "copy": "cp -r skills/plan-create <runtime>/skills/plan-create",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/plan-create/protocol.yon --profile exec"
+        "copy": "cp -r skills/plan-create <skills-dir>/plan-create",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-create/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1889,8 +1889,8 @@
       ],
       "steps": 13,
       "install": {
-        "copy": "cp -r skills/plan-deep-dive <runtime>/skills/plan-deep-dive",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/plan-deep-dive/protocol.yon --profile exec"
+        "copy": "cp -r skills/plan-deep-dive <skills-dir>/plan-deep-dive",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-deep-dive/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1929,7 +1929,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/plan-evolve <runtime>/skills/plan-evolve",
+        "copy": "cp -r skills/plan-evolve <skills-dir>/plan-evolve",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -1980,8 +1980,8 @@
       ],
       "steps": 10,
       "install": {
-        "copy": "cp -r skills/plan-execute <runtime>/skills/plan-execute",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/plan-execute/protocol.yon --profile exec"
+        "copy": "cp -r skills/plan-execute <skills-dir>/plan-execute",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-execute/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -2030,8 +2030,8 @@
       ],
       "steps": 10,
       "install": {
-        "copy": "cp -r skills/plan-phases <runtime>/skills/plan-phases",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/plan-phases/protocol.yon --profile exec"
+        "copy": "cp -r skills/plan-phases <skills-dir>/plan-phases",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-phases/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -2083,8 +2083,8 @@
       ],
       "steps": 10,
       "install": {
-        "copy": "cp -r skills/prime-expand <runtime>/skills/prime-expand",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/prime-expand/protocol.yon --profile exec"
+        "copy": "cp -r skills/prime-expand <skills-dir>/prime-expand",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/prime-expand/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -2130,8 +2130,8 @@
       ],
       "steps": 9,
       "install": {
-        "copy": "cp -r skills/prime-fetch <runtime>/skills/prime-fetch",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/prime-fetch/protocol.yon --profile exec"
+        "copy": "cp -r skills/prime-fetch <skills-dir>/prime-fetch",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/prime-fetch/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -2183,8 +2183,8 @@
       ],
       "steps": 11,
       "install": {
-        "copy": "cp -r skills/prime-sweep <runtime>/skills/prime-sweep",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/prime-sweep/protocol.yon --profile exec"
+        "copy": "cp -r skills/prime-sweep <skills-dir>/prime-sweep",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/prime-sweep/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -2215,7 +2215,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/reflect <runtime>/skills/reflect",
+        "copy": "cp -r skills/reflect <skills-dir>/reflect",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -2264,8 +2264,8 @@
       ],
       "steps": 4,
       "install": {
-        "copy": "cp -r skills/self-improve <runtime>/skills/self-improve",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/self-improve/protocol.yon --profile exec"
+        "copy": "cp -r skills/self-improve <skills-dir>/self-improve",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/self-improve/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -2300,7 +2300,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/skills-help <runtime>/skills/skills-help",
+        "copy": "cp -r skills/skills-help <skills-dir>/skills-help",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -2346,8 +2346,8 @@
       ],
       "steps": 5,
       "install": {
-        "copy": "cp -r skills/verify <runtime>/skills/verify",
-        "validate": "npx @younndai/yon-parser validate <runtime>/skills/verify/protocol.yon --profile exec"
+        "copy": "cp -r skills/verify <skills-dir>/verify",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/verify/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -2381,7 +2381,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/yon-read <runtime>/skills/yon-read",
+        "copy": "cp -r skills/yon-read <skills-dir>/yon-read",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -2421,7 +2421,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/yon-write <runtime>/skills/yon-write",
+        "copy": "cp -r skills/yon-write <skills-dir>/yon-write",
         "validate": null
       },
       "license": "Apache-2.0",

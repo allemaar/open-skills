@@ -34,7 +34,15 @@ const LICENSE = 'Apache-2.0';
 const SRC = 'github.com/allemaar/open-skills';
 const ATTRIBUTION =
   'open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL.';
-const RUNTIME_DIRS = ['~/.claude/skills', '~/.codex/skills', '~/.agents/skills'];
+const RUNTIME_DIRS = ['~/.claude/skills', '~/.agents/skills', '~/.codex/skills'];
+// Which runtime actually reads each dir. These are NOT interchangeable, and the failure
+// is silent: copy into a dir the user's runtime doesn't read and there is no error — the
+// skill simply never appears. A bare path list can't say that, which is why it must.
+const RUNTIME_READS = {
+  '~/.claude/skills': 'Claude Code, which reads this dir and no other — it does not read ~/.agents/skills',
+  '~/.agents/skills': 'the shared cross-runtime dir — Codex (its current location), Cline, Zed, Warp',
+  '~/.codex/skills': 'Codex — its older path, still read for backward compatibility',
+};
 
 // --- front-matter reader (zero-dep, no YAML lib) ----------------------------
 
@@ -149,9 +157,9 @@ function collect() {
       rules: proto ? proto.rules : [],
       steps: proto ? proto.steps : 0,
       install: {
-        copy: `cp -r ${SKILLS}/${name} <runtime>/skills/${name}`,
+        copy: `cp -r ${SKILLS}/${name} <skills-dir>/${name}`,
         validate: proto
-          ? `npx @younndai/yon-parser validate <runtime>/skills/${name}/protocol.yon --profile ${proto.profile}`
+          ? `npx @younndai/yon-parser validate <skills-dir>/${name}/protocol.yon --profile ${proto.profile}`
           : null,
       },
       license: LICENSE,
@@ -247,12 +255,21 @@ function emitLlms(skills) {
   );
   L.push('');
   L.push('## For agents — how to install');
-  L.push('No build step, no opaque installer. To install a skill on the user\'s machine:');
+  L.push('No build step, no opaque installer. Follow these in order; the checks in step 3 are the ones that matter, because every failure mode here is SILENT.');
+  L.push('0. Clone this repo and work from its root: `git clone https://github.com/allemaar/open-skills && cd open-skills`. Every relative path below is from that root.');
   L.push('1. Enumerate skills from catalog.json (repo root) — each record carries name, description, triggers, gates, and install commands.');
-  L.push(`2. Detect the user's runtime skills dir — use whichever exists: ${RUNTIME_DIRS.join(' | ')}.`);
-  L.push('3. COPY the skill folder (copy-default, never symlink): `cp -r skills/<name> <runtime>/skills/<name>` (Windows PowerShell: `Copy-Item -Recurse skills/<name> <runtime>/skills/<name>`).');
-  L.push('4. If it ships a protocol.yon, validate it: `npx @younndai/yon-parser validate <runtime>/skills/<name>/protocol.yon --profile <profile>` (profile is in catalog.json).');
+  L.push("2. Choose SKILLS_DIR — the ONE directory the user's runtime actually reads. These are not interchangeable, and choosing wrong fails silently: no error, the skill simply never appears.");
+  for (const d of RUNTIME_DIRS) L.push(`   - ${d} — ${RUNTIME_READS[d]}`);
+  L.push('   Other tools use a dir of their own (Cursor ~/.cursor/skills, Copilot ~/.copilot/skills). If you cannot establish which runtime you are running in, ASK the user — do not guess. NOTE: SKILLS_DIR already ends in `/skills`. Every step below uses `$SKILLS_DIR/<name>` and never appends `/skills` a second time.');
+  L.push('3. CHECK before you write. Both of these, in order — neither condition raises an error on its own, so if you skip the check you will not find out:');
+  L.push('   a. `test -e "$SKILLS_DIR/<name>"` — if it exists, the user already has this skill. ASK before replacing it. Do NOT just copy: `cp -r` onto an existing directory does not fail, it nests a second copy INSIDE it and leaves the old SKILL.md exactly where the runtime will keep reading it.');
+  L.push('   b. `test -L "$SKILLS_DIR/<name>"` (PowerShell: `(Get-Item -Force "$SKILLS_DIR/<name>").LinkType`) — if it is a symlink or junction, STOP and ask. Copying through it writes into whatever it points at, outside the skills dir, and exits 0 while doing so. Remove the link itself (`rmdir` on Windows, `unlink` on POSIX) — never delete or copy through it.');
+  L.push('4. COPY the folder (copy-default, never symlink): `cp -r skills/<name> "$SKILLS_DIR/<name>"` (Windows PowerShell: `Copy-Item -Recurse skills/<name> "$SKILLS_DIR/<name>"`). If it fails because SKILLS_DIR itself does not exist, create exactly that directory and retry — do not invent a different path to make the command succeed.');
+  L.push('5. If it ships a protocol.yon, validate it: `npx @younndai/yon-parser validate "$SKILLS_DIR/<name>/protocol.yon" --profile <profile>` (profile is in catalog.json).');
+  L.push('   EXPECT exit 0 and `✓ <the path you passed>: Valid` — the parser echoes the full path, so match on `: Valid` and the exit code, not on a fixed string. Anything else — a parse error, a non-zero exit — means STOP: report the output to the user and do not claim the skill installed cleanly.');
+  L.push('6. VERIFY, then report the path: `$SKILLS_DIR/<name>/SKILL.md` exists and its first line is `---`. Tell the user the exact directory you installed into — that is what decides which runtime can see it. (This confirms the copy landed; it cannot tell you SKILLS_DIR was the right dir. Step 2 is what gets that right.)');
   L.push('That is the whole install: copy a readable folder, validate its declarative contract. No code runs on faith.');
+  L.push('Updating later: these are frozen copies — they do not change until you re-copy. `git pull` in the clone, then diff before you accept: `git diff --no-index "$SKILLS_DIR/<name>" skills/<name>` — silence means identical; read anything it prints before re-copying. Do NOT filter that diff. A `cp -r` install carries no `metadata:` provenance block, so filtering those lines buys nothing and would hide one APPEARING — which is a change you want to see, since that block is an unsigned claim other tooling will act on.');
   L.push('');
   L.push('## Skills');
   for (const s of skills) {
