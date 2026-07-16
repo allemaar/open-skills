@@ -13,9 +13,30 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+---
+
+## [1.2.0] — 2026-07-17
+
 ### Added
 
+- **Three new skills:**
+  - **`budget-check`** — a fail-closed pre-wave usage gate. Wraps `ccusage blocks --json` into go / no-go / unknown against a 95% threshold, exiting 0/1/2 so a dispatch script can gate on it. It never emits a fabricated "go": a missing, non-numeric, or unreadable figure fails closed to `unknown`, and an inferred ceiling is labelled as what it is rather than passed off as a real budget.
+  - **`diff-recap`** — turns a git diff into a PR-pasteable recap: one row per changed file, whose path, status, and line counts are transcribed verbatim from `git diff --numstat` (true by construction — the model writes only the labels), emitted as an inline annotated widget plus a mandatory ASCII twin. Ships `tools/diff-recap-check.mjs`, the value gate that holds the record to its arithmetic: the totals must equal the sum of the rows, and no row may hide.
+  - **`orient-roadmap`** — the multi-horizon read, joining the `orient-` family over the same `orient-record` schema: the increment arc (built → current → next), what shipped, the gates, the next increment's clusters, and the runway of stage boxes, plus the deferred lanes.
+- **Claude Code plugin marketplace** — `/plugin marketplace add allemaar/open-skills` then `/plugin install open-skills@open-skills` installs the pack and namespaces the skills (`/open-skills:cold-review`, …). Updates in place with `/plugin marketplace update open-skills`.
+- **A visual face for the `orient-` family** — `orient-status`, `orient-map` and `orient-gaps` each render their record as an inline widget, with a **mandatory ASCII twin** so the read survives anywhere the widget doesn't, plus a family-wide "you are here" breadcrumb. The render face is a contract in `orient-spec/`, not per-skill decoration.
 - **`install.mjs` now stamps provenance into the copy it makes.** The installed `SKILL.md` gains a `metadata:` block recording the repo, ref, and tree SHA it came from — the same keys `gh skill` writes, so `gh skill list` / `gh skill update --dry-run` work on copies this installer made (verified against gh v2.96.0). **This means the installed file is no longer byte-identical to the repo's.** When this clone can't honestly back the claim — no origin, detached HEAD, local edits, or unpushed commits — it records a plain `local-path` instead. `--no-stamp` copies byte-for-byte and records nothing.
+- **[`DISTRIBUTION.md`](DISTRIBUTION.md)** — the distribution ledger: where the pack is published, a falsifiable traction gate with named thresholds for the held submissions, and an append-only measured-signals log. It also records the measurement cost it accepts: the read-first install paths are untelemetered by design, so the numbers undercount.
+- **`insight-angles`** gains a Cartography/Representation lens family (17-family roster).
+- Pack grows to **51 skills / 37 with a `protocol.yon`** (14 Markdown-only).
+
+### Changed
+
+- **`verify` and `cold-review` now re-check claims against source rather than trusting a report.** `verify` gained an active per-claim source re-check — an agent's self-report of having checked is not evidence, so the claim is re-derived from the artifact that actually ships (the committed blob, the built output, the served route), not the working tree. `cold-review` gained a self-verify pass over its own synthesis: evidence is re-opened, findings are posed as questions, and anything that doesn't survive a fresh read is dropped.
+- **CI hardened** — `leak-guard` and `consistency-guard` join the workflow, alongside the orient **value gate** (`tools/orient-validate.mjs`), which enforces what the parser structurally cannot: enum membership, required fields, and the fail-closed cross-field gate, checked against the schema read live so the rules can't drift from it.
+- **`handoff-execute`'s scope-expansion halt now fires less often.** `rule:no-scope-expansion` is a `MUST_NOT` that used to halt execution whenever it needed a source the brief did not list. It now halts only when the *agent itself* decides, on its own judgment, that it needs an unlisted source. A file the brief's own prose cites as an edit target, or a fact it names without saying where it lives, is read on demand and recorded in `@DELTA_FROM_BRIEF` rather than halted on.
+- **`extract-signal`** is now model-invocable (it is read-only, so the invocation flag bought nothing).
+- README leads with the plugin-marketplace install, states the "composable, not a framework" position, and surfaces the `orient-` family and its spec.
 
 ### Fixed
 
@@ -50,5 +71,6 @@ Initial public release of the **open-skills** pack — reusable skills for AI co
 - CI conformance — YON validation, a cross-reference/structural lint, a YON-DAG semantic check, spine-manifest sync, and a `gate-fires` proof that the guards actually reject broken input;
 - Apache-2.0 license, NOTICE, THREAT-MODEL, CONTRIBUTING (DCO), and SECURITY policy.
 
+[1.2.0]: https://github.com/allemaar/open-skills/releases/tag/v1.2.0
 [1.1.0]: https://github.com/allemaar/open-skills/releases/tag/v1.1.0
 [1.0.0]: https://github.com/allemaar/open-skills/releases/tag/v1.0.0
