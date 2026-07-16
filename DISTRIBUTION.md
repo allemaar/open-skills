@@ -17,7 +17,7 @@ Where open-skills is published, how to get it, and — since 2026-07-16 — the 
 
 | Channel | Mechanism | Status |
 |---|---|---|
-| **Vercel `skills` CLI / skills.sh** | `npx skills add allemaar/open-skills` — **live-tested 2026-07-16 in an isolated HOME: 51/51 skills installed, `skills/` subdirectory layout handled, exit 0**; installs reportedly surface on skills.sh via the CLI's install telemetry (not yet observed for this repo — check at each sample) | ✅ verified working |
+| **Vercel `skills` CLI / skills.sh** | `npx skills add allemaar/open-skills` — **layout compatibility live-tested 2026-07-16 in an isolated HOME: 51/51 skills installed, `skills/` subdirectory layout handled, exit 0.** That proves the CLI *can* install this pack from our `skills/` layout. It proves nothing about **reach**: an isolated HOME has no agent dirs to detect, and skills.sh surfacing (via the CLI's install telemetry) is **still unobserved for this repo** — check at each sample. **Scope note: the exact invocation was not recorded.** Mode is set by `--copy` / `--yes` / the unique-agent-dir count / scope (`add.ts:760-788`) — agent detection feeds that count but doesn't set mode directly. What we can reason from what *is* known: an isolated HOME detects no agents, so an unattended 51/51 run needed `--yes`/`--all` or agent-detection, and each of those selects every agent → >1 unique dir → no prompt → **symlink**. So the run most likely exercised symlink mode, not copy. Log the command next run rather than reconstructing it. | ✅ installable · reach unmeasured |
 
 ## The traction gate (falsifiable — added 2026-07-16)
 
@@ -51,9 +51,14 @@ Submissions below are **held on traction** ("doctrine" in the tables = this repo
 
 > **All "to submit" rows are human-driven web actions** — agents can't (and per some lists' rules, must not) file them. The shared norm across these lists: **submit after traction, not as launch promo.** Descriptions must be plain (state what it does; no sales pitch, no emoji, one line).
 
-## Deferred tooling (named triggers, not vibes)
+## Tooling triggers (named, not vibes)
 
-- **`install.mjs --outdated`** (read-only staleness diff for copy-path users): build on **first external ask** (issue/PR requesting update tooling) OR **second observed stale-copy incident** — not before. Until then the update story is the README Updating table + `install.mjs`'s existing `--force` procedure.
+- **`install.mjs --outdated`** (read-only staleness diff for copy-path users): **trigger DECLARED MET 2026-07-16 — no longer deferred, in build.** The old condition read "first external ask OR second observed stale-copy incident — not before"; it was retired on the reasoning that the ask is already filed *by the author* (THREAT-MODEL step 5 prescribes a diff-on-update the tooling cannot perform), and that a trigger firing on a *second* stale-copy incident fires **after** the harm. Until it lands, the update story is `git pull` + `node install.mjs --force <skill>` — note the per-path "Updating" table referenced by earlier revisions of this line **was never written**; it is a companion deliverable, not a shipped affordance.
+- **E1 — canonical copy + bridge junction** (copy to `~/.agents/skills/<name>`, then junction `~/.claude/skills/<name>` at it, so one canonical copy serves every runtime): **fires on** the first external ask for a non-Claude runtime, OR the first issue reporting a missing or duplicated skills dir.
+  - **Check first — it may already exist.** `npx skills add` **can produce this exact topology** (canonical `~/.agents/skills/<name>` + per-agent symlink/junction) — though **not by default**: it needs a *global* install in *symlink* mode, whereas an interactive run **prompts** for scope (`add.ts:734`) and only falls to project when non-interactive, and mode falls to copy when a single agent dir is targeted. If E1's trigger fires, first evaluate *recommending that CLI with the right flags* over building our own; only build if that is unacceptable.
+  - **Kill-condition:** Anthropic ships `~/.agents/skills` discovery — the bridge would be dead code before it shipped. Tracking: [#31005](https://github.com/anthropics/claude-code/issues/31005) (open), [#56193](https://github.com/anthropics/claude-code/issues/56193) and [#66352](https://github.com/anthropics/claude-code/issues/66352) (**both closed `not_planned`**). Read honestly: the request has been declined twice, so this kill-condition currently looks **unlikely to fire** — which is itself part of the bet, and makes the deferral below more justified, not less.
+  - **Why not today:** it buys a permanent link-removal obligation on exactly the hazard class [`install.mjs`](install.mjs) refuses to touch, on strangers' Windows boxes, for a user with no evidence of existing yet.
+  - **Dated bet, not a constant:** `~/.agents/skills` is an unowned convention — no spec, no governing body — so if it is moved or renamed, everything built on it breaks at once; if E1 is ever built it needs a CI path re-verify.
 
 ## Log
 

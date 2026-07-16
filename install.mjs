@@ -105,7 +105,8 @@ function installOne(name, catalog, runtimes, { noValidate, force }, failures) {
     try { st = fs.lstatSync(dest); } catch {}
     if (st) {
       const refuseLink = () => die(`${dest} is a symlink/junction, not a copy. Remove the link ` +
-        `yourself (rmdir / unlink the link only), then re-run — refusing to delete through it.`);
+        `yourself (rmdir / unlink the link only), then re-run — refusing to delete through it.\n` +
+        `        Installed it with \`npx skills\`? Use \`npx skills remove --global ${name}\` — do not \`rm -rf\` a junction.`);
       // Junction/symlink safety (the L0 destructive-delete hazard): a recursive delete
       // that traverses a link would descend into the repo source. Refuse any link.
       // lstat catches the leaf link (live or dangling) on current Node; the realpath

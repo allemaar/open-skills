@@ -67,28 +67,51 @@ No build step, no dependency on me. Clone the repo and copy the skill folders yo
 git clone https://github.com/allemaar/open-skills
 cd open-skills
 
-# Copy a skill into your runtime's skills dir (default)
+# Copy a skill into ONE skills dir — whichever your runtime reads
 cp -r skills/cold-review ~/.claude/skills/cold-review     # Claude Code
-cp -r skills/cold-review ~/.codex/skills/cold-review      # Codex
-cp -r skills/cold-review ~/.agents/skills/cold-review     # generic
+cp -r skills/cold-review ~/.agents/skills/cold-review     # the shared dir — Codex, Cline, Zed, Warp
+cp -r skills/cold-review ~/.codex/skills/cold-review      # Codex — older path, still read
 
 # Windows
 xcopy /E /I skills\cold-review "%USERPROFILE%\.claude\skills\cold-review"
 ```
 
+**Pick the dir your agent reads — one, not all three.** Claude Code reads `~/.claude/skills` and only that, never `~/.agents/skills`. On Codex, use `~/.agents/skills` — it's the current location, and other runtimes read it too; the older `~/.codex/skills` still works if you're already there. Most other tools have a dir of their own — Cursor `~/.cursor/skills`, Copilot `~/.copilot/skills` — so check yours rather than assuming `~/.agents/skills` is universal.
+
 Prefer one command? [`install.mjs`](install.mjs) does the same thing — read the catalog, copy the folder, validate its `protocol.yon` — and nothing else. It is a single zero-dependency Node file you can read in one screen before you run it:
 
 ```bash
-node install.mjs cold-review     # one skill
-node install.mjs --all           # the whole pack
-node install.mjs --list          # see what's installable
+node install.mjs cold-review                    # one skill
+node install.mjs --runtime claude cold-review   # into one dir only
+node install.mjs --all                          # the whole pack
+node install.mjs --list                         # see what's installable
 ```
+
+By default it copies into **every** skills dir it finds — pass `--runtime claude|codex|agents` to target just one.
 
 It copies (never symlinks), skips an already-installed skill unless you pass `--force`, and — true to the wedge — *refuses* to overwrite a symlinked or junctioned skill rather than delete through the link into the repo. The installer is itself inspectable; read it first.
 
-Want a skill to track the repo as you pull updates? Symlink instead of copying — POSIX `ln -s "$PWD/skills/cold-review" ~/.claude/skills/cold-review`, or a Windows junction `cmd /c mklink /J "%USERPROFILE%\.claude\skills\cold-review" "%CD%\skills\cold-review"`. One caveat worth knowing: a symlinked/junctioned skill dir means a recursive delete of your skills folder can traverse the link into this repo — copies don't have that edge.
+**Want a skill to track the repo as you pull?** That means symlinking into this clone — and it's the one setup this pack argues against. A `git pull` then silently changes the instructions your agent runs, with no moment where you read the diff. That is exactly the drift [`THREAT-MODEL.md`](THREAT-MODEL.md) names, and it's why copying is the default. If you want it anyway — you're maintaining the pack, or you read every pull — link it deliberately:
 
-**Other ways to fetch.** The [Vercel `skills` CLI](https://github.com/vercel-labs/skills) installs straight from GitHub with no manual clone — `npx skills add allemaar/open-skills --skill cold-review` (drop `--skill` for the whole pack, or add `--list` to see them first; `npx skills update` later). One copy into the shared `~/.agents/skills` dir serves every runtime that reads it — Codex, Cursor, Copilot, OpenCode. And for a single skill without the full repo, `git sparse-checkout` set to `skills/cold-review` pulls only that folder. Every path ends the same way: a skill folder in your runtime's `skills/` dir that you can open and read.
+```bash
+# POSIX — target first, then the link
+ln -s "$PWD/skills/cold-review" ~/.claude/skills/cold-review
+
+# Windows — link first, then the target. Run this one in cmd, not Git-Bash.
+mklink /J "%USERPROFILE%\.claude\skills\cold-review" "%CD%\skills\cold-review"
+```
+
+Two things to know if you do. **On Windows use `mklink /J`** — under Git-Bash/MSYS, `ln -s` by default silently makes a *copy* instead of a link, so you would believe you were tracking the repo while holding a frozen snapshot. And remove a link with `rmdir` (Windows) or `unlink` (POSIX) — never `rm -rf` through it, or the delete descends into this repo. That's the hazard [`install.mjs`](install.mjs) refuses to touch, above.
+
+**Other ways to fetch.**
+
+- **[Vercel `skills` CLI](https://github.com/vercel-labs/skills)** — installs straight from GitHub, no manual clone:
+  `npx skills add allemaar/open-skills --skill cold-review` (drop `--skill` for the whole pack, `--list` to see them first, `npx skills update` later). Two things this page owes you about it:
+  - **Pass `--copy`.** Without it you may get symlinks — junctions on Windows — which is the tracking topology above, not the frozen copy this pack prefers. Which one you get depends on how, and on what, runs it: one agent dir copies; several prompt you, recommending symlink; `--yes`/`--all` takes symlink without asking, and so does any run it detects as agent-driven, which goes non-interactive even with no flags.
+  - **Set `DISABLE_TELEMETRY` or `DO_NOT_TRACK`** if you'd rather not report usage to `add-skill.vercel.sh/t` — its `find` command sends your search query along with the event. (Those variables gate that endpoint; a separate audit lookup it performs at install time isn't gated by them.)
+- **`git sparse-checkout`** set to `skills/cold-review` — one skill, without the full repo.
+
+Every fetch above ends the same way: a skill folder in your runtime's `skills/` dir that you can open and read.
 
 **For agents.** This pack is built to be installed *by* an agent, not just a human. Enumerate every skill from [`catalog.json`](catalog.json) (name, description, triggers, gates, per-skill install + validate commands), or read [`llms.txt`](llms.txt) for a dense manifest plus a step-by-step *"For agents — how to install"* recipe (detect runtime dir → copy the folder → validate its `protocol.yon`). Copy-default, no opaque installer — the install path is itself inspectable.
 
@@ -139,7 +162,7 @@ The skill classified the work, sized the reviewer pool, briefed fresh agents on 
 
 Every `protocol.yon` validates against the public YON parser. The whole trust model is: the protocol is a declarative document you can parse, diff, and check — not arbitrary code you run on faith. Every skill's status is tracked in [`CONFORMANCE.md`](CONFORMANCE.md) and enforced in CI — the badge above is green only when all of them validate, alongside a cross-reference linter, a YON-DAG semantic check (dangling refs, unreachable steps), an orient value gate that rejects out-of-enum or fail-open orientation records the structural validator passes, and several more guards — leak scan, spine-sync, gate-fires, and the orient round-trip (the full list is in [`conformance.yml`](.github/workflows/conformance.yml)).
 
-The edges of that promise are stated plainly in [`THREAT-MODEL.md`](THREAT-MODEL.md): a skill runs with your agent's permissions, so installing one is a supply-chain decision. Inspectability removes the excuse not to read. It does not remove the need to. Validation proves a protocol is well-formed, not that it is benign — so the workflow is **read, validate, diff on update.**
+The edges of that promise are stated plainly in [`THREAT-MODEL.md`](THREAT-MODEL.md): a skill runs with your agent's permissions, so installing one is a supply-chain decision. Inspectability removes the excuse not to read. It does not remove the need to. Validation proves a protocol is well-formed, not that it is benign — so the workflow is **read, validate, diff on update.** On the copy path that diff is yours to run today: `git pull` in your clone, then `git diff` the skill folder before you re-copy it. Tooling to do that for you is on the way, not shipped.
 
 ---
 

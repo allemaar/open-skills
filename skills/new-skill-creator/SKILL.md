@@ -1,6 +1,6 @@
 ---
 name: new-skill-creator
-description: Scaffold a new Agent Skill end-to-end (folder, SKILL.md, optional protocol.yon for dual-doc skills, tri-runtime links for Claude Code + Codex + generic .agents/, commit and push). Trigger when the user runs /new-skill-creator or says "create a skill", "make a new skill for X", "add a slash command", "turn this workflow into a skill", "codify this as a skill". Not for editing existing skills — edit the SKILL.md directly. For migrating an existing single-doc skill to the dual-doc YON pattern, see section 6 below.
+description: Scaffold a new Agent Skill end-to-end (folder, SKILL.md, optional protocol.yon for dual-doc skills, tri-runtime links for Claude Code + Codex + the shared .agents/ dir, commit and push). Trigger when the user runs /new-skill-creator or says "create a skill", "make a new skill for X", "add a slash command", "turn this workflow into a skill", "codify this as a skill". Not for editing existing skills — edit the SKILL.md directly. For migrating an existing single-doc skill to the dual-doc YON pattern, see section 6 below.
 disable-model-invocation: true
 runtime: [claude, codex, agents]
 visibility: public
@@ -195,11 +195,11 @@ New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.codex\skills\{skill-nam
 > **Note:** Despite Developer Mode being enabled, `New-Item -ItemType SymbolicLink` still requires elevation in some Win 11 builds. `mklink /D` is preferred when symbolic links are available; `mklink /J` is an acceptable fallback. If runtime link creation fails, stop and report — do not try to elevate or work around it.
 
 #### Why three runtime links (not a chain)
-- `.claude/skills/` is consumed by **Claude Code**.
-- `.codex/skills/` is consumed by **Codex**.
-- `.agents/skills/` is a **runtime-agnostic mirror** for other agent harnesses or future tools that may consult it. **It is NOT what Codex reads** — Codex reads only from `.codex/skills/`.
+- `.claude/skills/` is consumed by **Claude Code** — which reads only its own dir, never `.agents/`.
+- `.codex/skills/` is Codex's **older** user location, still read for backward compatibility (`$CODEX_HOME/skills`).
+- `.agents/skills/` is the **shared cross-runtime dir** — Codex's *current* user location, and read by Cline, Zed, and Warp. Other tools use dirs of their own (Cursor `~/.cursor/skills`, Copilot `~/.copilot/skills`), so it is not universal.
 
-Each runtime's directory is read independently. A chain (e.g. `.claude/` → `.agents/` → repo) would mean a broken `.agents/` link silently breaks Claude Code, and Codex would get nothing because it doesn't look at `.agents/` at all. Three direct links keep every runtime independent and resilient.
+Each runtime's directory is read independently. A chain (e.g. `.claude/` → `.agents/` → repo) would mean a broken `.agents/` link silently breaks Claude Code. Three direct links keep every runtime independent and resilient.
 
 #### Agent-specific skills
 If a skill is intentionally Claude-only or Codex-only — because it depends on tools that aren't available in the other runtime — the author MAY skip the runtime links for the unsupported runtimes. In that case the author MUST add a `runtime:` field to the front-matter listing the supported runtimes. Examples:

@@ -1291,7 +1291,7 @@
     },
     {
       "name": "new-skill-creator",
-      "description": "Scaffold a new Agent Skill end-to-end (folder, SKILL.md, optional protocol.yon for dual-doc skills, tri-runtime links for Claude Code + Codex + generic .agents/, commit and push). Trigger when the user runs /new-skill-creator or says \"create a skill\", \"make a new skill for X\", \"add a slash command\", \"turn this workflow into a skill\", \"codify this as a skill\". Not for editing existing skills — edit the SKILL.md directly. For migrating an existing single-doc skill to the dual-doc YON pattern, see section 6 below.",
+      "description": "Scaffold a new Agent Skill end-to-end (folder, SKILL.md, optional protocol.yon for dual-doc skills, tri-runtime links for Claude Code + Codex + the shared .agents/ dir, commit and push). Trigger when the user runs /new-skill-creator or says \"create a skill\", \"make a new skill for X\", \"add a slash command\", \"turn this workflow into a skill\", \"codify this as a skill\". Not for editing existing skills — edit the SKILL.md directly. For migrating an existing single-doc skill to the dual-doc YON pattern, see section 6 below.",
       "visibility": "public",
       "triggers": [
         "/new-skill-creator",
