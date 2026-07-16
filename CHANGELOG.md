@@ -11,6 +11,19 @@ or guard changes that neither add nor remove a skill.
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- **`install.mjs` now stamps provenance into the copy it makes.** The installed `SKILL.md` gains a `metadata:` block recording the repo, ref, and tree SHA it came from — the same keys `gh skill` writes, so `gh skill list` / `gh skill update --dry-run` work on copies this installer made (verified against gh v2.96.0). **This means the installed file is no longer byte-identical to the repo's.** When this clone can't honestly back the claim — no origin, detached HEAD, local edits, or unpushed commits — it records a plain `local-path` instead. `--no-stamp` copies byte-for-byte and records nothing.
+
+### Fixed
+
+- **False and misleading statements on the install surface.** The runtime-dir table named the wrong runtimes for `~/.agents/skills` (Cursor, Copilot and OpenCode use their own dirs; Codex reads `.agents` as its current location, with `~/.codex/skills` still read for backward compatibility). The symlink recipe sold repo-tracking as a feature while warning only about deletes, never drift — and its POSIX `ln -s` line silently makes a *copy* under Git-Bash/MSYS. `install.mjs` copying into **every** runtime dir it finds was undocumented, as was `--runtime`. The Vercel CLI's symlink-by-default behaviour and its telemetry are now disclosed.
+- **THREAT-MODEL step 5 had no procedure for the copy default** — the pack's own default. It prescribed reviewing a diff for symlinked skills, the one topology the same document rejects. It now gives the copy path a real command. The "Silent drift" bullet no longer frames symlinking as the norm.
+
+---
+
 ## [1.1.0] — 2026-06-22
 
 ### Added

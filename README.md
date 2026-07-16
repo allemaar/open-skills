@@ -78,7 +78,7 @@ xcopy /E /I skills\cold-review "%USERPROFILE%\.claude\skills\cold-review"
 
 **Pick the dir your agent reads — one, not all three.** Claude Code reads `~/.claude/skills` and only that, never `~/.agents/skills`. On Codex, use `~/.agents/skills` — it's the current location, and other runtimes read it too; the older `~/.codex/skills` still works if you're already there. Most other tools have a dir of their own — Cursor `~/.cursor/skills`, Copilot `~/.copilot/skills` — so check yours rather than assuming `~/.agents/skills` is universal.
 
-Prefer one command? [`install.mjs`](install.mjs) does the same thing — read the catalog, copy the folder, validate its `protocol.yon` — and nothing else. It is a single zero-dependency Node file you can read in one screen before you run it:
+Prefer one command? [`install.mjs`](install.mjs) does close to the same thing — read the catalog, copy the folder, validate its `protocol.yon` — plus one edit the `cp` above doesn't make: it stamps the copy's `SKILL.md` with a `metadata:` block recording the repo, ref, and tree SHA it came from, so you can tell later whether it has drifted. That means the installed file is not byte-identical to this repo's; `--no-stamp` turns it off, and [`THREAT-MODEL.md`](THREAT-MODEL.md#what-open-skills-does-about-it) explains the trade. It is a single zero-dependency Node file you can read before you run it:
 
 ```bash
 node install.mjs cold-review                    # one skill
@@ -162,7 +162,13 @@ The skill classified the work, sized the reviewer pool, briefed fresh agents on 
 
 Every `protocol.yon` validates against the public YON parser. The whole trust model is: the protocol is a declarative document you can parse, diff, and check — not arbitrary code you run on faith. Every skill's status is tracked in [`CONFORMANCE.md`](CONFORMANCE.md) and enforced in CI — the badge above is green only when all of them validate, alongside a cross-reference linter, a YON-DAG semantic check (dangling refs, unreachable steps), an orient value gate that rejects out-of-enum or fail-open orientation records the structural validator passes, and several more guards — leak scan, spine-sync, gate-fires, and the orient round-trip (the full list is in [`conformance.yml`](.github/workflows/conformance.yml)).
 
-The edges of that promise are stated plainly in [`THREAT-MODEL.md`](THREAT-MODEL.md): a skill runs with your agent's permissions, so installing one is a supply-chain decision. Inspectability removes the excuse not to read. It does not remove the need to. Validation proves a protocol is well-formed, not that it is benign — so the workflow is **read, validate, diff on update.** On the copy path that diff is yours to run today: `git pull` in your clone, then `git diff` the skill folder before you re-copy it. Tooling to do that for you is on the way, not shipped.
+The edges of that promise are stated plainly in [`THREAT-MODEL.md`](THREAT-MODEL.md): a skill runs with your agent's permissions, so installing one is a supply-chain decision. Inspectability removes the excuse not to read. It does not remove the need to. Validation proves a protocol is well-formed, not that it is benign — so the workflow is **read, validate, diff on update.** That diff is one command, and it needs nothing from us: `git pull` in your clone, then
+
+```bash
+git diff --no-index -I '^(metadata:|  (github-|local-path))' ~/.claude/skills/cold-review skills/cold-review
+```
+
+Silence means identical. (The `-I` skips the `metadata:` provenance block `install.mjs` writes into your copy.) [`THREAT-MODEL.md`](THREAT-MODEL.md#audit-a-skill-before-you-install-it) has the whole workflow, including a loop for checking every skill you installed.
 
 ---
 

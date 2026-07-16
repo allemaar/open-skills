@@ -1,13 +1,19 @@
 #!/usr/bin/env node
 // install.mjs — copy-default skill installer for open-skills.
 //
-// Read this before you run it. It does exactly two things, and nothing else:
+// Read this before you run it. It does exactly three things, and nothing else:
 //   1. COPIES a readable skill folder from this repo into your agent's skills dir.
-//   2. VALIDATES that skill's declarative protocol.yon with the public YON parser.
-// No build step, no opaque binary. Zero dependencies — Node built-ins only. The
-// whole install is "copy a folder you can read, check its contract." If you don't
-// trust it, read it; it fits on a screen. (The only network is validation: the first
-// `npx` run fetches the pinned public parser; `--no-validate` skips it entirely.)
+//   2. STAMPS the copied SKILL.md with where it came from (repo, ref, tree sha) under
+//      the spec's `metadata:` key. This is the ONLY edit to the copied bytes, and it
+//      is why `git diff --no-index <installed> <clone>` shows a `metadata:` block —
+//      that block is expected; anything else in the diff is a real change. The keys
+//      are `gh skill`'s own, so `gh skill update --dry-run` can report staleness on
+//      these copies without us shipping an updater. `--no-stamp` skips it.
+//   3. VALIDATES that skill's declarative protocol.yon with the public YON parser.
+// No build step, no opaque binary. Zero dependencies — Node built-ins only. If you
+// don't trust it, read it. (The only network is validation: the first `npx` run
+// fetches the pinned public parser; `--no-validate` skips it entirely. Stamping is
+// local-only — it shells out to `git` in THIS clone and phones nowhere.)
 //
 // Usage:
 //   node install.mjs <skill> [<skill> ...]      install named skills
@@ -15,6 +21,7 @@
 //   node install.mjs --list                     list installable skills, then exit
 //   node install.mjs --runtime claude <skill>   target one runtime dir (claude|codex|agents)
 //   node install.mjs --no-validate <skill>      skip protocol.yon validation (escape hatch)
+//   node install.mjs --no-stamp <skill>         copy byte-for-byte; write no provenance
 //   node install.mjs --force <skill>            overwrite an already-installed skill
 //
 // Apache-2.0. "YON" and "YounndAI" are trademarks of MARLINK TRADING SRL; this repo
@@ -24,7 +31,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { execSync } from "node:child_process";
+import { execSync, execFileSync } from "node:child_process";
 
 const PARSER = "@younndai/yon-parser@2"; // pinned to major 2; CI tracks latest 2.0.x
 const NAME_RE = /^[a-z0-9][a-z0-9-]*$/; // a skill name is also a path segment — keep it one
@@ -71,6 +78,100 @@ function targetRuntimes(forced) {
   return present;
 }
 
+// Provenance, in the two shapes `gh skill` uses (internal/skills/frontmatter): GitHub
+// keys when THIS clone can honestly back the claim, `local-path` when it cannot. gh's
+// local injector clears the github keys; we keep the two shapes exclusive for the same
+// reason. A stamp that cannot be backed is worse than no stamp — `github-tree-sha` must
+// describe the exact bytes copied and be findable at `github-repo`, or its readers lie.
+function provenance(name) {
+  const src = path.join(ROOT, "skills", name);
+  // execFile, never a shell. ROOT is wherever this clone happens to sit; /bin/sh expands
+  // $(), backticks and quotes even inside double quotes, so a crafted clone path would
+  // run commands here. (validate() below quotes for the same hazard; git is a real
+  // executable, so this path can dodge the shell entirely instead.)
+  const git = (...args) =>
+    execFileSync("git", ["-C", ROOT, ...args], { stdio: ["ignore", "pipe", "ignore"] })
+      .toString().trim();
+  try {
+    // Only GitHub can back a github-* claim. Any other origin (a GitLab mirror, a
+    // private fork) gets the local shape: stamping it as `github-repo` would fabricate
+    // a claim and leak that origin into a file the agent reads. Normalize both remote
+    // forms to the https shape gh itself writes, so the two tools agree byte-for-byte.
+    const remote = git("remote", "get-url", "origin").replace(/\.git$/, "");
+    const gh = remote.match(/^(?:https:\/\/github\.com\/|git@github\.com:)(.+)$/);
+    if (!gh) return { "local-path": src };
+    const url = `https://github.com/${gh[1]}`;
+    const ref = git("rev-parse", "--abbrev-ref", "HEAD");
+    const tree = git("rev-parse", `HEAD:skills/${name}`); // the skill dir's own tree object
+    // Refuse the GitHub claim whenever it would be a lie:
+    //  - a detached HEAD, with no ref to record;
+    //  - local edits, where the tree sha describes committed bytes and NOT the bytes we
+    //    are about to copy. --ignored matters: this repo ignores skills/*/.claude/, and
+    //    an ignored file is still COPIED, so a plain status would call it clean while the
+    //    copy carries bytes the tree sha does not cover;
+    //  - commits not yet pushed, where the tree is real here but absent at `github-repo` —
+    //    a reader (or `gh skill update`) looks for it and finds nothing. If the remote
+    //    ref is merely stale this fails closed to `local-path`, which is the safe way.
+    const dirty = git("status", "--porcelain", "--ignored", "--", `skills/${name}`);
+    const pushed = (() => {
+      try { git("merge-base", "--is-ancestor", "HEAD", "@{upstream}"); return true; }
+      catch { return false; }
+    })();
+    if (!tree || !ref || ref === "HEAD" || dirty || !pushed) return { "local-path": src };
+    return {
+      "github-repo": url, // a URL: gh's ParseMetadataRepo -> ghrepo.FromFullName reads this
+      "github-ref": ref,
+      "github-tree-sha": tree,
+      "github-path": `skills/${name}`,
+    };
+  } catch {
+    return { "local-path": src }; // no git, no origin, not a checkout — say so plainly
+  }
+}
+
+// Inject provenance into the copy's YAML frontmatter under `metadata:`. Deliberately
+// narrow: create-only. If a frontmatter already carries `metadata:` (no skill in this
+// repo does; a fork might), leave it untouched rather than hand-merge YAML zero-dep.
+function stampCopy(destSkillDir, name) {
+  const f = path.join(destSkillDir, "SKILL.md");
+  // Write-path link guard — the mirror of refuseLink()'s delete-path guard above. cpSync
+  // reproduces a symlink as a symlink, and writeFileSync follows one; a tampered clone
+  // shipping SKILL.md as a link would have us write through it, outside the copy.
+  let st;
+  try { st = fs.lstatSync(f); } catch { return; } // no SKILL.md — nothing to stamp
+  if (!st.isFile()) {
+    console.log(`  note: ${name}/SKILL.md is not a regular file — not stamped`);
+    return;
+  }
+  const text = fs.readFileSync(f, "utf8");
+  const lines = text.split("\n"); // keeps a trailing \r per line when the file is CRLF
+  const fence = (l) => l.trimEnd() === "---"; // trimEnd tolerates CRLF
+  if (!fence(lines[0])) return; // no frontmatter to extend
+  // Scan line-wise for the closing fence. indexOf("\n---") would also match a `---`
+  // sitting inside a block scalar and inject the stamp into the middle of a value.
+  const close = lines.findIndex((l, i) => i > 0 && fence(l));
+  if (close === -1) return; // unterminated frontmatter — don't guess
+  if (lines.slice(1, close).some((l) => /^metadata:/.test(l))) {
+    // Never clobber. Say so: a pre-baked block is an unverifiable claim we are choosing
+    // to preserve over the one we could compute, and the user should know we did that.
+    console.log(`  note: ${name} ships its own metadata: block — left as-is, not stamped`);
+    return;
+  }
+  const keys = provenance(name);
+  // Quote the value: a path containing " #" would otherwise start a YAML comment, and
+  // one containing ": " would break the parse outright.
+  const crlf = /\r\n/.test(text);
+  const block = ["metadata:", ...Object.entries(keys).map(([k, v]) => `  ${k}: ${JSON.stringify(v)}`)]
+    .map((l) => (crlf ? l + "\r" : l)); // match the file's existing line endings
+  lines.splice(close, 0, ...block);
+  try { fs.writeFileSync(f, lines.join("\n")); }
+  catch (e) {
+    // A read-only source mode is preserved by cpSync. Don't abort the run over it —
+    // validate() collects failures for the same reason.
+    console.log(`  note: could not stamp ${name} (${e.code || e.message}) — copy left unstamped`);
+  }
+}
+
 function validate(destSkillDir, skill, rtName, failures) {
   const protocol = path.join(destSkillDir, "protocol.yon");
   if (!skill.hasProtocol && !fs.existsSync(protocol)) return;
@@ -92,7 +193,7 @@ function validate(destSkillDir, skill, rtName, failures) {
   }
 }
 
-function installOne(name, catalog, runtimes, { noValidate, force }, failures) {
+function installOne(name, catalog, runtimes, { noValidate, noStamp, force }, failures) {
   const skill = catalog.get(name);
   if (!skill) die(`"${name}" is not in the catalog. Run --list to see installable skills.`);
   const src = path.join(ROOT, "skills", name); // name is NAME_RE-validated at catalog load
@@ -127,6 +228,7 @@ function installOne(name, catalog, runtimes, { noValidate, force }, failures) {
     }
     fs.mkdirSync(dir, { recursive: true });
     fs.cpSync(src, dest, { recursive: true }); // copy-default, never a symlink
+    if (!noStamp) stampCopy(dest, name);
     console.log(`  copied ${name} -> ${rtName}`);
     if (!noValidate) validate(dest, skill, rtName, failures);
   }
@@ -134,11 +236,12 @@ function installOne(name, catalog, runtimes, { noValidate, force }, failures) {
 
 function main() {
   const argv = process.argv.slice(2);
-  const opts = { noValidate: false, force: false, all: false, list: false, runtime: null };
+  const opts = { noValidate: false, noStamp: false, force: false, all: false, list: false, runtime: null };
   const names = [];
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--no-validate") opts.noValidate = true;
+    else if (a === "--no-stamp") opts.noStamp = true;
     else if (a === "--force") opts.force = true;
     else if (a === "--all") opts.all = true;
     else if (a === "--list") opts.list = true;
