@@ -21,7 +21,7 @@ triggers:
 # /new-skill-creator
 
 ## What this skill does
-Creates a new skill in the skills repo, links it into all three agent runtimes (Claude Code, Codex, and the generic `.agents/` mirror), commits and pushes to GitHub. Supports two formats:
+Creates a new skill in the skills repo, links it into all three agent runtimes (Claude Code, Codex, and the shared `.agents/` dir), commits and pushes to GitHub. Supports two formats:
 
 - **Single-doc** — one `SKILL.md` (default for short routers, triggers, mode-setters, reference cards).
 - **Dual-doc** — `SKILL.md` (human-readable, self-sufficient) + `protocol.yon` (machine-executable spec) (default for heavy procedural skills with phases, gates, severity-ranked rules). See section 2b.
@@ -38,7 +38,7 @@ Ask the user (on Claude Code, use `AskUserQuestion` for structured options; on C
 - When should it trigger? Give 2-3 example phrases a user might say.
 - Could this skill be confused with an existing skill? If yes, list the ones it's most similar to — we'll add boundary clauses to clarify.
 - Should only the user invoke it (not Claude auto-trigger)? Default: yes for workflows with side effects.
-- Is this skill runtime-specific? Default: no — skills are available in all three runtimes (Claude Code, Codex, generic). Only mark runtime-specific if the skill depends on tools or capabilities that are not available in the other runtime(s).
+- Is this skill runtime-specific? Default: no — skills are available in all three targets (Claude Code, Codex, and the shared `.agents/` dir). Only mark runtime-specific if the skill depends on tools or capabilities that are not available in the other runtime(s).
 - **Dual-doc or single-doc?** Apply the criterion below; default to single-doc if uncertain.
 - **Caller Options participant?** If the skill has genuine venue or mode optionality worth surfacing to the caller, add the COP opt-in block — see [`caller-options/references/OPT-IN-BLOCK.md`](../caller-options/references/OPT-IN-BLOCK.md).
 - **Next-skills participant?** If, after this skill finishes, there are natural successor skills worth recommending to the user, add the NSP opt-in block — see [`next-skills/SKILL.md`](../next-skills/SKILL.md) and the subsection below.
@@ -123,7 +123,7 @@ skills/{skill-name}/
 
 1. Frontmatter (same fields as single-doc).
 2. One-paragraph human overview — what the skill does and when it triggers.
-3. **Self-sufficient summary body** — instructions complete enough that a runtime which ignores `protocol.yon` (Codex today, generic agents) still produces acceptable behavior. This is non-negotiable because of multi-runtime.
+3. **Self-sufficient summary body** — instructions complete enough that a runtime which ignores `protocol.yon` (Codex today, and other agents reading the shared dir) still produces acceptable behavior. This is non-negotiable because of multi-runtime.
 4. Pointer block, exact phrasing: *"**Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date."*
 5. Optional: critical examples or trace formats that benefit from prose.
 
@@ -152,7 +152,7 @@ Required elements:
 
 **Multi-runtime safety (critical):**
 
-The `SKILL.md` body MUST be execution-sufficient on its own, because Codex and the generic `.agents/` mirror have no YON priming today. Treat `protocol.yon` as "extra precision when the runtime can use it" — Claude Code reads it; Codex/`.agents/` may not. Even when `runtime: [claude, codex, agents]` is declared, the `protocol.yon` body is only used effectively on Claude Code today.
+The `SKILL.md` body MUST be execution-sufficient on its own, because Codex and the other runtimes reading the shared `.agents/` dir have no YON priming today. Treat `protocol.yon` as "extra precision when the runtime can use it" — Claude Code reads it; Codex/`.agents/` may not. Even when `runtime: [claude, codex, agents]` is declared, the `protocol.yon` body is only used effectively on Claude Code today.
 
 ### 3. Link into all three runtimes
 
@@ -207,7 +207,7 @@ If a skill is intentionally Claude-only or Codex-only — because it depends on 
 ```yaml
 runtime: [claude]          # Claude Code only
 runtime: [codex]           # Codex only
-runtime: [claude, codex]   # both LLM runtimes, skip generic .agents/
+runtime: [claude, codex]   # both LLM runtimes, skip the shared .agents/ dir
 ```
 
 The default (when `runtime:` is omitted) is all three: `[claude, codex, agents]`. The `runtime:` field is documentation today, not enforced — it's how an author signals intent to humans and to future tooling.
