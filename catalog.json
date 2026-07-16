@@ -3,7 +3,7 @@
   "name": "open-skills",
   "homepage": "https://allemaar.com",
   "repository": "https://github.com/allemaar/open-skills",
-  "generated": "2026-07-10",
+  "generated": "2026-07-16",
   "generator": "tools/spine.mjs",
   "license": "Apache-2.0",
   "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL.",
@@ -763,7 +763,7 @@
     },
     {
       "name": "insight-angles",
-      "description": "Angle & connection discovery engine. Classifies a subject (domain, type, current trends), picks lenses from a 15-family roster AND derives dynamic subject-specific ones, then runs layered passes via a context-adaptive venue (cold fan-out for independence — the cold-review effect — or inline) to surface frames, typed connections, hidden assumptions, candidate-expansions, and second-order effects, scored by novelty × relevance. Trigger on /insight-angles, \"find unseen angles\", \"what connections am I missing\", \"what are we not seeing\", \"surface hidden assumptions\", \"reframe this\". Not insight-explore (generates solution options — angles surfaces frames & connections) or insight-adversarial (attacks for flaws via personas — angles widens via lenses). Not insight-critique (reviews an output) or insight-cross-examine (the deliberation engine that orchestrates this one).",
+      "description": "Angle & connection discovery engine. Classifies a subject (domain, type, current trends), picks lenses from a 17-family roster AND derives dynamic subject-specific ones, then runs layered passes via a context-adaptive venue (cold fan-out for independence — the cold-review effect — or inline) to surface frames, typed connections, hidden assumptions, candidate-expansions, and second-order effects, scored by novelty × relevance. Trigger on /insight-angles, \"find unseen angles\", \"what connections am I missing\", \"what are we not seeing\", \"surface hidden assumptions\", \"reframe this\". Not insight-explore (generates solution options — angles surfaces frames & connections) or insight-adversarial (attacks for flaws via personas — angles widens via lenses). Not insight-critique (reviews an output) or insight-cross-examine (the deliberation engine that orchestrates this one).",
       "visibility": "public",
       "triggers": [
         "/insight-angles",

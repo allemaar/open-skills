@@ -1,7 +1,7 @@
 ---
 name: insight-angles
 description: >
-  Angle & connection discovery engine. Classifies a subject (domain, type, current trends), picks lenses from a 15-family roster AND derives dynamic subject-specific ones, then runs layered passes via a context-adaptive venue (cold fan-out for independence — the cold-review effect — or inline) to surface frames, typed connections, hidden assumptions, candidate-expansions, and second-order effects, scored by novelty × relevance. Trigger on /insight-angles, "find unseen angles", "what connections am I missing", "what are we not seeing", "surface hidden assumptions", "reframe this". Not insight-explore (generates solution options — angles surfaces frames & connections) or insight-adversarial (attacks for flaws via personas — angles widens via lenses). Not insight-critique (reviews an output) or insight-cross-examine (the deliberation engine that orchestrates this one).
+  Angle & connection discovery engine. Classifies a subject (domain, type, current trends), picks lenses from a 17-family roster AND derives dynamic subject-specific ones, then runs layered passes via a context-adaptive venue (cold fan-out for independence — the cold-review effect — or inline) to surface frames, typed connections, hidden assumptions, candidate-expansions, and second-order effects, scored by novelty × relevance. Trigger on /insight-angles, "find unseen angles", "what connections am I missing", "what are we not seeing", "surface hidden assumptions", "reframe this". Not insight-explore (generates solution options — angles surfaces frames & connections) or insight-adversarial (attacks for flaws via personas — angles widens via lenses). Not insight-critique (reviews an output) or insight-cross-examine (the deliberation engine that orchestrates this one).
 visibility: public
 self-improvable: true
 next-skills:
@@ -31,7 +31,7 @@ A lens-based, multi-pass discovery engine. Where `/insight-explore` asks "what a
 
 ## The lens roster (seed, not ceiling)
 
-16 families, grouped by what they perturb. **Core** = candidate for most subjects; **Specialist** = domain-triggered. **Always also derive dynamic, subject-specific lenses** (see below) — the roster is a seed.
+17 families, grouped by what they perturb. **Core** = candidate for most subjects; **Specialist** = domain-triggered. **Always also derive dynamic, subject-specific lenses** (see below) — the roster is a seed.
 
 | Family | Tier | Operators | Best for |
 |---|---|---|---|
@@ -44,6 +44,7 @@ A lens-based, multi-pass discovery engine. Where `/insight-explore` asks "what a
 | **Epistemic** | Core | load-bearing assumption · weakest evidence · what-would-change-our-mind · unknown-unknowns · information asymmetry · observability | research, forecasts, high-stakes |
 | **Zoom** | Specialist | in · out · across · boundary/interface | architecture, scope, scale |
 | **Formal/Structural** | Specialist | invariants · symmetries · limits & edge cases · conservation · the formal model | technical, math |
+| **Cartography/Representation** | Specialist | viewpoint/view/model separation · level-of-detail · epistemic legend · one-fact-one-home · cross-map anchors · ratification status | architecture, portfolios, complex operating systems |
 | **Power & Politics** | Specialist | who holds/gains/loses power · gatekeepers · coalitions · feasible vs optimal | org, strategy, governance |
 | **Human/Behavioral** | Specialist | cognitive biases · status/identity/fear/desire · friction & defaults · rewarded behavior | product, UX, change mgmt |
 | **Economic/Value** | Specialist | cost structure · value capture · opportunity cost · marginal vs fixed · who pays | product, business |
@@ -52,7 +53,7 @@ A lens-based, multi-pass discovery engine. Where `/insight-explore` asks "what a
 | **Narrative** | Specialist | story told · hero/villain · the spin · meta-narrative · positioning | comms, positioning, naming |
 | **Activation/Engagement** | Specialist | first-win · time-to-first-value (TTFV) · the hook / aha-moment · activation arc · drop-off & friction-to-activation · juice (satisfying feedback) | onboarding, first-run, tutorials, adoption funnels, growth/UX |
 
-8 core (Aesthetic/Elegance included — it's good practice across UX, DX, design, ergonomics) + 8 specialist. A run still fires only 4–6 — the roster's job is to make the *picking* rich.
+8 core (Aesthetic/Elegance included — it's good practice across UX, DX, design, ergonomics) + 9 specialist. A run still fires only 4–6 — the roster's job is to make the *picking* rich.
 
 ## Dynamic-lens derivation (the roster is a seed)
 
@@ -61,7 +62,7 @@ For every run, also derive subject-specific lenses from three named sources, the
 1. **Domain-native** — what would an expert *in the subject's home discipline* always ask here?
 2. **Foreign-transplant** — what does a deliberately *distant* discipline ask that nobody here is?
 3. **Live-trend** — from Classify's current-trends read, what recent shift / live debate reframes the space?
-4. **Validate** — keep a candidate only if it generates a question the 15 families don't. Otherwise drop it as redundant.
+4. **Validate** — keep a candidate only if it generates a question the 17 families don't. Otherwise drop it as redundant.
 
 ## Typed connections
 
@@ -97,7 +98,7 @@ The three modes (selected adaptively, not by a fixed default):
 
 Cold lens-agents are **leaf workers**: each gets a primed brief (subject + its one lens [+ prior-layer findings in deep mode]), runs cold, returns its angles/connections, and orchestrates nothing further.
 
-**Runtime:** cold fan-out needs a sub-agent-capable runtime (Claude's `Agent` / isolation). On runtimes without isolated workers (Codex, generic `.agents/`), all modes fall back to inline — the adaptive selector degrades gracefully since inline is always available.
+**Runtime:** detect capabilities, not product names. When the active runtime exposes isolated workers (for example, Claude's `Agent` or Codex collaboration agents when available), cold fan-out may be used. Without isolated workers, all modes fall back to inline — the adaptive selector degrades gracefully since inline is always available.
 
 ## The angle map (output)
 
@@ -120,7 +121,7 @@ Selected lenses (+ dynamic ones + skipped & why) → angles grouped by lens, eac
 
 ## Self-improvement → roster discovery
 
-This skill's SIP is specialized: **usage grows the roster.** When a *dynamic* lens this run produced a high novelty × relevance angle the roster lacked, SIP proposes a diff adding it to the lens roster + selection map (gated via `/ask-gate`, never auto-applied). When a roster lens consistently yields nothing for a subject-type, SIP proposes pruning/remapping it. The 15 families are the seed; real subjects reveal the rest.
+This skill's SIP is specialized: **usage grows the roster.** When a *dynamic* lens this run produced a high novelty × relevance angle the roster lacked, SIP proposes a diff adding it to the lens roster + selection map (gated via `/ask-gate`, never auto-applied). When a roster lens consistently yields nothing for a subject-type, SIP proposes pruning/remapping it. The 17 families are the seed; real subjects reveal the rest.
 
 ## Boundary
 
