@@ -10,7 +10,7 @@ Full procedure in [`../SKILL.md`](../SKILL.md) section 7. This card is the quick
 4. **Symlinks (all three runtimes).**
    - POSIX: `rm ~/.claude/skills/<old> ~/.codex/skills/<old> ~/.agents/skills/<old>` then `ln -s "$REPO/skills/<new>" ~/.claude/skills/<new>` (repeat for `.codex` / `.agents`).
    - Windows: `cmd /c rmdir` then `cmd /c mklink /D` per runtime. Bash tool: prefix `MSYS_NO_PATHCONV=1`.
-5. **Sweep cross-references.** `grep -rn "<old>" skills/ README.md CONFORMANCE.md` — update each: other skills' `next-skills:` entries, sibling-boundary clauses, `README.md` inventory, `skills-help` menu, `skills-audit` prose.
+5. **Sweep cross-references.** `grep -rn "<old>" skills/ README.md CONFORMANCE.md` — update each: other skills' `next-skills:` entries, sibling-boundary clauses, `README.md` inventory, `skills-help` menu.
 6. **Lint.** `node tools/lint.mjs` → expect clean. It catches a rename's cross-reference fallout — broken links, `next-skills` orphans, a `name:` that no longer matches its folder. It takes no flags and **does not look at symlinks**: those are OS state, and the snapshot diff below is what verifies them.
 7. **Commit + push.** `skill: rename <old> → <new>`.
 

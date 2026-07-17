@@ -1,12 +1,12 @@
 @DOC ver=2.0 | id=self-improve | title="Self-Improvement Protocol — Per-Skill, Signal-Triggered Improvement Proposals" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="After a participating skill runs, detect concrete signals that the skill itself could be better (ambiguity, uncovered edge case, forced deviation, misfired rule, stale cross-reference, user correction) and propose a specific diff to it. Conservative: surface only when a signal is concrete and blocking-or-recurring and a fix is ready; silent otherwise. Dedup against an already-proposed queue. Surface via /ask-gate; never auto-apply." | trigger="a self-improvable skill completes; or user runs /self-improve [skill]"
-@STAMP ts:ts=2026-06-04T00:00:00Z | src=human | method=manual
+@STAMP ts:ts=2026-07-17T00:00:00Z | src=human | method=manual
 
 # --- Boundary ---
 
 @SEC name="Boundary"
 @RULE rid=rule:per-run-detector | lvl=MUST | when="invoked" | then="act as the in-the-moment, per-skill improvement detector for the run that just completed — do not run a deliberate batch skill-gap scan (that is /insight-skill-gap) or a full post-implementation retrospective (that is /insight-retro)"
-@MAP rid=map:sibling-boundary | pairs=["insight-skill-gap"->"deliberate batch scan of recent work for new/updated skills","insight-retro"->"full post-implementation retrospective","skills-audit"->"library health: descriptions, cross-refs, runtime parity","self-improve"->"per-run, signal-triggered proposal to improve the skill that just ran"]
+@MAP rid=map:sibling-boundary | pairs=["insight-skill-gap"->"deliberate batch scan of recent work for new/updated skills","insight-retro"->"full post-implementation retrospective","self-improve"->"per-run, signal-triggered proposal to improve the skill that just ran"]
 @MAP rid=map:lifecycle | pairs=["caller-options"->"before a skill — routes venue/mode","ask-gate"->"the question moment — triages/quality-gates handler questions","next-skills"->"after a skill — recommends successor skills","self-improve"->"after a skill — proposes improvements to the skill that just ran; surfaces through ask-gate"]
 
 # --- Signal taxonomy ---
@@ -58,4 +58,4 @@
 @SEC name="Platform mapping"
 @MAP rid=map:platform | pairs=["claude-code"->"surface via /ask-gate -> AskUserQuestion","codex/agents"->"present proposal + recommended action as prose and wait","watch/triage/draft"->"runtime-agnostic"]
 
-@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-17T00:00:00Z | src="agent:claude-code" | method=generated

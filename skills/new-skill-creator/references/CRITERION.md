@@ -17,6 +17,6 @@ Otherwise omit the field (or set `false`). Read-only analysis, brainstorming, ev
 | `plan-evolve` | omit (auto-invocable) | Drafts the next plan version for user review — same category as `plan-create`; not a state-change. |
 | `caller-options` | omit (auto-invocable) | A routing-evaluation protocol; consumed via the opt-in block, not by auto-trigger. The flag only blocked ad-hoc agent invocation for no safety gain. |
 | `cold-review` | omit (auto-invocable) | Spawns reviewer sub-agents but mutates nothing. Triggers are anchored to "cold"/"outside"/"fresh", so it will not auto-fire on generic "review this" (that is `insight-critique`). An orchestrator must be able to dispatch it — agent-invocability is the point. |
-| `skills-audit`, `paper-check`, `verify` | omit (auto-invocable) | Read-only analysis / audit / gate skills — the rule already classes these as auto-invocable. Do not re-flag. |
+| `verify`, `investigate` | omit (auto-invocable) | Read-only analysis / gate skills — the rule already classes these as auto-invocable. Do not re-flag. |
 
 Updates: edit this file directly, no need to churn SKILL.md.

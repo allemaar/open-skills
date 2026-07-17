@@ -1,8 +1,8 @@
 # COP Candidate Register
 
-The Caller Options participation register. **Per-skill `protocol.yon` / front-matter is canonical** for each skill's dimensions; this file is a derived index — `skills-audit` cross-checks the two.
+The Caller Options participation register. **Per-skill `protocol.yon` / front-matter is canonical** for each skill's dimensions; this file is a derived index.
 
-> **Register agreement (2026-06-14).** This file (the front-matter-derived *participant index*) and `docs/nsp-cop-audit.md` (the per-skill *triage record*) MUST agree on every skill's COP verdict. On disagreement, apply the **self-orchestrator exclusion test** (`OPT-IN-BLOCK.md` § Excluded skills): a skill that infers venue/mode internally is Excluded even if caller overrides exist. Enforcing this agreement via lint is logged in `MAYBE.md`.
+> **Resolving a disagreement.** Where this index and a skill's own front-matter disagree on its COP verdict, the front-matter wins — and apply the **self-orchestrator exclusion test** (`OPT-IN-BLOCK.md` § Excluded skills): a skill that infers venue/mode internally is Excluded even if caller overrides exist. That test decides the case on its own; it needs no record outside this repo.
 
 ## Participants
 
@@ -15,11 +15,10 @@ Skills carrying the COP opt-in block. *Provisional — the venue set and the bor
 | `insight-adversarial` | Venue | Venue-only — pass-count optionality is already caller-surfaced by its own Step 5. |
 | `double-check` | Venue | **Single-doc** — COP opt-in is the SKILL.md prose block only (no `protocol.yon` `@SEC`). Confirmed Participant: its protocol mandates re-reading from sources, the textbook delegate profile. |
 | `cold-review` | Mode | Mode = the Step 3 reviewer-count tiers (1/2/3); venue forced `inline` (self-orchestrating). |
-| `skills-audit` | Venue | Whole-library audit is a textbook delegate (heavy throwaway reads → bounded report); `inline` for small libraries. Front-matter `venue:[inline,delegated]`. *Reclassified from Excluded 2026-06-14: the caller can delegate the entire audit, so a real venue choice exists.* |
-| `plan-deep-dive` | Venue | Front-matter `venue:[inline,delegated]`. *Reclassified from Never-delegate 2026-06-14 per front-matter-canonical + `docs/nsp-cop-audit.md` (Phase 3b, deliberate).* `inline` keeps the per-phase interactive forced-stop gates; `delegated` walks a long plan in a sub-agent and returns the consolidated verdict log. |
+| `plan-deep-dive` | Venue | Front-matter `venue:[inline,delegated]`. *Reclassified from Never-delegate 2026-06-14, deliberately: front-matter is canonical.* `inline` keeps the per-phase interactive forced-stop gates; `delegated` walks a long plan in a sub-agent and returns the consolidated verdict log. |
 | `prime-sweep` | Mode | Mode = wave scope (single-source / multi-source / discovery / mixed); venue forced `inline` (it is itself the delegator). |
-| `prime-fetch` | Venue | Declares **delegation intent** for the `/prime-*` family — `venue:[inline]` today (the prime skill runs inline as the delegator). Deliberate per `docs/nsp-cop-audit.md` (COP: yes, line 53), not vestigial. |
-| `prime-expand` | Venue | Same delegation-intent declaration as `prime-fetch` (`docs/nsp-cop-audit.md`, COP: yes, line 52). |
+| `prime-fetch` | Venue | Declares **delegation intent** for the `/prime-*` family — `venue:[inline]` today (the prime skill runs inline as the delegator). Deliberate, not vestigial. |
+| `prime-expand` | Venue | Same delegation-intent declaration as `prime-fetch`. |
 
 ## Deferred — COP-pending
 
@@ -50,4 +49,4 @@ Zero COP optionality; no opt-in block by design.
 
 Inline-only by rule — they need live conversation context, or are conversational/interactive. No COP block unless one later gains a genuine Mode.
 
-`reflect`, `verify`, `insight-retro`, `plan-create`, `plan-phases`, `plan-execute`, `plan-cleanup`, `plan-evolve`, `yon-writer`, `obsidian-markdown`
+`reflect`, `verify`, `insight-retro`, `plan-create`, `plan-phases`, `plan-execute`, `plan-cleanup`, `plan-evolve`, `yon-write`, `obsidian-markdown`

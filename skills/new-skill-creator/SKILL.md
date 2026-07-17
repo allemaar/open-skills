@@ -263,7 +263,7 @@ Renames touch four surfaces: the folder, the front-matter, the OS-level symlinks
    - Sibling-boundary clauses in other skills' `description:` fields ("Not for X — use `<old>`").
    - `README.md` inventory section.
    - `skills-help/SKILL.md` menu entries (if the rename crosses families, also re-categorize).
-   - `skills-audit/SKILL.md` rule lists (if the skill is named in any phase's prose).
+   - Any other skill's prose that names the one you renamed.
 6. **Run the lint.** `node tools/lint.mjs` — expect clean. If a broken link/reference, `next-skills-orphan`, or `name-mismatch` fires, fix and re-run.
 7. **Atomic commit.** Message format: `skill: rename <old> → <new>`. Push.
 

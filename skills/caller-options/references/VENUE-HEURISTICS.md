@@ -22,8 +22,8 @@ The rubric COP's **Phase 2 (Enumerate)** applies to decide which venues are viab
 
 ## Hard rules
 
-- **Never-delegate list** — `reflect`, `verify`, `insight-retro`, `plan-*`, `yon-writer`, `obsidian-markdown`. These need live context or are conversational/interactive; venue is `inline` only.
-- **Self-orchestrating skills are inline only.** A skill that spawns its own sub-agents (`cold-review`, `skills-audit`, `improve-codebase-architecture`) must not be wrapped in a `delegated` venue — COP-subagent → its-own-subagent = depth 2, violating the depth-1 limit. COP never wraps an orchestrator.
+- **Never-delegate list** — `reflect`, `verify`, `insight-retro`, `plan-*`, `yon-write`, `obsidian-markdown`. These need live context or are conversational/interactive; venue is `inline` only.
+- **Self-orchestrating skills are inline only.** A skill that spawns its own sub-agents (`cold-review`, `improve-codebase-architecture`) must not be wrapped in a `delegated` venue — COP-subagent → its-own-subagent = depth 2, violating the depth-1 limit. COP never wraps an orchestrator.
 - **Depth guard** — when a resolved-invocation marker is present the invocation is itself COP-spawned; `delegated`/`fan-out` are dropped regardless of the signals above.
 
 ## How to read the signals

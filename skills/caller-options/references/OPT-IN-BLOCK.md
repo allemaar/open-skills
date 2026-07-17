@@ -13,7 +13,7 @@ caller-options:
   default-policy: ask             # ask | recommend | auto — surfacing policy for agent callers
 ```
 
-This is **metadata** — the harness does not execute it. It is read by `skills-audit` and by humans. Behavior lives in the block below + `protocol.yon`.
+This is **metadata** — the harness does not execute it. It is read by humans and by library tooling. Behavior lives in the block below + `protocol.yon`.
 
 ## 2. SKILL.md prose block
 
@@ -55,4 +55,4 @@ If `caller-options` is missing, unlinked, or unreadable, the opt-in block is a *
 
 A skill with **zero optionality** — a never-delegate skill with no modes, or a self-orchestrating skill with no modes — gets **no opt-in block**. Adding one would surface no choice and cost tokens for nothing. See [`CANDIDATES.md`](CANDIDATES.md) for the participant / excluded register.
 
-**The self-orchestrator exclusion test.** Exclude a skill when surfacing its venue/mode would **duplicate built-in self-selection** — i.e. the skill already infers venue/mode from the call via its own (possibly confidence-gated) selector, *even if caller overrides exist*. Self-orchestrating skills that dispatch their own sub-agents and infer mode internally — e.g. `insight-angles`, `insight-cross-examine`, `improve-codebase-architecture`, `extract-signal` — are Excluded on this test: not because they lack a choice, but because COP would re-implement logic they already own. `CANDIDATES.md` and `docs/nsp-cop-audit.md` must agree per this test.
+**The self-orchestrator exclusion test.** Exclude a skill when surfacing its venue/mode would **duplicate built-in self-selection** — i.e. the skill already infers venue/mode from the call via its own (possibly confidence-gated) selector, *even if caller overrides exist*. Self-orchestrating skills that dispatch their own sub-agents and infer mode internally — e.g. `insight-angles`, `insight-cross-examine`, `improve-codebase-architecture`, `extract-signal` — are Excluded on this test: not because they lack a choice, but because COP would re-implement logic they already own. `CANDIDATES.md` records the outcome of this test; the test itself is what settles a disagreement.
