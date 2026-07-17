@@ -71,6 +71,24 @@ const scenarios = [
   { gate: "diff-recap value gate", expect: "accept",
     defect: "POSITIVE CONTROL — the conformant `skills/diff-recap/examples/diff-recap.example.yon` (rows match the git numstat)",
     cmd: `node tools/diff-recap-check.mjs skills/diff-recap/examples/diff-recap.example.yon --numstat skills/diff-recap/examples/diff-recap.numstat` },
+  // The DCO guard enforces a rule CONTRIBUTING.md already states. It drifted for exactly the reason
+  // this file exists: the rule was written down, nothing ran it, and the other gates stayed green
+  // while 7 commits went unsigned. These two grade a commit message rather than a YON record.
+  { gate: "DCO sign-off guard", expect: "reject",
+    defect: "a commit message with no `Signed-off-by` trailer. Grades the PREDICATE only — the floor, the commit range, and forward-only are not exercised here",
+    cmd: `node tools/dco-guard.mjs --message-file ${FIX}/unsigned-commit.txt`,
+    mustSay: /has no valid "Signed-off-by/ },
+  { gate: "DCO sign-off guard", expect: "reject",
+    defect: "a message that QUOTES a sign-off in its body but carries no trailer. A message-wide regex passes this; git reads only the last paragraph, so it does not. (The documented limit is the inverse layout — a fenced sign-off that IS the last paragraph — which git counts as a real trailer. See `signoffValues()` in tools/dco-guard.mjs)",
+    cmd: `node tools/dco-guard.mjs --message-file ${FIX}/quoted-signoff-commit.txt`,
+    mustSay: /has no valid "Signed-off-by/ },
+  { gate: "DCO sign-off guard", expect: "reject",
+    defect: "a REAL trailer in the real trailer block, with no name before the email (`Signed-off-by: <nobody@example.com>`) — certifying nobody",
+    cmd: `node tools/dco-guard.mjs --message-file ${FIX}/nameless-signoff-commit.txt`,
+    mustSay: /has no valid "Signed-off-by/ },
+  { gate: "DCO sign-off guard", expect: "accept",
+    defect: "POSITIVE CONTROL — a message carrying a real sign-off trailer, so the gate is not trivially red",
+    cmd: `node tools/dco-guard.mjs --message-file ${FIX}/signed-commit.txt` },
 ];
 
 function run(cmd) {
@@ -93,7 +111,11 @@ let broken = false;
 for (const s of scenarios) {
   const r = run(s.cmd);
   const rejected = r.code !== 0;
-  const ok = s.expect === "reject" ? rejected : !rejected;
+  // A non-zero exit alone is weak evidence: a crash (a missing fixture, a broken
+  // import) exits non-zero too, and would score as "the gate fired" while grading
+  // nothing. Where a scenario pins `mustSay`, the gate must also SAY why it rejected.
+  const saidIt = !s.mustSay || s.mustSay.test(r.out);
+  const ok = s.expect === "reject" ? rejected && saidIt : !rejected;
   if (!ok) broken = true;
   rows.push({ ...s, code: r.code, rejected, ok, signal: firstSignal(r.out) });
   console.log(`${ok ? "✓" : "✗"} ${s.gate} — expected ${s.expect}, ` +

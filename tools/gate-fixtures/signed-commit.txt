@@ -1,0 +1,7 @@
+docs: fix a typo in the installer walkthrough
+
+The path in the Windows block pointed at the wrong runtime dir.
+This one is signed off, so the guard must accept it — the positive
+control that keeps the gate from being "always red".
+
+Signed-off-by: Alexandru Mareș <hello@allemaar.com>

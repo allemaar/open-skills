@@ -1,0 +1,14 @@
+docs: document the DCO guard
+
+The guard looks for a trailer like:
+
+```
+Signed-off-by: Jane Dev <jane@example.com>
+```
+
+That is all it takes.
+
+This message has NO sign-off trailer — it only quotes one. Git's trailer
+parser reports zero trailers here. A regex scanning the whole message
+reports a match, and passes an unsigned commit about the DCO guard through
+the DCO guard. That is why tools/dco-guard.mjs parses trailers instead.

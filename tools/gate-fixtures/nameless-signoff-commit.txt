@@ -1,0 +1,7 @@
+chore: tidy the fixture list
+
+A real trailer, in the real trailer block — but certifying nobody.
+The DCO is a statement that a PERSON wrote the contribution, so a
+sign-off with no name in front of the email certifies nothing.
+
+Signed-off-by: <nobody@example.com>

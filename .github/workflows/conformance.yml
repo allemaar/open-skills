@@ -15,6 +15,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0   # full history + tags — the consistency guard checks CHANGELOG ↔ git tags
+      # First: it is pure git, needs no parser and no setup-node, and a sign-off is
+      # the cheapest thing to get wrong. GitHub surfaces the FIRST failing step, so
+      # putting it here hands a contributor the fixable error rather than burying it
+      # under the suite. DCO_BASE grades a PR on its OWN commits — without it, one
+      # unsigned commit on main would red-line every later PR for someone else's work.
+      - name: DCO guard (every non-merge commit after the floor carries a sign-off)
+        run: node tools/dco-guard.mjs
+        env:
+          DCO_BASE: ${{ github.event.pull_request.base.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: '20'

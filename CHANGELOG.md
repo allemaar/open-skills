@@ -18,6 +18,10 @@ or guard changes that neither add nor remove a skill.
 - **README leads with the install, and the read-first path is labelled as the default.** Install now follows the pitch directly; the two-files-per-skill philosophy moved below it, after first value. The choice is stated as two paths — clone-and-copy (the default) and the plugin marketplace — each with its trade named once, rather than the page arguing the reader out of the faster one; the remaining fetchers moved into a subordinate *Other ways to fetch*, and the Vercel CLI's mode-selection behaviour is restated as the one composite condition [`DISTRIBUTION.md`](DISTRIBUTION.md) sources it to. *Start here* gains starter prompts you can type.
 - **`install.mjs` no longer prints `Done` above a validation failure.** The failure is reported first: a run that copied something nobody could validate is not a success, and the word "Done" above it read as reassurance. The close message now says copies stay frozen until you re-copy them, and points at *README > Updating* for the diff command that makes a re-copy something you read first.
 
+### Added
+
+- **`tools/dco-guard.mjs` — the sign-off [`CONTRIBUTING.md`](CONTRIBUTING.md) already requires is now checked in CI.** The DCO was stated as a rule and run by nothing, so it drifted against our own history: 7 of the 29 non-merge commits between v1.1.0 and `075a7e5` carry no `Signed-off-by`. Checked, not prevented — `git commit -s` is still what stops an unsigned commit being written. It grades the trailer's shape, not that the name is real and not against the commit author: the DCO is a certification you make, not an identity we can authenticate. Trailers come from `git interpret-trailers`, not a scan of the message, so a commit that merely *quotes* a sign-off is rejected — that message is a fixture in [`GATE-FIRES.md`](GATE-FIRES.md). One layout still passes: a fenced sign-off that *is* the last paragraph, which git reads as a real trailer — a limit taken deliberately, and reasoned out in the guard. Forward-only from `075a7e5`: the 7 stay unsigned and uncertified, and no remediation commit has landed.
+
 ---
 
 ## [1.2.0] — 2026-07-17

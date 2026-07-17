@@ -1,0 +1,5 @@
+docs: fix a typo in the installer walkthrough
+
+The path in the Windows block pointed at the wrong runtime dir.
+This commit message carries no Signed-off-by trailer — the defect
+the DCO guard exists to reject.

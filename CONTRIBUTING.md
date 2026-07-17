@@ -24,6 +24,14 @@ Signed-off-by: Your Name <you@example.com>
 
 Pull requests whose commits are not signed off will be asked to amend before merge.
 
+This is checked, not just asked: [`tools/dco-guard.mjs`](tools/dco-guard.mjs) runs in CI and fails the build if any non-merge commit after the enforcement floor lacks a sign-off. It grades the trailer's shape — that a `Signed-off-by:` trailer exists with a name and an email. It does not verify that the name is yours: the certification is still yours to mean. Three things worth knowing:
+
+- **Set it once and forget it** — `git config format.signOff true` in your clone signs every commit automatically. Forgetting `-s` is how the 7 unsigned commits in this repo's own history happened.
+- **The sign-off goes in the last paragraph**, which is where `git commit -s` puts it. Git only reads trailers there, so a stray "PS:" paragraph after your sign-off will hide it and the check will say you have no sign-off.
+- **If CI catches you**, `git commit --amend -s --no-edit` fixes the tip commit; `git rebase --signoff origin/main` fixes several at once. Then `git push --force-with-lease` to your branch.
+
+The check is **forward-only**: it grades commits after the floor recorded in the guard, so the repo's own 7 unsigned commits do not fail it. They stay unsigned — rewriting published history to backfill them would cost more than it buys. On a pull request the check grades only your commits, so an unsigned commit on `main` can never be charged to you.
+
 ## What a good skill looks like
 
 - **A folder under `skills/`** named for the skill, matching its `name` field.

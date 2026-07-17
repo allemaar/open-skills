@@ -27,6 +27,10 @@ control proving a real skill still passes.
 | diff-recap value gate | `gate_status=clean` with `attested=false` — a clean recap claimed from no git source (fail-open) | reject | `1` | ✅ rejected | `` |
 | diff-recap value gate (--numstat) | `skills/diff-recap/examples/bad/numstat-mismatch.yon` is internally consistent (sums match) but a row names a file absent from the git numstat — only the per-file attestation catches it | reject | `1` | ✅ rejected | `` |
 | diff-recap value gate | POSITIVE CONTROL — the conformant `skills/diff-recap/examples/diff-recap.example.yon` (rows match the git numstat) | accept | `0` | ✅ accepted | `` |
+| DCO sign-off guard | a commit message with no `Signed-off-by` trailer. Grades the PREDICATE only — the floor, the commit range, and forward-only are not exercised here | reject | `1` | ✅ rejected | `dco-guard: tools/gate-fixtures/unsigned-commit.txt has no valid "Signed-off-by: Name <email>" trailer` |
+| DCO sign-off guard | a message that QUOTES a sign-off in its body but carries no trailer. A message-wide regex passes this; git reads only the last paragraph, so it does not. (The documented limit is the inverse layout — a fenced sign-off that IS the last paragraph — which git counts as a real trailer. See `signoffValues()` in tools/dco-guard.mjs) | reject | `1` | ✅ rejected | `dco-guard: tools/gate-fixtures/quoted-signoff-commit.txt has no valid "Signed-off-by: Name <email>" trailer` |
+| DCO sign-off guard | a REAL trailer in the real trailer block, with no name before the email (`Signed-off-by: <nobody@example.com>`) — certifying nobody | reject | `1` | ✅ rejected | `dco-guard: tools/gate-fixtures/nameless-signoff-commit.txt has no valid "Signed-off-by: Name <email>" trailer` |
+| DCO sign-off guard | POSITIVE CONTROL — a message carrying a real sign-off trailer, so the gate is not trivially red | accept | `0` | ✅ accepted | `dco-guard: OK — tools/gate-fixtures/signed-commit.txt carries a valid sign-off` |
 
 ## What this demonstrates
 
