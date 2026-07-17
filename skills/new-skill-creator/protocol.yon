@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=new-skill-creator | title="/new-skill-creator" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
-@INTENT goal="Scaffold a new Agent Skill end-to-end — folder, SKILL.md, optional protocol.yon for dual-doc skills, three parallel runtime links, commit and push" | trigger="user runs /new-skill-creator or says create a skill, make a new skill for X, add a slash command, codify this as a skill"
-@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated
+@INTENT goal="Scaffold a new Agent Skill end-to-end, in a skills repo the author maintains — folder, SKILL.md, optional protocol.yon for dual-doc skills, three parallel runtime links, commit and push. The maintainer's authoring loop: it links rather than copies because the author writes the changes the links carry; installing a pack you do not maintain is a copy, not a link" | trigger="user runs /new-skill-creator or says create a skill, make a new skill for X, add a slash command, codify this as a skill"
+@STAMP ts:ts=2026-07-17T00:00:00Z | src="agent:claude-code" | method=generated
 
 @NOTE text="Two formats: single-doc (one SKILL.md — routers, triggers, mode-setters, reference cards) and dual-doc (SKILL.md + protocol.yon — heavy procedural skills with phases, gates, severity-ranked rules). For editing an existing skill, edit the SKILL.md directly — do not run this. Migrating single-doc→dual-doc and renaming are alternate flows (see the closing notes + SKILL.md §6/§7)."
 
@@ -17,7 +17,7 @@
 @CHECK rid=check:dual-validate | assert="for a dual-doc skill, protocol.yon passes: npx @younndai/yon-parser validate protocol.yon --profile exec" | fail=ABORT | msg="A dual-doc protocol.yon must validate against the public parser before it is linked and pushed."
 
 @SEC name="Step 4: Link runtimes"
-@STEP rid=step:link | n:int=4 | op=std:cmd.run@v1 | in=[ref:files] | args=[task="Create three parallel DIRECT runtime links (never a chain), each pointing straight at the repo source: ~/.claude/skills, ~/.codex/skills, ~/.agents/skills. Windows: mklink /D (or /J fallback); POSIX: ln -s (NOT on Windows Git-Bash — it silently copies). Links are directory-level, so companion files travel automatically. Skip a runtime only if the front-matter runtime: list excludes it."] | out=[ref:links] | rules=[rid:rule:three-links,rid:rule:no-elevate]
+@STEP rid=step:link | n:int=4 | op=std:cmd.run@v1 | in=[ref:files] | args=[task="Create three parallel DIRECT runtime links (never a chain), each pointing straight at the source in the skills repo you maintain: ~/.claude/skills, ~/.codex/skills, ~/.agents/skills. Windows: mklink /D (or /J fallback); POSIX: ln -s (NOT on Windows Git-Bash — it silently copies). Links are directory-level, so companion files travel automatically. Skip a runtime only if the front-matter runtime: list excludes it."] | out=[ref:links] | rules=[rid:rule:three-links,rid:rule:no-elevate]
 
 @SEC name="Step 5: Publish"
 @STEP rid=step:commit | n:int=5 | op=std:cmd.run@v1 | in=[ref:links] | args=[task="git add skills/<name>; commit 'skill: add <name>'; push."] | out=[ref:pushed]
@@ -29,7 +29,7 @@
 @RULE rid=rule:kebab | lvl=MUST | when="naming the skill" | then="use kebab-case only"
 @RULE rid=rule:boundary | lvl=MUST | when="the skill could be confused with an existing one (overlapping triggers or domain)" | then="add a 'Not for X — use Y' sibling-boundary clause to the description so the router can disambiguate"
 @RULE rid=rule:under-500 | lvl=MUST | when="writing SKILL.md" | then="keep it under 500 lines; a longer skill is a dual-doc candidate"
-@RULE rid=rule:three-links | lvl=MUST | when="linking into runtimes" | then="create three parallel direct links, never a chain — each runtime directory is read independently"
+@RULE rid=rule:three-links | lvl=MUST | when="linking a skill you are authoring into your own runtimes, from a skills repo you maintain" | then="create three parallel direct links, never a chain — each runtime directory is read independently. Scope: this is the author's loop, where the change a link carries is the one you just wrote. Installing a pack you do not maintain is a copy, not a link — see README.md and THREAT-MODEL.md"
 @RULE rid=rule:self-sufficient | lvl=MUST | when="the skill is dual-doc" | then="keep the SKILL.md body execution-sufficient on its own — protocol.yon adds precision, it never replaces the SKILL.md (Codex and .agents may not read YON)"
 @RULE rid=rule:no-elevate | lvl=MUST | when="runtime link creation fails" | then="stop and report — do not try to elevate or work around it"
 
@@ -42,4 +42,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill, draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-17T00:00:00Z | src="agent:claude-code" | method=generated

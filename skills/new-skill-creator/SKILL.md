@@ -1,6 +1,6 @@
 ---
 name: new-skill-creator
-description: Scaffold a new Agent Skill end-to-end (folder, SKILL.md, optional protocol.yon for dual-doc skills, tri-runtime links for Claude Code + Codex + the shared .agents/ dir, commit and push). Trigger when the user runs /new-skill-creator or says "create a skill", "make a new skill for X", "add a slash command", "turn this workflow into a skill", "codify this as a skill". Not for editing existing skills — edit the SKILL.md directly. For migrating an existing single-doc skill to the dual-doc YON pattern, see section 6 below.
+description: Scaffold a new Agent Skill end-to-end into a skills repo you maintain (folder, SKILL.md, optional protocol.yon for dual-doc skills, tri-runtime links for Claude Code + Codex + the shared .agents/ dir, commit and push). The maintainer's authoring loop — it links your own clone into your runtimes because you write the changes those links carry. Trigger when the user runs /new-skill-creator or says "create a skill", "make a new skill for X", "add a slash command", "turn this workflow into a skill", "codify this as a skill". Not for editing existing skills — edit the SKILL.md directly. Not for installing skills you did not write — copy those, per README.md. For migrating an existing single-doc skill to the dual-doc YON pattern, see section 6 below.
 disable-model-invocation: true
 runtime: [claude, codex, agents]
 visibility: public
@@ -21,7 +21,10 @@ triggers:
 # /new-skill-creator
 
 ## What this skill does
-Creates a new skill in the skills repo, links it into all three agent runtimes (Claude Code, Codex, and the shared `.agents/` dir), commits and pushes to GitHub. Supports two formats:
+
+> **This is a maintainer's authoring loop, and it assumes a skills repo you own.** It writes a new skill into your clone, links that clone into your runtimes, and pushes. The linking below is the opposite of what [`README.md`](../../README.md) tells you to do when *installing* this pack — and deliberately so. A symlink means your agent runs whatever the next `git pull` brings, with no moment where you read the diff; that is the drift [`THREAT-MODEL.md`](../../THREAT-MODEL.md) names, and it is why copying is the default there. The trade only works when **you are the author**: the change the link carries is the one you just wrote. Installing skills someone else maintains is a different act — copy those.
+
+Creates a new skill in your skills repo, links it into all three agent runtimes (Claude Code, Codex, and the shared `.agents/` dir), commits and pushes to GitHub. Supports two formats:
 
 - **Single-doc** — one `SKILL.md` (default for short routers, triggers, mode-setters, reference cards).
 - **Dual-doc** — `SKILL.md` (human-readable, self-sufficient) + `protocol.yon` (machine-executable spec) (default for heavy procedural skills with phases, gates, severity-ranked rules). See section 2b.
@@ -156,7 +159,9 @@ The `SKILL.md` body MUST be execution-sufficient on its own, because Codex and t
 
 ### 3. Link into all three runtimes
 
-The skills repo is the single source of truth. Each runtime reads from its own directory, so we create three **parallel direct runtime links**, all pointing back to the same repo source. No chaining — every link goes straight to the repo. The links are at the **directory** level, so any companion files (`protocol.yon`, `references/`, `personas/`, etc.) travel automatically with no extra symlinking needed.
+*Authoring your own skills only — see [what this skill does](#what-this-skill-does). Linking makes your edits live without a re-copy on every save, which is what you want while writing a skill and not what you want while running someone else's.*
+
+Your skills repo is the single source of truth. Each runtime reads from its own directory, so we create three **parallel direct runtime links**, all pointing back to the same repo source. No chaining — every link goes straight to the repo. The links are at the **directory** level, so any companion files (`protocol.yon`, `references/`, `personas/`, etc.) travel automatically with no extra symlinking needed.
 
 > In the commands below, `$HOME` / `%USERPROFILE%` / `$env:USERPROFILE` expand to your home directory on any machine — no edit needed. The repo path shown (`<skills-repo>`) is your clone of the skills repo; substitute your own clone path if it differs.
 
@@ -280,7 +285,7 @@ Before relying on the procedure for a real rename, exercise it on a throwaway br
 - Always confirm the skill name and description with the user before writing files
 - kebab-case names only
 - Keep SKILL.md under 500 lines (longer skills are good candidates for dual-doc — see section 2b)
-- Three parallel direct runtime links, never a chain
+- Three parallel direct runtime links, never a chain — into a skills repo you author; installing a pack you do not maintain is a copy, not a link
 - For dual-doc skills, the SKILL.md body must remain execution-sufficient on its own — `protocol.yon` adds precision, never replaces the SKILL.md
 
 > **Next skills.** On completion, run the Next Skills protocol (`next-skills/SKILL.md`): surface the `next-skills` recommendations from front-matter for the caller to pick. Offer only — never auto-invoke.
