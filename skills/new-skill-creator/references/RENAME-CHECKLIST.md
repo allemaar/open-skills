@@ -10,8 +10,8 @@ Full procedure in [`../SKILL.md`](../SKILL.md) section 7. This card is the quick
 4. **Symlinks (all three runtimes).**
    - POSIX: `rm ~/.claude/skills/<old> ~/.codex/skills/<old> ~/.agents/skills/<old>` then `ln -s "$REPO/skills/<new>" ~/.claude/skills/<new>` (repeat for `.codex` / `.agents`).
    - Windows: `cmd /c rmdir` then `cmd /c mklink /D` per runtime. Bash tool: prefix `MSYS_NO_PATHCONV=1`.
-5. **Sweep cross-references.** `grep -rn "<old>" skills/ README.md VISIBILITY.md docs/` — update each: other skills' `next-skills:` entries, sibling-boundary clauses, `README.md` inventory, `VISIBILITY.md` row, `skills-help` menu, `skills-audit` prose, `docs/nsp-cop-audit.md` row.
-6. **Lint.** `python tools/lint_skills.py --check-symlinks` → expect clean.
+5. **Sweep cross-references.** `grep -rn "<old>" skills/ README.md CONFORMANCE.md` — update each: other skills' `next-skills:` entries, sibling-boundary clauses, `README.md` inventory, `skills-help` menu, `skills-audit` prose.
+6. **Lint.** `node tools/lint.mjs` → expect clean. It catches a rename's cross-reference fallout — broken links, `next-skills` orphans, a `name:` that no longer matches its folder. It takes no flags and **does not look at symlinks**: those are OS state, and the snapshot diff below is what verifies them.
 7. **Commit + push.** `skill: rename <old> → <new>`.
 
 ## Dry-run first time
@@ -30,7 +30,7 @@ Symlinks are OS state, not git state. If dry-run fails mid-flight:
 1. Restore symlinks manually from the snapshot file.
 2. `git checkout main`.
 3. `git branch -D tmp/rename-dryrun-<sha>`.
-4. Re-verify with `python tools/lint_skills.py --check-symlinks`.
+4. Re-verify the symlinks by diffing a fresh listing against the snapshot (step 2 above) — nothing in `tools/` checks OS link state. `node tools/lint.mjs` re-verifies the repo side.
 
 Do not re-attempt the rename until the snapshot diff is clean.
 

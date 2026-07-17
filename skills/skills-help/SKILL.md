@@ -72,7 +72,7 @@ The menu below is the editorial taxonomy plus a marker snapshot as of 2026-06-04
 - ◆ `extract-signal` — elastic signal extraction with proportional gather, vet, and provenance
 
 ### Skill library (meta)
-- ◇ `new-skill-creator` — scaffold a new skill, tri-runtime link, commit, push
+- ◇ `new-skill-creator` — scaffold a new skill into a repo you maintain, tri-runtime link, commit, push
 - ◇ `skills-help` — this menu
 - ◇ `next-skills` — recommend successor skills after one finishes (NSP)
 - ◆ `self-improve` — propose concrete per-skill improvements after a run exposes a real signal
