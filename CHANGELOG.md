@@ -13,6 +13,11 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+### Changed
+
+- **README leads with the install, and the read-first path is labelled as the default.** Install now follows the pitch directly; the two-files-per-skill philosophy moved below it, after first value. The choice is stated as two paths — clone-and-copy (the default) and the plugin marketplace — each with its trade named once, rather than the page arguing the reader out of the faster one; the remaining fetchers moved into a subordinate *Other ways to fetch*, and the Vercel CLI's mode-selection behaviour is restated as the one composite condition [`DISTRIBUTION.md`](DISTRIBUTION.md) sources it to. *Start here* gains starter prompts you can type.
+- **`install.mjs` no longer prints `Done` above a validation failure.** The failure is reported first: a run that copied something nobody could validate is not a success, and the word "Done" above it read as reassurance. The close message now says copies stay frozen until you re-copy them, and points at *README > Updating* for the diff command that makes a re-copy something you read first.
+
 ---
 
 ## [1.2.0] — 2026-07-17

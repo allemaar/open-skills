@@ -268,11 +268,19 @@ function main() {
   console.log(`Installing ${want.length} skill(s) into: ${runtimes.map(([n]) => n).join(", ")}`);
   const failures = [];
   for (const name of want) installOne(name, catalog, runtimes, opts, failures);
-  console.log("Done. Copied folders are frozen snapshots — after a git pull, re-run with --force to update.");
+  // Report the failure BEFORE the close message: a run that copied skills nobody could
+  // validate is not "Done", and printing that word above the failure reads as reassurance.
+  // The exit code stays nonzero — it is the only machine-readable signal this tool emits.
   if (failures.length) {
-    die(`${failures.length} skill(s) copied but FAILED validation: ${failures.join(", ")}. ` +
-        `Inspect their protocol.yon, or re-run with --no-validate to skip validation.`);
+    die(`${failures.length} skill(s) copied but FAILED validation: ${failures.join(", ")}.\n` +
+        `        Those copies are on disk and your agent will load them as they are. The parser\n` +
+        `        printed why above — read that against the copied protocol.yon. Until you have,\n` +
+        `        remove the copies: a protocol that fails the weakest check is not one to trust.`);
   }
+  console.log("Done. Copied folders are frozen snapshots — they change only when you re-copy.");
+  console.log("      After a git pull, diff your copy against this clone before re-running with");
+  console.log("      --force — the re-copy is where you accept the new bytes, and the diff is");
+  console.log("      the only place you get to read them first. README > Updating has the command.");
 }
 
 main();

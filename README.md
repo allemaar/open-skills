@@ -31,37 +31,22 @@ This is a pack of reusable skills for AI coding agents (Claude Code, Codex, and 
 
 **Composable, not a framework.** Install one or install fifty — each stands on its own as an install decision, none require the rest, and your agent keeps room to think between them. Take what earns its place and ignore the rest.
 
-## The idea: two files per skill
-
-Each skill is a folder under [`skills/`](skills/) with up to two files:
-
-| File | For whom | What it carries |
-|---|---|---|
-| **`SKILL.md`** | human + agent | what the skill does and when to use it, in plain language |
-| **`protocol.yon`** | the runtime | the same skill's steps, rules, and gates as a **declarative protocol** it can enforce and *you* can audit |
-
-Markdown explains the skill. **YON makes it inspectable and enforceable** — the control flow, the rules (`MUST` / `MUST_NOT`), and the gates (`ABORT` / `WARN`) are named, typed objects, not prose you hope the model follows. Of the 51 skills here, **37 ship a `protocol.yon`**; 14 are Markdown-only.
-
-"Enforceable" is a claim you can check: [`GATE-FIRES.md`](GATE-FIRES.md) shows the public parser and the semantic linter *rejecting* deliberately-broken skills — regenerated in CI on every push, so it can't be staged.
-
 ---
 
 ## Install
 
-Pick your path: a one-line plugin install if you just want the skills working, or clone-and-copy if you want to read them before you trust them. The second is the whole point of this pack — the first is just here if you want to try the skills before reading all of them.
+**Two paths.** Clone-and-copy is the default: you read the skill first, and your copy stays frozen until you re-copy it. The plugin marketplace is one line and updates in place. Either way, these are skills your agent runs with your access — so read the ones you'll lean on. That's what the rest of this page is for.
 
-### Fastest on Claude Code — the plugin marketplace
+| Path | What you get | The trade |
+|---|---|---|
+| **[Clone and copy](#read-first--clone-and-copy-any-runtime)** · *the default* | a frozen copy you read before it runs | updating is manual: `git pull` → diff → re-copy |
+| **[Plugin marketplace](#fastest-on-claude-code--the-plugin-marketplace)** · Claude Code | the pack working, in one line | you read the skills after they're installed, not before |
 
-```text
-/plugin marketplace add allemaar/open-skills
-/plugin install open-skills@open-skills
-```
-
-This registers the repo as a Claude Code plugin marketplace and installs the pack (the plugin and the marketplace are both named `open-skills`, hence `open-skills@open-skills`); the skills are then namespaced (`/open-skills:cold-review`, `/open-skills:investigate`, …). Update in place with `/plugin marketplace update open-skills`. It's still skills your agent runs with your access — so read the ones you'll lean on; that's what the rest of this page is for.
+Everything else on this page is a variant of those two — [one command](#read-first--clone-and-copy-any-runtime) instead of `cp`, [a different fetcher](#other-ways-to-fetch), or [tracking the repo](#read-first--clone-and-copy-any-runtime) instead of freezing it.
 
 ### Read-first — clone and copy (any runtime)
 
-No build step, no dependency on me. Clone the repo and copy the skill folders your agent reads — a frozen copy is the default, and the safest:
+**This is the default, and the one the pack is built around.** No build step, no dependency on me. Clone the repo and copy the skill folders your agent reads — a frozen copy is the safest thing you can hold:
 
 ```bash
 git clone https://github.com/allemaar/open-skills
@@ -103,15 +88,34 @@ mklink /J "%USERPROFILE%\.claude\skills\cold-review" "%CD%\skills\cold-review"
 
 Two things to know if you do. **On Windows use `mklink /J`** — under Git-Bash/MSYS, `ln -s` by default silently makes a *copy* instead of a link, so you would believe you were tracking the repo while holding a frozen snapshot. And remove a link with `rmdir` (Windows) or `unlink` (POSIX) — never `rm -rf` through it, or the delete descends into this repo. That's the hazard [`install.mjs`](install.mjs) refuses to touch, above.
 
-**Other ways to fetch.**
+### Fastest on Claude Code — the plugin marketplace
 
-- **[Vercel `skills` CLI](https://github.com/vercel-labs/skills)** — installs straight from GitHub, no manual clone:
-  `npx skills add allemaar/open-skills --skill cold-review` (drop `--skill` for the whole pack, `--list` to see them first, `npx skills update` later). Two things this page owes you about it:
-  - **Pass `--copy`.** Without it you may get symlinks — junctions on Windows — which is the tracking topology above, not the frozen copy this pack prefers. Which one you get depends on how, and on what, runs it: one agent dir copies; several prompt you, recommending symlink; `--yes`/`--all` takes symlink without asking, and so does any run it detects as agent-driven, which goes non-interactive even with no flags.
-  - **Set `DISABLE_TELEMETRY` or `DO_NOT_TRACK`** if you'd rather not report usage to `add-skill.vercel.sh/t` — its `find` command sends your search query along with the event. (Those variables gate that endpoint; a separate audit lookup it performs at install time isn't gated by them.)
-- **`git sparse-checkout`** set to `skills/cold-review` — one skill, without the full repo.
+```text
+/plugin marketplace add allemaar/open-skills
+/plugin install open-skills@open-skills
+```
 
-Every fetch above ends the same way: a skill folder in your runtime's `skills/` dir that you can open and read.
+This registers the repo as a Claude Code plugin marketplace and installs the pack (the plugin and the marketplace are both named `open-skills`, hence `open-skills@open-skills`); the skills are then namespaced (`/open-skills:cold-review`, `/open-skills:investigate`, …). Update in place with `/plugin marketplace update open-skills`.
+
+### Other ways to fetch
+
+You don't need these to get started — both paths above are complete. They're here because people ask for them.
+
+**[Vercel `skills` CLI](https://github.com/vercel-labs/skills)** — installs straight from GitHub, no manual clone:
+
+```bash
+npx skills add allemaar/open-skills --skill cold-review
+```
+
+Drop `--skill` for the whole pack, `--list` to see them first, `npx skills update` later. Two things this page owes you about it:
+
+**1. Pass `--copy`.** Without it you may get symlinks — junctions on Windows — which is [the tracking topology above](#read-first--clone-and-copy-any-runtime), not the frozen copy this pack prefers. Which one you get is one composite condition, not a menu: it turns on the number of unique agent dirs in play, and the flags and scope you ran it with. One agent dir copies; several prompt you, recommending symlink; `--yes`/`--all` takes symlink without asking, and so does any run it detects as agent-driven, which goes non-interactive even with no flags — agent detection feeds that dir count rather than setting the mode itself. [`DISTRIBUTION.md`](DISTRIBUTION.md) cites the vendor source.
+
+**2. Set `DISABLE_TELEMETRY` or `DO_NOT_TRACK`** if you'd rather not report usage to `add-skill.vercel.sh/t` — its `find` command sends your search query along with the event. Those variables gate that endpoint; a separate audit lookup it performs at install time isn't gated by them.
+
+**`git sparse-checkout`** — set to `skills/cold-review` for one skill, without the full repo.
+
+Every fetch that copies a folder ends the same way: a skill folder in your runtime's `skills/` dir that you can open and read.
 
 ### Updating
 
@@ -148,6 +152,55 @@ for d in ~/.claude/skills/*/; do n=$(basename "$d"); [ -d "skills/$n" ] &&
 ### For agents
 
 This pack is built to be installed *by* an agent, not just a human. Enumerate every skill from [`catalog.json`](catalog.json) (name, description, triggers, gates, per-skill install + validate commands), or read [`llms.txt`](llms.txt) for a dense manifest plus a step-by-step *"For agents — how to install"* recipe (detect runtime dir → copy the folder → validate its `protocol.yon`). Copy-default, no opaque installer — the install path is itself inspectable.
+
+---
+
+## Start here
+
+Most skills are slash commands you invoke when you want them (`/cold-review …`); a couple — `orchestrate-mode`, `multi-agent-mode` — are persistent session modes, and several fire on their own when their trigger shows up. Each skill's `SKILL.md` says which.
+
+**Something to type first.** Once a skill is installed, this is what first value looks like — a real prompt, in your agent:
+
+```text
+/cold-review this branch before I open the PR
+/investigate how auth is wired in this repo
+/orient-status where are we on this?
+```
+
+Installed through the plugin marketplace? Same prompts, namespaced — `/open-skills:cold-review …`.
+
+A few that pay off on their own, no setup:
+
+| Skill | What it does |
+|---|---|
+| [`cold-review`](skills/cold-review/) | Summons fresh-context reviewer agents to audit your work — evidence-based findings, severity tiers, a score, and a verdict. |
+| [`investigate`](skills/investigate/) | Read-only fact-gathering before you change anything — maps files, deps, and patterns. |
+| [`orient-status`](skills/orient-status/) | A fresh "where are we" on any repo, plan, or task — position, what's left, and a banded ETA; `--resume` rebuilds context after a gap. |
+| [`insight-angles`](skills/insight-angles/) | Points lenses at a subject to surface the frames, connections, and assumptions you can't see. |
+| [`insight-cross-examine`](skills/insight-cross-examine/) | Routes a decision through angle-discovery → critique → assess → recommend, and hands back a decision surface. |
+| [`plan-create`](skills/plan-create/) | A phased, gated implementation plan before any code is written. |
+| [`improve-codebase-architecture`](skills/improve-codebase-architecture/) | Finds refactors that deepen shallow modules (Ousterhout's *A Philosophy of Software Design*). |
+| [`ask-gate`](skills/ask-gate/) | Triages whether a question is really yours to answer before interrupting you — an enforced gate, firing. |
+| [`prime-sweep`](skills/prime-sweep/) | Parallel sub-agents absorb a large source surface; only the vetted digest reaches your context. |
+| [`yon-read`](skills/yon-read/) | Reads, interprets, and explains any YON you point it at — the protocols in this pack included. |
+| [`yon-write`](skills/yon-write/) | Drafts and converts content into valid YON — the fastest way to author your own `protocol.yon`. |
+
+Browse [`skills/`](skills/) for the full set of 51 — planning, insight & decision, [orientation](#the-orient--family), priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, diff recap, and YON authoring.
+
+---
+
+## The idea: two files per skill
+
+Each skill is a folder under [`skills/`](skills/) with up to two files:
+
+| File | For whom | What it carries |
+|---|---|---|
+| **`SKILL.md`** | human + agent | what the skill does and when to use it, in plain language |
+| **`protocol.yon`** | the runtime | the same skill's steps, rules, and gates as a **declarative protocol** it can enforce and *you* can audit |
+
+Markdown explains the skill. **YON makes it inspectable and enforceable** — the control flow, the rules (`MUST` / `MUST_NOT`), and the gates (`ABORT` / `WARN`) are named, typed objects, not prose you hope the model follows. Of the 51 skills here, **37 ship a `protocol.yon`**; 14 are Markdown-only.
+
+"Enforceable" is a claim you can check: [`GATE-FIRES.md`](GATE-FIRES.md) shows the public parser and the semantic linter *rejecting* deliberately-broken skills — regenerated in CI on every push, so it can't be staged.
 
 ---
 
@@ -197,28 +250,6 @@ The skill classified the work, sized the reviewer pool, briefed fresh agents on 
 Every `protocol.yon` validates against the public YON parser. The whole trust model is: the protocol is a declarative document you can parse, diff, and check — not arbitrary code you run on faith. Every skill's status is tracked in [`CONFORMANCE.md`](CONFORMANCE.md) and enforced in CI — the badge above is green only when all of them validate, alongside a cross-reference linter, a YON-DAG semantic check (dangling refs, unreachable steps), an orient value gate that rejects out-of-enum or fail-open orientation records the structural validator passes, and several more guards — leak scan, spine-sync, gate-fires, and the orient round-trip (the full list is in [`conformance.yml`](.github/workflows/conformance.yml)).
 
 The edges of that promise are stated plainly in [`THREAT-MODEL.md`](THREAT-MODEL.md): a skill runs with your agent's permissions, so installing one is a supply-chain decision. Inspectability removes the excuse not to read. It does not remove the need to. Validation proves a protocol is well-formed, not that it is benign — so the workflow is **read, validate, diff on update.** That diff is one command and it needs nothing from us — see [Updating](#updating).
-
----
-
-## Start here
-
-Most skills are slash commands you invoke when you want them (`/cold-review …`); a couple — `orchestrate-mode`, `multi-agent-mode` — are persistent session modes, and several fire on their own when their trigger shows up. Each skill's `SKILL.md` says which. A few that pay off on their own, no setup:
-
-| Skill | What it does |
-|---|---|
-| [`cold-review`](skills/cold-review/) | Summons fresh-context reviewer agents to audit your work — evidence-based findings, severity tiers, a score, and a verdict. |
-| [`investigate`](skills/investigate/) | Read-only fact-gathering before you change anything — maps files, deps, and patterns. |
-| [`orient-status`](skills/orient-status/) | A fresh "where are we" on any repo, plan, or task — position, what's left, and a banded ETA; `--resume` rebuilds context after a gap. |
-| [`insight-angles`](skills/insight-angles/) | Points lenses at a subject to surface the frames, connections, and assumptions you can't see. |
-| [`insight-cross-examine`](skills/insight-cross-examine/) | Routes a decision through angle-discovery → critique → assess → recommend, and hands back a decision surface. |
-| [`plan-create`](skills/plan-create/) | A phased, gated implementation plan before any code is written. |
-| [`improve-codebase-architecture`](skills/improve-codebase-architecture/) | Finds refactors that deepen shallow modules (Ousterhout's *A Philosophy of Software Design*). |
-| [`ask-gate`](skills/ask-gate/) | Triages whether a question is really yours to answer before interrupting you — an enforced gate, firing. |
-| [`prime-sweep`](skills/prime-sweep/) | Parallel sub-agents absorb a large source surface; only the vetted digest reaches your context. |
-| [`yon-read`](skills/yon-read/) | Reads, interprets, and explains any YON you point it at — the protocols in this pack included. |
-| [`yon-write`](skills/yon-write/) | Drafts and converts content into valid YON — the fastest way to author your own `protocol.yon`. |
-
-Browse [`skills/`](skills/) for the full set of 51 — planning, insight & decision, [orientation](#the-orient--family), priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, diff recap, and YON authoring.
 
 ---
 
