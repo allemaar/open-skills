@@ -33,7 +33,7 @@ Before printing, refresh the menu against the live library:
 2. For each skill, set its marker from the filesystem: `protocol.yon` present → ◆ dual-doc; absent → ◇ single-doc.
 3. If a skill directory exists that is not in the menu below, render it under its best-fit family and append: *"⚠ {name} is not yet in the skills-help taxonomy — update this skill."* If a menu entry no longer has a directory, mark it *"(missing)"*.
 
-The menu below is the editorial taxonomy plus a marker snapshot as of 2026-06-04. The live scan above is what keeps the markers and the roster honest — trust it over the snapshot when they disagree.
+The menu below is the editorial taxonomy plus a marker snapshot as of 2026-07-17, covering the skills this public pack ships. The live scan above is what keeps the markers and the roster honest — trust it over the snapshot when they disagree. A CI guard (`tools/consistency-guard.mjs`) fails the build if the snapshot ever names a skill the pack does not ship.
 
 ## Marker legend
 
@@ -84,19 +84,13 @@ The menu below is the editorial taxonomy plus a marker snapshot as of 2026-06-04
 - ◆ `handoff-execute` — execute a handoff brief with source gates, verification, and retro
 - ◆ `caller-options` — route one skill invocation's venue and mode (COP)
 - ◆ `ask-gate` — triage and quality-gate handler-facing questions
+- ◆ `budget-check` — pre-wave usage gate: go / no-go / unknown before an expensive fan-out
 
-### Content & creative
-- ◆ `new-content-topic` — run the Content Moulding Engine on new topics
-- ◆ `hfl` — full high-fidelity rewrite pipeline: compile → audit → score → loop
-- ◆ `hfl-compile` — a single HFL rewrite pass, no scoring
-- ◆ `hfl-score` — score text against the 100-point HFL rubric
-
-### Papers
-- ◆ `paper-create` — run the paper engine to a seam-certified draft
-- ◆ `paper-publish` — run the publishing engine to a Zenodo DOI and arXiv
-- ◆ `paper-check` — drift-check audit of a paper (read-only)
-- ◆ `paper-spot` — spot-check one unit: source, claim, coinage, phrasing, voice, teeth
-- ◇ `paper-help` — the papers engine menu
+### Orientation
+- ◆ `orient-status` — quick "where are we" read: position, what's left, banded ETA
+- ◆ `orient-map` — delta-first "show me the shape" read: what changed since your last look
+- ◆ `orient-gaps` — surface what's stuck (blockers) and what's missing
+- ◆ `orient-roadmap` — multi-horizon read: the increment arc, gates, and the runway ahead
 
 ### Code & architecture
 - ◆ `improve-codebase-architecture` — find refactors that deepen shallow modules
@@ -114,21 +108,12 @@ The menu below is the editorial taxonomy plus a marker snapshot as of 2026-06-04
 - ◇ `yon-read` — read, interpret, or explain existing YON content
 - ◇ `yon-write` — write or compile content into YON
 
-### Web & deployment
+### Web
 - ◇ `defuddle` — extract clean markdown from web pages
-- ◆ `allemaar-deploy` — deploy vault content to allemaar-www
 
 ### Git & sync
 - ◆ `github-sync` — review session changes, then commit and push to GitHub
-
-### YAS agent system
-- ◆ `yas-activate` — activate a YAS agent on a named arc in a fresh session (Claude-only)
-- ◇ `yas-status` — read-only state pull for the current YAS agent + arc
-- ◇ `yas-fleet` — read-only cross-agent fleet dashboard (roster + per-agent state); no /yas-activate needed
-- ◇ `yas-handoff` — generate a handoff brief for the next session (Claude-only)
-- ◆ `yas-archive` — archive a YAS arc to cold storage with confirmation (Claude-only)
-- ◆ `yas-restore` — list or restore a YAS arc from cold storage (Claude-only)
-- ◇ `yas-help` — YAS usage overview and topic-routed help
+- ◆ `diff-recap` — turn a git diff into a PR-pasteable recap, one row per changed file
 
 ## Family drill-down
 
@@ -141,14 +126,12 @@ The menu below is the editorial taxonomy plus a marker snapshot as of 2026-06-04
 | `priming` | prime, primer, context-load | Priming |
 | `meta` | skills, library, hygiene | Skill library (meta) |
 | `orchestration` | orchestrate, dispatch | Orchestration & dispatch |
-| `content` | creative, hfl, writing | Content & creative |
-| `papers` | paper | Papers |
+| `orientation` | orient, status, roadmap | Orientation |
 | `code` | architecture, arch | Code & architecture |
 | `obsidian` | vault | Obsidian & vault |
 | `yon` | — | YON |
-| `web` | deployment, deploy | Web & deployment |
+| `web` | — | Web |
 | `git` | sync | Git & sync |
-| `yas` | agent, agents, yas-system | YAS agent system |
 
 In drill-down mode, for each skill in the family read its `SKILL.md` front-matter and present: name, full description, format (dual-doc/single-doc, from the live `protocol.yon` check), and `runtime:` (default `[claude, codex, agents]` when the field is absent). If the argument matches no key or alias, print the key table above and stop.
 

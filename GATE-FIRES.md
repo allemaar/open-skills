@@ -33,6 +33,8 @@ control proving a real skill still passes.
 | DCO sign-off guard | POSITIVE CONTROL — a message carrying a real sign-off trailer, so the gate is not trivially red | accept | `0` | ✅ accepted | `dco-guard: OK — tools/gate-fixtures/signed-commit.txt carries a valid sign-off` |
 | structural lint (ref check) | a companion doc citing `docs/nsp-cop-audit.md` — a path that does not exist in the public pack (a private-repo leftover). Invisible before the 2026-07-17 widening: companion files were unscanned AND docs/-shaped paths were outside the base whitelist | reject | `1` | ✅ rejected | `[ERROR] tools/gate-fixtures/broken-ref.md:3 broken reference → docs/nsp-cop-audit.md` |
 | structural lint (ref check) | POSITIVE CONTROL — a companion doc whose references (`tools/lint.mjs`) all resolve, so a green run means checked-and-clean, not check-never-looked | accept | `0` | ✅ accepted | `lint: 0 error(s) in tools/gate-fixtures/clean-ref.md` |
+| menu-roster guard | a skills-help menu naming `ghost-skill`, which has no skills/ghost-skill/ directory — the export-kept-a-private-entry class | reject | `1` | ✅ rejected | `` |
+| menu-roster guard | POSITIVE CONTROL — the real skills-help menu, whose every entry resolves to a shipped skill | accept | `0` | ✅ accepted | `` |
 
 ## What this demonstrates
 

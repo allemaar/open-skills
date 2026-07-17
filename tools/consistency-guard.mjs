@@ -91,6 +91,48 @@ if (clVersions.length && tags.length) {
   }
 }
 
+// --- 3. MENU (skills-help roster -> shipped skills) -------------------------
+//
+// skills-help/SKILL.md carries a hand-authored menu snapshot. On export from a
+// larger private library it listed ~18 skills this pack does not ship (whole
+// paper-* / hfl* / yas-* families) — a public front door advertising skills a
+// reader cannot have. This gates the PHANTOM direction: every menu entry must
+// resolve to a shipped skill. The MISSING direction (a shipped skill absent from
+// the menu) is left to the skill's own render-time protocol, which appends an
+// unlisted skill with a ⚠ — a deliberate soft-handle, so gating it here would
+// fight the design and fail CI on every newly-added skill.
+// `--menu-file <path>` overrides the menu source so gate-fires can point this check
+// at a fixture (a menu naming a phantom skill), proving it rejects. Defaults to the
+// real menu. Same idiom as dco-guard's --message-file and lint's single-file mode.
+const menuFlag = process.argv.indexOf('--menu-file');
+const menuFile = menuFlag !== -1 ? process.argv[menuFlag + 1] : join(ROOT, 'skills', 'skills-help', 'SKILL.md');
+if (!existsSync(menuFile)) {
+  fail('MENU: skills/skills-help/SKILL.md is missing');
+} else {
+  const md = readFileSync(menuFile, 'utf8');
+  const start = md.indexOf('## The menu');
+  const end = md.indexOf('## Family drill-down');
+  if (start < 0) {
+    // Fail closed: if the section markers move, the check must not silently pass.
+    fail('MENU: could not locate the "## The menu" section in skills-help/SKILL.md — guard cannot verify the roster');
+  } else {
+    const section = md.slice(start, end >= 0 ? end : undefined);
+    const shipped = new Set(dirs);
+    // An entry line is `- <marker> `skill-name` — …`; capture the FIRST backtick token
+    // only, so a mid-prose backtick (e.g. the `obsidian` CLI binary) is never mistaken
+    // for a menu entry.
+    const entries = [...section.matchAll(/^-\s+\S+\s+`([a-z0-9-]+)`/gm)].map((m) => m[1]);
+    if (entries.length === 0) {
+      // A menu that parses to zero entries is a reformat, not an empty pack — fail
+      // closed rather than pass vacuously.
+      fail('MENU: parsed 0 entries from skills-help — the entry format changed; update this guard');
+    }
+    for (const name of entries) {
+      if (!shipped.has(name)) fail(`MENU: skills-help lists \`${name}\` but skills/${name}/ does not exist`);
+    }
+  }
+}
+
 // --- report -----------------------------------------------------------------
 
 if (errors.length) {
@@ -98,4 +140,4 @@ if (errors.length) {
   for (const e of errors) console.error('  ✗ ' + e);
   process.exit(1);
 }
-console.log(`consistency-guard: OK — counts (total=${total}, dual=${dual}, md-only=${mdonly}) consistent; ${clVersions.length} CHANGELOG releases ↔ ${tags.length} tags in sync`);
+console.log(`consistency-guard: OK — counts (total=${total}, dual=${dual}, md-only=${mdonly}) consistent; ${clVersions.length} CHANGELOG releases ↔ ${tags.length} tags in sync; skills-help menu roster ⊆ shipped skills`);

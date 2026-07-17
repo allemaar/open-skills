@@ -100,6 +100,16 @@ const scenarios = [
   { gate: "structural lint (ref check)", expect: "accept",
     defect: "POSITIVE CONTROL — a companion doc whose references (`tools/lint.mjs`) all resolve, so a green run means checked-and-clean, not check-never-looked",
     cmd: `node tools/lint.mjs ${FIX}/clean-ref.md` },
+  // The skills-help menu roster guard. On export from a larger private library the
+  // public menu listed ~18 skills the pack does not ship. This proves the guard
+  // rejects a menu that names a phantom skill and accepts the real menu.
+  { gate: "menu-roster guard", expect: "reject",
+    defect: "a skills-help menu naming `ghost-skill`, which has no skills/ghost-skill/ directory — the export-kept-a-private-entry class",
+    cmd: `node tools/consistency-guard.mjs --menu-file ${FIX}/phantom-menu.md`,
+    mustSay: /skills\/ghost-skill\/ does not exist/ },
+  { gate: "menu-roster guard", expect: "accept",
+    defect: "POSITIVE CONTROL — the real skills-help menu, whose every entry resolves to a shipped skill",
+    cmd: `node tools/consistency-guard.mjs` },
 ];
 
 function run(cmd) {
