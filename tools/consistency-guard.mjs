@@ -118,10 +118,11 @@ if (!existsSync(menuFile)) {
   } else {
     const section = md.slice(start, end >= 0 ? end : undefined);
     const shipped = new Set(dirs);
-    // An entry line is `- <marker> `skill-name` — …`; capture the FIRST backtick token
-    // only, so a mid-prose backtick (e.g. the `obsidian` CLI binary) is never mistaken
-    // for a menu entry.
-    const entries = [...section.matchAll(/^-\s+\S+\s+`([a-z0-9-]+)`/gm)].map((m) => m[1]);
+    // An entry line is `- <marker> `skill-name` — …`; the marker is OPTIONAL so a
+    // marker-less entry cannot evade the check (the prose promises *every* entry).
+    // `[a-z0-9-]+` has no slash/dot/space, so a mid-prose path or the `obsidian` CLI
+    // binary is never captured — and the menu section is entries only, no prose bullets.
+    const entries = [...section.matchAll(/^-\s+(?:\S+\s+)?`([a-z0-9-]+)`/gm)].map((m) => m[1]);
     if (entries.length === 0) {
       // A menu that parses to zero entries is a reformat, not an empty pack — fail
       // closed rather than pass vacuously.

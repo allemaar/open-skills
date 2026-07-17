@@ -55,9 +55,11 @@ const ROOT = process.cwd();
 // enforcement begins with the change that introduced it.
 const FLOOR = '075a7e5656abdf2d4fc37c47a65b8c75b0569214';
 
-// The trailer VALUE: a non-empty name, then an angle-bracketed email with a dotted
-// domain. `^\S` rejects "Signed-off-by: <a@b.c>" — a sign-off with no name at all.
-const VALUE = /^(\S.*?)\s*<([^<>@\s]+@[^<>@\s]+\.[^<>@\s]+)>$/;
+// The trailer VALUE: a non-empty name, then an angle-bracketed email (a local part
+// and a host, `@` between). `^\S` rejects "Signed-off-by: <a@b.c>" — no name at all.
+// The host is NOT required to be dotted: git's own default sign-off is user@hostname,
+// and a dotless host (localhost, a laptop name) is a real sign-off, not a defect.
+const VALUE = /^(\S.*?)\s*<([^<>@\s]+@[^<>@\s]+)>$/;
 
 // maxBuffer: a pathological trailer block must not blow past the 1 MB default and
 // throw. An uncaught throw here would exit 1 — scoring a CRASH as a rejection, the

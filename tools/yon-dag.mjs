@@ -59,7 +59,7 @@
 //     - An unproduced ref consumed only mid/late-flow (never in the entry step's
 //       in=[...]) stays [ERROR] — a real dataflow hole or typo.
 //   FUTURE: an explicit YON-native entry-input declaration (a tag/convention)
-//   would replace this inference; that needs a yon-writer / tag-registry
+//   would replace this inference; that needs a yon-write / tag-registry
 //   consultation and is NOT invented here — this WARN is the interim signal.
 //
 // Exit code: non-zero if ANY error-class finding exists; zero if clean or

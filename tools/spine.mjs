@@ -353,7 +353,7 @@ function main() {
 
   for (const [file, content] of Object.entries(outputs)) writeFileSync(file, content);
   console.log(
-    `spine: wrote catalog.yon + catalog.json + llms.txt — ${skills.length} skills, ${skills.filter((s) => s.hasProtocol).length} with protocol.yon`
+    `spine: wrote catalog.yon + catalog.json + llms.txt + skills.graph.yon — ${skills.length} skills, ${skills.filter((s) => s.hasProtocol).length} with protocol.yon`
   );
 }
 

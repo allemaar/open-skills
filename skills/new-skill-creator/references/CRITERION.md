@@ -1,8 +1,8 @@
 # disable-model-invocation Criterion
 
 Set `disable-model-invocation: true` if and only if **at least one** of:
-- The skill mutates external state (files, network, repos) that requires explicit user authorization before each run. Examples: `allemaar-deploy`, `github-sync`, `new-content-topic`, `new-skill-creator`.
-- The skill is a workflow shell that should only run when the user explicitly asks (not auto-triggered by keywords). Examples: `handoff`, `hfl`, `orchestrate-mode`.
+- The skill mutates external state (files, network, repos) that requires explicit user authorization before each run. Examples: `github-sync`, `new-skill-creator`.
+- The skill is a workflow shell that should only run when the user explicitly asks (not auto-triggered by keywords). Examples: `handoff`, `orchestrate-mode`, `multi-agent-mode`.
 - The skill is deprecated and should not be invoked.
 
 Otherwise omit the field (or set `false`). Read-only analysis, brainstorming, evaluation, and drafting skills are safe to auto-invoke when their description matches user intent. Examples: `defuddle`, `insight-critique`, `investigate`, `plan-deep-dive`, `yon-read`.

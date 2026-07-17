@@ -137,4 +137,4 @@ In drill-down mode, for each skill in the family read its `SKILL.md` front-matte
 
 ## Boundary
 
-This is a reference card — it lists and explains skills, it changes nothing. For a health audit of the library (description quality, cross-references, runtime parity, symlink state) run a library-audit pass. To scaffold a new skill use `/new-skill-creator`. For the papers sub-engine's own menu use `/paper-help`.
+This is a reference card — it lists and explains skills, it changes nothing. For a health audit of the library (description quality, cross-references, runtime parity), the pack's guards run in CI (`tools/lint.mjs`, `tools/consistency-guard.mjs`). To scaffold a new skill use `/new-skill-creator`.

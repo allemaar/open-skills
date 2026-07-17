@@ -12,12 +12,15 @@
 // never swept, or a private-repo path kept on export, was invisible to this guard
 // even though catching exactly that is why it exists.
 //
-// KNOWN LIMIT (GAP 3, deliberate): check 2 skips any backtick token containing
-// whitespace, so a broken path INSIDE a backticked shell command
-// (`python tools/x.py --flag`) is not checked. Extracting a path from an arbitrary
-// command false-positives on npx scopes / `cd a && b` / flags, so it is left out of
-// scope rather than done unreliably. Documented so it is a known boundary, not a
-// silent one.
+// KNOWN LIMITS (deliberate, so they are boundaries rather than silent gaps):
+//   - GAP 3: check 2 skips any backtick token containing whitespace, so a broken
+//     path inside a backticked shell command (`python tools/x.py --flag`) is not
+//     checked. Extracting a path from an arbitrary command false-positives on npx
+//     scopes / `cd a && b` / flags, so it is left out of scope.
+//   - Bare names: a backtick token with no slash (`MAYBE.md`) is not a path ref and
+//     is skipped — the pack has many bare artifact mentions (`SKILL.md`, `PLAN.md`).
+//   - Anchored skill-rel: `skill/SKILL.md#section` falls outside SKILL_REL's anchor
+//     and is skipped rather than validated (the un-anchored form is checked).
 //
 // Usage:  node tools/lint.mjs          lint the whole library (CI gate)
 //
