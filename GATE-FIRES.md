@@ -31,6 +31,8 @@ control proving a real skill still passes.
 | DCO sign-off guard | a message that QUOTES a sign-off in its body but carries no trailer. A message-wide regex passes this; git reads only the last paragraph, so it does not. (The documented limit is the inverse layout — a fenced sign-off that IS the last paragraph — which git counts as a real trailer. See `signoffValues()` in tools/dco-guard.mjs) | reject | `1` | ✅ rejected | `dco-guard: tools/gate-fixtures/quoted-signoff-commit.txt has no valid "Signed-off-by: Name <email>" trailer` |
 | DCO sign-off guard | a REAL trailer in the real trailer block, with no name before the email (`Signed-off-by: <nobody@example.com>`) — certifying nobody | reject | `1` | ✅ rejected | `dco-guard: tools/gate-fixtures/nameless-signoff-commit.txt has no valid "Signed-off-by: Name <email>" trailer` |
 | DCO sign-off guard | POSITIVE CONTROL — a message carrying a real sign-off trailer, so the gate is not trivially red | accept | `0` | ✅ accepted | `dco-guard: OK — tools/gate-fixtures/signed-commit.txt carries a valid sign-off` |
+| structural lint (ref check) | a companion doc citing `docs/nsp-cop-audit.md` — a path that does not exist in the public pack (a private-repo leftover). Invisible before the 2026-07-17 widening: companion files were unscanned AND docs/-shaped paths were outside the base whitelist | reject | `1` | ✅ rejected | `[ERROR] tools/gate-fixtures/broken-ref.md:3 broken reference → docs/nsp-cop-audit.md` |
+| structural lint (ref check) | POSITIVE CONTROL — a companion doc whose references (`tools/lint.mjs`) all resolve, so a green run means checked-and-clean, not check-never-looked | accept | `0` | ✅ accepted | `lint: 0 error(s) in tools/gate-fixtures/clean-ref.md` |
 
 ## What this demonstrates
 

@@ -89,6 +89,17 @@ const scenarios = [
   { gate: "DCO sign-off guard", expect: "accept",
     defect: "POSITIVE CONTROL — a message carrying a real sign-off trailer, so the gate is not trivially red",
     cmd: `node tools/dco-guard.mjs --message-file ${FIX}/signed-commit.txt` },
+  // The structural lint's reference check. Its companion-file coverage and its docs/-shaped
+  // path resolution were BOTH blind until 2026-07-17 — a broken ref in a references/ file, or
+  // any path outside the tools//skills/ whitelist, passed silently. These prove the widened
+  // check fires on exactly that class and stays quiet on a clean one.
+  { gate: "structural lint (ref check)", expect: "reject",
+    defect: "a companion doc citing `docs/nsp-cop-audit.md` — a path that does not exist in the public pack (a private-repo leftover). Invisible before the 2026-07-17 widening: companion files were unscanned AND docs/-shaped paths were outside the base whitelist",
+    cmd: `node tools/lint.mjs ${FIX}/broken-ref.md`,
+    mustSay: /broken reference/ },
+  { gate: "structural lint (ref check)", expect: "accept",
+    defect: "POSITIVE CONTROL — a companion doc whose references (`tools/lint.mjs`) all resolve, so a green run means checked-and-clean, not check-never-looked",
+    cmd: `node tools/lint.mjs ${FIX}/clean-ref.md` },
 ];
 
 function run(cmd) {

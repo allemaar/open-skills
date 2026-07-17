@@ -6,6 +6,19 @@
 // is well-formed, and dual-doc pairs are in sync. Built after a cold-review found
 // ~16 references to files/skills that don't exist in the public repo.
 //
+// SCANS: each skill's SKILL.md, the 5 root public docs, and (since 2026-07-17) the
+// companion markdown under skills/*/ (references/, personas/, profiles/, examples/).
+// The companion files were previously unscanned — a broken ref in a rename that was
+// never swept, or a private-repo path kept on export, was invisible to this guard
+// even though catching exactly that is why it exists.
+//
+// KNOWN LIMIT (GAP 3, deliberate): check 2 skips any backtick token containing
+// whitespace, so a broken path INSIDE a backticked shell command
+// (`python tools/x.py --flag`) is not checked. Extracting a path from an arbitrary
+// command false-positives on npx scopes / `cd a && b` / flags, so it is left out of
+// scope rather than done unreliably. Documented so it is a known boundary, not a
+// silent one.
+//
 // Usage:  node tools/lint.mjs          lint the whole library (CI gate)
 //
 // Checks:
@@ -29,10 +42,34 @@
 // Exit code: non-zero if any ERROR. Zero if clean or warnings-only. Zero npm deps.
 
 import { readdirSync, existsSync, readFileSync, statSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { join, dirname, resolve, relative } from 'node:path';
 
 const ROOT = process.cwd();
 const SKILLS = 'skills';
+
+// Resolve a backtick path token to an absolute path, or null when it is "not our
+// business" (an npm scope, a URL, an absolute path, an unknown shape). Deliberately
+// TARGETED, not "any slash = a repo path": that flooded on npm scopes (@younndai/…),
+// GitHub slugs (owner/repo), URLs, and illustrative cross-repo paths. Two known repo
+// shapes are checked, and everything else is left alone.
+//
+//   ROOT_DIRS — a real top-level dir of THIS repo. docs/ is included ON PURPOSE:
+//     it does not exist, and its absence IS the defect (a private-repo leftover), so
+//     a "first segment must exist" rule would defeat the point.
+//   SKILL_REL — the pack's own convention: `self-improve/SKILL.md` means
+//     skills/self-improve/SKILL.md (used throughout the NSP / SIP footers).
+const ROOT_DIRS = /^(tools|skills|docs|orient-spec|\.github)\//;
+const SKILL_REL = /^[a-z0-9][a-z0-9-]*\/(SKILL\.md|protocol\.yon|(references|examples|personas|profiles)\/[^/]+)$/;
+function resolveRef(tok, dir) {
+  if (/^[~/]/.test(tok) || /^[a-zA-Z]:[\\/]/.test(tok)) return null; // home / POSIX / Windows absolute
+  if (/^@/.test(tok)) return null;                                    // npm scope, e.g. @younndai/yon-parser
+  if (/^(\.\.?)\//.test(tok)) return resolve(dir, tok);              // ./ or ../ — file-relative
+  if (/^references\//.test(tok)) return resolve(dir, tok);           // file-relative convention
+  if (ROOT_DIRS.test(tok)) return resolve(ROOT, tok);               // repo-root-relative
+  if (SKILL_REL.test(tok)) return resolve(ROOT, SKILLS, tok);       // skills/<name>/… shorthand
+  return null;                                                        // unknown shape: not our business
+}
 
 const findings = []; // { sev, file, line, msg }
 function err(file, line, msg) { findings.push({ sev: 'ERROR', file, line, msg }); }
@@ -80,12 +117,14 @@ function lintMarkdown(file) {
     while ((m = tickRe.exec(line)) !== null) {
       const tok = m[1].trim();
       if (!tok.includes('/')) continue;                       // path-like only
-      if (/[\s*?<>\\$%{}"']/.test(tok)) continue;             // skip placeholders/globs/shell
-      let base = null;
-      if (/^(tools|skills)\//.test(tok)) base = ROOT;          // repo-root-relative
-      else if (/^(\.\.?|references)\//.test(tok)) base = dir;  // file-relative
-      if (base === null) continue;
-      if (!existsSync(resolve(base, tok.replace(/#.*$/, '')))) {
+      if (/[\s*?<>\\$%{}"']/.test(tok)) continue;             // skip placeholders/globs/shell (see GAP-3 note in header)
+      // Skip a token that is the DISPLAY TEXT of a markdown link — `[`a/b`](real/target)`.
+      // Check 1 already validates the real target; the label resolves against the
+      // wrong base and would false-positive.
+      if (line.slice(m.index + m[0].length).startsWith('](')) continue;
+      const target = resolveRef(tok, dir);
+      if (target === null) continue;
+      if (!existsSync(target.replace(/#.*$/, ''))) {
         err(file, ln, `broken reference → ${tok}`);
       }
     }
@@ -156,6 +195,27 @@ function lintSkill(name) {
 
 // --- driver -----------------------------------------------------------------
 
+// Single-file mode: `node tools/lint.mjs <file.md>` runs checks 1+2 on one file.
+// Used by tools/gate-fires.mjs to prove — un-stageably, in CI — that the ref check
+// actually FIRES on a broken reference and stays quiet on a clean one. Without a
+// firing proof, a green run is indistinguishable from a check that silently stopped
+// looking (which is exactly how the companion-file gap hid for so long).
+const fileArg = process.argv[2];
+if (fileArg) {
+  if (!existsSync(fileArg)) {
+    console.error(`lint: ${fileArg} not found`);
+    process.exit(2);
+  }
+  lintMarkdown(fileArg);
+  for (const f of findings) {
+    const loc = f.line ? `${f.file}:${f.line}` : f.file;
+    console.log(`[${f.sev === 'ERROR' ? 'ERROR' : 'WARN '}] ${loc}  ${f.msg}`);
+  }
+  const n = findings.filter((f) => f.sev === 'ERROR').length;
+  console.log(`lint: ${n} error(s) in ${fileArg}`);
+  process.exit(n > 0 ? 1 : 0);
+}
+
 const names = readdirSync(SKILLS).filter((n) => statSync(join(SKILLS, n)).isDirectory()).sort();
 for (const n of names) lintSkill(n);
 
@@ -163,6 +223,22 @@ for (const n of names) lintSkill(n);
 for (const doc of ['README.md', 'THREAT-MODEL.md', 'SECURITY.md', 'CONTRIBUTING.md', 'CONFORMANCE.md']) {
   if (existsSync(doc)) lintMarkdown(doc);
 }
+
+// And the COMPANION markdown under skills/*/ — references/, personas/, profiles/,
+// examples/. lintSkill only reads each skill's own SKILL.md, so a broken ref in a
+// companion file (e.g. a rename never swept, or a private-repo path kept on export)
+// was invisible. Tracked files only, via git — never a node_modules walk.
+// NOT scanned: CHANGELOG.md. A changelog records history, including paths that no
+// longer exist by design; linting it fights its purpose.
+let companions = [];
+try {
+  companions = execFileSync('git', ['ls-files', 'skills/**/*.md'], { cwd: ROOT, encoding: 'utf8' })
+    .split(/\r?\n/)
+    .filter((f) => f && !f.endsWith('/SKILL.md'));
+} catch {
+  warn('tools/lint.mjs', 0, 'could not enumerate companion files via git ls-files — companion coverage skipped');
+}
+for (const f of companions) lintMarkdown(f);
 
 // --- report -----------------------------------------------------------------
 
