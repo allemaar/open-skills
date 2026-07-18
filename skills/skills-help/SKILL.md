@@ -33,7 +33,7 @@ Before printing, refresh the menu against the live library:
 2. For each skill, set its marker from the filesystem: `protocol.yon` present → ◆ dual-doc; absent → ◇ single-doc.
 3. If a skill directory exists that is not in the menu below, render it under its best-fit family and append: *"⚠ {name} is not yet in the skills-help taxonomy — update this skill."* If a menu entry no longer has a directory, mark it *"(missing)"*.
 
-The menu below is the editorial taxonomy plus a marker snapshot as of 2026-07-17, covering the skills this public pack ships. The live scan above is what keeps the markers and the roster honest — trust it over the snapshot when they disagree. A CI guard (`tools/consistency-guard.mjs`) fails the build if the snapshot ever names a skill the pack does not ship.
+The menu below is the editorial taxonomy plus a marker snapshot as of 2026-07-19, covering the skills this public pack ships. The live scan above is what keeps the markers and the roster honest — trust it over the snapshot when they disagree. A CI guard (`tools/consistency-guard.mjs`) fails the build if the snapshot ever names a skill the pack does not ship.
 
 ## Marker legend
 
@@ -91,6 +91,11 @@ The menu below is the editorial taxonomy plus a marker snapshot as of 2026-07-17
 - ◆ `orient-map` — delta-first "show me the shape" read: what changed since your last look
 - ◆ `orient-gaps` — surface what's stuck (blockers) and what's missing
 - ◆ `orient-roadmap` — multi-horizon read: the increment arc, gates, and the runway ahead
+
+### Human output
+- ◇ `human-output` — the contract for writing anything a person will read and decide from
+- ◇ `human-rewrite` — the repair pass on text that already exists, at guaranteed fidelity
+- ◇ `human-draw` — decide whether the material wants a picture, then build it
 
 ### Code & architecture
 - ◆ `improve-codebase-architecture` — find refactors that deepen shallow modules

@@ -137,4 +137,7 @@ Scoring thresholds: **90-100** clean (minor notes only) · **75-89** acceptable 
 - MUST NOT let reviewers modify files; this skill reviews only.
 - MUST NOT confuse critique with verification: a high score does not replace tests, builds, or `verify` when those are required.
 
+> **Human output.** This skill's handler-facing output obeys the human-output
+> contract (`human-output/SKILL.md`).
+
 > **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.

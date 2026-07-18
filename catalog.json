@@ -3,7 +3,7 @@
   "name": "open-skills",
   "homepage": "https://allemaar.com",
   "repository": "https://github.com/allemaar/open-skills",
-  "generated": "2026-07-17",
+  "generated": "2026-07-18",
   "generator": "tools/spine.mjs",
   "license": "Apache-2.0",
   "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL.",
@@ -12,7 +12,7 @@
     "~/.agents/skills",
     "~/.codex/skills"
   ],
-  "count": 51,
+  "count": 54,
   "dualDoc": 37,
   "install": "Copy a skill folder into your runtime skills dir (copy-default, not symlink), then validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.",
   "skills": [
@@ -657,6 +657,120 @@
       "install": {
         "copy": "cp -r skills/handoff-execute <skills-dir>/handoff-execute",
         "validate": "npx @younndai/yon-parser validate <skills-dir>/handoff-execute/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "human-draw",
+      "description": "Renders information as a picture a person reads at a glance. Seven shapes — bar, spine, tree, lane, fork, matrix, small-multiple — drawn in printable ASCII on a monospace grid. Works on any subject: a budget, a harvest, a rota, a roof, a decision. Trigger phrases: \"/human-draw\", \"draw this\", \"show me this visually\", \"make a diagram of this\", \"I can't hold all this in my head\". Not /human-output (governs the prose around the figure). Not /dataviz (styles charts for rendered surfaces). This skill builds the text figure that survives copy-paste into any terminal.",
+      "visibility": "public",
+      "triggers": [
+        "/human-draw",
+        "draw this",
+        "draw it for me",
+        "show me this visually",
+        "make a diagram of this",
+        "picture this",
+        "I can't hold all this in my head",
+        "how do these relate"
+      ],
+      "nextSkills": [
+        {
+          "skill": "human-output",
+          "phrase": "/human-output",
+          "why": "Owns the prose around the figure — the verdict, the caveats, the ask. A figure never ships bare."
+        },
+        {
+          "skill": "insight-assess",
+          "phrase": "/insight-assess",
+          "why": "The figure made a decision visible; now it needs weighing rather than drawing."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/human-draw <skills-dir>/human-draw",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "human-output",
+      "description": "The contract for writing anything a person will read and decide from — a report, a finding, an answer, a request for a decision. Works on any subject: research, legal, finance, operations, planning, code. Referenced by other skills and invocable directly before a long piece of work. Trigger phrases: \"/human-output\", \"remember I am a person not a machine\", \"write this for a human\", \"keep the reader in mind\". Not /human-rewrite (repairs text that already exists) or /human-draw (builds a picture) — human-output governs writing as it happens.",
+      "visibility": "public",
+      "triggers": [
+        "/human-output",
+        "remember I am a person not a machine",
+        "write this for a human",
+        "keep the reader in mind",
+        "before you write the report"
+      ],
+      "nextSkills": [
+        {
+          "skill": "human-rewrite",
+          "phrase": "/human-rewrite",
+          "why": "The text already exists and needs repair rather than authoring."
+        },
+        {
+          "skill": "human-draw",
+          "phrase": "/human-draw",
+          "why": "The material is relational, positional, or proportional — it wants a picture, not prose."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/human-output <skills-dir>/human-output",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "human-rewrite",
+      "description": "The repair pass on text that already exists — an agent's own last output, a subagent's report, a supplied document, a research summary, a legal or medical paragraph — rewritten so a person can read it fast and act on it, without changing what it claims. Meaning-preserving by contract: uncertainty, scope conditions, numbers, sample sizes, attribution, absent results, and reversing caveats all survive. Works on any subject, not just software. Trigger phrases: \"/human-rewrite\", \"translate that into human\", \"that was a wall of text\", \"I can't follow this\", \"say that again but readable\", \"shorten this without losing anything\". Not /human-output (the writing contract, which this skill links to rather than restates) or /human-draw (builds a picture) — human-rewrite governs the transformation of text that already exists.",
+      "visibility": "public",
+      "triggers": [
+        "/human-rewrite",
+        "translate that into human",
+        "that was a wall of text",
+        "I can't follow this",
+        "say that again but readable",
+        "shorten this without losing anything"
+      ],
+      "nextSkills": [
+        {
+          "skill": "human-output",
+          "phrase": "/human-output",
+          "why": "The writing contract this repair converges on. Load it when the next piece should not arrive needing repair."
+        },
+        {
+          "skill": "human-draw",
+          "phrase": "/human-draw",
+          "why": "The rewritten material turned out relational, positional, or proportional — it wants a picture, not a paragraph."
+        },
+        {
+          "skill": "double-check",
+          "phrase": "/double-check",
+          "why": "The rewrite exposed a load-bearing claim whose confidence the source never justified — go re-verify it against its source."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/human-rewrite <skills-dir>/human-rewrite",
+        "validate": null
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
@@ -1536,7 +1650,7 @@
     },
     {
       "name": "orient-gaps",
-      "description": "Surfaces what's STUCK and what's MISSING on any subject — blockers (on you vs on others), open forks, loose ends, and inferred silent gaps — computed fresh via a bounded read-only subagent. `--audit` raises claim-vs-evidence + gamed-signal disclosure. Not /orient-status (position + ETA), /orient-map (shape + delta), or /investigate (deep facts) — orient-gaps shows the STALL surface.",
+      "description": "Answers \"What is stuck or missing?\" on any subject — blockers (on you vs on others), open forks, loose ends, and inferred silent gaps, computed fresh via a bounded read-only subagent. `--audit` raises claim-vs-evidence + gamed-signal disclosure. Trigger phrases: \"/orient-gaps\", \"what's stuck\", \"what are the blockers\", \"can I trust this\". Not /orient-status (how far along am I and when will it be done), /orient-map (what changed since I last looked), /orient-roadmap (what comes next and what gates it), or /investigate (deep facts) — orient-gaps shows the STALL surface.",
       "visibility": "public",
       "triggers": [
         "/orient-gaps",
@@ -1587,7 +1701,7 @@
     },
     {
       "name": "orient-map",
-      "description": "Delta-first \"show me the shape\" read on any subject — what changed since your last look, plus done → here → next as a path on trunk or a TREE on a branch, computed fresh via a bounded read-only subagent. Not /orient-status (position + remaining + ETA), an IDE file-tree, or /plan-deep-dive — orient-map shows the SHAPE and the DELTA.",
+      "description": "Answers \"What changed since I last looked?\" on any subject — the delta since your last look, plus done → here → next as a path on trunk or a TREE on a branch, computed fresh via a bounded read-only subagent. Trigger phrases: \"/orient-map\", \"show me the map\", \"what changed since last look\", \"how deep down this branch am I\". Not /orient-status (how far along am I and when will it be done), /orient-gaps (what is stuck or missing), /orient-roadmap (what comes next and what gates it), an IDE file-tree, or /plan-deep-dive — orient-map shows the SHAPE and the DELTA.",
       "visibility": "public",
       "triggers": [
         "/orient-map",
@@ -1638,7 +1752,7 @@
     },
     {
       "name": "orient-roadmap",
-      "description": "Multi-horizon \"show me the roadmap\" read on any subject — the increment arc (built → current → next), what shipped now, the gates, the next increment's clusters (paramount starred), and the runway of stage boxes (now → gated-next → future) plus the deferred lanes, computed fresh via a bounded read-only subagent. Not /orient-status (position + ETA on ONE node) or /orient-map (topology + delta since last look) — orient-roadmap shows the FORWARD HORIZONS and the runway.",
+      "description": "Answers \"What comes next, and what gates it?\" on any subject — the increment arc (built → current → next), what shipped now, the gates, the next increment's clusters (paramount starred), and the runway of stage boxes (now → gated-next → future) plus the deferred lanes, computed fresh via a bounded read-only subagent. Trigger phrases: \"/orient-roadmap\", \"show me the roadmap\", \"show me the runway\", \"what's next\". Not /orient-status (how far along am I and when will it be done), /orient-map (what changed since I last looked), or /orient-gaps (what is stuck or missing) — orient-roadmap shows the FORWARD HORIZONS and the runway.",
       "visibility": "public",
       "triggers": [
         "/orient-roadmap",
@@ -1688,7 +1802,7 @@
     },
     {
       "name": "orient-status",
-      "description": "Quick \"where are we\" read on any subject (repo, folder, plan, task) — current position, what's left, and a banded ETA, computed fresh via a bounded read-only subagent. `--resume` rebuilds context after a gap (one next move + counter-case). Not /investigate (deep facts), /reflect (thinking), or /yas-status (YAS agent/arc state) — orient-status SEES and reports NOW on any subject.",
+      "description": "Answers \"How far along am I, and when will it be done?\" on any subject (repo, folder, plan, task) — current position, what's left, and a banded ETA, computed fresh via a bounded read-only subagent. `--resume` rebuilds context after a gap (one next move + counter-case). Trigger phrases: \"/orient-status\", \"where are we on this\", \"how far along\", \"what's the ETA\". Not /orient-map (what changed since I last looked), /orient-gaps (what is stuck or missing), /orient-roadmap (what comes next and what gates it), /investigate (deep facts), /reflect (thinking), or /yas-status (YAS agent/arc state) — orient-status SEES and reports NOW.",
       "visibility": "public",
       "triggers": [
         "/orient-status",

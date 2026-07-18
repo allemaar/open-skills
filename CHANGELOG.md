@@ -11,6 +11,28 @@ or guard changes that neither add nor remove a skill.
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- **A `human-*` family: the contract for output a person actually reads.** Three Markdown-only skills. `human-output` is the contract itself — five policeable rules (verdict first, including anything that would reverse it; say what it costs, not what it is; label every claim confirmed/judgement/estimate; say what you did not check; no shorthand the reader must decode) over a craft layer of defaults, on the principle that a contract with twenty rules is a contract with none. `human-rewrite` is the repair pass on text that already exists, narrowed to what only exists because there is a source: fidelity guarantees, foreign-input handling, inventory-then-reconcile. `human-draw` decides whether the material wants a picture and builds it, defaulting to DRAW and downgrading to a simpler shape rather than refusing — a refusal hands a text-fatigued reader back the wall of text that caused the problem. Figures are printable ASCII only (`0x20–0x7E`): box-drawing and block glyphs are East Asian *Ambiguous* and render double-width under some locales, shearing every column below.
+
+- **`tools/human-output-check.mjs`** — the mechanical half of the contract, since a rule with no gate drifts silently while everything else stays green. Checks acronym expansion at first use, one marked recommendation, sentence length, ASCII inside fences, and figure arithmetic. Rules 1, 3 and 4 are judgement and the file says so rather than pretending to grade them. Self-tests with `--self-test`.
+
+- **The six loudest skills now cite the contract** rather than restating it: `insight-retro`, `cold-review`, `insight-cross-examine`, `plan-create`, `improve-codebase-architecture`, and `investigate` — each chosen for a long or decision-bearing mandated report template.
+
+### Fixed
+
+- **The `orient-*` skills printed a YON record at a human, and the rule that caused it is now gated.** All four carried an unconditional `MUST emit a record conformant to orient-record.yon` two lines above a *consumer-conditional* visual rule. Facing one unconditional MUST and one conditional one, an emitter obeys the unconditional one — so the machine face reached the person, contradicting `orient-contract.md` §1 ("No raw record fields or node-ids surfaced to the human") and `family-behaviors.md` §6. The MUST is now conditioned on `handler_type = agent`, a companion MUST NOT forbids any record field, node-id, gate enum, `@CFG` or `@MAP` line in a human reply, and the "Record emission" headings and step 6 emission instructions name the consumer explicitly. Mirrored into each `protocol.yon` (`rule:render-face`, `step:emit`). Nothing about the record, the schema, or the widget kit changed — only who receives which face.
+
+### Changed
+
+- **The four `orient-*` descriptions lead with the question they answer**, and each `SKILL.md` opens with a four-line card stating what it answers, what it does not (naming the sibling that does), and what it owns for the family. Sections 2–8 were near-identical boilerplate across the four, so the ~10% that differed was buried behind a shared preamble and a reader comparing two files saw the same document twice.
+
+- Pack grows to **54 skills / 37 with a `protocol.yon`** (17 Markdown-only).
+
+---
+
 ## [1.2.1] — 2026-07-18
 
 ### Changed

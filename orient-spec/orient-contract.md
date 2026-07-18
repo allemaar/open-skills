@@ -23,6 +23,8 @@ Every `orient-*` skill returns **one computed, ephemeral bundle with three faces
 - **One-move terminator** (re-entry outputs): the resume-pointer is the LAST section — exactly ONE next action + ONE counter-case + the single dropped alternative. Never a menu.
 - **Honest degradation is mandatory and visible.** Thin evidence renders a *different, explicit* collapse (`**~barely-started / mid / near-done — can't tell.**`, `## ETA — unknown`, `Δ … (coarse — mtime only)`) and the trust line states it plainly. A fabricated percentage or confident phase is banned. The empty-folder banner is a success state, not a failure.
 - **Token discipline.** Empty buckets are dropped; a clean/no-finding result collapses to one line. Tables over prose. No raw record fields or node-ids surfaced to the human — those collapse into the trailer glyphs.
+- **The record is not a human face.** The YON record is emitted to an `agent` consumer only, per [`family-behaviors.md`](family-behaviors.md) §6; the human reply carries the markdown read plus the visual and never the record itself.
+- **Human-facing prose obeys the human-output contract** (`human-output/SKILL.md`); this section sets only the orientation-specific shape.
 
 ## 2. Visual-render contract
 

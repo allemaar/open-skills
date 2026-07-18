@@ -185,7 +185,7 @@ A few that pay off on their own, no setup:
 | [`yon-read`](skills/yon-read/) | Reads, interprets, and explains any YON you point it at — the protocols in this pack included. |
 | [`yon-write`](skills/yon-write/) | Drafts and converts content into valid YON — the fastest way to author your own `protocol.yon`. |
 
-Browse [`skills/`](skills/) for the full set of 51 — planning, insight & decision, [orientation](#the-orient--family), priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, diff recap, and YON authoring.
+Browse [`skills/`](skills/) for the full set of 54 — planning, insight & decision, [orientation](#the-orient--family), priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, diff recap, and YON authoring.
 
 ---
 
@@ -198,7 +198,7 @@ Each skill is a folder under [`skills/`](skills/) with up to two files:
 | **`SKILL.md`** | human + agent | what the skill does and when to use it, in plain language |
 | **`protocol.yon`** | the runtime | the same skill's steps, rules, and gates as a **declarative protocol** it can enforce and *you* can audit |
 
-Markdown explains the skill. **YON makes it inspectable and enforceable** — the control flow, the rules (`MUST` / `MUST_NOT`), and the gates (`ABORT` / `WARN`) are named, typed objects, not prose you hope the model follows. Of the 51 skills here, **37 ship a `protocol.yon`**; 14 are Markdown-only.
+Markdown explains the skill. **YON makes it inspectable and enforceable** — the control flow, the rules (`MUST` / `MUST_NOT`), and the gates (`ABORT` / `WARN`) are named, typed objects, not prose you hope the model follows. Of the 54 skills here, **37 ship a `protocol.yon`**; 17 are Markdown-only.
 
 "Enforceable" is a claim you can check: [`GATE-FIRES.md`](GATE-FIRES.md) shows the public parser and the semantic linter *rejecting* deliberately-broken skills — regenerated in CI on every push, so it can't be staged.
 
