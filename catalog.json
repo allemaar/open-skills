@@ -223,6 +223,11 @@
           "skill": "double-check",
           "phrase": "/double-check",
           "why": "Re-verify a single contested finding the review raised before reworking everything."
+        },
+        {
+          "skill": "human-rewrite",
+          "phrase": "/human-rewrite",
+          "why": "Repair the readability of the single synthesised review once it exists — it stays long and reviewer-voiced — without softening a severity or dropping a caveat. Hand it the one synthesis, never the separate reviewer reports."
         }
       ],
       "hasProtocol": true,
@@ -459,6 +464,11 @@
           "skill": "handoff",
           "phrase": "/handoff",
           "why": "Package the extracted, provenance-tagged signal as a brief for a fresh agent"
+        },
+        {
+          "skill": "human-rewrite",
+          "phrase": "/human-rewrite",
+          "why": "When the destination is a person rather than an agent — make the signal readable while provenance, confidence and stated gaps all survive the pass"
         }
       ],
       "hasProtocol": true,
@@ -663,7 +673,7 @@
     },
     {
       "name": "human-draw",
-      "description": "Renders information as a picture a person reads at a glance. Seven shapes — bar, spine, tree, lane, fork, matrix, small-multiple — drawn in printable ASCII on a monospace grid. Works on any subject: a budget, a harvest, a rota, a roof, a decision. Trigger phrases: \"/human-draw\", \"draw this\", \"show me this visually\", \"make a diagram of this\", \"I can't hold all this in my head\". Not /human-output (governs the prose around the figure). Not /dataviz (styles charts for rendered surfaces). This skill builds the text figure that survives copy-paste into any terminal.",
+      "description": "Renders information as a picture a person reads at a glance. Seven shapes — bar, spine, tree, lane, fork, matrix, small-multiple — drawn in printable ASCII on a monospace grid. Works on any subject: a budget, a harvest, a rota, a roof, a decision. Trigger phrases: \"/human-draw\", \"draw this\", \"show me this visually\", \"make a diagram of this\", \"I can't hold all this in my head\". Not /human-output (governs the prose around the figure, and runs alongside this skill rather than before it). Not /human-rewrite (repairs existing text, and hands material here when it turns out relational). This skill builds the text figure that survives copy-paste into any terminal.",
       "visibility": "public",
       "triggers": [
         "/human-draw",
@@ -719,7 +729,7 @@
         {
           "skill": "human-draw",
           "phrase": "/human-draw",
-          "why": "The material is relational, positional, or proportional — it wants a picture, not prose."
+          "why": "The material is relational, positional, or proportional — it wants a figure. Runs alongside this skill, which keeps the prose around it."
         }
       ],
       "hasProtocol": false,
@@ -795,6 +805,11 @@
           "skill": "prime-sweep",
           "phrase": "/prime-sweep",
           "why": "When the codebase to refactor spans ≥3 sources or >10k tokens — delegate the surveying to keep your context clean"
+        },
+        {
+          "skill": "human-rewrite",
+          "phrase": "/human-rewrite",
+          "why": "The refactor case or RFC is long-form argument aimed at whoever approves it — repair it for a reader without weakening the coupling evidence it rests on"
         }
       ],
       "hasProtocol": true,
@@ -847,6 +862,11 @@
           "skill": "plan-execute",
           "phrase": "/plan-execute",
           "why": "Proceed to execution if the plan held up under scrutiny"
+        },
+        {
+          "skill": "human-rewrite",
+          "phrase": "/human-rewrite",
+          "why": "Multi-pass persona output arrives long and in several voices — condense it to the objections that survived, keeping each one's force intact"
         }
       ],
       "hasProtocol": true,
@@ -1064,6 +1084,11 @@
           "skill": "insight-adversarial",
           "phrase": "/insight-adversarial",
           "why": "Stress-test the leading option from multiple adversarial POVs before committing"
+        },
+        {
+          "skill": "human-draw",
+          "phrase": "/human-draw",
+          "why": "A set weighed against shared criteria is a matrix — draw the decision surface so the trade-offs are visible in one pass"
         }
       ],
       "hasProtocol": true,
@@ -1154,6 +1179,11 @@
           "skill": "insight-skill-gap",
           "phrase": "/insight-skill-gap",
           "why": "Codify recurring patterns into new or updated skills"
+        },
+        {
+          "skill": "human-draw",
+          "phrase": "/human-draw",
+          "why": "Blast radius is proportional and positional — how far the change reached shows in a figure, not in a list of touched files"
         }
       ],
       "hasProtocol": true,
@@ -1245,6 +1275,11 @@
           "skill": "prime-sweep",
           "phrase": "/prime-sweep",
           "why": "When the gathering should be delegated to keep the caller's context clean (≥3 distinct sources OR ≥~10k tokens)"
+        },
+        {
+          "skill": "human-draw",
+          "phrase": "/human-draw",
+          "why": "Files, dependencies and call paths are relational — a tree or lane figure lands faster than a bulleted inventory of paths"
         }
       ],
       "hasProtocol": true,
@@ -1928,6 +1963,11 @@
           "skill": "prime-expand",
           "phrase": "/prime-expand",
           "why": "When the planning target is vague — clarify intent (concrete questions + named sources) before planning"
+        },
+        {
+          "skill": "human-draw",
+          "phrase": "/human-draw",
+          "why": "Gated phases are a spine — the approver sees the sequence and where each gate sits far faster than in nested prose"
         }
       ],
       "hasProtocol": true,

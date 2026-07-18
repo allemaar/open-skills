@@ -27,6 +27,9 @@ next-skills:
   - skill: double-check
     phrase: "/double-check"
     why: "Re-verify a single contested finding the review raised before reworking everything."
+  - skill: human-rewrite
+    phrase: "/human-rewrite"
+    why: "Repair the readability of the single synthesised review once it exists — it stays long and reviewer-voiced — without softening a severity or dropping a caveat. Hand it the one synthesis, never the separate reviewer reports."
 ---
 
 # /cold-review

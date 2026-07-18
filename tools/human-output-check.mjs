@@ -109,8 +109,12 @@ function checkBarArithmetic(fences) {
       const run = text.match(/([#=*x@])\1{2,}/);
       if (!run) continue;
       const cells = text.split('').filter((c) => c === run[1]).length;
-      // the value is the first number that is not part of the bar run
-      const num = text.replace(/([#=*x@])\1{2,}/g, ' ').match(/(\d[\d,]*\.?\d*)/);
+      // The value is the number printed AFTER the bar, not before it. A label
+      // to the left routinely contains digits ("Q4 2025", "2019 harvest") and
+      // reading those produced false rejections of correct figures — a gate
+      // that cries wolf gets switched off, so this must stay precise.
+      const afterBar = text.slice(text.indexOf(run[0]) + run[0].length);
+      const num = afterBar.match(/(\d[\d,]*\.?\d*)/);
       if (!num) continue;
       const value = parseFloat(num[1].replace(/,/g, ''));
       if (!Number.isFinite(value) || value === 0) continue;

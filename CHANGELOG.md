@@ -19,7 +19,7 @@ or guard changes that neither add nor remove a skill.
 
 - **`tools/human-output-check.mjs`** — the mechanical half of the contract, since a rule with no gate drifts silently while everything else stays green. Checks acronym expansion at first use, one marked recommendation, sentence length, ASCII inside fences, and figure arithmetic. Rules 1, 3 and 4 are judgement and the file says so rather than pretending to grade them. Self-tests with `--self-test`.
 
-- **The six loudest skills now cite the contract** rather than restating it: `insight-retro`, `cold-review`, `insight-cross-examine`, `plan-create`, `improve-codebase-architecture`, and `investigate` — each chosen for a long or decision-bearing mandated report template.
+- **The eight loudest skills now cite the contract** rather than restating it, each gaining a `human-*` next-skills edge: `insight-retro`, `cold-review`, `insight-cross-examine`, `plan-create`, `improve-codebase-architecture`, `investigate`, `extract-signal`, and `insight-adversarial` — each chosen for a long or decision-bearing mandated report template.
 
 ### Fixed
 

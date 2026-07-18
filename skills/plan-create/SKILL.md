@@ -17,6 +17,9 @@ next-skills:
   - skill: prime-expand
     phrase: "/prime-expand"
     why: "When the planning target is vague — clarify intent (concrete questions + named sources) before planning"
+  - skill: human-draw
+    phrase: "/human-draw"
+    why: "Gated phases are a spine — the approver sees the sequence and where each gate sits far faster than in nested prose"
 triggers:
   - "/plan-create"
   - "make a plan"

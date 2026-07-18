@@ -118,6 +118,17 @@ const scenarios = [
   { gate: "menu-roster guard", expect: "accept",
     defect: "POSITIVE CONTROL — the real skills-help menu, whose every entry resolves to a shipped skill",
     cmd: `node tools/consistency-guard.mjs` },
+  // The human-output check grades the MECHANICAL half of the human-output contract — the
+  // half a reader can measure. Its sharpest rule is figure arithmetic: prose can claim
+  // anything, but a bar drawn out of proportion to its own printed label is a picture that
+  // contradicts its caption, and no amount of reading the text catches it.
+  { gate: "human-output check (figure arithmetic)", expect: "reject",
+    defect: "a figure whose bars contradict their printed labels — `logs` is drawn nearly as long as `archive` while claiming a third of the value, so a reader who measures the bar gets a different number than the one written beside it",
+    cmd: `node tools/human-output-check.mjs ${FIX}/bad-figure.md`,
+    mustSay: /not proportional to their labels/ },
+  { gate: "human-output check (figure arithmetic)", expect: "accept",
+    defect: "POSITIVE CONTROL — the same figure drawn honestly (one cell per hundred units, printable ASCII, inside the column budget), so a green run means checked-and-clean rather than the checker never looking",
+    cmd: `node tools/human-output-check.mjs ${FIX}/clean-figure.md` },
 ];
 
 function run(cmd) {

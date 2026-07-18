@@ -7,6 +7,9 @@ next-skills:
   - skill: prime-sweep
     phrase: "/prime-sweep"
     why: "When the codebase to refactor spans ≥3 sources or >10k tokens — delegate the surveying to keep your context clean"
+  - skill: human-rewrite
+    phrase: "/human-rewrite"
+    why: "The refactor case or RFC is long-form argument aimed at whoever approves it — repair it for a reader without weakening the coupling evidence it rests on"
 triggers:
   - "/improve-codebase-architecture"
   - "improve architecture"

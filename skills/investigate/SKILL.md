@@ -16,6 +16,9 @@ next-skills:
   - skill: prime-sweep
     phrase: "/prime-sweep"
     why: "When the gathering should be delegated to keep the caller's context clean (≥3 distinct sources OR ≥~10k tokens)"
+  - skill: human-draw
+    phrase: "/human-draw"
+    why: "Files, dependencies and call paths are relational — a tree or lane figure lands faster than a bulleted inventory of paths"
 triggers:
   - "/investigate"
   - "look into this"

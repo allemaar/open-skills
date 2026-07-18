@@ -10,7 +10,7 @@
       "name": "open-skills",
       "source": "./",
       "displayName": "open-skills",
-      "description": "Reusable skills for AI coding agents. Every skill ships a SKILL.md (plain-language protocol); 37 of 51 also ship a declarative protocol.yon (named, typed steps, MUST/MUST_NOT rules, and ABORT/WARN gates) validated by @younndai/yon-parser. Read before you trust — nothing executes on faith.",
+      "description": "Reusable skills for AI coding agents. Every skill ships a SKILL.md (plain-language protocol); 37 of 54 also ship a declarative protocol.yon (named, typed steps, MUST/MUST_NOT rules, and ABORT/WARN gates) validated by @younndai/yon-parser. Read before you trust — nothing executes on faith.",
       "author": {
         "name": "Alexandru Mares",
         "url": "https://allemaar.com"

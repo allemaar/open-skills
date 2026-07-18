@@ -1,7 +1,7 @@
 ---
 name: human-draw
 description: >
-  Renders information as a picture a person reads at a glance. Seven shapes — bar, spine, tree, lane, fork, matrix, small-multiple — drawn in printable ASCII on a monospace grid. Works on any subject: a budget, a harvest, a rota, a roof, a decision. Trigger phrases: "/human-draw", "draw this", "show me this visually", "make a diagram of this", "I can't hold all this in my head". Not /human-output (governs the prose around the figure). Not /dataviz (styles charts for rendered surfaces). This skill builds the text figure that survives copy-paste into any terminal.
+  Renders information as a picture a person reads at a glance. Seven shapes — bar, spine, tree, lane, fork, matrix, small-multiple — drawn in printable ASCII on a monospace grid. Works on any subject: a budget, a harvest, a rota, a roof, a decision. Trigger phrases: "/human-draw", "draw this", "show me this visually", "make a diagram of this", "I can't hold all this in my head". Not /human-output (governs the prose around the figure, and runs alongside this skill rather than before it). Not /human-rewrite (repairs existing text, and hands material here when it turns out relational). This skill builds the text figure that survives copy-paste into any terminal.
 visibility: public
 self-improvable: true
 triggers:
@@ -32,8 +32,9 @@ Two facts set every rule below.
 
 1. **The grid is about 80 columns wide and one character deep.** Cross it and
    the terminal wraps the line, shearing the figure into unreadable halves.
-2. **The reader stops wherever they stop.** There is no expand control, so a
-   figure must be correct at a glance and still correct on a second look.
+2. **The reader stops wherever they stop** — the family's stopping-point
+   doctrine, `human-spec/human-contract.md` §2. So a figure must be correct at
+   a glance and still correct on a second look.
 
 ## Placement: the rule that matters most
 
@@ -43,17 +44,14 @@ Three parts, always in this order.
   verdict sentence  ->  figure  ->  caption stating the finding
 ```
 
-- **Verdict above.** One sentence, including anything that would reverse it.
-- **Figure in the middle.** Fenced, so the renderer cannot collapse the spaces.
-- **Caption below, naming the finding, not the subject.** Not "Chapter
-  network" but "Eight of twelve chapters route through Weald."
-
 **A reader who never looks at the picture must still be correct.** That is the
-whole test. A figure is evidence for a claim someone else already made in
-words; it is never the claim itself.
+whole test, and it is the stopping-point doctrine applied to a figure. A figure
+is evidence for a claim someone else already made in words; it is never the
+claim itself.
 
-The prose itself is governed by `human-output/SKILL.md`. Do not restate those
-rules here.
+The verdict above and the caption below are prose, and prose is governed by
+`human-output/SKILL.md` — including what a caption must name (the finding, not
+the subject). This file owns only what is inside the fence.
 
 ## The default is to draw
 
@@ -419,7 +417,7 @@ by locking the business in.**
                                   |
                               low cost
 
-  [fig matrix | 4 options | 67 cols | ascii | both axes carry measured cost]
+  [fig matrix | 4 options | 67 cols | ascii | axes: cost x reversibility]
 ```
 
 Caption: *Try the terrace for one season; it is the only option that does not
@@ -650,19 +648,29 @@ The receipt is one line, the last line inside the fence:
 It reports what was carried, not merely that formatting passed. If a check
 fails, fix the figure — do not ship it with an apology attached.
 
-`tools/human-output-check.mjs` grades the mechanical half: printable ASCII
-inside fences, fence width, bar proportionality, and percentage sums. Run it on
-any file containing a figure. Alignment, ceilings and honesty stay judgement,
-and this file does not pretend otherwise.
+Run `tools/human-output-check.mjs` on any file containing a figure; it grades
+the mechanical half only, and alignment, ceilings and honesty stay judgement.
+Full checker contract: `human-spec/human-contract.md` §3.
 
 ## Boundary
+
+This skill is one member of the `human-` family. The routing table — which
+member handles which material — is `human-spec/human-contract.md` §1.
 
 - Not `/human-output` — that owns the words: the verdict sentence, the register,
   caveat placement, and the machine block. This skill owns what is inside the
   fence. Both run together; neither replaces the other.
-- Not `/dataviz` — that styles charts for rendered surfaces where colour and
-  typography exist. This skill targets a monospace transcript, where position
-  and length are the only accurate channels available.
+- Not `/human-rewrite` — that repairs text that already exists without changing
+  what it claims. It hands material here at its restack step when the material
+  turns out to be relational, positional, or proportional; this skill draws that
+  material and never rewrites the surrounding text.
+- Not `human-merge` — several separate reports into one. **Specified, not yet
+  shipped**; a figure drawn across several unmerged reports would encode a
+  combination nobody made. See `human-spec/human-contract.md` §1.
+- **Not a rendered chart.** Charting for surfaces where colour, typography and
+  a layout engine exist is a different craft with different rules. This skill
+  targets a monospace transcript, where position and length are the only
+  accurate channels available.
 - Not `/orient-map`, `/orient-status` or `/orient-roadmap` — those compute a
   subject's state from artifacts and own their own machine-checked glyph
   contracts. This skill renders a position it is given.

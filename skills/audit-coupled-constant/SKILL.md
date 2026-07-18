@@ -23,7 +23,7 @@ triggers:
 
 Before declaring an edit to a coupled constant complete, grep the constant's value globally to verify every site moved together. The author-maintained `SEE ALSO` trail is a maintenance contract, not enforcement — when one site is missed, the trail silently lies in the other sites.
 
-> **Origin.** This skill emerged in Lyt v1.C.4.2 cold-review (2026-06-01). A 60s retry budget was raised to 180s across 3 of 4 call sites; the 4th (`packages/lyt-vault/src/flows/rename.ts:297`) was missed because the SEE ALSO comments in the 3 known sites never mentioned it. Two independent cold reviewers caught it via global grep; the original diagnosis trusted the SEE ALSO trail. The lesson generalizes far beyond retry budgets.
+> **Origin.** This skill emerged from a cold-review finding. A 60s retry budget was raised to 180s across 3 of 4 call sites; the 4th (`packages/<pkg>/src/flows/rename.ts:297`) was missed because the SEE ALSO comments in the 3 known sites never mentioned it. Two independent cold reviewers caught it via global grep; the original diagnosis trusted the SEE ALSO trail. The lesson generalizes far beyond retry budgets.
 
 ## Boundary
 
@@ -99,7 +99,7 @@ Brief, structured. One section per scope swept:
 audit-coupled-constant report
   constant: <name or value>
   shapes searched: 240, 60_000, 60s, RETRY_BUDGET_MS
-  scope: packages/lyt-vault
+  scope: packages/<pkg>
   sites found: 4
     src/flows/registry-reset.ts:90    moved together ✓
     src/scaffold/delete.ts:42          moved together ✓

@@ -35,6 +35,8 @@ control proving a real skill still passes.
 | structural lint (ref check) | POSITIVE CONTROL — a companion doc whose references (`tools/lint.mjs`) all resolve, so a green run means checked-and-clean, not check-never-looked | accept | `0` | ✅ accepted | `lint: 0 error(s) in tools/gate-fixtures/clean-ref.md` |
 | menu-roster guard | a skills-help menu naming `ghost-skill`, which has no skills/ghost-skill/ directory — the export-kept-a-private-entry class | reject | `1` | ✅ rejected | `` |
 | menu-roster guard | POSITIVE CONTROL — the real skills-help menu, whose every entry resolves to a shipped skill | accept | `0` | ✅ accepted | `` |
+| human-output check (figure arithmetic) | a figure whose bars contradict their printed labels — `logs` is drawn nearly as long as `archive` while claiming a third of the value, so a reader who measures the bar gets a different number than the one written beside it | reject | `1` | ✅ rejected | `ERROR bar-arithmetic:8 bars in this figure are not proportional to their labels (cells-per-unit ranges 0.0129..0.0400) — a reader who measur` |
+| human-output check (figure arithmetic) | POSITIVE CONTROL — the same figure drawn honestly (one cell per hundred units, printable ASCII, inside the column budget), so a green run means checked-and-clean rather than the checker never looking | accept | `0` | ✅ accepted | `human-output-check: 0 error(s), 0 warning(s) — judgement rules (verdict-first, confidence labels, what-was-not-checked) are NOT graded here` |
 
 ## What this demonstrates
 

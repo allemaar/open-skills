@@ -62,7 +62,7 @@ const SKILLS = 'skills';
 //     a "first segment must exist" rule would defeat the point.
 //   SKILL_REL — the pack's own convention: `self-improve/SKILL.md` means
 //     skills/self-improve/SKILL.md (used throughout the NSP / SIP footers).
-const ROOT_DIRS = /^(tools|skills|docs|orient-spec|\.github)\//;
+const ROOT_DIRS = /^(tools|skills|docs|orient-spec|human-spec|\.github)\//;
 const SKILL_REL = /^[a-z0-9][a-z0-9-]*\/(SKILL\.md|protocol\.yon|(references|examples|personas|profiles)\/[^/]+)$/;
 function resolveRef(tok, dir) {
   if (/^[~/]/.test(tok) || /^[a-zA-Z]:[\\/]/.test(tok)) return null; // home / POSIX / Windows absolute

@@ -8,6 +8,9 @@ next-skills:
   - skill: insight-skill-gap
     phrase: "/insight-skill-gap"
     why: "Codify recurring patterns into new or updated skills"
+  - skill: human-draw
+    phrase: "/human-draw"
+    why: "Blast radius is proportional and positional — how far the change reached shows in a figure, not in a list of touched files"
 triggers:
   - "/retro"
   - "retrospective"

@@ -16,7 +16,7 @@ next-skills:
     why: "The text already exists and needs repair rather than authoring."
   - skill: human-draw
     phrase: "/human-draw"
-    why: "The material is relational, positional, or proportional — it wants a picture, not prose."
+    why: "The material is relational, positional, or proportional — it wants a figure. Runs alongside this skill, which keeps the prose around it."
 ---
 
 # /human-output
@@ -29,7 +29,7 @@ after is reference you consult while writing, not rules to memorise.
 1. **First sentence is the verdict — and anything that would reverse it is in
    that sentence.** Not the context, not the method. The outcome.
 2. **Say what it costs, not what it is.** Compute the consequence. "1x
-   participating preference" is a fact; "costs you EUR 960k in a EUR 10M exit"
+   participating preference" is a fact; "costs you EUR 1.0M in a EUR 10M exit"
    is a decision.
 3. **Label every claim: confirmed, judgement, or estimate.** A confirmed claim
    carries its source. A judgement with no basis is a guess — say so.
@@ -44,18 +44,10 @@ is worse than no contract at all.
 
 ## Why the first rule is first
 
-The reader stops at a point you cannot predict, and a terminal has no
-collapse control — everything you write is visible, and nothing can be
-hidden behind an expander. So the reader's stopping point *is* the disclosure
-control.
-
-**Every prefix must therefore leave them correct.** Correct-but-incomplete is
-fine. Incomplete in a way that flips a decision is a defect.
-
-Test any sentence: *if they stop immediately before this, are they now wrong?*
-If yes, it belongs earlier. This is why a reversing caveat is part of the
-verdict rather than a footnote — disclosure below the stopping point is not
-disclosure.
+Because the reader's stopping point is the disclosure control, and you cannot
+predict it. The doctrine and its test are stated once for the whole family in
+`human-spec/human-contract.md` §2 — read it there. Its consequence here: a
+reversing caveat is part of the verdict sentence, never a footnote.
 
 ## The shape
 
@@ -107,19 +99,22 @@ failure, not a service.
 
 **Good** — same facts, decidable in two lines:
 
-> **The valuation is fine; two clauses under it cost you about EUR 960k in a
+> **The valuation is fine; two clauses under it cost you about EUR 2.2M in a
 > EUR 10M exit. Do not sign as drafted.**
 >
 > **Decision needed by day 10:** push back on the participating preference and
 > the pre-money employee option pool, or accept and know the number.
 >
 > **The preference is "1x participating"** — the investor takes their EUR 1.2M
-> back *and* their 20% share of the rest. On a EUR 10M exit that is EUR 2.96M
-> to them, against EUR 2.0M if it were non-participating. (Confirmed, §4.1.)
+> back *and* their share of the rest. EUR 1.2M into a EUR 6M pre-money is
+> 16.7% of the EUR 7.2M post-money company. On a EUR 10M exit that pays them
+> EUR 2.67M, against EUR 1.67M if it were non-participating. **Costs you
+> EUR 1.0M.** (Confirmed, §4.1.)
 >
-> **The option pool comes out of your side.** A 20% pool taken before the
-> investment means your effective pre-money is EUR 4.8M, not EUR 6M.
-> (Confirmed, §2.)
+> **The option pool comes out of your side.** A 20% pool carved before the
+> investment means you are selling at an effective EUR 4.8M pre-money, not
+> EUR 6M — **EUR 1.2M of headline valuation, borne entirely by you** rather
+> than shared with the incoming investor. (Confirmed, §2.)
 >
 > Valuation, anti-dilution and governance are genuinely standard. Not worth
 > spending negotiating capital on. (Judgement.)
@@ -127,10 +122,16 @@ failure, not a service.
 > **Not checked:** whether this investor has conceded participating preference
 > before. That decides whether the pushback is cheap or a dealbreaker.
 
-Three things happened that formatting alone cannot do. The EUR 960k was
+Three things happened that formatting alone cannot do. The EUR 1.0M was
 *computed*, not implied by naming the clause. The claims are *labelled*, so the
 reader knows which to trust. And the one unchecked thing that governs the
 negotiation is *named* rather than silently absent.
+
+The shorthand went too. The bad version says "ESOP" — employee share option
+pool — and leaves the reader to decode it; the good version writes it out and
+loses nothing. That abbreviation is left unexpanded above **on purpose**: it is
+the defect being illustrated. `tools/human-output-check.mjs` flags it there,
+correctly, which is the check working rather than the example failing.
 
 ## The craft layer
 
@@ -181,14 +182,10 @@ machine block must still be able to decide.
 
 ## Checking
 
-Rules 1, 3 and 4 are judgement — no script can grade them, and this file does
-not pretend otherwise. The mechanical parts are checkable, and
-`tools/human-output-check.mjs` checks them: acronyms expanded at first use, one
-marked recommendation, sentence length, ASCII inside fences, and figure
-arithmetic.
-
-Run it on drafted text before sending. A rule with no gate drifts silently
-while everything else stays green.
+Run `tools/human-output-check.mjs` on drafted text before sending. What it
+grades, and the far longer list of what no script can grade — including the
+fact that nothing verifies a number in your prose against a number in your
+source — is the family checker contract, `human-spec/human-contract.md` §3.
 
 ## How other skills use this
 
@@ -203,8 +200,16 @@ verbose reporting accumulates.
 
 ## Boundary
 
+This skill is one member of the `human-` family. The routing table — which
+member handles which material — is `human-spec/human-contract.md` §1.
+
 - Not `/human-rewrite` — the repair pass on text that already exists.
-- Not `/human-draw` — decides on and builds a visual.
+- Not `/human-draw` — that owns what is inside the fence; this owns the words
+  around it. They **run together** on any output carrying a figure; neither
+  precedes nor replaces the other.
+- Not `human-merge` — several separate reports into one. **Specified, not yet
+  shipped**; until it is, do not merge reports by reflex. See
+  `human-spec/human-contract.md` §1.
 - Not `/ask-gate` — that decides *whether* to ask the handler; this governs how
   the asking is written.
 - Not a substitute for having something to say. A well-shaped report of a

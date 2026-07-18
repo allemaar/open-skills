@@ -79,9 +79,10 @@ structure, vocabulary, format — is yours to change freely.
 | 6 | Negative and absent results | What failed, what was not tested, what is unknown. Absent and unreadable are different claims — show absent work at low resolution rather than dropping it. |
 | 7 | Verdict-reversing caveats | Any caveat that could flip the reader's decision is *part of* the verdict and moves up with it. It may never sit below the verdict it qualifies. |
 
-**Guarantee 7 is the load-bearing one.** The reader's stopping point is
-unpredictable and a transcript has no click-to-expand. A caveat placed further
-down "for completeness" is, for a reader who stops early, deleted.
+**Guarantee 7 is the load-bearing one**, and it is the family's stopping-point
+doctrine (`human-spec/human-contract.md` §2) in its fidelity form: a caveat
+placed further down "for completeness" is, for a reader who stops early,
+deleted.
 
 **What you MAY change.** Order, structure, vocabulary, length, and resolution —
 a subordinate point may be compressed to a named line. *Named*, not deleted.
@@ -160,9 +161,9 @@ work was, and the same content presented twice at the same resolution. None of
 it is in the fidelity set. Nothing in the fidelity set is cuttable here.
 
 **5. Restack by decision-relevance and choose the face.** Never by the
-chronology of the work. One verdict is a sentence; several items sharing
-attributes is a table; steps are a numbered list; a causal argument stays
-prose; anything relational or proportional goes to `/human-draw`.
+chronology of the work — the ordering rule is `human-output/SKILL.md`, and the
+material-shape-to-face routing is the family table at
+`human-spec/human-contract.md` §1. Apply them; do not re-derive them here.
 
 **6. Reconcile against the inventory, and emit the trace.** Walk the step-1
 list item by item against your output. Each is present unchanged, present at
@@ -247,8 +248,8 @@ threshold as a safety line (item 9). The water company analysing its own
 discharge is gone (item 8). "Should go up" hardens "may wish to consider" into
 a recommendation the source declined to make (item 12). And the two limits on
 what the survey can say at all — no winter sampling, no comparison with 2023 —
-are absent (items 10, 11). Six of twelve items lost or altered; the reader
-cannot tell.
+are absent (items 10, 11). Nine of the twelve inventory items are lost or
+altered — only items 3, 4 and 5 survive — and the reader cannot tell.
 
 ### Panel 3 — the faithful rewrite
 
@@ -293,11 +294,11 @@ reverses anything above it.
 Cut the extraneous load — layout, jargon, ordering — and tell the reader the
 remaining density is real. Never simplify substance to hit a length target.
 
-**You were asked to shorten and fidelity forbids it.** Report the conflict with
-the number rather than resolving it by cutting: *"Cut to 180 words; below that
-the exclusion criteria have to go, and they change who this applies to."* Then
-let the handler decide. Fidelity is a floor and length is a target;
-`human-output/SKILL.md` settles that.
+**You were asked to shorten and fidelity forbids it.** `human-output/SKILL.md`
+already settles this — a floor never yields to a target. The rewrite-specific
+part is only what you hand back: the conflict *with the number*, so the handler
+can decide. *"Cut to 180 words; below that the exclusion criteria have to go,
+and they change who this applies to."*
 
 **The artifact is not a report.** A specification, a legal clause, a log, a
 quoted source: those are evidence, not prose to repair. Rewrite the commentary
@@ -305,17 +306,32 @@ around them and leave them intact.
 
 ## Checking
 
-Run `tools/human-output-check.mjs` on the rewritten text. It grades the
+Run `tools/human-output-check.mjs` on the rewritten text; it grades the
 mechanical half only. Steps 6 and 7 — reconciliation and confidence drift — are
-judgement, and no script grades them; that is precisely why step 6 emits a
-visible trace.
+judgement, which is precisely why step 6 emits a visible trace. Full checker
+contract: `human-spec/human-contract.md` §3.
 
 ## Boundary
+
+This skill is one member of the `human-` family. The routing table — which
+member handles which material — is `human-spec/human-contract.md` §1.
 
 - Not `/human-output` — the contract for text you are about to write. This
   skill repairs text that exists and defers every style rule to that file.
 - Not `/human-draw` — builds the picture. Step 5 hands off when the material is
-  relational, positional, or proportional.
+  relational, positional, or proportional; the figure's internals are that
+  skill's, and the prose around it stays this rewrite's output.
+- Not `human-merge` — several separate reports into one. **Specified, not yet
+  shipped.**
+- **Several separate reports are not one text.** "That was a wall of text" is
+  this skill's exact trigger, and it fires just as readily on six documents as
+  on one. It must not. This skill reads nothing beyond the single text it was
+  handed and adds no facts, so combining several would silently drop whatever
+  it never saw and invent the joins between the rest. Say so and hand back:
+  *"That is six separate reports, not one text — a rewrite would drop what it
+  cannot see. Name the one to repair, or ask for a new report written across
+  all six."* Then rewrite one named report, or route to `/human-output` to
+  author across them. Never merge by accident.
 - Not `/extract-signal` — that gathers and vets signal from noisy *sources*.
   Rewrite reads nothing beyond the text it was handed and adds no facts.
 - Not `/double-check` — that re-verifies a claim against its source. Rewrite

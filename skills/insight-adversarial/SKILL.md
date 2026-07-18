@@ -21,6 +21,9 @@ next-skills:
   - skill: plan-execute
     phrase: "/plan-execute"
     why: "Proceed to execution if the plan held up under scrutiny"
+  - skill: human-rewrite
+    phrase: "/human-rewrite"
+    why: "Multi-pass persona output arrives long and in several voices — condense it to the objections that survived, keeping each one's force intact"
 triggers:
   - "/insight-adversarial"
   - "adversarial"

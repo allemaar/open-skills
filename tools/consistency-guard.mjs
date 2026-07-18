@@ -6,7 +6,9 @@
 //   1. COUNTS  — the skill counts stated in the docs must match reality.
 //                actual: total = skills/ dirs; dual = skills/*/protocol.yon;
 //                mdonly = total - dual. Any 2-digit number on a count-bearing
-//                line in README.md / THREAT-MODEL.md must be one of those three.
+//                line in README.md / THREAT-MODEL.md — or inside a description
+//                string of .claude-plugin/plugin.json / marketplace.json, the copy
+//                a stranger reads at `/plugin install` — must be one of those three.
 //   2. VERSION — the CHANGELOG released versions and the git tags must be a
 //                bijection (ignoring an "## [Unreleased]" section), and the
 //                latest released CHANGELOG entry must equal the latest tag.
@@ -56,6 +58,49 @@ for (const doc of COUNT_DOCS) {
       }
     }
   });
+}
+
+// --- 1b. COUNTS in the plugin manifests -------------------------------------
+//
+// The count also lives in .claude-plugin/plugin.json and marketplace.json — the
+// strings a stranger reads at `/plugin install`, i.e. the MOST public copy of the
+// number and, until 2026-07-19, the only one no guard watched (both said "37 of 51"
+// while the pack shipped 54). Same rule as the docs above, but applied to the
+// DESCRIPTION STRINGS ONLY: parsing the JSON and walking to the description fields
+// means `"version": "1.3.0"`, keywords, and URLs are never scanned, so a version
+// bump can never false-positive as a bad count.
+const COUNT_MANIFESTS = [
+  ['.claude-plugin/plugin.json', (j) => [['description', j.description]]],
+  ['.claude-plugin/marketplace.json', (j) => [
+    ['description', j.description],
+    ...(j.plugins || []).map((p, i) => [`plugins[${i}].description`, p.description]),
+  ]],
+];
+
+for (const [rel, pick] of COUNT_MANIFESTS) {
+  const path = join(ROOT, rel);
+  if (!existsSync(path)) { fail(`COUNT: ${rel} missing`); continue; }
+  let json;
+  try {
+    json = JSON.parse(readFileSync(path, 'utf8'));
+  } catch (e) {
+    // Fail closed: unparseable manifest means the check verified nothing.
+    fail(`COUNT: ${rel} is not valid JSON (${e.message}) — guard cannot verify its counts`);
+    continue;
+  }
+  const fields = pick(json).filter(([, text]) => typeof text === 'string');
+  if (fields.length === 0) {
+    fail(`COUNT: ${rel} has no description string — the manifest shape changed; update this guard`);
+    continue;
+  }
+  for (const [field, text] of fields) {
+    if (!COUNT_LINE.test(text)) continue;
+    for (const n of (text.match(/\b\d{2}\b/g) || []).map(Number)) {
+      if (!valid.has(n)) {
+        fail(`COUNT: ${rel} (${field}) states "${n}" in a skill-count description; actual counts are total=${total}, dual=${dual}, md-only=${mdonly} — this string is what a user reads at \`/plugin install\``);
+      }
+    }
+  }
 }
 
 // --- 2. VERSION (tags <-> CHANGELOG bijection) ------------------------------

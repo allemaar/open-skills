@@ -49,6 +49,8 @@ jobs:
         run: node tools/orient-validate.mjs
       - name: Diff-recap value gate (Σ per-file == totals; fail-closed; yon validate can't enforce)
         run: node tools/diff-recap-check.mjs
+      - name: Human-output check (ASCII fences, figure arithmetic, acronym expansion)
+        run: node tools/human-output-check.mjs --self-test
       - name: Leak guard (no machine-specific / absolute paths in the public pack)
         run: node tools/leak-guard.mjs
       - name: Consistency guard (skill counts agree; CHANGELOG releases ↔ git tags)

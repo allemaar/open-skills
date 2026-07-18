@@ -18,6 +18,9 @@ next-skills:
   - skill: handoff
     phrase: "/handoff"
     why: "Package the extracted, provenance-tagged signal as a brief for a fresh agent"
+  - skill: human-rewrite
+    phrase: "/human-rewrite"
+    why: "When the destination is a person rather than an agent — make the signal readable while provenance, confidence and stated gaps all survive the pass"
 ---
 
 # /extract-signal

@@ -17,6 +17,9 @@ next-skills:
   - skill: insight-adversarial
     phrase: "/insight-adversarial"
     why: "Stress-test the leading option from multiple adversarial POVs before committing"
+  - skill: human-draw
+    phrase: "/human-draw"
+    why: "A set weighed against shared criteria is a matrix — draw the decision surface so the trade-offs are visible in one pass"
 triggers:
   - "/insight-cross-examine"
   - "cross-examine this"
