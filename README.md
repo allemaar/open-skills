@@ -185,7 +185,7 @@ A few that pay off on their own, no setup:
 | [`yon-read`](skills/yon-read/) | Reads, interprets, and explains any YON you point it at — the protocols in this pack included. |
 | [`yon-write`](skills/yon-write/) | Drafts and converts content into valid YON — the fastest way to author your own `protocol.yon`. |
 
-Browse [`skills/`](skills/) for the full set of 55 — planning, insight & decision, [orientation](#the-orient--family), priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, diff recap, and YON authoring.
+Browse [`skills/`](skills/) for the full set of 55 — planning, insight & decision, [orientation](#the-orient--family), [writing for a reader](#the-human--family), priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, diff recap, and YON authoring.
 
 ---
 
@@ -265,6 +265,35 @@ When you sit down to a repo, a plan, or a task and ask *"where are we?"* — tha
 | [`orient-roadmap`](skills/orient-roadmap/) | show me the roadmap | the increment arc (built → current → next), the gates, the next increment's clusters, and the runway of now → gated-next → future stages plus the deferred lanes |
 
 All four emit slices of **one shared orientation record** — the record schema, the render contract, and the family rules live in [`orient-spec/`](orient-spec/), so the skills agree on shape without sharing code. On Claude Code the bundle also renders as a sparse visual widget; an information-complete ASCII twin is always emitted, so no runtime is left without the full read.
+
+---
+
+## The human- family
+
+Agents write for readers who then have to decide, and the default output — long,
+hedged, ordered by how the work happened, thick with shorthand — makes deciding
+harder. These four exist for that.
+
+| Skill | Use it | Hands back |
+|---|---|---|
+| [`human-output`](skills/human-output/) | before writing | the contract: five rules you can police in fifteen seconds |
+| [`human-rewrite`](skills/human-rewrite/) | "that was a wall of text" | the same claims, reordered so you can act — nothing dropped, nothing made more certain |
+| [`human-draw`](skills/human-draw/) | "draw me a picture" | a figure in printable ASCII that survives copy-paste into any terminal |
+| [`human-merge`](skills/human-merge/) | several reports piled up | one decidable surface, with what's superseded, what's double-counted, and what the reports say only together |
+
+The contract is five rules: **verdict first, including anything that would
+reverse it · say what it costs, not what it is · label every claim confirmed,
+judgement or estimate · say what you did not check · no shorthand the reader
+must decode.** Everything else is a craft layer you consult while writing, not
+rules to memorise — a contract with twenty rules gets applied by sampling.
+
+The shared doctrine, the routing table, and the checker contract live in
+[`human-spec/`](human-spec/). [`tools/human-output-check.mjs`](tools/human-output-check.mjs)
+grades the mechanical half in CI — acronyms expanded, one recommendation,
+sentence length, ASCII inside fences, and whether a figure's bars are
+proportional to their labels. It also states what it cannot check: **no script
+verifies that a number in your prose traces to a number in your source.** That
+one needs a reader with the source in hand.
 
 ---
 
