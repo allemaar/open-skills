@@ -15,7 +15,7 @@ read it and act. Each member owns one shape that material can take.
 | [`human-output`](../skills/human-output/SKILL.md) | The contract for text you are about to write. Five rules, then the craft. |
 | [`human-rewrite`](../skills/human-rewrite/SKILL.md) | The repair pass on text that already exists, without changing what it claims. |
 | [`human-draw`](../skills/human-draw/SKILL.md) | The picture: seven shapes in printable ASCII on a monospace grid. |
-| `human-merge` | Several separate reports into one. **Specified, not yet shipped.** |
+| [`human-merge`](../skills/human-merge/SKILL.md) | Several separate reports into one surface a person can decide from. |
 
 ## The files here
 

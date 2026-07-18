@@ -11,11 +11,11 @@ or guard changes that neither add nor remove a skill.
 
 ---
 
-## [Unreleased]
+## [1.3.0] — 2026-07-19
 
 ### Added
 
-- **A `human-*` family: the contract for output a person actually reads.** Three Markdown-only skills. `human-output` is the contract itself — five policeable rules (verdict first, including anything that would reverse it; say what it costs, not what it is; label every claim confirmed/judgement/estimate; say what you did not check; no shorthand the reader must decode) over a craft layer of defaults, on the principle that a contract with twenty rules is a contract with none. `human-rewrite` is the repair pass on text that already exists, narrowed to what only exists because there is a source: fidelity guarantees, foreign-input handling, inventory-then-reconcile. `human-draw` decides whether the material wants a picture and builds it, defaulting to DRAW and downgrading to a simpler shape rather than refusing — a refusal hands a text-fatigued reader back the wall of text that caused the problem. Figures are printable ASCII only (`0x20–0x7E`): box-drawing and block glyphs are East Asian *Ambiguous* and render double-width under some locales, shearing every column below.
+- **A `human-*` family: the contract for output a person actually reads.** Four Markdown-only skills. `human-output` is the contract itself — five policeable rules (verdict first, including anything that would reverse it; say what it costs, not what it is; label every claim confirmed/judgement/estimate; say what you did not check; no shorthand the reader must decode) over a craft layer of defaults, on the principle that a contract with twenty rules is a contract with none. `human-rewrite` is the repair pass on text that already exists, narrowed to what only exists because there is a source: fidelity guarantees, foreign-input handling, inventory-then-reconcile. `human-draw` decides whether the material wants a picture and builds it, defaulting to DRAW and downgrading to a simpler shape rather than refusing — a refusal hands a text-fatigued reader back the wall of text that caused the problem. Figures are printable ASCII only (`0x20–0x7E`): box-drawing and block glyphs are East Asian *Ambiguous* and render double-width under some locales, shearing every column below. `human-merge` owns the pass across *many* reports, which is the case the other three each refuse: it collapses reports sharing an upstream source into the single source they are, names what is superseded and whether a live decision rests on the dead figure, classifies conflicts instead of averaging them away, and pools coverage so a gap no single report had becomes visible. `human-rewrite` reads nothing beyond the one text it was handed, so the pile now routes here rather than being merged by reflex.
 
 - **`tools/human-output-check.mjs`** — the mechanical half of the contract, since a rule with no gate drifts silently while everything else stays green. Checks acronym expansion at first use, one marked recommendation, sentence length, ASCII inside fences, and figure arithmetic. Rules 1, 3 and 4 are judgement and the file says so rather than pretending to grade them. Self-tests with `--self-test`.
 
@@ -29,7 +29,7 @@ or guard changes that neither add nor remove a skill.
 
 - **The four `orient-*` descriptions lead with the question they answer**, and each `SKILL.md` opens with a four-line card stating what it answers, what it does not (naming the sibling that does), and what it owns for the family. Sections 2–8 were near-identical boilerplate across the four, so the ~10% that differed was buried behind a shared preamble and a reader comparing two files saw the same document twice.
 
-- Pack grows to **54 skills / 37 with a `protocol.yon`** (17 Markdown-only).
+- Pack grows to **55 skills / 37 with a `protocol.yon`** (18 Markdown-only).
 
 ---
 
@@ -116,6 +116,7 @@ Initial public release of the **open-skills** pack — reusable skills for AI co
 - CI conformance — YON validation, a cross-reference/structural lint, a YON-DAG semantic check, spine-manifest sync, and a `gate-fires` proof that the guards actually reject broken input;
 - Apache-2.0 license, NOTICE, THREAT-MODEL, CONTRIBUTING (DCO), and SECURITY policy.
 
+[1.3.0]: https://github.com/allemaar/open-skills/releases/tag/v1.3.0
 [1.2.1]: https://github.com/allemaar/open-skills/releases/tag/v1.2.1
 [1.2.0]: https://github.com/allemaar/open-skills/releases/tag/v1.2.0
 [1.1.0]: https://github.com/allemaar/open-skills/releases/tag/v1.1.0

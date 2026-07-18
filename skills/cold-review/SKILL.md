@@ -27,6 +27,9 @@ next-skills:
   - skill: double-check
     phrase: "/double-check"
     why: "Re-verify a single contested finding the review raised before reworking everything."
+  - skill: human-merge
+    phrase: "/human-merge"
+    why: "Several reviewers came back separately and the pile is what defeats the reader — collapse the reviewer reports into one decision surface, classifying where two reviewers actually conflict instead of averaging their verdicts, and pooling coverage so a gap no single reviewer had becomes visible."
   - skill: human-rewrite
     phrase: "/human-rewrite"
     why: "Repair the readability of the single synthesised review once it exists — it stays long and reviewer-voiced — without softening a severity or dropping a caveat. Hand it the one synthesis, never the separate reviewer reports."

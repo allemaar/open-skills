@@ -12,7 +12,7 @@
     "~/.agents/skills",
     "~/.codex/skills"
   ],
-  "count": 54,
+  "count": 55,
   "dualDoc": 37,
   "install": "Copy a skill folder into your runtime skills dir (copy-default, not symlink), then validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.",
   "skills": [
@@ -223,6 +223,11 @@
           "skill": "double-check",
           "phrase": "/double-check",
           "why": "Re-verify a single contested finding the review raised before reworking everything."
+        },
+        {
+          "skill": "human-merge",
+          "phrase": "/human-merge",
+          "why": "Several reviewers came back separately and the pile is what defeats the reader — collapse the reviewer reports into one decision surface, classifying where two reviewers actually conflict instead of averaging their verdicts, and pooling coverage so a gap no single reviewer had becomes visible."
         },
         {
           "skill": "human-rewrite",
@@ -466,6 +471,11 @@
           "why": "Package the extracted, provenance-tagged signal as a brief for a fresh agent"
         },
         {
+          "skill": "human-merge",
+          "phrase": "/human-merge",
+          "why": "Several sub-agents each returned their own signal report — collapse reports drawn from the same upstream source into the single source they are, and name the conflicts between them, before any of it reaches a person"
+        },
+        {
           "skill": "human-rewrite",
           "phrase": "/human-rewrite",
           "why": "When the destination is a person rather than an agent — make the signal readable while provenance, confidence and stated gaps all survive the pass"
@@ -704,6 +714,52 @@
       "steps": 0,
       "install": {
         "copy": "cp -r skills/human-draw <skills-dir>/human-draw",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "human-merge",
+      "description": "Takes several separate reports — from several agents, several sources, or several documents — and returns one surface a person can decide from. Each report may be individually fine; the pile is what defeats the reader, and the relations between reports are invisible to every author who wrote one. Collapses reports that share an upstream source into the single source they are, names what is now superseded and whether a live decision rests on the dead figure, classifies conflicts instead of averaging them away, and pools coverage so a gap no single report had becomes visible. Works on any subject: research, legal, finance, operations, conservation, code. Trigger phrases: \"/human-merge\", \"merge these reports\", \"combine what the agents found\", \"what do all of these add up to\", \"the sub-agents all came back\", \"did anything here contradict anything else\". Not /human-output (the writing contract, which this skill links to rather than restates) or /human-rewrite (repairs one existing text and explicitly refuses several) — human-merge governs the pass across many.",
+      "visibility": "public",
+      "triggers": [
+        "/human-merge",
+        "merge these reports",
+        "combine what the agents found",
+        "what do all of these add up to",
+        "the sub-agents all came back",
+        "did anything here contradict anything else"
+      ],
+      "nextSkills": [
+        {
+          "skill": "human-output",
+          "phrase": "/human-output",
+          "why": "The writing contract the merged surface is written to. Load it before drafting the merge, not after."
+        },
+        {
+          "skill": "human-draw",
+          "phrase": "/human-draw",
+          "why": "The source structure or the joint figure turned out relational or proportional — it wants a picture."
+        },
+        {
+          "skill": "human-rewrite",
+          "phrase": "/human-rewrite",
+          "why": "One input is unreadable on its own and needs repair before it can be read into the merge."
+        },
+        {
+          "skill": "double-check",
+          "phrase": "/double-check",
+          "why": "The merge exposed one live conflict that governs the decision — go re-verify that claim against its source."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/human-merge <skills-dir>/human-merge",
         "validate": null
       },
       "license": "Apache-2.0",

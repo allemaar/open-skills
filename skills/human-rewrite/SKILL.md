@@ -321,17 +321,17 @@ member handles which material — is `human-spec/human-contract.md` §1.
 - Not `/human-draw` — builds the picture. Step 5 hands off when the material is
   relational, positional, or proportional; the figure's internals are that
   skill's, and the prose around it stays this rewrite's output.
-- Not `human-merge` — several separate reports into one. **Specified, not yet
-  shipped.**
+- Not `/human-merge` — several separate reports into one. That is where a pile
+  goes; this skill repairs one text at a time and refuses the pile outright.
 - **Several separate reports are not one text.** "That was a wall of text" is
   this skill's exact trigger, and it fires just as readily on six documents as
   on one. It must not. This skill reads nothing beyond the single text it was
   handed and adds no facts, so combining several would silently drop whatever
   it never saw and invent the joins between the rest. Say so and hand back:
   *"That is six separate reports, not one text — a rewrite would drop what it
-  cannot see. Name the one to repair, or ask for a new report written across
-  all six."* Then rewrite one named report, or route to `/human-output` to
-  author across them. Never merge by accident.
+  cannot see. Name the one to repair, or run `/human-merge` to collapse all six
+  into one surface."* Then rewrite one named report, or route to
+  `/human-merge`. Never merge by accident.
 - Not `/extract-signal` — that gathers and vets signal from noisy *sources*.
   Rewrite reads nothing beyond the text it was handed and adds no facts.
 - Not `/double-check` — that re-verifies a claim against its source. Rewrite

@@ -4,8 +4,9 @@
 > ships no `SKILL.md` and is not counted in the pack). Companion to
 > [the folder overview](README.md). The members are
 > [`human-output`](../skills/human-output/SKILL.md),
-> [`human-rewrite`](../skills/human-rewrite/SKILL.md) and
-> [`human-draw`](../skills/human-draw/SKILL.md).
+> [`human-rewrite`](../skills/human-rewrite/SKILL.md),
+> [`human-draw`](../skills/human-draw/SKILL.md) and
+> [`human-merge`](../skills/human-merge/SKILL.md).
 
 The family answers one question: **a person has to read this and act on it —
 what shape does it take?** Each member owns one answer. This file holds what is
@@ -23,7 +24,7 @@ material's *shape*, not its subject — every member works on any subject.
 | Several items sharing one attribute set | `human-output` | That is a table, and always was. Not a figure. |
 | Relational, positional, proportional, sequential, containing | `human-draw` | Position and length carry meaning that prose has to make the reader reconstruct. |
 | Text that already exists and is correct but unreadable | `human-rewrite` | Repair, not authorship. The claims are already made. |
-| Several separate reports that must become one | `human-merge` | **Not yet shipped** — see below. |
+| Several separate reports that must become one | `human-merge` | The pile is the problem, and the relations between reports are invisible to every author who wrote one. |
 | You are about to write something new | `human-output` | The default. It governs writing as it happens. |
 
 Two members routinely run **together**, not in sequence: a figure never ships
@@ -34,15 +35,16 @@ the verdict above it and the caption below it. Neither is the other's successor.
 to somebody else's text — and hands off to `human-draw` at its restack step
 when the material turns out to be relational.
 
-**`human-merge` is specified but not written.** Nothing in this pack ships it.
-Until it does, do **not** merge several reports by reflex, and in particular do
-not route the merge to `human-rewrite`: that member reads nothing beyond the one
-text it was handed and adds no facts, so combining N sources is outside its
-contract and would silently drop whatever it never saw. Meanwhile: say plainly
-that the input is several documents rather than one, then either rewrite one
-named report at a time, or author a new report under `human-output` and treat
-each source as material you are reading — with every number traced back to the
-document it came from, per section 3.
+`human-merge` owns the pass across many. Do **not** route a merge to
+`human-rewrite`: that member reads nothing beyond the one text it was handed and
+adds no facts, so combining N sources is outside its contract and would silently
+drop whatever it never saw — it refuses the pile and hands it to `human-merge`.
+The merge is itself *written* to `human-output` and adds only the cross-report
+layer: collapsing reports that share an upstream source, naming what is
+superseded, classifying conflicts rather than averaging them, and pooling
+coverage so a gap no single report had becomes visible — with every number
+traced back to the document it came from, per section 3. It hands off to
+`human-draw` when the source structure or the joint figure turns out relational.
 
 ## 2. The stopping-point doctrine
 

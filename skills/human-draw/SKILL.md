@@ -664,9 +664,11 @@ member handles which material — is `human-spec/human-contract.md` §1.
   what it claims. It hands material here at its restack step when the material
   turns out to be relational, positional, or proportional; this skill draws that
   material and never rewrites the surrounding text.
-- Not `human-merge` — several separate reports into one. **Specified, not yet
-  shipped**; a figure drawn across several unmerged reports would encode a
-  combination nobody made. See `human-spec/human-contract.md` §1.
+- Not `/human-merge` — several separate reports into one. A figure drawn across
+  several *unmerged* reports would encode a combination nobody made: merge
+  first, then draw. That skill hands material here when the source structure or
+  the joint figure turns out relational or proportional. See
+  `human-spec/human-contract.md` §1.
 - **Not a rendered chart.** Charting for surfaces where colour, typography and
   a layout engine exist is a different craft with different rules. This skill
   targets a monospace transcript, where position and length are the only

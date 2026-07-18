@@ -207,8 +207,9 @@ member handles which material — is `human-spec/human-contract.md` §1.
 - Not `/human-draw` — that owns what is inside the fence; this owns the words
   around it. They **run together** on any output carrying a figure; neither
   precedes nor replaces the other.
-- Not `human-merge` — several separate reports into one. **Specified, not yet
-  shipped**; until it is, do not merge reports by reflex. See
+- Not `/human-merge` — several separate reports into one. A merge is *written*
+  to this contract and adds only the cross-report layer on top of it, so route
+  the pile there first and return here to write the result. See
   `human-spec/human-contract.md` §1.
 - Not `/ask-gate` — that decides *whether* to ask the handler; this governs how
   the asking is written.

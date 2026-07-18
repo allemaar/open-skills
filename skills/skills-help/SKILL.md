@@ -96,6 +96,7 @@ The menu below is the editorial taxonomy plus a marker snapshot as of 2026-07-19
 - ◇ `human-output` — the contract for writing anything a person will read and decide from
 - ◇ `human-rewrite` — the repair pass on text that already exists, at guaranteed fidelity
 - ◇ `human-draw` — decide whether the material wants a picture, then build it
+- ◇ `human-merge` — collapse several separate reports into one surface a person can decide from
 
 ### Code & architecture
 - ◆ `improve-codebase-architecture` — find refactors that deepen shallow modules
