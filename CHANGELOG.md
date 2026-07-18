@@ -11,6 +11,18 @@ or guard changes that neither add nor remove a skill.
 
 ---
 
+## [1.3.1] — 2026-07-19
+
+### Changed
+
+- **The human-output contract now reaches every skill that writes for a person — 36 of 55.** It shipped governing six. The footer cites the contract rather than restating it, so there is one rulebook and no drift between copies. Nineteen skills are deliberately excluded and the exclusion is the point rather than an oversight: the four `orient-*` and `diff-recap` carry their own machine-checked render and value contracts; `skills-help`, `next-skills` and `caller-options` have a choice set as their deliverable, which the contract exempts by name; and `yon-*`, `obsidian-*`, `json-canvas`, `defuddle` and the `prime-*` family have no human reader to serve.
+
+- **`human-spec/` is machine-checked instead of documentation.** It holds the family roster, the routing table and the contract; every member defers to it as the authority; and no tool read it. `orient-spec/` is read live by `orient-validate.mjs` so the schema and the code cannot drift apart — `human-spec/` had no equivalent, which is how `human-merge` shipped and was released while three siblings and the routing table all still said "not yet shipped". Two checks now run in `consistency-guard`, both proven by `gate-fires` (23 → 28 scenarios) and by hand-tamper. **ROSTER** reads the routing table live and compares it to `skills/human-*/` in both directions: a phantom member fails, and so does a shipped member the table never names. **FOOTER** requires the verbatim blockquote in any skill citing the contract. As first written that check was self-nullifying — for 32 of the 36 carriers the footer is the only place the contract is named, so deleting it deletes the trigger and the check passes silently; it is now gated on a declared coverage number the spec states and the guard recomputes.
+
+- **The README carries the family.** The 1.3.0 release shipped four skills the front page never mentioned — counts updated, family invisible. Adds a section matching the `orient-` precedent, links `human-spec/` alongside `orient-spec/`, and puts the family in the browse line.
+
+---
+
 ## [1.3.0] — 2026-07-19
 
 ### Added
@@ -116,6 +128,7 @@ Initial public release of the **open-skills** pack — reusable skills for AI co
 - CI conformance — YON validation, a cross-reference/structural lint, a YON-DAG semantic check, spine-manifest sync, and a `gate-fires` proof that the guards actually reject broken input;
 - Apache-2.0 license, NOTICE, THREAT-MODEL, CONTRIBUTING (DCO), and SECURITY policy.
 
+[1.3.1]: https://github.com/allemaar/open-skills/releases/tag/v1.3.1
 [1.3.0]: https://github.com/allemaar/open-skills/releases/tag/v1.3.0
 [1.2.1]: https://github.com/allemaar/open-skills/releases/tag/v1.2.1
 [1.2.0]: https://github.com/allemaar/open-skills/releases/tag/v1.2.0
