@@ -45,4 +45,7 @@ The verdict points to the next move: `/investigate` when issues were found, `/pl
 
 `verify` is the formal self-gate against intent, plan, and execution artifacts. It is not `/cold-review` (outside-agent review of work artifacts), not `/insight-critique` (advisory review of one output), and not `/double-check` (a quick targeted re-read of a single claim). A clean verdict is not a substitute for tests or a build where those are required. Verification is active and per-claim: a passive alignment pass, or an agent's self-report of having checked, does not satisfy it.
 
+> **Human output.** This skill's handler-facing output obeys the human-output
+> contract (`human-output/SKILL.md`).
+
 > **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.

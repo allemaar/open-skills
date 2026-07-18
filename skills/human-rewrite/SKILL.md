@@ -339,6 +339,9 @@ member handles which material — is `human-spec/human-contract.md` §1.
 - Not a summariser and not a fact-checker. If a claim looks wrong, say so in
   one line beside the rewrite and keep the claim.
 
+> **Human output.** This skill's handler-facing output obeys the human-output
+> contract (`human-output/SKILL.md`).
+
 > **Next skills.** On completion, run the Next Skills protocol
 > (`next-skills/SKILL.md`): surface the `next-skills` recommendations from
 > front-matter for the caller to pick. Offer only — never auto-invoke.

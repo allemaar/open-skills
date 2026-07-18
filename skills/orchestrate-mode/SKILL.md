@@ -146,4 +146,7 @@ Use `multi-agent-mode` instead when the lead agent should still execute some wor
 
 Use `handoff` instead when the goal is to transfer the whole task to a fresh session as an artifact rather than switch behavior in the current session.
 
+> **Human output.** This skill's handler-facing output obeys the human-output
+> contract (`human-output/SKILL.md`).
+
 

@@ -288,6 +288,9 @@ Before relying on the procedure for a real rename, exercise it on a throwaway br
 - Three parallel direct runtime links, never a chain — into a skills repo you author; installing a pack you do not maintain is a copy, not a link
 - For dual-doc skills, the SKILL.md body must remain execution-sufficient on its own — `protocol.yon` adds precision, never replaces the SKILL.md
 
+> **Human output.** This skill's handler-facing output obeys the human-output
+> contract (`human-output/SKILL.md`).
+
 > **Next skills.** On completion, run the Next Skills protocol (`next-skills/SKILL.md`): surface the `next-skills` recommendations from front-matter for the caller to pick. Offer only — never auto-invoke.
 
 > **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.

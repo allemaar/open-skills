@@ -234,6 +234,9 @@ Once a repo has syncpack + manypkg + a `.syncpackrc.json`, the maintenance caden
 - MUST NOT touch `pnpm-lock.yaml` or `yarn.lock` files — this skill is npm-only.
 - MUST NOT commit or push — that's `/github-sync`'s job. End with a status summary and let the user decide.
 
+> **Human output.** This skill's handler-facing output obeys the human-output
+> contract (`human-output/SKILL.md`).
+
 > **Next skills.** On completion, run the Next Skills protocol (`next-skills/SKILL.md`): surface the `next-skills` recommendations from front-matter for the caller to pick. Offer only — never auto-invoke.
 
 > **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.

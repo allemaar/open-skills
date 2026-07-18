@@ -107,4 +107,7 @@ Done.
 - If new dirty files appear, branch state changes, staged files mismatch, or the approved plan no longer matches reality: STOP and ask for a revised plan.
 - If nothing to commit, say so and stop.
 
+> **Human output.** This skill's handler-facing output obeys the human-output
+> contract (`human-output/SKILL.md`).
+
 > **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.

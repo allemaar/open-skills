@@ -104,4 +104,7 @@ Final report must include: changed paths, commands run, result, unresolved risks
 - Use `verify` for a formal self-gate against intent, plan, and execution artifacts.
 - Use `double-check` for same-agent adversarial re-reading of a specific target.
 
+> **Human output.** This skill's handler-facing output obeys the human-output
+> contract (`human-output/SKILL.md`).
+
 

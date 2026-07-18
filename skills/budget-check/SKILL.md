@@ -57,6 +57,9 @@ This is a **runtime** tool — it reads *your* local usage logs, so it has nothi
 - Not `/orchestrate-mode` or `/multi-agent-mode` — those *run* the wave; budget-check only decides whether it should start.
 - It encodes no policy and amends no directive: a skill you call, not a rule that fires.
 
+> **Human output.** This skill's handler-facing output obeys the human-output
+> contract (`human-output/SKILL.md`).
+
 > **Next skills.** On completion, run the Next Skills protocol: surface the front-matter recommendations for the caller to pick. Offer only — never auto-invoke.
 
 > **Self-improvement.** On completion, run the Self-Improvement Protocol: if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.

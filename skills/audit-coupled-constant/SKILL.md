@@ -154,4 +154,7 @@ audit-coupled-constant report
 - This skill does NOT enforce future drift. The SEE ALSO trail it repairs will decay again over time. Periodic re-audit is the price of human-maintained cross-references.
 - This skill does NOT replace a typecheck-enforced `as const` extraction when it's feasible. Prefer language-level enforcement when the constant is purely internal; this skill handles the cases where extraction isn't practical (external interfaces, cross-package fixtures, comment-embedded values).
 
+> **Human output.** This skill's handler-facing output obeys the human-output
+> contract (`human-output/SKILL.md`).
+
 > **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.

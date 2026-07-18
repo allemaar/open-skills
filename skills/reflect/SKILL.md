@@ -37,4 +37,7 @@ This is not a status report. Be direct about uncertainty — the value is in nam
 
 Not `/verify` (the formal gate against intent, plan, and execution) and not `/ask-gate` (question-triage). `reflect` is freeform thinking — no gate, no enforcement, no artifacts.
 
+> **Human output.** This skill's handler-facing output obeys the human-output
+> contract (`human-output/SKILL.md`).
+
 > **Next skills.** On completion, run the Next Skills protocol (`next-skills/SKILL.md`): surface the `next-skills` recommendations from front-matter for the caller to pick. Offer only — never auto-invoke.

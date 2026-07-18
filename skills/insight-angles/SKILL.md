@@ -131,6 +131,9 @@ This skill's SIP is specialized: **usage grows the roster.** When a *dynamic* le
 - `/insight-cross-examine` — the deliberation engine that **orchestrates** insight-angles (in quick mode), then assesses and recommends. Use cross-examine for a decision; insight-angles to just see more.
 - `/cold-review` — outside review of *work artifacts* against objectives. insight-angles borrows its cold-agent *independence*, but for *angle discovery on a subject*, not artifact review.
 
+> **Human output.** This skill's handler-facing output obeys the human-output
+> contract (`human-output/SKILL.md`).
+
 > **Next skills.** On completion, run the Next Skills protocol (`next-skills/SKILL.md`): surface the `next-skills` recommendations from front-matter for the caller to pick. Offer only — never auto-invoke.
 
 > **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill — *including a dynamic lens worth promoting into the roster* — propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.
