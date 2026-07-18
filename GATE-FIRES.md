@@ -37,6 +37,11 @@ control proving a real skill still passes.
 | menu-roster guard | POSITIVE CONTROL — the real skills-help menu, whose every entry resolves to a shipped skill | accept | `0` | ✅ accepted | `` |
 | human-output check (figure arithmetic) | a figure whose bars contradict their printed labels — `logs` is drawn nearly as long as `archive` while claiming a third of the value, so a reader who measures the bar gets a different number than the one written beside it | reject | `1` | ✅ rejected | `ERROR bar-arithmetic:8 bars in this figure are not proportional to their labels (cells-per-unit ranges 0.0129..0.0400) — a reader who measur` |
 | human-output check (figure arithmetic) | POSITIVE CONTROL — the same figure drawn honestly (one cell per hundred units, printable ASCII, inside the column budget), so a green run means checked-and-clean rather than the checker never looking | accept | `0` | ✅ accepted | `human-output-check: 0 error(s), 0 warning(s) — judgement rules (verdict-first, confidence labels, what-was-not-checked) are NOT graded here` |
+| human-spec roster guard | a contract routing table naming `human-ghost`, which has no skills/human-ghost/ directory — the spec promises a member the pack cannot deliver | reject | `1` | ✅ rejected | `` |
+| human-spec roster guard | the inverse and the one that actually happened: a routing table that never names `human-merge` while skills/human-merge/ ships — a silently unlisted member, invisible to a phantom-only check | reject | `1` | ✅ rejected | `` |
+| human-spec roster guard | POSITIVE CONTROL — the real `human-spec/human-contract.md`, whose routing table and the shipped skills/human-*/ dirs agree in both directions | accept | `0` | ✅ accepted | `` |
+| human-output footer guard | a skill body citing `human-output/SKILL.md` whose closing blockquote is a PARAPHRASE of the footer, not the verbatim two lines — a substring-anywhere check passes this; a verbatim check does not | reject | `1` | ✅ rejected | `` |
+| human-output footer guard | POSITIVE CONTROL — the same body with the footer verbatim, so a green run means the check read the file and found it rather than never looking | accept | `0` | ✅ accepted | `` |
 
 ## What this demonstrates
 

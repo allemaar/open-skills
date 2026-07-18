@@ -27,6 +27,12 @@ material's *shape*, not its subject — every member works on any subject.
 | Several separate reports that must become one | `human-merge` | The pile is the problem, and the relations between reports are invisible to every author who wrote one. |
 | You are about to write something new | `human-output` | The default. It governs writing as it happens. |
 
+> **This table is machine-checked.** `tools/consistency-guard.mjs` reads the
+> Member column of the table above — live, not a copy — and compares it against
+> the `skills/human-*/` directories in **both** directions: a member named here
+> that does not ship fails, and a member that ships but is not named here fails
+> too. Keep the table's Member cells as single backticked skill names.
+
 Two members routinely run **together**, not in sequence: a figure never ships
 bare, so `human-draw` owns what is inside the fence while `human-output` owns
 the verdict above it and the caption below it. Neither is the other's successor.
@@ -118,13 +124,26 @@ two blocks of its `SKILL.md`:
   blocking-or-recurring weakness. Conservative, never auto-applied.
 
 **A growing set of the pack's other skills carries the family's outward
-footer** — currently the six highest-output ones: `cold-review`,
-`improve-codebase-architecture`, `insight-cross-examine`, `insight-retro`,
-`investigate` and `plan-create`. It is one line, in place of restating any rule
-above:
+footer** — every skill whose handler-facing output is worth governing. It is one
+line, in place of restating any rule above:
 
 > **Human output.** This skill's handler-facing output obeys the human-output
 > contract (`human-output/SKILL.md`).
+
+**This footer is machine-checked, and verbatim means verbatim.**
+`tools/consistency-guard.mjs` holds those two lines as a literal and requires
+that any `skills/*/SKILL.md` whose body cites `human-output/SKILL.md` contains
+the blockquote exactly. A citation without the footer fails; a paraphrased
+footer fails. If you ever change the footer's wording, change the literal in the
+guard in the same edit.
+
+**Coverage is machine-checked too: 36 of the pack's 55 skills carry it.** That
+sentence is a gate, not a note — the guard recomputes both numbers and fails on
+a mismatch. It exists because the citation rule alone cannot catch a *deleted*
+footer: for most carriers the footer is the only place the contract is named, so
+removing it removes the very citation that triggers the check. A count is
+immune to that. Adding or removing a carrier means editing this number in the
+same change, which is the point.
 
 Inline the five rules of `human-output` into any worker or subagent brief. A
 subagent does not inherit the harness's response guidance, and unbriefed

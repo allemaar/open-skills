@@ -129,6 +129,32 @@ const scenarios = [
   { gate: "human-output check (figure arithmetic)", expect: "accept",
     defect: "POSITIVE CONTROL — the same figure drawn honestly (one cell per hundred units, printable ASCII, inside the column budget), so a green run means checked-and-clean rather than the checker never looking",
     cmd: `node tools/human-output-check.mjs ${FIX}/clean-figure.md` },
+  // The human-spec roster guard. human-spec/ holds the family's roster and routing table and
+  // every member defers to it — but until 2026-07-19 NO tool read it, so it was documentation
+  // that could go stale silently. Gated BOTH ways: the phantom direction (names what does not
+  // ship) and the missing direction, which is how `human-merge` shipped while three siblings
+  // and the routing table still said "not yet shipped".
+  { gate: "human-spec roster guard", expect: "reject",
+    defect: "a contract routing table naming `human-ghost`, which has no skills/human-ghost/ directory — the spec promises a member the pack cannot deliver",
+    cmd: `node tools/consistency-guard.mjs --human-contract ${FIX}/phantom-roster.md`,
+    mustSay: /names `human-ghost` but skills\/human-ghost\/ does not exist/ },
+  { gate: "human-spec roster guard", expect: "reject",
+    defect: "the inverse and the one that actually happened: a routing table that never names `human-merge` while skills/human-merge/ ships — a silently unlisted member, invisible to a phantom-only check",
+    cmd: `node tools/consistency-guard.mjs --human-contract ${FIX}/unlisted-roster.md`,
+    mustSay: /skills\/human-merge\/ ships but the human-contract\.md routing table never names it/ },
+  { gate: "human-spec roster guard", expect: "accept",
+    defect: "POSITIVE CONTROL — the real `human-spec/human-contract.md`, whose routing table and the shipped skills/human-*/ dirs agree in both directions",
+    cmd: `node tools/consistency-guard.mjs --human-contract human-spec/human-contract.md` },
+  // The human-output footer guard. A skill that cites the contract has opted into it, so it
+  // must carry the contract's footer VERBATIM — a paraphrase is drift, and drift is what a
+  // growing family produces. Coverage when wired: 36 of 55 skills cite it, all 36 carry it.
+  { gate: "human-output footer guard", expect: "reject",
+    defect: "a skill body citing `human-output/SKILL.md` whose closing blockquote is a PARAPHRASE of the footer, not the verbatim two lines — a substring-anywhere check passes this; a verbatim check does not",
+    cmd: `node tools/consistency-guard.mjs --footer-file ${FIX}/missing-footer-skill.md`,
+    mustSay: /does not carry the verbatim human-output footer blockquote/ },
+  { gate: "human-output footer guard", expect: "accept",
+    defect: "POSITIVE CONTROL — the same body with the footer verbatim, so a green run means the check read the file and found it rather than never looking",
+    cmd: `node tools/consistency-guard.mjs --footer-file ${FIX}/clean-footer-skill.md` },
 ];
 
 function run(cmd) {
