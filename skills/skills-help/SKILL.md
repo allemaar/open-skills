@@ -116,6 +116,7 @@ The menu below is the editorial taxonomy plus a marker snapshot as of 2026-07-19
 
 ### Web
 - ◇ `defuddle` — extract clean markdown from web pages
+- ◆ `domain-check` — reconcile conflicting domain-availability sources into one auditable verdict (RDAP authoritative, broker nameservers override "available")
 
 ### Git & sync
 - ◆ `github-sync` — review session changes, then commit and push to GitHub

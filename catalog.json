@@ -3,7 +3,7 @@
   "name": "open-skills",
   "homepage": "https://allemaar.com",
   "repository": "https://github.com/allemaar/open-skills",
-  "generated": "2026-07-18",
+  "generated": "2026-07-19",
   "generator": "tools/spine.mjs",
   "license": "Apache-2.0",
   "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL.",
@@ -12,8 +12,8 @@
     "~/.agents/skills",
     "~/.codex/skills"
   ],
-  "count": 55,
-  "dualDoc": 37,
+  "count": 56,
+  "dualDoc": 38,
   "install": "Copy a skill folder into your runtime skills dir (copy-default, not symlink), then validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.",
   "skills": [
     {
@@ -390,6 +390,63 @@
       "install": {
         "copy": "cp -r skills/diff-recap <skills-dir>/diff-recap",
         "validate": "npx @younndai/yon-parser validate <skills-dir>/diff-recap/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "domain-check",
+      "description": "Reconcile domain-name availability across sources that disagree. Registrar availability endpoints report registered, broker-parked domains as available; this skill fixes the precedence — RDAP (Registration Data Access Protocol) is authoritative, DNS (Domain Name System) corroborates, broker nameservers override any \"available\", and the registrar is consulted for price only. Works on one domain or a bulk candidate sweep. Trigger via /domain-check, \"is this domain available\", \"check these domain names\", \"did the availability tool lie\". Not /investigate (read-only fact-gathering over a codebase) or /double-check (re-verifies one already-stated claim) — domain-check owns the availability verdict itself.",
+      "visibility": "public",
+      "triggers": [
+        "/domain-check",
+        "is this domain available",
+        "check these domain names",
+        "did the availability tool lie"
+      ],
+      "nextSkills": [
+        {
+          "skill": "insight-assess",
+          "phrase": "/assess",
+          "why": "Weigh the surviving candidates against each other once availability is settled."
+        },
+        {
+          "skill": "double-check",
+          "phrase": "/double-check",
+          "why": "Re-verify a single contested verdict where the sources disagreed."
+        },
+        {
+          "skill": "ask-gate",
+          "phrase": "/ask-gate",
+          "why": "A registration is a spend and irreversible — quality-gate the question before asking the handler to commit."
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "bootstrap-resolved=ABORT",
+        "no-registrar-binary=ABORT",
+        "broker-not-lost=ABORT",
+        "uncertainty-stated=ABORT"
+      ],
+      "rules": [
+        "rdap-authoritative=MUST",
+        "bootstrap-never-hardcode=MUST_NOT",
+        "broker-override=MUST",
+        "registrar-price-only=MUST_NOT",
+        "two-resolvers=MUST",
+        "404-is-not-purchase=MUST",
+        "whois-confidence=MUST",
+        "rate-limit=MUST",
+        "hypothesis-not-fact=MUST_NOT",
+        "fail-to-unknown=MUST",
+        "state-uncertainty=MUST",
+        "never-register=MUST_NOT"
+      ],
+      "steps": 10,
+      "install": {
+        "copy": "cp -r skills/domain-check <skills-dir>/domain-check",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/domain-check/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
