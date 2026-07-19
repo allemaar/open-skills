@@ -11,6 +11,14 @@ or guard changes that neither add nor remove a skill.
 
 ---
 
+## [Unreleased]
+
+### Changed
+
+- **`cold-review` briefs now supply primary-source pointers instead of a curated evidence set.** The reviewer template opened with "review only the supplied artifacts" above a lead-filled `Artifacts/evidence to inspect:` line, so the agent whose bias the review exists to correct was choosing which artifacts existed for every reviewer. Fresh context and one-lens-each decorrelate reviewers from each other; neither decorrelates them from the lead's reading of the work, and reviewers confined to that list can only audit the selection they were given. The brief now names where the sources are, states that the list is a starting point rather than a boundary, and requires each reviewer to open them. Reachability is the operative property: an unreachable source is where checking actually fails, so the fix is to make the source reachable rather than to add another instruction about diligence. `rule:narrow-evidence-brief` updated to match; the conclusions-are-not-ground-truth and claims-as-questions clauses are unchanged.
+
+---
+
 ## [1.3.1] — 2026-07-19
 
 ### Changed

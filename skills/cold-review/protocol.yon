@@ -39,7 +39,7 @@
 # --- Step 4: Brief Reviewers ---
 
 @SEC name="Step 4 — Brief Reviewers"
-@RULE rid=rule:narrow-evidence-brief | lvl=MUST | when="briefing each reviewer" | then="give a narrow, evidence-based brief — review only supplied artifacts and source evidence; do not pass the lead agent's conclusions as ground truth; instruct reviewers to pose each checked claim as a question against the source (re-open, not recall)"
+@RULE rid=rule:narrow-evidence-brief | lvl=MUST | when="briefing each reviewer" | then="give a narrow, evidence-based brief — supply primary-source pointers rather than a curated evidence set, and require each reviewer to open the sources themselves; do not pass the lead agent's conclusions as ground truth; instruct reviewers to pose each checked claim as a question against the source (re-open, not recall)"
 @RULE rid=rule:reviewers-read-only | lvl=MUST_NOT | when="reviewers run" | then="let reviewers modify files or propose broad rewrites unless needed to fix a concrete issue — cold-review reviews only"
 @MAP name=LensGroups | pairs=["backend-code"->"Correctness Reviewer, Architecture Reviewer, Security Reviewer, Test Coverage Reviewer, Performance Reviewer","frontend-ui"->"UX Reviewer, Visual/Layout Reviewer, Accessibility Reviewer, Responsive States Reviewer, Product Friction Reviewer","plan-spec"->"Scope Reviewer, Pragmatist, Sequencing Reviewer, Assumption Reviewer, Executability Reviewer","agent-skill-workflow"->"Trigger Auditor, Runtime Portability Reviewer, Agent Runtime Reviewer, Process Auditor, Failure-Mode Reviewer"]
 @STEP rid=step:brief | n:int=4 | op=std:ai.prompt@v1 | args=[task="Brief each reviewer using the reviewer prompt template in SKILL.md, assigning one lens per reviewer from LensGroups for the classified target type. Each reviewer returns: findings grouped Critical/Major/Minor/Interesting; evidence for every finding with file paths, commands, screenshots, or artifact references; missing evidence or uncertainty; a suggested 0-100 score with rationale."] | in=[ref:classification,ref:reviewer-plan] | use=[cfg:LensGroups] | out=[ref:reviewer-reports] | rules=[rid:rule:narrow-evidence-brief,rid:rule:reviewers-read-only]
@@ -69,4 +69,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=6 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-07-02T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-19T00:00:00Z | src="agent:claude-code" | method=generated

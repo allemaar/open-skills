@@ -77,14 +77,16 @@ Do not spawn more than 3 reviewers without explicit user confirmation. If fresh 
 
 Each reviewer gets a narrow, evidence-based brief. Do not pass the lead agent's conclusions as ground truth. Assign one lens per reviewer.
 
+**Supply pointers, not a curated evidence set.** The lead choosing *which artifacts exist* correlates every reviewer to one reading of the work — fresh context and distinct lenses do not undo that. Name where the sources are and require each reviewer to open them; a reachable source is what makes an independent check possible, and reviewers who cannot reach past your list can only audit your selection.
+
 ```text
-You are a cold reviewer. You did not do this work. Review only the supplied artifacts and source evidence.
+You are a cold reviewer. You did not do this work. Start from the pointers below and open the primary sources yourself.
 
 Work assessed:
 Objectives:
 Constraints:
 Your review lens:
-Artifacts/evidence to inspect:
+Primary-source pointers (a starting point, not the boundary — locate and open the sources yourself; add any the list omits):
 Do not modify files. Do not propose broad rewrites unless needed to fix a concrete issue.
 When you check a claim, pose it as a question against the source ("Is X true, per the evidence?"), not a statement to confirm; re-open the source, do not rely on recall.
 
