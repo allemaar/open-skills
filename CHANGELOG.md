@@ -11,7 +11,7 @@ or guard changes that neither add nor remove a skill.
 
 ---
 
-## [Unreleased]
+## [1.4.0] — 2026-07-19
 
 ### Added
 
@@ -142,6 +142,7 @@ Initial public release of the **open-skills** pack — reusable skills for AI co
 - CI conformance — YON validation, a cross-reference/structural lint, a YON-DAG semantic check, spine-manifest sync, and a `gate-fires` proof that the guards actually reject broken input;
 - Apache-2.0 license, NOTICE, THREAT-MODEL, CONTRIBUTING (DCO), and SECURITY policy.
 
+[1.4.0]: https://github.com/allemaar/open-skills/releases/tag/v1.4.0
 [1.3.1]: https://github.com/allemaar/open-skills/releases/tag/v1.3.1
 [1.3.0]: https://github.com/allemaar/open-skills/releases/tag/v1.3.0
 [1.2.1]: https://github.com/allemaar/open-skills/releases/tag/v1.2.1
