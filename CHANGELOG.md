@@ -11,6 +11,12 @@ or guard changes that neither add nor remove a skill.
 
 ---
 
+## [1.6.1] — 2026-07-21
+
+### Fixed
+
+- **Removed an unsatisfiable rule pair introduced late in `1.6.0`.** A last-minute amendment added `rule:atomic-capability`, requiring a runtime with no rename primitive to declare reduced publication atomicity — while `rule:atomic-publish` still required staged atomic rename unconditionally. A runtime lacking that primitive could satisfy neither, so the amendment created an impossible obligation rather than the usable fallback it claimed. It is withdrawn from both documents; `rule:atomic-publish` and its fail-closed path stand unchanged. The underlying limitation — that some harnesses expose no primitive able to rename a staged file into place — is real and is recorded as known work rather than answered by a contradictory rule.
+
 ## [1.6.0] — 2026-07-21
 
 ### Added
@@ -177,6 +183,7 @@ Initial public release of the **open-skills** pack — reusable skills for AI co
 - CI conformance — YON validation, a cross-reference/structural lint, a YON-DAG semantic check, spine-manifest sync, and a `gate-fires` proof that the guards actually reject broken input;
 - Apache-2.0 license, NOTICE, THREAT-MODEL, CONTRIBUTING (DCO), and SECURITY policy.
 
+[1.6.1]: https://github.com/allemaar/open-skills/releases/tag/v1.6.1
 [1.6.0]: https://github.com/allemaar/open-skills/releases/tag/v1.6.0
 [1.5.0]: https://github.com/allemaar/open-skills/releases/tag/v1.5.0
 [1.4.0]: https://github.com/allemaar/open-skills/releases/tag/v1.4.0

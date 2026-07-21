@@ -72,7 +72,6 @@
         "locus=MUST",
         "atomic-publish=MUST",
         "expected-callsigns=MUST",
-        "atomic-capability=MUST",
         "conflict-copy=MUST_NOT",
         "tags=MUST",
         "human-links=MUST",
