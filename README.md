@@ -25,33 +25,57 @@
 
 ---
 
-A skill is instructions your agent runs with your machine's access. These you can read before you trust them — each is a Markdown doc, and 39 of the 57 also ship a declarative YON protocol you validate yourself.
+## Why this exists
 
-This is a pack of reusable skills for AI coding agents (Claude Code, Codex, and any runtime that reads the open Agent Skills format). I'm [Alexandru Mares](https://allemaar.com), and these are the skills I run my own agents on every day — review, planning, priming, deliberation. I designed them, and I've spent months refining them against real work: each one exists because I hit a problem often enough to want it solved properly, then kept reshaping it until it earned its place. What's published here is the working set, not a demo. It's a living set: I add skills as I build the ones I need.
+A skill is instructions your agent runs with your machine's access: you hand a document to something that can touch your files. So the rule here is that you should be able to **read a skill before you trust it** — each is a Markdown doc, and 39 of the 57 also ship a declarative YON protocol you validate yourself.
 
-**Composable, not a framework.** Install one or install fifty — each is its own install decision, and your agent keeps room to think between them. Take what earns its place and ignore the rest.
+These are reusable skills you can run your own agents on — Claude Code, Codex, and any runtime that reads the open Agent Skills format: review, planning, priming, deliberation. Each exists because a problem showed up in real work, showed up again, and was worth solving once instead of re-prompting around it every time.
 
-They are also built to cooperate. A few skills cite companion protocols — `caller-options`, `human-output`, `self-improve` — so the pack behaves most fully with those present. Start with what you need; add the companions when you want the fuller behaviour.
+**In daily use and evolution for over 18 months.** Precisely: not all 57 skills are that old. Some are at least that old; others were designed along the way, as the work demanded them. That is the author's own account, not a number you can verify from here. What's published is the working set, not a demo, and it keeps growing.
+
+**Composable, not a framework.** Install one or install fifty — each is its own decision, and your agent keeps room to think between them. Take what earns its place.
+
+They also cooperate. A few skills cite companion protocols — `caller-options`, `human-output`, `self-improve` — so the pack behaves most fully with those present. Add the companions when you want the fuller behaviour.
 
 ---
 
-### New: [`agent-mailbox`](skills/agent-mailbox/) — agents collaborate through any folder that syncs
+## The idea: two files per skill
 
-Two or more agents, **any harness, any vendor**, working together through a shared folder. No server, no daemon, no database, no SDK — the network is any folder that already syncs: local, Git, OneDrive, Drive, a network share. Messages are plain markdown you can read; in Obsidian the collaboration renders as a clickable causal graph.
+Each skill is a folder under [`skills/`](skills/) with up to two files:
 
-It carries an identity lifecycle, group rooms, work claims, trust boundaries, a reserved Handler seat, and an autonomy loop-breaker. The whole manual is: **share a folder, load the skill, point at it.**
+| File | For whom | What it carries |
+|---|---|---|
+| **`SKILL.md`** | human + agent | what the skill does and when to use it, in plain language |
+| **`protocol.yon`** | the runtime | the same skill's steps, rules, and gates as a **declarative protocol** you can read, diff, and validate before anything runs |
 
-It was **dogfooded through its own design**: the design conversation ran over the protocol itself, driven across agents on two different vendors' runtimes — which is how three real defects surfaced and became contract rules rather than patches.
+Markdown explains the skill. **YON makes it inspectable** — control flow, steps, rules (`MUST` / `MUST_NOT`) and gates (`ABORT` / `WARN`) are named, typed, declared objects, not instructions buried in a paragraph. Read them, diff them between versions, validate them mechanically before you run anything — and [`GATE-FIRES.md`](GATE-FIRES.md) lets you check that the validator actually rejects broken ones, rather than taking anyone's word for it. Of the 57 skills here, **39 ship a `protocol.yon`**; 18 are Markdown-only.
 
-Evidence ships with it, split on purpose. [`VALIDATION.md`](skills/agent-mailbox/references/VALIDATION.md) records what was **measured** — local and Git delivery, across two runtimes, with zero false detections — separately from what is still **design-validated**: the sync-share transports are a field test in progress, not a proven claim.
+**Now the limit, stated plainly, because you would find it yourself and rightly distrust everything else on this page.** There is no runtime interpreter standing over the model mid-run, policing each declared step as it executes. The runtimes named above read `SKILL.md`. The checking here is author-side and CI-side — the conformance workflow and [`GATE-FIRES.md`](GATE-FIRES.md) — plus the one validate command you run yourself, below.
+
+What remains is not small. A declared gate is a named object with a type and a failure mode: auditable, diffable, mechanically checkable before you install anything. A paragraph of prose is none of those three. You see a skill's abort conditions and `MUST_NOT` bounds without running it, and see exactly what changed when you pull.
+
+---
+
+## Validate it yourself
+
+Every `protocol.yon` validates against the public YON parser — nothing of the author's is in the loop:
+
+```bash
+npx @younndai/yon-parser validate skills/cold-review/protocol.yon --profile exec
+# ✓ skills/cold-review/protocol.yon: Valid
+```
+
+That line is the whole trust model: the protocol is a declarative document you can parse, diff, and check — not arbitrary code you run on faith. Every skill's status is tracked in [`CONFORMANCE.md`](CONFORMANCE.md) and enforced in CI — the badge above is green only when all of them validate, alongside a cross-reference linter, a YON-DAG semantic check (dangling refs, unreachable steps), an orient value gate that rejects out-of-enum or fail-open orientation records the structural validator passes, and more guards — leak scan, spine-sync, gate-fires, orient round-trip (full list in [`conformance.yml`](.github/workflows/conformance.yml)). That orient value gate is the flavour of the list: a check that passes when it shouldn't is worse than no check at all.
+
+The edges of that promise are in [`THREAT-MODEL.md`](THREAT-MODEL.md): a skill runs with your agent's permissions, so installing one is a supply-chain decision. Inspectability removes the excuse not to read. It does not remove the need to. Validation proves a protocol is well-formed, not that it is benign — a well-formed protocol can still declare something you would never allow on your machine, and only a reader catches that. So the workflow is **read, validate, diff on update.** That diff is one command and needs nothing from us — see [Updating](#updating).
 
 ---
 
 ## Start here
 
-Most skills are slash commands you invoke when you want them (`/cold-review …`); a couple — `orchestrate-mode`, `multi-agent-mode` — are persistent session modes, and several fire on their own when their trigger shows up. Each skill's `SKILL.md` says which.
+Most skills are slash commands you invoke when you want them (`/cold-review …`); a couple — `orchestrate-mode`, `multi-agent-mode` — are persistent session modes, and several fire on their own when their trigger shows up. Each `SKILL.md` says which, so you never guess what is running behind you.
 
-**Something to type first.** Once a skill is installed, this is what first value looks like — a real prompt, in your agent:
+**Something to type first.** Once a skill is installed, first value looks like this:
 
 ```text
 /cold-review this branch before I open the PR
@@ -81,22 +105,74 @@ A few that pay off on their own, no setup:
 
 Browse [`skills/`](skills/) for the full set of 57 — planning, insight & decision, [orientation](#the-orient--family), [writing for a reader](#the-human--family), priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, diff recap, and YON authoring.
 
+### New: [`agent-mailbox`](skills/agent-mailbox/) — agents collaborate through any folder that syncs
+
+Two or more agents, **any harness, any vendor**, working together through a shared folder. No server, no daemon, no database, no SDK — nothing to deploy, nothing to keep alive. The network is any folder that already syncs: local, Git, OneDrive, Drive, a network share. Messages are plain markdown you can read; in Obsidian the collaboration renders as a clickable causal graph.
+
+It carries an identity lifecycle, group rooms, work claims, trust boundaries, a reserved Handler seat, and an autonomy loop-breaker. All that, and the manual is still one line: **share a folder, load the skill, point at it.**
+
+It was **dogfooded through its own design**: the design conversation ran over the protocol itself, across agents on two different vendors' runtimes — which is how three real defects surfaced and became contract rules rather than patches.
+
+**Then it was tested blind.** The contract's establishment rule decides when a two-message exchange counts as an established thread: a reply that amends nothing establishes it, a reply carrying a material counter does not. Four sub-agents ran the handshake in two pairs, none told the expected outcome. All four reached the correct verdict — the pair whose reply carried a material counter both judged the thread not established; the pair whose reply amended nothing both judged it established. A further pair ran the same handshake across two different vendors' runtimes, and the responder applied the establishment rule correctly on first contact.
+
+The limit belongs in the same breath: those agents ran the contract as written. Nothing here tests an agent trying to get around it, so no result above shows the contract holding under adversarial conditions.
+
+Evidence ships with it, deliberately split — a table that mixes measured with reasoned is how honest work gets read as overclaiming. [`VALIDATION.md`](skills/agent-mailbox/references/VALIDATION.md) records what was **measured** — local and Git delivery, across two runtimes, with zero false detections — separately from what is still **design-validated**: the sync-share transports are a field test in progress, not a proven claim.
+
+---
+
+## Use it
+
+A worked example with [`cold-review`](skills/cold-review/). Four steps, and the first two happen before anything runs.
+
+**1 — Read what it does.** [`SKILL.md`](skills/cold-review/SKILL.md), in plain language: *"Run outside-agent review of actual work artifacts against objectives, with classification, fresh reviewer lenses, evidence-based findings, scoring, and thresholds."*
+
+**2 — Read what it declares.** [`protocol.yon`](skills/cold-review/protocol.yon) names every gate. Before running anything, you see that the skill declares an *abort* rather than inventing a review out of thin air — a confident review of nothing is the worst thing a reviewer agent can hand you:
+
+```yon
+@STEP rid=step:establish | n:int=1 | op=std:ai.prompt@v1 | args=[task="Identify the work assessed, objectives, constraints, available evidence."]
+@CHECK rid=check:target-exists | assert="a concrete artifact exists to review" | fail=ABORT | msg="No concrete artifact. Stop and ask the user — do not review from vague memory."
+@RULE rid=rule:max-three | lvl=MUST_NOT | when="sizing the reviewer pool" | then="spawn more than 3 reviewers without explicit user confirmation"
+```
+
+That's the trust model in three lines: a named gate (`check:target-exists`, `fail=ABORT`), a bounded fan-out (`rule:max-three`, `MUST_NOT`) so a review isn't meant to become a swarm of agents on your machine, and a provenance stamp — all readable, none of it arbitrary code.
+
+**3 — Validate it yourself** against the public YON parser — no third-party install required. Command in [Validate it yourself](#validate-it-yourself) above.
+
+**4 — Run it.** In your agent:
+
+```text
+/cold-review the auth refactor on this branch
+```
+
+An illustrative example of the shape that comes back — not a measured result, and not a benchmark:
+
+```text
+Cold review — backend-code · 2 reviewers (Correctness, Security)
+  Critical  0
+  Major     1   token refresh races on concurrent requests  (auth/session.ts:88)
+  Minor     2
+  Score 82/100 — acceptable with concerns. Fix the Major before high-stakes use.
+```
+
+Classify the work, size the reviewer pool, brief fresh agents on evidence only, hand back severity-tiered findings with file-level evidence, a score, and a verdict — that is the contract its `protocol.yon` declares, which is why step 2 pays: you know the shape of the answer before you ask.
+
 ---
 
 ## Install
 
-**Two paths.** Clone-and-copy is the default: you read the skill first, and your copy stays frozen until you re-copy it. The plugin marketplace is one line and updates in place. Either way, these are skills your agent runs with your access — so read the ones you'll lean on. That's what the rest of this page is for.
+**Two paths, separated by when you get to read.** These run with your access — so read the ones you'll lean on.
 
 | Path | What you get | The trade |
 |---|---|---|
 | **[Clone and copy](#read-first--clone-and-copy-any-runtime)** · *the default* | a frozen copy you read before it runs | updating is manual: `git pull` → diff → re-copy |
 | **[Plugin marketplace](#fastest-on-claude-code--the-plugin-marketplace)** · Claude Code | the pack working, in one line | you read the skills after they're installed, not before |
 
-Everything else on this page is a variant of those two — [one command](#read-first--clone-and-copy-any-runtime) instead of `cp`, [a different fetcher](#other-ways-to-fetch), or [tracking the repo](#read-first--clone-and-copy-any-runtime) instead of freezing it.
+Everything else here is a variant of those two — [one command](#read-first--clone-and-copy-any-runtime) instead of `cp`, [a different fetcher](#other-ways-to-fetch), or [tracking the repo](#read-first--clone-and-copy-any-runtime) instead of freezing it.
 
 ### Read-first — clone and copy (any runtime)
 
-**This is the default, and the one the pack is built around.** No build step, no dependency on me. Clone the repo and copy the skill folders your agent reads — a frozen copy is the safest thing you can hold:
+**The default the pack is built around.** No build step, no dependency on anyone else: if this repo vanished tomorrow, your copy keeps working exactly as you read it. Clone, then copy the skill folders your agent reads:
 
 ```bash
 git clone https://github.com/allemaar/open-skills
@@ -111,9 +187,9 @@ cp -r skills/cold-review ~/.codex/skills/cold-review      # Codex — older path
 xcopy /E /I skills\cold-review "%USERPROFILE%\.claude\skills\cold-review"
 ```
 
-**Pick the dir your agent reads — one, not all three.** Claude Code reads `~/.claude/skills` and only that, never `~/.agents/skills`. On Codex, use `~/.agents/skills` — it's the current location, and other runtimes read it too; the older `~/.codex/skills` still works if you're already there. Most other tools have a dir of their own — Cursor `~/.cursor/skills`, Copilot `~/.copilot/skills` — so check yours rather than assuming `~/.agents/skills` is universal.
+**Pick the dir your agent reads — one, not all three.** Claude Code reads `~/.claude/skills` and only that, never `~/.agents/skills`. On Codex use `~/.agents/skills` — the current location, read by other runtimes too; the older `~/.codex/skills` still works if you're already there. Most other tools have their own — Cursor `~/.cursor/skills`, Copilot `~/.copilot/skills` — so check yours rather than assuming `~/.agents/skills` is universal.
 
-Prefer one command? [`install.mjs`](install.mjs) does close to the same thing — read the catalog, copy the folder, validate its `protocol.yon` — plus one edit the `cp` above doesn't make: it stamps the copy's `SKILL.md` with a `metadata:` block recording the repo, ref, and tree SHA it came from, so you can tell later whether it has drifted. That means the installed file is not byte-identical to this repo's; `--no-stamp` turns it off, and [`THREAT-MODEL.md`](THREAT-MODEL.md#what-open-skills-does-about-it) explains the trade. It is a single zero-dependency Node file you can read before you run it:
+Prefer one command? [`install.mjs`](install.mjs) does nearly the same — read the catalog, copy the folder, validate its `protocol.yon` — plus one edit `cp` doesn't make: it stamps the copy's `SKILL.md` with a `metadata:` block recording the repo, ref, and tree SHA it came from, so you can answer later, "is what I'm running still what I read?". The price is real: the installed file is not byte-identical to this repo's. `--no-stamp` turns it off, and [`THREAT-MODEL.md`](THREAT-MODEL.md#what-open-skills-does-about-it) explains the trade. A single zero-dependency Node file you can read before you run it:
 
 ```bash
 node install.mjs cold-review                    # one skill
@@ -124,9 +200,9 @@ node install.mjs --list                         # see what's installable
 
 By default it copies into **every** skills dir it finds — pass `--runtime claude|codex|agents` to target just one.
 
-It copies (never symlinks), skips an already-installed skill unless you pass `--force`, and — true to the wedge — *refuses* to overwrite a symlinked or junctioned skill rather than delete through the link into the repo. The installer is itself inspectable; read it first.
+It copies (never symlinks), skips an already-installed skill unless you pass `--force`, and *refuses* to overwrite a symlinked or junctioned skill rather than delete through the link into the repo. Read it first.
 
-**Want a skill to track the repo as you pull?** That means symlinking into this clone — and it's the one setup this pack argues against. A `git pull` then silently changes the instructions your agent runs, with no moment where you read the diff. That is exactly the drift [`THREAT-MODEL.md`](THREAT-MODEL.md) names, and it's why copying is the default. If you want it anyway — you're maintaining the pack, or you read every pull — link it deliberately:
+**Want a skill to track the repo as you pull?** That means symlinking into this clone — the one setup this pack argues against. A `git pull` then silently changes the instructions your agent runs, with no moment where you read the diff: you'd be trusting a version that did not exist when you decided to trust it. That's the drift [`THREAT-MODEL.md`](THREAT-MODEL.md) names, and why copying is the default. If you want it anyway — you maintain the pack, or you read every pull — link deliberately:
 
 ```bash
 # POSIX — target first, then the link
@@ -136,7 +212,7 @@ ln -s "$PWD/skills/cold-review" ~/.claude/skills/cold-review
 mklink /J "%USERPROFILE%\.claude\skills\cold-review" "%CD%\skills\cold-review"
 ```
 
-Two things to know if you do. **On Windows use `mklink /J`** — under Git-Bash/MSYS, `ln -s` by default silently makes a *copy* instead of a link, so you would believe you were tracking the repo while holding a frozen snapshot. And remove a link with `rmdir` (Windows) or `unlink` (POSIX) — never `rm -rf` through it, or the delete descends into this repo. That's the hazard [`install.mjs`](install.mjs) refuses to touch, above.
+Two things to know if you do, and both fail quietly. **On Windows use `mklink /J`** — under Git-Bash/MSYS, `ln -s` by default silently makes a *copy* instead of a link, so you'd believe you were tracking the repo while holding a frozen snapshot, with nothing to tell you otherwise. And remove a link with `rmdir` (Windows) or `unlink` (POSIX) — never `rm -rf` through it, or the delete descends into this repo and takes the clone with it. That's the hazard [`install.mjs`](install.mjs) refuses to touch, above.
 
 ### Fastest on Claude Code — the plugin marketplace
 
@@ -145,11 +221,11 @@ Two things to know if you do. **On Windows use `mklink /J`** — under Git-Bash/
 /plugin install open-skills@open-skills
 ```
 
-This registers the repo as a Claude Code plugin marketplace and installs the pack (the plugin and the marketplace are both named `open-skills`, hence `open-skills@open-skills`); the skills are then namespaced (`/open-skills:cold-review`, `/open-skills:investigate`, …). Update in place with `/plugin marketplace update open-skills`.
+This registers the repo as a Claude Code plugin marketplace and installs the pack (plugin and marketplace are both named `open-skills`, hence `open-skills@open-skills`); the skills are then namespaced (`/open-skills:cold-review`, `/open-skills:investigate`, …). Update in place with `/plugin marketplace update open-skills`.
 
 ### Other ways to fetch
 
-You don't need these to get started — both paths above are complete. They're here because people ask for them.
+You don't need these — both paths above are complete. They're here because people ask.
 
 **[Vercel `skills` CLI](https://github.com/vercel-labs/skills)** — installs straight from GitHub, no manual clone:
 
@@ -157,7 +233,7 @@ You don't need these to get started — both paths above are complete. They're h
 npx skills add allemaar/open-skills --skill cold-review
 ```
 
-Drop `--skill` for the whole pack, `--list` to see them first, `npx skills update` later. Two things this page owes you about it:
+Drop `--skill` for the whole pack, `--list` to see them first, `npx skills update` later. Two things this page owes you, because the alternative is you discovering them on your own machine:
 
 **1. Pass `--copy`.** Without it you may get symlinks — junctions on Windows — which is [the tracking topology above](#read-first--clone-and-copy-any-runtime), not the frozen copy this pack prefers. Which one you get is one composite condition, not a menu: it turns on the number of unique agent dirs in play, and the flags and scope you ran it with. One agent dir copies; several prompt you, recommending symlink; `--yes`/`--all` takes symlink without asking, and so does any run it detects as agent-driven, which goes non-interactive even with no flags — agent detection feeds that dir count rather than setting the mode itself. [`DISTRIBUTION.md`](DISTRIBUTION.md) cites the vendor source.
 
@@ -165,7 +241,7 @@ Drop `--skill` for the whole pack, `--list` to see them first, `npx skills updat
 
 **`git sparse-checkout`** — set to `skills/cold-review` for one skill, without the full repo.
 
-Every fetch that copies a folder ends the same way: a skill folder in your runtime's `skills/` dir that you can open and read.
+Every fetch that copies ends the same way, and that's the point: a skill folder in your runtime's `skills/` dir that you can open and read.
 
 ### Updating
 
@@ -176,7 +252,7 @@ Every fetch that copies a folder ends the same way: a skill folder in your runti
 | **Vercel `skills` CLI** | `npx skills update` |
 | **Symlinked (any source)** | Nothing to do — it updated when you pulled. No diff moment; [that's the trade](#read-first--clone-and-copy-any-runtime) |
 
-If you copied, your skill is frozen until you re-copy it — and that re-copy is your one moment to read what you are accepting. So diff first, from your clone:
+If you copied, your skill is frozen until you re-copy it — and that re-copy is your one moment to read what you're accepting. Skip the read and the freeze bought you nothing. So diff first, from your clone:
 
 ```bash
 # copied with cp -r — a plain diff, nothing to skip:
@@ -188,9 +264,9 @@ git diff --no-index -I '^(metadata:|  (github-|local-path))' \
   ~/.claude/skills/cold-review skills/cold-review
 ```
 
-Know what `-I` costs you: it also hides a `metadata:` block appearing *upstream*, and that block is an unsigned claim other tooling acts on ([why that matters](THREAT-MODEL.md#the-attack-surface)). No skill in this repo ships one, and `install.mjs` prints a note if it ever finds one instead of stamping — treat that note as a reason to look. Drop the `-I` any time you want to see everything.
+Know what `-I` costs you: it also hides a `metadata:` block appearing *upstream*, and that block is an unsigned claim other tooling acts on ([why that matters](THREAT-MODEL.md#the-attack-surface)). No skill in this repo ships one, and `install.mjs` prints a note if it ever finds one instead of stamping — treat that note as a reason to look. Drop the `-I` to see everything.
 
-Silence means identical; anything printed is behavior you have not read yet. Check each dir you installed into — `install.mjs` copies into every one it finds unless you passed `--runtime`. To sweep everything you installed at once:
+Silence means identical; anything printed is behavior you have not read yet. Check each dir you installed into — `install.mjs` copies into every one it finds unless you passed `--runtime`, and the copy you forgot about is the one that surprises you. To sweep everything at once:
 
 ```bash
 for d in ~/.claude/skills/*/; do n=$(basename "$d"); [ -d "skills/$n" ] &&
@@ -201,77 +277,13 @@ for d in ~/.claude/skills/*/; do n=$(basename "$d"); [ -d "skills/$n" ] &&
 
 ### For agents
 
-This pack is built to be installed *by* an agent, not just a human. Enumerate every skill from [`catalog.json`](catalog.json) (name, description, triggers, gates, per-skill install + validate commands), or read [`llms.txt`](llms.txt) for a dense manifest plus a step-by-step *"For agents — how to install"* recipe (detect runtime dir → copy the folder → validate its `protocol.yon`). Copy-default, no opaque installer — the install path is itself inspectable.
-
----
-
-## The idea: two files per skill
-
-Each skill is a folder under [`skills/`](skills/) with up to two files:
-
-| File | For whom | What it carries |
-|---|---|---|
-| **`SKILL.md`** | human + agent | what the skill does and when to use it, in plain language |
-| **`protocol.yon`** | the runtime | the same skill's steps, rules, and gates as a **declarative protocol** it can enforce and *you* can audit |
-
-Markdown explains the skill. **YON makes it inspectable and enforceable** — the control flow, the rules (`MUST` / `MUST_NOT`), and the gates (`ABORT` / `WARN`) are named, typed objects, not prose you hope the model follows. Of the 57 skills here, **39 ship a `protocol.yon`**; 18 are Markdown-only.
-
-"Enforceable" is a claim you can check: [`GATE-FIRES.md`](GATE-FIRES.md) shows the public parser and the semantic linter *rejecting* deliberately-broken skills — regenerated in CI on every push, so it can't be staged.
-
----
-
-## Use it
-
-A worked example with [`cold-review`](skills/cold-review/) — a skill that summons fresh-context agents to audit your work.
-
-**1 — Read what it does.** [`SKILL.md`](skills/cold-review/SKILL.md) is plain language: *"Run outside-agent review of actual work artifacts against objectives, with classification, fresh reviewer lenses, evidence-based findings, scoring, and thresholds."*
-
-**2 — Read what it's allowed to do.** [`protocol.yon`](skills/cold-review/protocol.yon) names every gate. You can see, before running anything, that the skill *aborts* rather than inventing a review out of thin air:
-
-```yon
-@STEP rid=step:establish | n:int=1 | op=std:ai.prompt@v1 | args=[task="Identify the work assessed, objectives, constraints, available evidence."]
-@CHECK rid=check:target-exists | assert="a concrete artifact exists to review" | fail=ABORT | msg="No concrete artifact. Stop and ask the user — do not review from vague memory."
-@RULE rid=rule:max-three | lvl=MUST_NOT | when="sizing the reviewer pool" | then="spawn more than 3 reviewers without explicit user confirmation"
-```
-
-That's the trust model in three lines: a named gate (`check:target-exists`, `fail=ABORT`), a bounded fan-out (`rule:max-three`, `MUST_NOT`), and a provenance stamp — all readable, none of it arbitrary code.
-
-**3 — Validate it yourself**, against the public YON parser — no install of mine required:
-
-```bash
-npx @younndai/yon-parser validate skills/cold-review/protocol.yon --profile exec
-# ✓ skills/cold-review/protocol.yon: Valid
-```
-
-**4 — Run it.** In your agent:
-
-```text
-/cold-review the auth refactor on this branch
-```
-
-```text
-Cold review — backend-code · 2 reviewers (Correctness, Security)
-  Critical  0
-  Major     1   token refresh races on concurrent requests  (auth/session.ts:88)
-  Minor     2
-  Score 82/100 — acceptable with concerns. Fix the Major before high-stakes use.
-```
-
-The skill classified the work, sized the reviewer pool, briefed fresh agents on evidence only, and handed back severity-tiered findings with file-level evidence, a score, and a verdict — exactly the contract its `protocol.yon` declares.
-
----
-
-## Validate it yourself
-
-Every `protocol.yon` validates against the public YON parser. The whole trust model is: the protocol is a declarative document you can parse, diff, and check — not arbitrary code you run on faith. Every skill's status is tracked in [`CONFORMANCE.md`](CONFORMANCE.md) and enforced in CI — the badge above is green only when all of them validate, alongside a cross-reference linter, a YON-DAG semantic check (dangling refs, unreachable steps), an orient value gate that rejects out-of-enum or fail-open orientation records the structural validator passes, and several more guards — leak scan, spine-sync, gate-fires, and the orient round-trip (the full list is in [`conformance.yml`](.github/workflows/conformance.yml)).
-
-The edges of that promise are stated plainly in [`THREAT-MODEL.md`](THREAT-MODEL.md): a skill runs with your agent's permissions, so installing one is a supply-chain decision. Inspectability removes the excuse not to read. It does not remove the need to. Validation proves a protocol is well-formed, not that it is benign — so the workflow is **read, validate, diff on update.** That diff is one command and it needs nothing from us — see [Updating](#updating).
+This pack installs *by* agent as readily as by hand, and is as legible to the agent doing the install as to the person who'll live with the result. Enumerate every skill from [`catalog.json`](catalog.json) (name, description, triggers, gates, per-skill install + validate commands), or read [`llms.txt`](llms.txt) for a dense manifest plus a step-by-step *"For agents — how to install"* recipe (detect runtime dir → copy the folder → validate its `protocol.yon`). Copy-default, no opaque installer — the install path is itself inspectable.
 
 ---
 
 ## The orient- family
 
-When you sit down to a repo, a plan, or a task and ask *"where are we?"* — that's orientation. The `orient-` skills answer it. Each spins up a bounded, read-only subagent, computes a fresh read, and hands back one ephemeral bundle — a structured YON record, a markdown read, and a small visual — then forgets it. Nothing is stored; every call recomputes from current reality.
+Orientation is the *"where are we?"* question — the one you ask most often and the one your notes answer worst, because notes go stale and the repo doesn't. The `orient-` skills answer it from current reality. Each spins up a bounded, read-only subagent, computes a fresh read, and hands back one ephemeral bundle — a structured YON record, a markdown read, and a small visual — then forgets it. Nothing is stored, so there's no cached answer sitting around being quietly wrong.
 
 | Skill | Asks | Hands back |
 |---|---|---|
@@ -280,7 +292,7 @@ When you sit down to a repo, a plan, or a task and ask *"where are we?"* — tha
 | [`orient-gaps`](skills/orient-gaps/) | what's stuck? | blockers, open forks, loose ends, and inferred silent gaps; `--audit` adds claim-vs-evidence disclosure |
 | [`orient-roadmap`](skills/orient-roadmap/) | show me the roadmap | the increment arc (built → current → next), the gates, the next increment's clusters, and the runway of now → gated-next → future stages plus the deferred lanes |
 
-All four emit slices of **one shared orientation record** — the record schema, the render contract, and the family rules live in [`orient-spec/`](orient-spec/), so the skills agree on shape without sharing code. On Claude Code the bundle also renders as a sparse visual widget; an information-complete ASCII twin is always emitted, so no runtime is left without the full read.
+All four emit slices of **one shared orientation record** — schema, render contract, and family rules live in [`orient-spec/`](orient-spec/), so the four agree on shape without sharing code. On Claude Code the bundle also renders as a sparse visual widget; an information-complete ASCII twin is always emitted, so no runtime is left without the full read.
 
 ---
 
@@ -288,7 +300,7 @@ All four emit slices of **one shared orientation record** — the record schema,
 
 Agents write for readers who then have to decide, and the default output — long,
 hedged, ordered by how the work happened, thick with shorthand — makes deciding
-harder. These four exist for that.
+harder. You end up summarising what the agent should have summarised for you.
 
 | Skill | Use it | Hands back |
 |---|---|---|
@@ -300,32 +312,33 @@ harder. These four exist for that.
 The contract is five rules: **verdict first, including anything that would
 reverse it · say what it costs, not what it is · label every claim confirmed,
 judgement or estimate · say what you did not check · no shorthand the reader
-must decode.** Everything else is a craft layer you consult while writing, not
-rules to memorise — a contract with twenty rules gets applied by sampling.
+must decode.** Five, not twenty — a twenty-rule contract gets applied by
+sampling, which is indistinguishable from not having one. Everything else is
+a craft layer you consult while writing.
 
-The shared doctrine, the routing table, and the checker contract live in
+The shared doctrine, routing table, and checker contract live in
 [`human-spec/`](human-spec/). [`tools/human-output-check.mjs`](tools/human-output-check.mjs)
 grades the mechanical half in CI — acronyms expanded, one recommendation,
 sentence length, ASCII inside fences, and whether a figure's bars are
 proportional to their labels. It also states what it cannot check: **no script
 verifies that a number in your prose traces to a number in your source.** That
-one needs a reader with the source in hand.
+needs a reader with the source in hand.
 
 ---
 
 ## Runs on YON
 
-The `protocol.yon` files are written in [**YON**](https://github.com/YounndAI/yon) — a stream-first data format for AI-agent workflows, with a public [specification](https://github.com/YounndAI/yon-spec), conformance vectors, and an Apache-2.0 reference parser (`@younndai/yon-parser`). YON is what lets a skill's rules and gates be machine-checkable instead of merely described — data, intent, provenance, and thought in one readable stream.
+The `protocol.yon` files are written in [**YON**](https://github.com/YounndAI/yon) — a stream-first data format for AI-agent workflows, with a public [specification](https://github.com/YounndAI/yon-spec), conformance vectors, and an Apache-2.0 reference parser (`@younndai/yon-parser`). YON is what makes a skill's rules and gates machine-checkable instead of merely described — data, intent, provenance, and thought in one readable stream. Without it, "this skill has a gate" would be a claim you had to take on trust, the exact thing this pack tries to make unnecessary.
 
-**Read and write it yourself.** Two skills put YON directly in your agent's hands: [`yon-read`](skills/yon-read/) interprets and explains any YON content, and [`yon-write`](skills/yon-write/) drafts and converts content into valid YON. Together they are the shortest path from reading a `protocol.yon` to producing your own.
+**Read and write it yourself.** [`yon-read`](skills/yon-read/) interprets and explains any YON content; [`yon-write`](skills/yon-write/) drafts and converts content into valid YON. Together they are the shortest path from reading a `protocol.yon` to producing your own.
 
-**Highlight it in your editor.** The whole pitch here is that you *read* the protocol before you trust it — so make the read easy. The official **YON extension** adds syntax highlighting, snippets, and language support for `.yon` files: install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=YounndAI.yon) or [Open VSX](https://open-vsx.org/extension/YounndAI/yon) (source: [yon-vscode](https://github.com/YounndAI/yon-vscode) · [yon-textmate](https://github.com/YounndAI/yon-textmate)).
+**Highlight it in your editor.** An unhighlighted wall of pipes is a read people skip, and reading is the whole point. The official **YON extension** adds syntax highlighting, snippets, and language support for `.yon` files: install from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=YounndAI.yon) or [Open VSX](https://open-vsx.org/extension/YounndAI/yon) (source: [yon-vscode](https://github.com/YounndAI/yon-vscode) · [yon-textmate](https://github.com/YounndAI/yon-textmate)).
 
 ---
 
 ## Contributing
 
-A contribution here is a skill other people read before they run it. The bar is readable, honest, and — where it ships a protocol — machine-checkable. See [`CONTRIBUTING.md`](CONTRIBUTING.md). The project uses DCO sign-off, not a CLA. Found a vulnerability? [`SECURITY.md`](SECURITY.md) — never a public issue for a live one.
+A contribution here is a skill other people read before they run it — a higher bar than "it works on my machine", and the only one that makes sense for something that runs with a stranger's access. Readable, honest, and — where it ships a protocol — machine-checkable. See [`CONTRIBUTING.md`](CONTRIBUTING.md). DCO sign-off, not a CLA. Found a vulnerability? [`SECURITY.md`](SECURITY.md) — never a public issue for a live one.
 
 ## License
 
@@ -335,9 +348,11 @@ Apache-2.0 — see [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE). Free to use, for
 
 **[Alexandru Mares](https://allemaar.com)** — [allemaar.com](https://allemaar.com).
 
-Every skill here is my own design: conceived, built, and refined over months of daily use and research. I use frontier models heavily — to research, to pressure-test, to dogfood these skills in the work they were built for — and that use is exactly why they've improved. But the thinking, the architecture, and the judgement about what belongs are mine. A tool that helps you build something doesn't own it.
+Every skill here is his own design, refined through daily use and research over the span described at the top of this page. Frontier models were used heavily throughout — to research, to pressure-test, to dogfood these skills in the work they were built for — and that use is why they improved. It's stated here rather than left for you to infer, because a project whose whole argument is "read it before you trust it" does not get to be vague about how it was made. The thinking, the architecture, and the judgement about what belongs are his. A tool that helps you build something doesn't own it.
 
 A personal, independent project. It is not a YounndAI™ product; "YON" and "YounndAI" are trademarks of MARLINK TRADING SRL.
+
+Made by Alexandru Mares · [allemaar.com](https://allemaar.com)
 
 ---
 
