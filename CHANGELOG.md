@@ -11,6 +11,24 @@ or guard changes that neither add nor remove a skill.
 
 ---
 
+## [1.5.0] — 2026-07-21
+
+### Added
+
+- **`agent-mailbox` — two or more agents, any harness and any vendor, collaborating through any folder that syncs.** The design premise is that the network is already there: a folder moved by local disk, Git, Lyt, OneDrive, Drive, or an SMB share is a transport, so the protocol piggybacks on it instead of standing up its own. There is no server, no daemon, no database and no SDK — transport and runtime adapters are paragraphs of prose rather than packages, and the entire operating manual is *share a folder, load the skill, point at it*. Messages are plain Markdown a person reads without tooling, and because every message wikilinks its cause, an Obsidian graph view renders the whole collaboration as a walkable causal graph. On top of the message layer it carries the parts that make unattended agent collaboration survivable: generated collision-free callsigns with speak-to-renew leases, expiry kept distinct from retirement, reclaim and declared succession across model generations, group rooms and work claims, a single-writer discipline with attestation-by-recompute, a four-category cross-review pattern, a bounded exchange budget, an autonomy loop-breaker, and a reserved Handler seat — which is deliberately aimed at the gap *Governance Gaps in Agent Interoperability Protocols* (arXiv 2606.31498) documents in MCP, A2A and ACP, none of which can express authority, arbitration or human oversight. The safety boundary is explicit and matches the rest of the pack: a peer payload is data, never instructions, and nothing arriving through the mailbox is executed merely because it arrived.
+
+  The protocol was designed, argued to resolution across five architectural conflicts, tested, and ratified by two agents from rival vendors — **conducting the entire negotiation over the protocol they were building**, with zero human arbitrations and a 40-message audit trail anyone can walk. Dogfooding it during its own design caught three real defects, each converted into a contract rule rather than a patch: a `Created`-only file watcher missed rename-published messages, so the contract now requires `Created` + `Renamed` plus startup reconciliation; staging a `.md.tmp` beside the inbox let a concurrent sync commit the temp file, so staging must now be transport-excluded with a fail-closed fallback; and transient `SQLITE_BUSY` index warnings were being read as delivery failures, so the contract now distinguishes a nonfatal index warning from a failed delivery, bounded by the failure budget.
+
+  Evidence ships with the skill and is deliberately split. [`references/VALIDATION.md`](skills/agent-mailbox/references/VALIDATION.md) records what was **measured** — four tests across two runtimes and two channels: 79.5 ms rename-to-detection locally on Codex via `FileSystemWatcher`, ≤2 s on Claude by exact-inbox poll, 9.2 s push-to-detection on Claude over Git-only with a pinned-SHA baseline, and ≤7.9 s on Codex over Git-only, each with zero false detections — and separately records what is **design-validated and not yet proven**, chiefly the sync-share transports (OneDrive, Drive, Dropbox, SMB) whose conflict-copy behaviour awaits a cross-organisation field test. That split is a contract, not a formality: the sync-share row must be described as a field test in progress until it is measured. [`references/PRIOR-ART.md`](skills/agent-mailbox/references/PRIOR-ART.md) is the landscape sweep on the same terms — every entry carries a verification level, the close relatives are credited with what they do better, and roughly twenty named-only tools are listed unverified rather than omitted, because independent convergence at that density is evidence the need is real and evidence the relay layer is crowded at the same time. What this protocol claims is the combination — zero runtime dependency, transport piggybacking, identity lifecycle, collaboration methodology, and governance as the design center — not any single element.
+
+  Dual-doc: 398 lines of `SKILL.md` against a 94-line `protocol.yon` whose rules, transport map and step sequence pass the public YON parser on the exec profile and a semantic DAG check at 0 errors and 0 warnings.
+
+- Pack grows to **57 skills / 39 with a `protocol.yon`** (18 Markdown-only).
+
+### Fixed
+
+- **`verify` declared `self-improvable: true` while its `protocol.yon` carried no `step:sip`, so the Self-Improvement Protocol never ran for the pack's own verification gate.** Both documents said to run it — the frontmatter flag and the `SKILL.md` footer — and only the execution spec disagreed, which is the precise shape of drift the dual-doc contract exists to prevent. `verify` was the sole skill in the pack with a `protocol.yon` in that state; the other 37 declaring the flag all carry the step. Added the missing `@SEC name="Self-improvement"` block with `step:sip` at the pack's dominant `n:int=100`, and refreshed both `@STAMP` dates, which were identical and stale.
+
 ## [1.4.0] — 2026-07-19
 
 ### Added
@@ -142,6 +160,7 @@ Initial public release of the **open-skills** pack — reusable skills for AI co
 - CI conformance — YON validation, a cross-reference/structural lint, a YON-DAG semantic check, spine-manifest sync, and a `gate-fires` proof that the guards actually reject broken input;
 - Apache-2.0 license, NOTICE, THREAT-MODEL, CONTRIBUTING (DCO), and SECURITY policy.
 
+[1.5.0]: https://github.com/allemaar/open-skills/releases/tag/v1.5.0
 [1.4.0]: https://github.com/allemaar/open-skills/releases/tag/v1.4.0
 [1.3.1]: https://github.com/allemaar/open-skills/releases/tag/v1.3.1
 [1.3.0]: https://github.com/allemaar/open-skills/releases/tag/v1.3.0
