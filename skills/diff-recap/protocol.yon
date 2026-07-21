@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=diff-recap | title="/diff-recap" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Turn a git diff into a PR-pasteable recap: one row per changed file whose path, status, and line counts are transcribed verbatim from git diff --numstat and --name-status (true by construction) plus a model-written label, emitted as a diff-recap/1 record with an inline widget and a mandatory ASCII twin. The model authors ONLY labels; every count is git-attested and the totals equal the sum of the rows." | audience=agent
-@STAMP ts:ts=2026-06-26T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-06-26T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
 @NOTE text="Emits a diff-recap/1 record (schema at skills/diff-recap/recap-schema.yon): envelope @CFG id=recap, identity @CFG id=subject, one @CFG id=file.<n> per changed file (path,status,added,removed,group,label), list field groups and per-field provenance as sidecar @MAP. Reserved tags only; validate --profile exec; never run yon format on an instance (CANON mode is destructive on set-internal lists and the corruption still validates clean). The per-file path/status/added/removed and the envelope totals are TRANSCRIBED from git diff --numstat / --name-status — the model authors only label and group. Enum membership, the Sigma per-file == totals true-by-construction invariant, and the fail-closed/attested gates are emitter obligations the parser cannot see; they are enforced pre-emit by the value gate tools/diff-recap-check.mjs."
 
 @SEC name="Inputs"
@@ -39,4 +39,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol: if this run surfaced a concrete blocking-or-recurring weakness in this skill, propose a specific fix via ask-gate for handler approval. Conservative, silent otherwise, never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-06-26T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

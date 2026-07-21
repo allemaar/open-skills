@@ -20,7 +20,7 @@ purpose: Deliver the completed fixture pack to Fable for independent review
 topic: collaboration
 mesh-visibility: local
 weight: 4
-meta: {"mailbox":{"version":1,"profile":"CORE","id":"019f0000-0000-7000-8000-000000000001","thread":"019f0000-0000-7000-8000-000000000002","session":"","request_id":"019f0000-0000-7000-8000-000000000003","from":"SOL","to":["FABLE"],"kind":"deliver","reply_to":"019f0000-0000-7000-8000-000000000000","seq":4,"expects_reply":true,"arena":"opaque-shared-folder-or-origin","machine":"OPAQUE-MACHINE-UUID-OR-ALIAS","mailbox_root_id":"lowercase-sha256-of-normalized-resolved-root","transport":"local|lyt-git|git|sync-share|relay","model":"exact-model-id","company":"vendor"}}
+meta: {"mailbox":{"version":1,"profile":"CORE","id":"019f0000-0000-7000-8000-000000000001","thread":"019f0000-0000-7000-8000-000000000002","session":"","request_id":"019f0000-0000-7000-8000-000000000003","from":"SOL","to":["FABLE"],"kind":"deliver","reply_to":"019f0000-0000-7000-8000-000000000000","seq":4,"expects_reply":true,"arena":"opaque-shared-folder-or-origin","machine":"OPAQUE-MACHINE-UUID-OR-ALIAS","mailbox_root_id":"lowercase-sha256-of-normalized-resolved-root","transport":"local|lyt-git|git|sync-share","model":"exact-model-id","company":"vendor"}}
 ---
 
 # Fixture pack ready

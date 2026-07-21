@@ -48,6 +48,56 @@ const RUNTIMES = {
 
 function die(msg) { console.error("install: " + msg); process.exit(1); }
 
+// A junction/symlink anywhere in the parent chain redirects a write out of the
+// runtime skills dir, and a recursive delete that traverses one descends wherever
+// it points. lstat every component we are about to write under — including the
+// runtime dir itself — and refuse rather than follow. Windows junctions report as
+// symlinks on current Node; the realpath comparison is the version-robust backstop.
+function assertChainIsReal(dir, label) {
+  const abs = path.resolve(dir);
+  const parts = abs.split(path.sep);
+  for (let i = parts.length; i >= 1; i--) {
+    const seg = parts.slice(0, i).join(path.sep) || path.sep;
+    let st = null;
+    try { st = fs.lstatSync(seg); } catch { continue; } // not created yet — nothing to follow
+    if (st.isSymbolicLink()) {
+      die(`${seg} is a symlink/junction on the path to your ${label} skills dir.\n` +
+        `        Refusing to write through it — a copy would land outside that dir, and a later\n` +
+        `        --force delete would follow it. Remove the link yourself (rmdir / unlink the\n` +
+        `        link only), or install into a real directory.`);
+    }
+  }
+  let real;
+  try { real = fs.realpathSync(abs); } catch { return; } // does not exist yet — fine
+  if (path.resolve(real) !== abs) {
+    die(`${abs} resolves to ${real} — a link is in the path to your ${label} skills dir.\n` +
+      `        Refusing to write through it.`);
+  }
+}
+
+// A recursive delete must never cross a reparse point NESTED inside the tree it is
+// removing: that is how a wipe reaches source outside the delete root. Walk the tree
+// and refuse if any descendant is a link, before rmSync is allowed to run.
+function assertNoNestedLinks(root) {
+  const stack = [path.resolve(root)];
+  while (stack.length) {
+    const dir = stack.pop();
+    let entries;
+    try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { continue; }
+    for (const e of entries) {
+      const full = path.join(dir, e.name);
+      let st;
+      try { st = fs.lstatSync(full); } catch { continue; }
+      if (st.isSymbolicLink()) {
+        die(`${full} is a symlink/junction nested inside the skill folder being replaced.\n` +
+          `        Refusing to delete recursively through it — it can point outside this dir.\n` +
+          `        Remove the link yourself (rmdir / unlink the link only), then re-run.`);
+      }
+      if (st.isDirectory()) stack.push(full);
+    }
+  }
+}
+
 function loadCatalog() {
   const p = path.join(ROOT, "catalog.json");
   if (!fs.existsSync(p)) die("catalog.json not found — run this from a clone of the repo root.");
@@ -228,8 +278,14 @@ function installOne(name, catalog, runtimes, { noValidate, noStamp, force }, fai
       if (!(real + path.sep).startsWith(path.resolve(dir) + path.sep)) {
         die(`${dest} resolves outside the ${rtName} skills dir — refusing to delete.`);
       }
+      // Nested reparse points are the remaining hazard: the checks above prove the
+      // ROOT of the delete is real, not that nothing inside it escapes.
+      assertNoNestedLinks(real);
       fs.rmSync(real, { recursive: true, force: true });
     }
+    // Guard the write path itself, not only the pre-existing-destination case: when
+    // nothing is there yet, everything above still has to be a real directory.
+    assertChainIsReal(dir, rtName);
     fs.mkdirSync(dir, { recursive: true });
     fs.cpSync(src, dest, { recursive: true }); // copy-default, never a symlink
     if (!noStamp) stampCopy(dest, name);

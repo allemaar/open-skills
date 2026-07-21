@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=prime-sweep | title="Prime Sweep — Parallel Sub-Agent Investigation of Large Source Surfaces" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Prime the calling agent with high-signal context from large source surfaces (multiple files, packages, folders) via parallel delegated sub-agents. Sub-agents absorb noise; only digested findings + source:line pointers enter the caller's context. Iterative with documented relevance signals, sufficiency checklist, max 8 waves, proof-of-work on every finding and every unfollowed pointer. Family invariant: caller context stays clean." | trigger="user runs /prime-sweep, chained from /prime-expand when sources are too large to read directly, or auto-fire on handoff receipt with listed sources"
-@STAMP ts:ts=2026-05-24T00:00:00Z | src=human | method=manual
+@STAMP ts:ts=2026-05-24T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Boundary ---
 
@@ -106,4 +106,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

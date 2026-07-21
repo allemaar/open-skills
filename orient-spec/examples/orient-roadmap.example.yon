@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=orient-roadmap-example | title="Example emitted orientation record (orient-roadmap on a git repo with a plan)" | kind=context | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="A worked, validatable instance of the roadmap slice of orient-record showing the reserved-tag emission with the 3-node increment arc, the runway, and a sidecar @MAP for every list field (never an in-set bracket-list)." | audience=agent
-@STAMP ts:ts=2026-07-07T00:00:00Z | src="agent:claude-code" | method=manual
+@STAMP ts:ts=2026-07-07T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 @NOTE text="Apache-2.0. Conforms to orient-spec/orient-record.yon (schema_version orient-record/1). Every list field is a sidecar @MAP — never a bare in-set bracket-list. The star (paramount) and the deferred dot ride inside the item label as render hints, never as tier glyphs."
 
 @CFG id=orient | set=[schema_version=orient-record/1,computed_at:ts=2026-07-07T00:00:00Z,ephemeral:bool=true,tool=orient-roadmap,tier=orient,scope=open-skills,evidence_mode=git-only,gate_status=ready,gate_score:int=70,gate_blocking_field=paramount_ref,gate_confidence_floor=inferred,family_used=orient-roadmap,family_suggested_next=orient-status,family_reason_code=lost_thread,overall_trust=med,degraded:bool=false]
@@ -17,4 +17,4 @@
 @MAP name=cleanup_now | pairs=["u1"->"⚠ stale STAMP dates"]
 @MAP name=deferred | pairs=["d1"->"◌ deterministic renderer (deferred)","d2"->"◌ ci wiring (deferred)"]
 @MAP name=provenance | pairs=["roadmap.arc_current"->"artifact-stated:med:plan-md","roadmap.built_items"->"git-attested:high:git-log","roadmap.gates"->"git-attested:high:ci-config","roadmap.next_items"->"inferred:med:plan-md","roadmap.runway_stages"->"inferred:med:plan-md","roadmap.paramount_ref"->"inferred:med:plan-md","roadmap.deferred"->"artifact-stated:med:deferred-goal","roadmap.cleanup_now"->"artifact-stated:med:arc-state"]
-@STAMP ts:ts=2026-07-07T00:00:00Z | src=human
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com"

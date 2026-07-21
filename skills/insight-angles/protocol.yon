@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=insight-angles | title="Angle & Connection Discovery — Cold Lens-Based Multi-Pass Engine" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Classify a subject, pick lenses (17-family roster + derived dynamic lenses), run layered passes — cold fan-out by default (one fresh leaf sub-agent per lens) for independence — then surface frames, typed connections, hidden assumptions, candidate-expansions, and second-order effects scored by novelty × relevance, and synthesize" | trigger="user runs /insight-angles, asks to find unseen angles, surface connections / hidden assumptions, reframe a subject, or 'what are we not seeing'"
-@STAMP ts:ts=2026-06-04T00:00:00Z | src=human | method=manual
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Governance ---
 
@@ -74,4 +74,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), specialized for roster discovery: (a) if a DYNAMIC lens this run produced a high novelty × relevance angle the roster lacked, draft a diff adding it to LensRoster + LensSelection; (b) if a roster lens consistently yields nothing for a subject-type, propose pruning/remapping; (c) any other concrete blocking-or-recurring weakness in THIS skill. Surface via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-07-14T00:00:00Z | src="agent:codex" | method=generated
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

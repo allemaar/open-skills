@@ -22,7 +22,7 @@ The premise of the family: a handler — human *or* an agent orienting itself �
 `git tier → plan/doc tier → conversation/folder tier`, stopping at the first signal.
 
 - **`orient-*` (public)** reads ONLY universal surfaces: git history/branch/dirty-tree, any plan/TODO/markdown file, the file tree, and the conversation/transcript if passed in.
-- **`yas-orient-*` (private)** *additionally* reads its own declared artifacts, which short-circuit inference because identity / status / rationale are declared rather than guessed. Those reads live in the private skill only; the public protocol never names them.
+- **A private conforming extension** *additionally* reads its own declared artifacts, which short-circuit inference because identity / status / rationale are declared rather than guessed. Those reads live in the private skill only; the public protocol never names them.
 
 ## 4. Return = the triple bundle, signal only
 

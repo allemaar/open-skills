@@ -1,6 +1,6 @@
 # orient-spec — the shared contract for the `orient-` family
 
-> Apache-2.0. Shared infrastructure (not a skill). The `orient-*` skills each emit a slice of one computed, ephemeral **orientation record**; this folder defines that record and how it renders, so every skill — and the private `yas-orient-*` mirror — agrees on shape without sharing code.
+> Apache-2.0. Shared infrastructure (not a skill). The `orient-*` skills each emit a slice of one computed, ephemeral **orientation record**; this folder defines that record and how it renders, so every skill — and a private conforming mirror — agrees on shape without sharing code.
 
 ## What `orient-` is
 
@@ -27,6 +27,6 @@ npx @younndai/yon-parser validate orient-spec/examples/orient-record.example.yon
 
 ## Two tiers, one contract
 
-`orient-*` (public, here) reads only universal surfaces — git, plan/TODO files, the file tree, the conversation. `yas-orient-*` (private) is independently implemented and reads its own declared artifacts, but conforms to this same record so the two interoperate with **no shared code and no separate domain**. (YAS is the private system that owns those artifacts; its internals are intentionally not described here.)
+`orient-*` (public, here) reads only universal surfaces — git, plan/TODO files, the file tree, the conversation. a private conforming extension is independently implemented and reads its own declared artifacts, but conforms to this same record so the two interoperate with **no shared code and no separate domain**. (That extension is private; its internals are intentionally not described here.)
 
 > **Status:** [`orient-status`](../skills/orient-status/), [`orient-map`](../skills/orient-map/), and [`orient-gaps`](../skills/orient-gaps/) are all **shipped** against this contract. A worked, validatable example record ships at [`examples/orient-record.example.yon`](examples/orient-record.example.yon).

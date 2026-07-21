@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=cold-review | title="Cold Review — Outside-Agent Review of Work Artifacts" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Run an independent review of actual work artifacts using fresh context, surfacing issues the owning agent misses through context bias. Classify the work, size the reviewer pool, brief fresh reviewers on evidence only, synthesize one report with severity-tagged findings, a numeric score, and a threshold verdict." | trigger="user runs /cold-review, says cold review this, get outside review, have fresh agents inspect this work, or review this with fresh context"
-@STAMP ts:ts=2026-05-18T00:00:00Z | src=human | method=manual
+@STAMP ts:ts=2026-05-18T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Boundary ---
 
@@ -69,4 +69,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=6 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-07-19T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

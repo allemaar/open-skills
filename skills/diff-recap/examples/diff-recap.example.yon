@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=diff-recap-example | title="Example emitted diff-recap record (a small rate-limit PR)" | kind=context | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="A worked, validatable diff-recap/1 instance: per-file rows transcribed from git numstat, envelope totals equal to the exact sum of the rows, with sidecar @MAP for groups and provenance." | audience=agent
-@STAMP ts:ts=2026-06-26T00:00:00Z | src="agent:claude-code" | method=manual
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 @NOTE text="Apache-2.0. Conforms to skills/diff-recap/recap-schema.yon (schema_version diff-recap/1). The per-file path/status/added/removed are git-attested; only label and group are model-written. Every list field is a sidecar @MAP — never a bare in-set bracket-list. Validate: node tools/diff-recap-check.mjs skills/diff-recap/examples/diff-recap.example.yon --numstat skills/diff-recap/examples/diff-recap.numstat"
 @CFG id=recap | set=[schema_version=diff-recap/1,computed_at:ts=2026-06-26T00:00:00Z,ephemeral:bool=true,tool=diff-recap,range="HEAD",repo=".",total_files:int=4,total_added:int=155,total_removed:int=7,attested:bool=true,gate_status=clean,overall_trust=high]
 @CFG id=subject | set=[name="acme-api",kind=repo,purpose="add per-route rate limiting",intent_status=stated]

@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=plan-create | title="Phased Gated Implementation Plan — Design Only" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Produce a structured PLAN.md artifact via 5 gated phases. Design only — no implementation code is written. The plan is the deliverable." | trigger="user runs /plan-create, says make a plan, plan this out, design before coding, lets plan first, architect this, or asks for a phased approach. Also trigger proactively for multi-file changes, new features, architectural shifts, refactors spanning multiple components."
-@STAMP ts:ts=2026-05-09T00:00:00Z | src=human | method=manual
+@STAMP ts:ts=2026-05-09T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Hard Rules ---
 
@@ -99,4 +99,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-06-04T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

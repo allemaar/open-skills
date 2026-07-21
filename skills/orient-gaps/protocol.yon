@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=orient-gaps | title="/orient-gaps" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Compute a fresh ephemeral read of what is stuck and what is missing — blockers (on-me vs on-other), open forks, loose ends, and inferred silent gaps — via a bounded read-only subagent; --audit raises claim-vs-evidence and gamed-signal disclosure. Emit the gaps slice conformant to orient-spec/orient-record.yon." | audience=agent
-@STAMP ts:ts=2026-07-19T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-19T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
 @NOTE text="Emits the gaps slice of the shared orientation record (orient-spec/orient-record.yon): the envelope @CFG id=orient, @CFG id=subject (carries intent_status), @CFG id=gaps (stall_status), with blocked_on_me blocked_on_other open_forks loose_ends silent_gaps audit_mismatches gamed_signals as sidecar @MAP; per-field provenance as @MAP. The stall surface and silent gaps are two tiers of one sweep; --audit raises the audit tier. Reserved tags only; validate --profile exec; never run yon format on an instance. Enum membership and these @RULE/@CHECK gates are emitter obligations enforced pre-emit by the value gate tools/orient-validate.mjs (enum membership plus the fail-closed cross-field gate), which yon validate --profile exec does not check."
 
 @SEC name="Inputs"
@@ -42,4 +42,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol: if this run surfaced a concrete blocking-or-recurring weakness in this skill, propose a specific fix via ask-gate for handler approval. Conservative, silent otherwise, never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-07-19T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

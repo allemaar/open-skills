@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=next-skills | title="Next Skills protocol (NSP)" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="On a skill's completion, surface its declared successor skills for the caller to pick — offer only, never auto-invoke" | audience=agent
-@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-06-15T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
 
 @NOTE text="Protocol hook that runs AFTER a skill completes (mirror of caller-options, which runs before). It offers successors; the caller gates every hop. Never blocks a skill from finishing."
 
@@ -15,4 +15,4 @@
 @RULE rid=rule:loop-safe | lvl=MUST | when="recommendations could chain A to B back to A" | then="rely on the caller's per-hop pick; NSP never auto-chains (its equivalent of the COP depth guard)"
 @RULE rid=rule:degrade | lvl=MUST | when="the next-skills skill is missing, unlinked, or unreadable" | then="treat the opt-in as a no-op — the participating skill completes normally"
 
-@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

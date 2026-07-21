@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=orient-map | title="/orient-map" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Compute a fresh ephemeral read of the work's shape — the delta since the last-look anchor plus the done-to-here-to-next trajectory as a path on trunk or a tree on a branch — via a bounded read-only subagent. Own the topology fields for the family. Emit a record conformant to orient-spec/orient-record.yon." | audience=agent
-@STAMP ts:ts=2026-07-19T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-19T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
 @NOTE text="Emits the trajectory and delta slices of the shared orientation record (orient-spec/orient-record.yon): the envelope @CFG id=orient, @CFG id=subject (carries parent_subject for the branch breadcrumb and intent_status), @CFG id=trajectory, tree nodes as @CFG id=node.<x>, @CFG id=delta; list fields (nodes edges changes no_change_zones) as sidecar @MAP; per-field provenance as @MAP. Reserved tags only; validate --profile exec; never run yon format on an instance. Enum membership and these @RULE/@CHECK gates are emitter obligations enforced pre-emit by the value gate tools/orient-validate.mjs (enum membership plus the fail-closed cross-field gate), which yon validate --profile exec does not check."
 
 @SEC name="Inputs"
@@ -43,4 +43,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol: if this run surfaced a concrete blocking-or-recurring weakness in this skill, propose a specific fix via ask-gate for handler approval. Conservative, silent otherwise, never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-07-19T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=self-improve | title="Self-Improvement Protocol — Per-Skill, Signal-Triggered Improvement Proposals" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="After a participating skill runs, detect concrete signals that the skill itself could be better (ambiguity, uncovered edge case, forced deviation, misfired rule, stale cross-reference, user correction) and propose a specific diff to it. Conservative: surface only when a signal is concrete and blocking-or-recurring and a fix is ready; silent otherwise. Dedup against an already-proposed queue. Surface via /ask-gate; never auto-apply." | trigger="a self-improvable skill completes; or user runs /self-improve [skill]"
-@STAMP ts:ts=2026-07-17T00:00:00Z | src=human | method=manual
+@STAMP ts:ts=2026-07-17T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Boundary ---
 
@@ -58,4 +58,4 @@
 @SEC name="Platform mapping"
 @MAP rid=map:platform | pairs=["claude-code"->"surface via /ask-gate -> AskUserQuestion","codex/agents"->"present proposal + recommended action as prose and wait","watch/triage/draft"->"runtime-agnostic"]
 
-@STAMP ts:ts=2026-07-17T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

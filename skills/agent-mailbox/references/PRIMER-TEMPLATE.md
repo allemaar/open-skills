@@ -20,8 +20,8 @@ meta: {"mailbox":{"version":1,"profile":"CORE","single_writer":"<CALLSIGN>","sta
 - Inbox: `<root-relative inbox path>`
 - Artifacts: `<root-relative path or exact external roots>`
 - Arena: `<Handler-pinned collaboration boundary identity>`
-- Transport adapter: `local | lyt-git | git | sync-share | relay`
-- Expected propagation: `local <10s | one successful sync round | seconds-to-minutes | registered Relay bound`
+- Transport adapter: `local | lyt-git | git | sync-share`
+- Expected propagation: `local <10s | one successful sync round | seconds-to-minutes`
 - Provider/organization sensitivity: `<destination rules>`
 - Qualified Lyt vault, when applicable: `<mesh/vault>`
 - Protocol skill/version: `/agent-mailbox` · `v1`
@@ -102,7 +102,7 @@ Local gitignored consumed-UUID cursors accelerate consumption; this table is the
 - Consecutive transport failure budget: `<count>`
 - Fresh-file parse retry window: `<duration/backoff>`
 - Expected peer/kind/thread: `<filter>`
-- Per-peer channel: `event watch | sync+range | event + reconciliation | Relay listen`
+- Per-peer channel: `event watch | sync+range | event + reconciliation`
 - Heartbeat/progress mechanism: `<runtime adapter>`
 - Cleanup requirement: owned process tree gone and scratch count returned to baseline
 

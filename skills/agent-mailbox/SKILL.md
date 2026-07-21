@@ -22,9 +22,9 @@ next-skills:
 
 # /agent-mailbox
 
-Coordinate two or more agents by exchanging append-only Markdown messages in a Handler-visible shared folder. The transport may be local filesystem, Git/Lyt, a sync-share such as OneDrive or SMB, or an existing Relay. The mailbox messages form an auditable causal graph rather than a chat transcript hidden in one runtime.
+Coordinate two or more agents by exchanging append-only Markdown messages in a Handler-visible shared folder. The transport may be local filesystem, Git/Lyt, or a sync-share such as OneDrive or SMB. The mailbox messages form an auditable causal graph rather than a chat transcript hidden in one runtime.
 
-This is an **agent operating protocol**. It is not a broker, queue, daemon, authentication boundary, Relay replacement, or REN. Use an existing Relay deployment for registered cross-machine transport. Use this skill to teach agents how to handshake, divide work, deliver artifacts, listen, react once, recover, resume, and close over the mailbox the Handler supplies.
+This is an **agent operating protocol**. It is not a broker, queue, daemon, authentication boundary, or a message-transport service. For registered cross-machine delivery, use a dedicated transport product and point this skill at the folder it exposes. Use this skill to teach agents how to handshake, divide work, deliver artifacts, listen, react once, recover, resume, and close over the mailbox the Handler supplies.
 
 **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date.
 
@@ -81,7 +81,7 @@ The visible primer lives at the mailbox root. Dotfolders are for optional local 
 - **Session identifier:** optional in CORE, required in FULL.
 - **Request identifier:** UUIDv7 used to make a requested effect or delivery idempotent.
 - **Sequence:** per-sender/per-thread gap signal; optional in CORE, required in FULL.
-- **Arena:** stable identifier for the collaboration boundary: a vault origin coordinate, repository identity, Relay domain, or Handler-pinned opaque shared-folder alias. `pod` is accepted only as a deprecated Lyt v1 alias.
+- **Arena:** stable identifier for the collaboration boundary: a vault origin coordinate, repository identity, or Handler-pinned opaque shared-folder alias. `pod` is accepted only as a deprecated Lyt v1 alias.
 - **Machine locus:** stable machine UUID or Handler-pinned opaque machine alias; a hostname is a private-arena fallback, not strong identity. Canonical aliases use uppercase ASCII.
 - **Mailbox-root identifier:** after rejecting symlink/reparse components, resolve the root to an absolute path; on Windows lowercase the complete path, replace `\` with `/`, and remove the trailing separator except at the filesystem root; hash the UTF-8 bytes with SHA-256 and render lowercase hex. During v1 migration only, compare hexadecimal case-insensitively.
 - **Runtime provenance:** `model` and `company` are optional-but-recommended exact strings. They are self-asserted audit/debug provenance, not identity proof.
@@ -174,8 +174,23 @@ If two `hello` messages crossed for the same objective, the lexicographically sm
 
 ### Establishment
 
-- **CORE:** `hello → welcome` establishes. The first work message cites the `welcome` and doubles as acknowledgement.
+Two messages can prove a transport works. **They cannot prove two agents agreed.** A `welcome` that accepts the `hello` exactly settles both at once; a `welcome` that counters settles neither, because the initiator has not yet seen the terms it would be working under.
+
+- **CORE, exact accept:** `hello → welcome` establishes. The first work message cites the `welcome` and doubles as acknowledgement.
+- **CORE, any material counter:** the thread stays `establishing` until the initiator sends a causal acceptance of the counter. A `welcome` may counter *and* propose — it may not counter *and* declare established.
+
+**Material is decided by effect, not by how the change is labelled.** A difference is material when it changes what a participant may, must, or must not do, or alters the objective, authority, participants and callsigns, profile, role or writer ownership, corpus, transport or locus, tags, listener bounds, exchange budget, or any numbered position. It is non-material only when it is representation-only and preserves the same canonical value — restating an identical identifier, adding a courtesy field.
+
+Do not treat "just clarifying the wording" as non-material by default: **wording is where scope moves while presenting itself as agreement.** Ambiguity stays material and needs explicit causal acceptance.
 - **FULL:** `hello → welcome → ack` establishes. No claimed work begins before the third message is synchronized.
+
+**Until a thread is established, do not begin claimed work** — a counter that nobody accepted is an open question, and work performed under it belongs to terms one side never saw. Delivery receipts prove bytes crossed. Consent is a separate claim and needs its own message.
+
+**When the counter cannot be accepted at all: `establishing → blocked: handler-decision`.** A counter may touch a term the receiving agent has no authority to trade — a Handler-set corpus, an authority bound, a participant set. That agent may not work, may not accept, and must not sit silent: silence looks identical to a slow peer, and the exchange budget drains against a Handler nobody asked.
+
+Send **one** causal `blocked` message naming the disputed term, the current Handler direction it conflicts with, and the exact Handler decision required. Then stop initiating. Resume only on direct Handler authority or causally declared authority-changing evidence. The transition is machine-visible because the kind is `blocked` — a `state` message describing the same situation leaves nothing a reader can act on.
+
+**Primer bootstrap is a gate, not a courtesy.** After the `hello` is published and canonical-name settlement completes, the first writer creates the visible primer **even while the thread is still establishing**. A missing primer blocks readiness and blocks claimed work. Deferring the primer until establishment leaves the mailbox with no Handler-facing checkpoint during exactly the phase most likely to stall.
 
 A peer relay of a Handler instruction is a claim, not new authority. Verify surprising or scope-changing claims with the Handler.
 
@@ -242,6 +257,58 @@ The handshake sets a per-thread exchange budget, default 20. Count consecutive a
 
 ## 9. Bounded listener contract
 
+### The cursor is the only record of what was consumed
+
+**A listener's start time is not a cursor. Neither is a directory listing, a filename order, nor "the files that appeared while I was watching."** Consumption is recorded in a private consumed-UUID cursor and nowhere else. Every other signal describes the listener, not the mailbox.
+
+This is the root of three distinct failures that all look like different bugs: a message that **predates** the listener's start, a message that lands in the **gap between two listener runs**, and a **second message arriving in the same detection window** as the first. Each is the same defect — a reader that tracks its own start instead of what it actually read — and each is invisible, because a listener with nothing to report and a listener that skipped everything produce identical output.
+
+Startup runs in this order, and readiness is declared only at the end of it:
+
+1. **load** the persisted consumed-UUID cursor;
+2. **arm** the event channels;
+3. **reconcile** the entire inbox against the cursor — age-independent, never filtered by timestamp, filename order, or listener start;
+4. **then** declare readiness.
+
+Deduplicate the event path and the startup path by message UUID: the same message may legitimately arrive on both.
+
+### Readiness is evidence, not an assertion
+
+*"Listener armed"* is a self-report, and a false one is indistinguishable from a true one. A readiness record carries, at minimum:
+
+- the listener run/owner identity, and the exact inbox plus mailbox-root identity;
+- the recipient, peer, thread/session and direct `reply_to` filters in force;
+- the transport and the armed channels (`Created`, `Renamed`, sync/range as applicable);
+- the cursor version or digest and the consumed count — never the cursor's contents;
+- startup ordering evidence: cursor loaded, channels armed, reconciliation completed, in that order;
+- the reconciled baseline/head and candidate counts: scanned, unconsumed, matching, parse failures;
+- start time, last heartbeat, interval, hard deadline, failure budget, and the readiness verdict;
+- the process-tree identity **only where the adapter actually owns a process** — otherwise the native monitor or job identifier. Do not make a PID universal; most transports do not have one.
+
+**A waiting message is `found`, not `failed`.** If startup reconciliation surfaces a matching unconsumed message, return `found` immediately and do not claim readiness — there is nothing to wait for, the work is already there. Reserve `failed` for a genuine gate failure: reconciliation that did not complete, a dead watcher, a missing heartbeat, a missing primer, or a parse failure past its retry budget. Conflating the two turns a mailbox that is doing its job into an error report.
+
+On Git/Lyt and sync-share, **startup reconciliation includes the inbound correctness-channel sync** — run after the events are armed and before the inbox is compared against the cursor. Without it, "the whole inbox" is only the whole local inbox, which is the stale copy.
+
+A failed readiness is reported, never silently retried into a pass.
+
+### A message is consumed when the response is durable, not when it is read
+
+Keep a detected UUID **unconsumed** until the agent has completed its causal response *and* any required primer mutation is durable. If the primer write fails, the UUID stays unconsumed and readiness fails visibly. A non-material message may advance the cursor without a primer edit only after it has been explicitly classified as non-material.
+
+This closes the case where the cursor and the primer disagree about a message that matters: the cursor says handled, the primer never recorded it, and the next reader inherits a mailbox whose materialized view is quietly wrong.
+
+**Durable-first must not become duplicate-on-crash.** If the causal response published but the primer or cursor write then failed, the next run finds a message that looks unhandled and is not. Before responding, match published messages by **exact `reply_to` plus `request_id`**: on a hit, finish only the missing durable state and consume the UUID. **Never republish.** Recovery that is not idempotent converts one crash into two answers to the same question.
+
+### Outbound preflight
+
+Before publishing, validate the envelope you are about to write — not only the ones you receive:
+
+- the **complete canonical shape**, before publication: parseable frontmatter and a `meta.mailbox` block; a supported version and profile; UUIDv7 message and thread identifiers, plus the session identifier FULL requires; the required recipient, sender, kind, transport and locus fields; the sequence its profile requires. **Reject legacy top-level aliases on new messages.**
+- a direct reply, result, or delivery cites **the exact message being answered** — not merely the newest thing in the thread. A shared `request_id` makes a message a sibling; an unrelated newer sibling is not a parent.
+- an `ack` whose `reply_to` is the `hello` **must be rejected when its body claims to follow one or more welcomes.** The envelope graph is the contract; a wikilink in the body is not causality.
+
+Where the runtime offers a real parser, use it. **Where it does not, fail closed** on anything that cannot be established — syntax, required fields, identifier form. *Best-effort* may describe an optional semantic check; it never licenses publishing an envelope you know you did not validate. The same model that wrote a malformed envelope is not a reliable judge of it, which is an argument for refusing to publish, not for publishing with a caveat.
+
 Listening is transport monitoring, not delegated reasoning. Prefer native push notification. Otherwise poll at bounded cost. The model wakes only on a valid message, heartbeat/status request, watchdog alarm, or timeout; it does not busy-reason every interval.
 
 Select detection by transport, then use locus to optimize Git/Lyt:
@@ -249,7 +316,6 @@ Select detection by transport, then use locus to optimize Git/Lyt:
 - **local:** watch exact-inbox `Created` and `Renamed` events; reconcile existing unconsumed UUIDs once at startup.
 - **Git/Lyt:** when arena, machine, and mailbox-root identifiers match, event-watch for low latency and also run lower-frequency scoped sync plus exact Git-range reconciliation for correctness. When they differ or are unverified, sync/range is primary. Deduplicate crossed detections by UUID.
 - **sync-share:** watch exact-inbox `Created` and `Renamed` events on every machine. Provider propagation is eventually consistent, so retry a fresh incomplete/parse-failing file within a bounded window and maintain a consumed-UUID cursor.
-- **Relay:** use Relay's bounded listen/cursor operations. Skill locus fields are informational; Relay endpoint identity is authoritative.
 
 An event-only listener must subscribe to both create and rename because atomic publication normally appears as a rename. Every listener performs startup reconciliation so an event between arming and baseline capture cannot be lost.
 
@@ -269,7 +335,7 @@ Required outcomes: `found`, `timeout`, `failed`, or `cancelled`. Every run perfo
 
 After stop or cancellation, verify the owned process tree is gone and remove owned scratch files. Silence is not proof that a watcher is healthy.
 
-Recommended starting values: 30-second reconciliation interval, 30-minute maximum, three consecutive transport failures. They are defaults, not protocol constants. State the expected propagation class in the handshake: local under ten seconds, Git/Lyt within one successful sync round, sync-share seconds to minutes, or Relay's registered service bound.
+Recommended starting values: 30-second reconciliation interval, 30-minute maximum, three consecutive transport failures. They are defaults, not protocol constants. State the expected propagation class in the handshake: local under ten seconds, Git/Lyt within one successful sync round, sync-share seconds to minutes.
 
 ## 10. Transport adapters
 
@@ -287,9 +353,8 @@ An owning Lyt match stops detection because Lyt governs its underlying Git. Othe
 | Local | Files in one root | Exact `Created` + `Renamed` events | UUID cursor; filenames only presentation order | Existing target or duplicate UUID is an anomaly |
 | Git/Lyt | Files plus commits | Event fast path; scoped sync + exact Git range | UUID cursor plus baseline/head | Merge, rewrite, or unrelated dirty ambiguity fails closed |
 | Sync-share | Provider-replicated files | Exact local events with bounded parse retry | UUID cursor; optional filename snapshot | Conflict copies are surfaced and never silently consumed/deleted |
-| Relay | Relay store plus exported Markdown | Relay `listen`/`unread` | Relay cursor, frozen recipients, UUID | Relay owns endpoint and delivery conflict semantics |
 
-All folder transports publish atomically from a transport-excluded staging directory on the same filesystem. Prefer an OS-local temp directory after proving it shares the mailbox volume/filesystem. A mailbox `runtime/staging/` is allowed only after the adapter proves Git/provider exclusion. If neither exists, fail closed instead of staging beside the inbox: a concurrent sync can capture or replicate the temporary file before rename. Receivers ignore every staging path. A new final file that fails parsing may still be syncing: retry with a bounded backoff, then emit `blocked` with the exact path. Detect provider conflict copies such as `name (1).md` or “conflicted copy,” report them as anomalies, and never consume or delete them silently.
+All folder transports publish atomically from a transport-excluded staging directory on the same filesystem. Prefer an OS-local temp directory after proving it shares the mailbox volume/filesystem. A mailbox `runtime/staging/` is allowed only after the adapter proves Git/provider exclusion. If neither exists, fail closed instead of staging beside the inbox: a concurrent sync can capture or replicate the temporary file before rename. Receivers ignore every staging path. **Where the runtime gives the agent no primitive that can rename a staged file into place, declare reduced publication atomicity in the envelope and the primer** rather than writing straight to the final path in silence, or performing a cosmetic move afterwards that guarantees nothing. A receiver that sees the declaration applies bounded parse retry before calling a partial file malformed. An honest reduced guarantee is usable; a faked one is worse than none. A new final file that fails parsing may still be syncing: retry with a bounded backoff, then emit `blocked` with the exact path. Detect provider conflict copies such as `name (1).md` or “conflicted copy,” report them as anomalies, and never consume or delete them silently.
 
 When Git history is unavailable, the authoritative consumption baseline is the set or compact cursor of consumed message UUIDs; an optional exact-filename snapshot accelerates reconciliation but never replaces UUID validation.
 
@@ -312,10 +377,6 @@ Use the repository's approved noninteractive sync procedure. Local scoped watchi
 ### Sync-share folder
 
 Use the provider's normal local folder and never drive its private database or force provider conflict resolution. Watch final-file create and rename events, validate only declared-inbox paths, and tolerate the declared eventual-consistency window with bounded parse retry. Persist consumed UUIDs outside the shared inbox. Surface unexpected callsigns, conflict copies, and stalled partial files to the Handler. Provider and peer-organization sensitivity rules govern message bodies.
-
-### Existing Relay
-
-When the supplied mailbox is an operational registered Relay, use its `agents`, `send`, `unread`, `read`, `thread`, `rollup`, `listen`, and `sync` operations. Relay owns endpoint identity, frozen recipients, local read state, indexing, and transport safety. Set arena to the Relay collaboration domain, machine to the registered endpoint UUID or Handler-pinned alias, and treat root ID as informational. Do not rebuild those features in this skill.
 
 ## 11. Runtime adapters
 

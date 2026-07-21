@@ -145,7 +145,7 @@ if (clVersions.length && tags.length) {
 //
 // skills-help/SKILL.md carries a hand-authored menu snapshot. On export from a
 // larger private library it listed ~18 skills this pack does not ship (whole
-// paper-* / hfl* / yas-* families) — a public front door advertising skills a
+// private-only families) — a public front door advertising skills a
 // reader cannot have. This gates the PHANTOM direction: every menu entry must
 // resolve to a shipped skill. The MISSING direction (a shipped skill absent from
 // the menu) is left to the skill's own render-time protocol, which appends an

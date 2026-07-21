@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=diff-recap-schema | title="diff-recap/1 — the recap record schema" | kind=spec | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="The shared schema for a diff-recap/1 record: the envelope, the identity, the per-file rows, and the enum tables the value gate tools/diff-recap-check.mjs checks an emitted instance against." | audience=agent
-@STAMP ts:ts=2026-06-26T00:00:00Z | src="agent:claude-code" | method=manual
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 @NOTE text="schema_version current value = diff-recap/1. Reserved tags only. An emitted instance carries @CFG id=recap (the envelope), @CFG id=subject (identity), one @CFG id=file.<n> per changed file, and sidecar @MAP for groups and per-field provenance. The per-file path/status/added/removed and the envelope totals are git-attested — transcribed verbatim from git diff --numstat and --name-status; the model authors ONLY label and group. ENFORCEMENT: yon validate --profile full checks STRUCTURE, not VALUES — enum membership, the Sigma per-file == totals true-by-construction invariant, and the fail-closed/attested cross-field gates are EMITTER obligations the parser cannot see. tools/diff-recap-check.mjs is that missing half; an emitted record passes it before emit and CI runs it on the worked example plus deliberately-bad fixtures."
 
 @SEC name="Enums"

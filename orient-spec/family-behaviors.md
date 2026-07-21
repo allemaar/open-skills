@@ -52,7 +52,7 @@ Evidence weight is **disclosed, never gamed**:
 
 When the sweep finds an **unwritten decision** or an open fork with no durable record:
 
-- Set `reason_code = unwritten_decision`; `family_suggested_next` routes **OUT** to a durable-capture skill — `/lyt-handoff` (hand the thread to the next session) or `/lyt-decision` (lock the choice).
+- Set `reason_code = unwritten_decision`; `family_suggested_next` routes **OUT** to a durable-capture skill — one that hands the thread to the next session, or one that locks the choice — when the consumer has such a skill installed.
 - These are **not** `orient-*` skills: orientation **surfaces** the gap; capture lives elsewhere. Per `rule:footer-installed`, route to them only if installed, else a prose hint.
 
 ## 6. Render-face decision (which face per consumer)

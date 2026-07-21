@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=insight-cross-examine | title="Context-Routed Deliberation — Discover Angles, Expose Connections, Assess, Recommend" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Take a subject or a set, route by Form × Corpus to a graduated depth, discover unseen angles & connections (via insight-angles), run critique → assess (+ explore, + typed hybrids), and present a decision surface with its insight trail — as an ask-gate or inline, never auto-diving without handler consent" | trigger="user runs /insight-cross-examine, asks to cross-examine / weigh options / pick between candidates / evaluate a set and recommend"
-@STAMP ts:ts=2026-06-04T00:00:00Z | src=human | method=manual
+@STAMP ts:ts=2026-06-04T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Governance ---
 
@@ -89,4 +89,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-06-14T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

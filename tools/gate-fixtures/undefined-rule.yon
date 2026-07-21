@@ -1,8 +1,8 @@
 @DOC ver=2.0 | id=undefined-rule-demo | title="Gate-fires fixture — undefined rule ref" | kind=workflow | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Deliberately broken: a step cites a rule id that is never defined" | audience=agent
-@STAMP ts:ts=2026-06-16T00:00:00Z | src=human | method=manual
+@STAMP ts:ts=2026-06-16T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 @SEC name="Flow"
 @STEP rid=step:only | n:int=1 | op=std:ai.prompt@v1 | args=[task="run under a rule that does not exist"] | out=[ref:result] | rules=[rid:rule:ghost]
 
-@STAMP ts:ts=2026-06-16T00:00:00Z | src=human | method=manual
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual

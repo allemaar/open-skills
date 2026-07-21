@@ -25,11 +25,13 @@
 
 ---
 
-A skill is instructions your agent runs with your machine's access. These you can read before you trust them — each is a Markdown doc plus a declarative YON protocol you validate yourself.
+A skill is instructions your agent runs with your machine's access. These you can read before you trust them — each is a Markdown doc, and 39 of the 57 also ship a declarative YON protocol you validate yourself.
 
-This is a pack of reusable skills for AI coding agents (Claude Code, Codex, and any runtime that reads the open Agent Skills format). They're the skills I run my own agents on — review, planning, priming, deliberation — published so you can read every line before you trust them. It's a living set: I add skills here as I build the ones I need.
+This is a pack of reusable skills for AI coding agents (Claude Code, Codex, and any runtime that reads the open Agent Skills format). I'm [Alexandru Mares](https://allemaar.com), and these are the skills I run my own agents on every day — review, planning, priming, deliberation. I designed them, and I've spent months refining them against real work: each one exists because I hit a problem often enough to want it solved properly, then kept reshaping it until it earned its place. What's published here is the working set, not a demo. It's a living set: I add skills as I build the ones I need.
 
-**Composable, not a framework.** Install one or install fifty — each stands on its own as an install decision, none require the rest, and your agent keeps room to think between them. Take what earns its place and ignore the rest.
+**Composable, not a framework.** Install one or install fifty — each is its own install decision, and your agent keeps room to think between them. Take what earns its place and ignore the rest.
+
+They are also built to cooperate. A few skills cite companion protocols — `caller-options`, `human-output`, `self-improve` — so the pack behaves most fully with those present. Start with what you need; add the companions when you want the fuller behaviour.
 
 ---
 
@@ -39,9 +41,45 @@ Two or more agents, **any harness, any vendor**, working together through a shar
 
 It carries an identity lifecycle, group rooms, work claims, trust boundaries, a reserved Handler seat, and an autonomy loop-breaker. The whole manual is: **share a folder, load the skill, point at it.**
 
-It was designed and ratified by two agents from rival vendors negotiating *over the protocol they were building* — which is also how three real defects were caught and converted into contract rules.
+It was **dogfooded through its own design**: the design conversation ran over the protocol itself, driven across agents on two different vendors' runtimes — which is how three real defects surfaced and became contract rules rather than patches.
 
-Evidence ships with it, split on purpose. [`VALIDATION.md`](skills/agent-mailbox/references/VALIDATION.md) records what was **measured** — local and Git delivery, across two runtimes, with zero false detections — separately from what is still **design-validated**: the sync-share transports are a field test in progress, not a proven claim. [`PRIOR-ART.md`](skills/agent-mailbox/references/PRIOR-ART.md) is the landscape on the same terms, including what the alternatives do better.
+Evidence ships with it, split on purpose. [`VALIDATION.md`](skills/agent-mailbox/references/VALIDATION.md) records what was **measured** — local and Git delivery, across two runtimes, with zero false detections — separately from what is still **design-validated**: the sync-share transports are a field test in progress, not a proven claim.
+
+---
+
+## Start here
+
+Most skills are slash commands you invoke when you want them (`/cold-review …`); a couple — `orchestrate-mode`, `multi-agent-mode` — are persistent session modes, and several fire on their own when their trigger shows up. Each skill's `SKILL.md` says which.
+
+**Something to type first.** Once a skill is installed, this is what first value looks like — a real prompt, in your agent:
+
+```text
+/cold-review this branch before I open the PR
+/investigate how auth is wired in this repo
+/orient-status where are we on this?
+/agent-mailbox Mailbox: ./shared-folder/mailbox
+```
+
+Installed through the plugin marketplace? Same prompts, namespaced — `/open-skills:cold-review …`.
+
+A few that pay off on their own, no setup:
+
+| Skill | What it does |
+|---|---|
+| [`cold-review`](skills/cold-review/) | Summons fresh-context reviewer agents to audit your work — evidence-based findings, severity tiers, a score, and a verdict. |
+| [`agent-mailbox`](skills/agent-mailbox/) | Lets two or more agents — any harness, any vendor — collaborate through any shared folder: share a folder, load the skill, point at it. |
+| [`investigate`](skills/investigate/) | Read-only fact-gathering before you change anything — maps files, deps, and patterns. |
+| [`orient-status`](skills/orient-status/) | A fresh "where are we" on any repo, plan, or task — position, what's left, and a banded ETA; `--resume` rebuilds context after a gap. |
+| [`insight-angles`](skills/insight-angles/) | Points lenses at a subject to surface the frames, connections, and assumptions you can't see. |
+| [`insight-cross-examine`](skills/insight-cross-examine/) | Routes a decision through angle-discovery → critique → assess → recommend, and hands back a decision surface. |
+| [`plan-create`](skills/plan-create/) | A phased, gated implementation plan before any code is written. |
+| [`improve-codebase-architecture`](skills/improve-codebase-architecture/) | Finds refactors that deepen shallow modules (Ousterhout's *A Philosophy of Software Design*). |
+| [`ask-gate`](skills/ask-gate/) | Triages whether a question is really yours to answer before interrupting you — an enforced gate, firing. |
+| [`prime-sweep`](skills/prime-sweep/) | Parallel sub-agents absorb a large source surface; only the vetted digest reaches your context. |
+| [`yon-read`](skills/yon-read/) | Reads, interprets, and explains any YON you point it at — the protocols in this pack included. |
+| [`yon-write`](skills/yon-write/) | Drafts and converts content into valid YON — the fastest way to author your own `protocol.yon`. |
+
+Browse [`skills/`](skills/) for the full set of 57 — planning, insight & decision, [orientation](#the-orient--family), [writing for a reader](#the-human--family), priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, diff recap, and YON authoring.
 
 ---
 
@@ -164,42 +202,6 @@ for d in ~/.claude/skills/*/; do n=$(basename "$d"); [ -d "skills/$n" ] &&
 ### For agents
 
 This pack is built to be installed *by* an agent, not just a human. Enumerate every skill from [`catalog.json`](catalog.json) (name, description, triggers, gates, per-skill install + validate commands), or read [`llms.txt`](llms.txt) for a dense manifest plus a step-by-step *"For agents — how to install"* recipe (detect runtime dir → copy the folder → validate its `protocol.yon`). Copy-default, no opaque installer — the install path is itself inspectable.
-
----
-
-## Start here
-
-Most skills are slash commands you invoke when you want them (`/cold-review …`); a couple — `orchestrate-mode`, `multi-agent-mode` — are persistent session modes, and several fire on their own when their trigger shows up. Each skill's `SKILL.md` says which.
-
-**Something to type first.** Once a skill is installed, this is what first value looks like — a real prompt, in your agent:
-
-```text
-/cold-review this branch before I open the PR
-/investigate how auth is wired in this repo
-/orient-status where are we on this?
-/agent-mailbox Mailbox: ./shared-folder/mailbox
-```
-
-Installed through the plugin marketplace? Same prompts, namespaced — `/open-skills:cold-review …`.
-
-A few that pay off on their own, no setup:
-
-| Skill | What it does |
-|---|---|
-| [`cold-review`](skills/cold-review/) | Summons fresh-context reviewer agents to audit your work — evidence-based findings, severity tiers, a score, and a verdict. |
-| [`agent-mailbox`](skills/agent-mailbox/) | Lets two or more agents — any harness, any vendor — collaborate through any shared folder: share a folder, load the skill, point at it. |
-| [`investigate`](skills/investigate/) | Read-only fact-gathering before you change anything — maps files, deps, and patterns. |
-| [`orient-status`](skills/orient-status/) | A fresh "where are we" on any repo, plan, or task — position, what's left, and a banded ETA; `--resume` rebuilds context after a gap. |
-| [`insight-angles`](skills/insight-angles/) | Points lenses at a subject to surface the frames, connections, and assumptions you can't see. |
-| [`insight-cross-examine`](skills/insight-cross-examine/) | Routes a decision through angle-discovery → critique → assess → recommend, and hands back a decision surface. |
-| [`plan-create`](skills/plan-create/) | A phased, gated implementation plan before any code is written. |
-| [`improve-codebase-architecture`](skills/improve-codebase-architecture/) | Finds refactors that deepen shallow modules (Ousterhout's *A Philosophy of Software Design*). |
-| [`ask-gate`](skills/ask-gate/) | Triages whether a question is really yours to answer before interrupting you — an enforced gate, firing. |
-| [`prime-sweep`](skills/prime-sweep/) | Parallel sub-agents absorb a large source surface; only the vetted digest reaches your context. |
-| [`yon-read`](skills/yon-read/) | Reads, interprets, and explains any YON you point it at — the protocols in this pack included. |
-| [`yon-write`](skills/yon-write/) | Drafts and converts content into valid YON — the fastest way to author your own `protocol.yon`. |
-
-Browse [`skills/`](skills/) for the full set of 57 — planning, insight & decision, [orientation](#the-orient--family), [writing for a reader](#the-human--family), priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, diff recap, and YON authoring.
 
 ---
 
@@ -329,7 +331,13 @@ A contribution here is a skill other people read before they run it. The bar is 
 
 Apache-2.0 — see [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE). Free to use, fork, and adapt.
 
-A personal, independent project by **[Alexandru Mares](https://allemaar.com)** ([allemaar.com](https://allemaar.com)). It is not a YounndAI™ product; "YON" and "YounndAI" are trademarks of MARLINK TRADING SRL.
+## Who made this
+
+**[Alexandru Mares](https://allemaar.com)** — [allemaar.com](https://allemaar.com).
+
+Every skill here is my own design: conceived, built, and refined over months of daily use and research. I use frontier models heavily — to research, to pressure-test, to dogfood these skills in the work they were built for — and that use is exactly why they've improved. But the thinking, the architecture, and the judgement about what belongs are mine. A tool that helps you build something doesn't own it.
+
+A personal, independent project. It is not a YounndAI™ product; "YON" and "YounndAI" are trademarks of MARLINK TRADING SRL.
 
 ---
 

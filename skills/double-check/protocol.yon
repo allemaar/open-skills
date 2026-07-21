@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=double-check | title="/double-check" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Re-verify a specific plan, output, decision, or document by re-reading the actual sources, adversarially challenging it, proposing improvements, and delivering a verdict" | audience=agent
-@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-06-15T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
 
 @NOTE text="Re-Read & Improve protocol — not a single-pass gate. Re-read the target fresh, challenge each part, propose improvements, iterate until solid. Not /verify (formal intent/plan/execution gate) and not /insight-critique (advisory output review) — double-check is a targeted re-read of one claim."
 
@@ -39,4 +39,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill, draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-06-15T00:00:00Z | src="agent:claude-code" | method=generated
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

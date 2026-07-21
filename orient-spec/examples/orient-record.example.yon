@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=orient-record-example | title="Example emitted orientation record (orient-status on a git repo)" | kind=context | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="A worked, validatable instance of orient-record showing the reserved-tag emission with a sidecar @MAP for every list field (never an in-set bracket-list)." | audience=agent
-@STAMP ts:ts=2026-06-22T00:00:00Z | src="agent:claude-code" | method=manual
+@STAMP ts:ts=2026-06-22T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 @NOTE text="Apache-2.0. Conforms to orient-spec/orient-record.yon (schema_version orient-record/1). Every list field is a sidecar @MAP — never a bare in-set bracket-list."
 
 @CFG id=orient | set=[schema_version=orient-record/1,computed_at:ts=2026-06-22T00:00:00Z,ephemeral:bool=true,tool=orient-status,tier=orient,scope=open-skills,evidence_mode=git-only,gate_status=stalled,gate_score:int=40,gate_blocking_field=open_forks,gate_confidence_floor=inferred,family_used=orient-status,family_suggested_next=orient-gaps,family_reason_code=blockers_present,overall_trust=med,degraded:bool=false]
@@ -24,4 +24,4 @@
 @MAP name=loose_ends | pairs=["l1"->"3 uncommitted files"]
 @MAP name=silent_gaps | pairs=["s1"->"new skill has no honesty fixture yet"]
 @MAP name=provenance | pairs=["snapshot.on_branch"->"git-attested:high:git-rev-parse","subject.name"->"git-attested:high:dir-name","forecast.eta"->"inferred:low:commit-cadence","gaps.loose_ends"->"git-attested:high:git-status","gaps.open_forks"->"inferred:med:no-decision-record"]
-@STAMP ts:ts=2026-06-22T00:00:00Z | src=human
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com"

@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=orient-record-bad-enum | title="BAD fixture — gate_status=banana (enum violation the parser cannot catch)" | kind=context | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="A STRUCTURALLY VALID orient record (validates clean under yon validate --profile exec) whose only defect is a VALUE: gate_status=banana is not a member of the gate_status enum. tools/orient-validate.mjs MUST reject it. Demonstrates the gap yon validate leaves (orient-record.yon ENFORCEMENT note)." | audience=agent
-@STAMP ts:ts=2026-06-22T00:00:00Z | src="agent:claude-code" | method=manual
+@STAMP ts:ts=2026-06-22T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 @NOTE text="Apache-2.0. DELIBERATELY BAD value fixture for the orient value gate. Do NOT treat as a conformant example."
 
 @CFG id=orient | set=[schema_version=orient-record/1,computed_at:ts=2026-06-22T00:00:00Z,ephemeral:bool=true,tool=orient-status,tier=orient,scope=open-skills,evidence_mode=git-only,gate_status=banana,gate_score:int=40,gate_blocking_field=open_forks,gate_confidence_floor=inferred,family_used=orient-status,family_suggested_next=orient-gaps,family_reason_code=blockers_present,overall_trust=med,degraded:bool=false]
@@ -10,4 +10,4 @@
 @MAP name=open_set | pairs=["o1"->"P2 orient-map","o2"->"P3 footer"]
 @CFG id=forecast | set=[kind=prediction,provenance=extrapolated,eta_low=1d,eta_high=3d,eta_unit=calendar-days,confidence=low,unschedulable:bool=false]
 @MAP name=provenance | pairs=["subject.name"->"git-attested:high:dir-name","forecast.eta"->"inferred:low:commit-cadence"]
-@STAMP ts:ts=2026-06-22T00:00:00Z | src=human
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com"

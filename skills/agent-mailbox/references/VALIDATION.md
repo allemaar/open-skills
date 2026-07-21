@@ -27,7 +27,6 @@ This record separates measured transport evidence from design-only coverage. It 
 ## Design-validated, field-test pending
 
 - OneDrive, Google Drive, Dropbox, SMB/network-share delivery and conflict-copy behavior;
-- cross-machine Relay composition in this skill layer;
 - simultaneous empty-arena bootstrap and deterministic primer winner;
 - generated-name collision, expired-name reclaim, declared succession, and late sync-share claim yield;
 - FULL group claims, votes, goodbye, exchange-budget freeze, and closed-thread archival.

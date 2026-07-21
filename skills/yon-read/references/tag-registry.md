@@ -17,6 +17,18 @@ Optional: `id` (recommended when using `refs` feature)
 Required: `ts` (ISO-8601 UTC), `src`
 Optional: `source`, `method` (api|manual|generated|scraped), `confidence` (0.0-1.0), `hash`, `algorithm` (sha256|sha512|blake3), `scope` (full|section|payload), `tokens`, `cost`, `model`, `approver`
 
+**`src` and `method` answer different questions, and both are needed to read a stamp correctly.**
+`src` names *who is responsible for the content* — a person, an organisation, a tool, or the
+generic `human`. `method` names *how those bytes were produced*. They are independent: a named
+author with `method=generated` means that author is responsible for a document a machine emitted
+under their direction, not that the author typed it, and not that the machine authored it.
+Reading `method` alone as an authorship claim is the common mistake.
+
+Where a document carries more than one `@STAMP`, they are ordered provenance records, earliest
+first. **Interpret each within its declared `scope`.** A later stamp does not erase earlier
+provenance, and a `scope=section` or `scope=payload` attestation never supersedes a `scope=full`
+one or an unrelated scope — recency alone settles nothing across different scopes.
+
 ### @META (Metadata)
 Required: `key`, `value`
 

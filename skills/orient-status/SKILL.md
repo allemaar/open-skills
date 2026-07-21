@@ -1,7 +1,7 @@
 ---
 name: orient-status
 description: >
-  Answers "How far along am I, and when will it be done?" on any subject (repo, folder, plan, task) — current position, what's left, and a banded ETA, computed fresh via a bounded read-only subagent. `--resume` rebuilds context after a gap (one next move + counter-case). Trigger phrases: "/orient-status", "where are we on this", "how far along", "what's the ETA". Not /orient-map (what changed since I last looked), /orient-gaps (what is stuck or missing), /orient-roadmap (what comes next and what gates it), /investigate (deep facts), /reflect (thinking), or /yas-status (YAS agent/arc state) — orient-status SEES and reports NOW.
+  Answers "How far along am I, and when will it be done?" on any subject (repo, folder, plan, task) — current position, what's left, and a banded ETA, computed fresh via a bounded read-only subagent. `--resume` rebuilds context after a gap (one next move + counter-case). Trigger phrases: "/orient-status", "where are we on this", "how far along", "what's the ETA". Not /orient-map (what changed since I last looked), /orient-gaps (what is stuck or missing), /orient-roadmap (what comes next and what gates it), /investigate (deep facts), /reflect (thinking), or a private arc-state status skill — orient-status SEES and reports NOW.
 visibility: public
 self-improvable: true
 next-skills:
@@ -110,7 +110,7 @@ The ASCII trust trailer with the `⚠️ lean your scrutiny here` line (naming t
 
 - **Not `/investigate`** — that gathers arbitrary deep facts read-only; orient-status computes a fixed *position + distance + forecast* about ongoing work.
 - **Not `/plan-deep-dive`** — that walks an existing plan phase-by-phase for quality; orient-status reads the *current position* against whatever evidence exists (often no plan) and forecasts.
-- **Not `/yas-status`** — that pulls **YAS agent + arc** state for the private YAS system; orient-status orients on *any* subject (repo, folder, plan, task) from universal evidence.
+- **Not a private arc-state status skill** — that kind pulls declared agent and arc state from a private system; orient-status orients on *any* subject (repo, folder, plan, task) from universal evidence.
 - **Not `/reflect`, not `insight-*`** — those THINK / DECIDE; orient-status only SEES and reports NOW. After it, reach for `/plan-create` to act, or a sibling lens (`orient-map` for the shape, `orient-gaps` for what's stuck) **once they ship** — until then the footer routes only to installed skills.
 - **Read-only.** It never mutates state; the one sanctioned reference point (an intent line / last-look anchor) is caller-supplied or harness-held, never written to disk by default.
 

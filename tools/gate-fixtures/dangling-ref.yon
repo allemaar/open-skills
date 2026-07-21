@@ -1,10 +1,10 @@
 @DOC ver=2.0 | id=dangling-ref-demo | title="Gate-fires fixture — dangling ref" | kind=workflow | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Deliberately broken: a mid-flow step consumes ref:ghost that no step ever produces" | audience=agent
-@STAMP ts:ts=2026-06-16T00:00:00Z | src=human | method=manual
+@STAMP ts:ts=2026-06-16T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 @SEC name="Flow"
 @STEP rid=step:one | n:int=1 | op=std:ai.prompt@v1 | args=[task="produce the first value"] | out=[ref:first]
 @STEP rid=step:two | n:int=2 | op=std:ai.prompt@v1 | in=[ref:first] | args=[task="entry-input step (consumes a produced ref)"] | out=[ref:second]
 @STEP rid=step:three | n:int=3 | op=std:ai.prompt@v1 | in=[ref:second,ref:ghost] | args=[task="consume a ref nobody ever produced — a real dataflow hole"] | out=[ref:third]
 
-@STAMP ts:ts=2026-06-16T00:00:00Z | src=human | method=manual
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
