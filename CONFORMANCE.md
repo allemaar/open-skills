@@ -1,12 +1,13 @@
 # YON Conformance
 
-**38 / 38** skills that ship a `protocol.yon` pass YON conformance validation, checked with the public [`@younndai/yon-parser`](https://www.npmjs.com/package/@younndai/yon-parser) using the `exec` profile. 18 skills are Markdown-only.
+**39 / 39** skills that ship a `protocol.yon` pass YON conformance validation, checked with the public [`@younndai/yon-parser`](https://www.npmjs.com/package/@younndai/yon-parser) using the `exec` profile. 18 skills are Markdown-only.
 
 > Run it yourself: `npx @younndai/yon-parser validate skills/<skill>/protocol.yon --profile exec`.
 > Regenerate this table: `node tools/conformance.mjs`. Enforced in CI on every push.
 
 | Skill | Profile | Conformance |
 |---|---|---|
+| `agent-mailbox` | exec | ✅ valid |
 | `ask-gate` | exec | ✅ valid |
 | `audit-coupled-constant` | — | — (md-only) |
 | `budget-check` | exec | ✅ valid |

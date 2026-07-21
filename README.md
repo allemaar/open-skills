@@ -33,6 +33,18 @@ This is a pack of reusable skills for AI coding agents (Claude Code, Codex, and 
 
 ---
 
+### New: [`agent-mailbox`](skills/agent-mailbox/) — agents collaborate through any folder that syncs
+
+Two or more agents, **any harness, any vendor**, working together through a shared folder. No server, no daemon, no database, no SDK — the network is any folder that already syncs: local, Git, OneDrive, Drive, a network share. Messages are plain markdown you can read; in Obsidian the collaboration renders as a clickable causal graph.
+
+It carries an identity lifecycle, group rooms, work claims, trust boundaries, a reserved Handler seat, and an autonomy loop-breaker. The whole manual is: **share a folder, load the skill, point at it.**
+
+It was designed and ratified by two agents from rival vendors negotiating *over the protocol they were building* — which is also how three real defects were caught and converted into contract rules.
+
+Evidence ships with it, split on purpose. [`VALIDATION.md`](skills/agent-mailbox/references/VALIDATION.md) records what was **measured** — local and Git delivery, across two runtimes, with zero false detections — separately from what is still **design-validated**: the sync-share transports are a field test in progress, not a proven claim. [`PRIOR-ART.md`](skills/agent-mailbox/references/PRIOR-ART.md) is the landscape on the same terms, including what the alternatives do better.
+
+---
+
 ## Install
 
 **Two paths.** Clone-and-copy is the default: you read the skill first, and your copy stays frozen until you re-copy it. The plugin marketplace is one line and updates in place. Either way, these are skills your agent runs with your access — so read the ones you'll lean on. That's what the rest of this page is for.
@@ -165,6 +177,7 @@ Most skills are slash commands you invoke when you want them (`/cold-review …`
 /cold-review this branch before I open the PR
 /investigate how auth is wired in this repo
 /orient-status where are we on this?
+/agent-mailbox Mailbox: ./shared-folder/mailbox
 ```
 
 Installed through the plugin marketplace? Same prompts, namespaced — `/open-skills:cold-review …`.
@@ -174,6 +187,7 @@ A few that pay off on their own, no setup:
 | Skill | What it does |
 |---|---|
 | [`cold-review`](skills/cold-review/) | Summons fresh-context reviewer agents to audit your work — evidence-based findings, severity tiers, a score, and a verdict. |
+| [`agent-mailbox`](skills/agent-mailbox/) | Lets two or more agents — any harness, any vendor — collaborate through any shared folder: share a folder, load the skill, point at it. |
 | [`investigate`](skills/investigate/) | Read-only fact-gathering before you change anything — maps files, deps, and patterns. |
 | [`orient-status`](skills/orient-status/) | A fresh "where are we" on any repo, plan, or task — position, what's left, and a banded ETA; `--resume` rebuilds context after a gap. |
 | [`insight-angles`](skills/insight-angles/) | Points lenses at a subject to surface the frames, connections, and assumptions you can't see. |
@@ -185,7 +199,7 @@ A few that pay off on their own, no setup:
 | [`yon-read`](skills/yon-read/) | Reads, interprets, and explains any YON you point it at — the protocols in this pack included. |
 | [`yon-write`](skills/yon-write/) | Drafts and converts content into valid YON — the fastest way to author your own `protocol.yon`. |
 
-Browse [`skills/`](skills/) for the full set of 56 — planning, insight & decision, [orientation](#the-orient--family), [writing for a reader](#the-human--family), priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, diff recap, and YON authoring.
+Browse [`skills/`](skills/) for the full set of 57 — planning, insight & decision, [orientation](#the-orient--family), [writing for a reader](#the-human--family), priming, orchestration, code & architecture, Obsidian/vault, web extraction, git, diff recap, and YON authoring.
 
 ---
 
@@ -198,7 +212,7 @@ Each skill is a folder under [`skills/`](skills/) with up to two files:
 | **`SKILL.md`** | human + agent | what the skill does and when to use it, in plain language |
 | **`protocol.yon`** | the runtime | the same skill's steps, rules, and gates as a **declarative protocol** it can enforce and *you* can audit |
 
-Markdown explains the skill. **YON makes it inspectable and enforceable** — the control flow, the rules (`MUST` / `MUST_NOT`), and the gates (`ABORT` / `WARN`) are named, typed objects, not prose you hope the model follows. Of the 56 skills here, **38 ship a `protocol.yon`**; 18 are Markdown-only.
+Markdown explains the skill. **YON makes it inspectable and enforceable** — the control flow, the rules (`MUST` / `MUST_NOT`), and the gates (`ABORT` / `WARN`) are named, typed objects, not prose you hope the model follows. Of the 57 skills here, **39 ship a `protocol.yon`**; 18 are Markdown-only.
 
 "Enforceable" is a claim you can check: [`GATE-FIRES.md`](GATE-FIRES.md) shows the public parser and the semantic linter *rejecting* deliberately-broken skills — regenerated in CI on every push, so it can't be staged.
 
