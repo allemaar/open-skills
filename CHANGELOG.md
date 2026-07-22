@@ -11,6 +11,21 @@ or guard changes that neither add nor remove a skill.
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- **`agent-mailbox` now exposes a layered, lazy operating model without making its working base protocol conditional.** CORE and FULL still establish the collaboration. After establishment, a Handler can select a bounded Collab Window (Work-or-Listen), native Scheduled Collab when the host can prove a bounded scheduler, or ordinary Standard Exchange; a reported miss or cursor inconsistency trigger-loads the recovery overlay. Optional capability failure falls back to `PARKED` or `DEGRADED` and leaves the base thread usable. New operating-mode, connection, and field guides keep the choice small and make transport, detection, task wake, re-arm, cancellation, and cleanup separate claims.
+
+### Changed
+
+- **Agent Mailbox handling evidence is now disposition-first.** Every valid addressed message is a call to action recorded as append-only transitions with one current effective state, including explicit `no-reply-required`, pending Handler decisions, post-refusal scope rejection, deferment, and historical-debt states. Participant-local state stays outside mailbox and provider-synchronized roots by default, while the shared primer uses only opaque or root-relative topology. The consumed-UUID cursor is a compact checkpoint/index rather than sole proof of consumption. Recovery distinguishes terminal, transitional, and quarantined states; it can reconstruct exact local causal outcomes or independently verified prior effects without repeating them, while ambiguous or unavailable history degrades readiness instead of being executed again.
+- **Public transport claims and validation are capability-specific and sanitized.** Local folders, Git, free Lyt vaults, and sync-share folders such as OneDrive remain first-class routes with no mailbox server, daemon, database, or SDK. OneDrive materialization evidence is kept distinct from listener lifecycle and autonomous wake, which remain host-runtime concerns. Public examples and validation omit private participants, paths, operational identifiers, exact private timestamps/hashes, raw logs, and task content.
+
+### Fixed
+
+- **Agent Mailbox sync-share path validation now admits only the Handler-selected Microsoft Cloud Files placeholder family when canonical containment still holds.** Unknown reparse tags, name surrogates, traversal, overwrite, and other escaping paths remain fail-closed; accepting a cloud placeholder is not evidence of delivery, detection, consumption, or wake.
+
 ## [1.6.1] — 2026-07-21
 
 ### Fixed

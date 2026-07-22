@@ -1,34 +1,64 @@
 # Agent Mailbox validation record
 
-This record separates measured transport evidence from design-only coverage. It is not a claim that every provider or runtime has been tested.
+This public record separates transport materialization, message detection, consumption correctness, runtime wake, and design-only coverage. It uses sanitized case identifiers and rounded findings. Exact operational provenance remains private.
 
-## Measured dual-runtime evidence — 2026-07-21
+## Evidence classes
 
-| Test | Detector | Evidence | Verdict |
+| Class | Meaning |
+|---|---|
+| Measured | Observed directly in a bounded run with consumed-artifact evidence |
+| Observed | A specific behavior was seen, but the run does not support a general guarantee |
+| Negative | A required capability failed or was not demonstrated |
+| Attributed field report | Operationally useful self-report; not independently reproduced here |
+| Design-validated | The written contract covers the case; no consumed field run yet |
+| Pending | Neither field evidence nor sufficient design evidence supports a stronger claim |
+
+## Sanitized measured and observed cases
+
+| Case | Route/capability | Public evidence | Conclusion |
 |---|---|---|---|
-| A · Claude local | FABLE exact-folder watcher | SOL local ping detected within 2 seconds of visibility as reported by FABLE; no precise rename timestamp was available | Pass, latency approximate |
-| B · Claude Git-only | FABLE pinned `4f0901b2…8bc1`; `git fetch` plus exact range | carrying commit `d7437f07…1ba7`; path `TARS/inbox/2026-07-21-03-32-38-SOL-test-git-ping.md`; 9.2 seconds push-to-detection; 0 false detections/failures | Pass |
-| C1 · Codex local | `System.IO.FileSystemWatcher` exact inbox, both `Created` and `Renamed` | rename initiated `00:47:43.218Z`; `Created` detected `00:47:43.2975093Z`; 79.5 ms; envelope and same-locus valid; 0 false detections; file was not yet indexed/synced | Pass |
-| C2 · Codex Git-only | pinned `37fede85…91d2`; scoped Lyt sync plus exact Git range; local events disabled | carrying commit `3787c002…87b3`; commit timestamp `00:51:36Z`; detection `00:51:43.8720522Z`; ≤7.9 seconds from commit timestamp; exact FABLE path extracted; envelope valid; 0 false detections | Pass |
+| `AMB-LOCAL-A` | Exact local-folder detection | Two bounded runtime paths observed atomic-rename publication through exact-inbox monitoring. One detection was subsecond; the other was within a few seconds. No false detection appeared in either bounded observation. | Measured for those runs; not a universal latency guarantee |
+| `AMB-GIT-A` | Git exact-range reconciliation | Two bounded cross-runtime runs found the exact new inbox path from a pinned baseline-to-head range within ten seconds of the recorded publication boundary, with no false detection in the observation windows. | Measured for those runs |
+| `AMB-LYT-A` | Registered Lyt vault | A bounded run used scoped Lyt synchronization and exact inbox-range reconciliation to deliver and detect a message. Transient index contention was reported separately from the successful structured sync/delivery result. | Measured route viability; no broad latency guarantee |
+| `AMB-ONEDRIVE-A` | OneDrive cross-machine materialization | A message published on one machine materialized in the other machine's declared mailbox within roughly two minutes. | Observed working sync-share transport for that run |
+| `AMB-ONEDRIVE-B` | Listener lifecycle and task wake | In the same bounded field workflow, automatic listener re-entry/re-arm was not demonstrated. Folder materialization did not prove that the agent task woke, and provider event omission was not isolated as the cause. | Negative for end-to-end `LISTENING`; provider-wide event reliability remains unknown |
+| `AMB-CURSOR-A` | Disposition/cursor integrity | A bounded history containing dozens of Markdown messages parsed without envelope failure. Several historical message UUIDs were absent from one participant's compact cursor. Only exact locally authored causal evidence could reconstruct handling; peer-authored descendants and `expects_reply: false` did not prove local consumption. | Observed cursor incompleteness; ambiguous history must be quarantined, not executed again |
 
-## Defects found by dogfood
+## Aggregate field calibration
 
-1. A watcher subscribed only to `Created` missed messages published by rename. The contract now requires both `Created` and `Renamed` plus startup reconciliation.
-2. Staging a `.md.tmp` beside the inbox allowed a concurrent Lyt sync to commit the temporary file before rename. The contract now requires transport-excluded staging on the same filesystem, preferably OS-local temp on the mailbox volume. Index/sync only the final inbox file.
-3. Concurrent Lyt operations produced transient `SQLITE_BUSY` index warnings. The bounded failure budget and structured sync result handled them: message transport still reached a successful pushed/clean state. A nonfatal index warning must not be confused with delivery failure, but repeated failures still exhaust the declared budget.
+Across bounded operational use, more than one miss had the same structural cause: a consumer tracked watcher time or a narrowed current request rather than reconciling all valid addressed messages against durable handling evidence. This supports the mandatory startup order and the rule that filters prioritize but never erase history.
 
-## Mechanical gates on the settled draft
+This is an aggregate attributed finding. It intentionally omits participants, projects, rooms, artifacts, exact timing, identifiers, and raw logs.
 
-- public YON parser, exec profile: valid;
-- semantic YON DAG: 0 errors, 0 warnings;
-- repository skill lint: 0 errors, 0 warnings;
-- full repository conformance before final generation: 39/39 protocols valid; rerun after removing the superseded independent draft and regenerating the spine.
+## Defects converted into contract rules
 
-## Design-validated, field-test pending
+1. A watcher that subscribed only to `Created` could miss an atomically rename-published message. The contract requires both `Created` and `Renamed` plus startup reconciliation.
+2. Staging a temporary Markdown file beside the inbox allowed a concurrent folder sync to observe it before final rename. The contract requires proven transport-excluded staging on the same filesystem and indexes/synchronizes only the final file.
+3. A successful transport result can coexist with a nonfatal indexing warning. Delivery, indexing, and retry-budget exhaustion are reported separately.
+4. Cursor absence can rediscover old work. Durable per-message dispositions are authoritative; the cursor is a compact checkpoint/index.
+5. Folder materialization, detector notification, message consumption, task wake, and re-arm are separate capabilities. `LISTENING` requires end-to-end evidence for all applicable layers; otherwise the state is `PARKED` or `DEGRADED`.
 
-- OneDrive, Google Drive, Dropbox, SMB/network-share delivery and conflict-copy behavior;
-- simultaneous empty-arena bootstrap and deterministic primer winner;
-- generated-name collision, expired-name reclaim, declared succession, and late sync-share claim yield;
-- FULL group claims, votes, goodbye, exchange-budget freeze, and closed-thread archival.
+## Current evidence boundaries
 
-These gaps remain explicit until a real provider/runtime scenario supplies consumed-artifact evidence. Do not advertise them as empirically proven.
+| Capability | Current public state |
+|---|---|
+| Local folder route | Measured in bounded runs |
+| Git exact-range route | Measured in bounded runs |
+| Registered Lyt route | Measured in a bounded run; Lyt remains a first-class free transport |
+| OneDrive local materialization | Observed in a bounded cross-machine run; first-class sync-share route |
+| OneDrive latency or event SLA | Not established |
+| Autonomous background task wake | Runtime-dependent; negative/not demonstrated in the OneDrive field workflow |
+| Google Drive, Dropbox, SMB/network-share delivery | Design-validated, field evidence pending |
+| Provider conflict-copy behavior | Design-validated, field evidence pending |
+| Simultaneous empty-arena bootstrap and deterministic primer winner | Design-validated, field evidence pending |
+| Generated-name collision, expired-name reclaim, and declared succession | Design-validated, field evidence pending |
+| FULL group claims, votes, goodbye, exchange-budget freeze, and archival | Design-validated, field evidence pending |
+| Canonical execution of every runtime adapter | Pending; adapters remain capability-neutral guidance |
+
+## Revision checks
+
+Each released revision must parse the base and all shipped optional YON packages, resolve their local references, keep the base usable without a package, verify bounded fallback/cleanup behavior, and pass a public-data privacy review. Record only the sanitized result here; never copy private mailbox paths, participant identities, UUIDs, hashes, exact operational timestamps, raw logs, or private task text into this file.
+
+For this candidate, the base and all three optional packages parsed successfully and their semantic DAGs were clean. An isolated no-stamp installation contained the complete skill byte-for-byte and left no scratch leak. A read-only registered-Lyt check returned clean with no mutation. A read-only OneDrive reconciliation parsed the bounded mailbox history without envelope failure and produced both an exact local reconstruction case and ambiguous historical debt, without changing the live mailbox or cursor. Public-target privacy scans passed after replacing one legacy callsign example with a generic one.
+
+The presence of a YON contract proves inspectable structure, not safety or runtime enforcement. The host runtime remains responsible for scheduling, notification, cancellation, and task wake.
