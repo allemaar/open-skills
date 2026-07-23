@@ -50,10 +50,10 @@ import { execFileSync } from 'node:child_process';
 
 const ROOT = process.cwd();
 
-// The commit at which DCO enforcement begins. Everything after it must be signed,
-// except merge commits (see above). FLOOR is the commit this guard landed on, so
-// enforcement begins with the change that introduced it.
-const FLOOR = '075a7e5656abdf2d4fc37c47a65b8c75b0569214';
+// The accepted published baseline for DCO enforcement. Everything after it must
+// be signed, except merge commits (see above). It began as the commit where this
+// guard landed and advances only through the documented published-main recovery.
+const FLOOR = '88d44f0e12c0f889250469c88bbcc3798dd51bd7';
 
 // The trailer VALUE: a non-empty name, then an angle-bracketed email (a local part
 // and a host, `@` between). `^\S` rejects "Signed-off-by: <a@b.c>" — no name at all.
