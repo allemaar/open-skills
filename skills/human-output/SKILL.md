@@ -4,6 +4,13 @@ description: >
   The contract for writing anything a person will read and decide from — a report, a finding, an answer, a request for a decision. Works on any subject: research, legal, finance, operations, planning, code. Referenced by other skills and invocable directly before a long piece of work. Trigger phrases: "/human-output", "remember I am a person not a machine", "write this for a human", "keep the reader in mind". Not /human-rewrite (repairs text that already exists) or /human-draw (builds a picture) — human-output governs writing as it happens.
 visibility: public
 self-improvable: true
+companions:
+  - path: references/human-contract.md
+    optional: false
+    why: "The required portable family doctrine and style floor; bundled inside this skill."
+  - path: references/tools/human-output-check.mjs
+    optional: false
+    why: "The required mechanical output checker; bundled inside this skill."
 triggers:
   - "/human-output"
   - "remember I am a person not a machine"
@@ -46,7 +53,7 @@ is worse than no contract at all.
 
 Because the reader's stopping point is the disclosure control, and you cannot
 predict it. The doctrine and its test are stated once for the whole family in
-`human-spec/human-contract.md` §2 — read it there. Its consequence here: a
+`references/human-contract.md` §2 — read it there. Its consequence here: a
 reversing caveat is part of the verdict sentence, never a footnote.
 
 ## The shape
@@ -130,7 +137,7 @@ negotiation is *named* rather than silently absent.
 The shorthand went too. The bad version says "ESOP" — employee share option
 pool — and leaves the reader to decode it; the good version writes it out and
 loses nothing. That abbreviation is left unexpanded above **on purpose**: it is
-the defect being illustrated. `tools/human-output-check.mjs` flags it there,
+the defect being illustrated. `references/tools/human-output-check.mjs` flags it there,
 correctly, which is the check working rather than the example failing.
 
 ## The craft layer
@@ -182,13 +189,11 @@ machine block must still be able to decide.
 
 ## Checking
 
-From the `open-skills` repository root, run
-`node tools/human-output-check.mjs <draft-path>` on drafted text before sending.
-From this skill directory, the equivalent command is
-`node ../../tools/human-output-check.mjs <draft-path>`. What it
+Resolve this installed skill's directory, then run
+`node <skill-dir>/references/tools/human-output-check.mjs <draft-path>` on drafted text before sending. The checker and [`human-contract.md`](references/human-contract.md) travel inside this skill folder; no repository-root companion is required. What it
 grades, and the far longer list of what no script can grade — including the
 fact that nothing verifies a number in your prose against a number in your
-source — is the family checker contract, `human-spec/human-contract.md` §3.
+source — is the family checker contract, `references/human-contract.md` §3.
 
 ## How other skills use this
 
@@ -204,7 +209,7 @@ verbose reporting accumulates.
 ## Boundary
 
 This skill is one member of the `human-` family. The routing table — which
-member handles which material — is `human-spec/human-contract.md` §1.
+member handles which material — is `references/human-contract.md` §1.
 
 - Not `/human-rewrite` — the repair pass on text that already exists.
 - Not `/human-draw` — that owns what is inside the fence; this owns the words
@@ -213,7 +218,7 @@ member handles which material — is `human-spec/human-contract.md` §1.
 - Not `/human-merge` — several separate reports into one. A merge is *written*
   to this contract and adds only the cross-report layer on top of it, so route
   the pile there first and return here to write the result. See
-  `human-spec/human-contract.md` §1.
+  `references/human-contract.md` §1.
 - Not `/ask-gate` — that decides *whether* to ask the handler; this governs how
   the asking is written.
 - Not a substitute for having something to say. A well-shaped report of a

@@ -12,7 +12,7 @@ next-skills:
     phrase: "/ask-gate"
     why: "SIP never auto-applies — the proposed diff must be surfaced to the handler, which is exactly the question-triage gate ask-gate governs."
   - skill: insight-skill-gap
-    phrase: "/skill-gap"
+    phrase: "/insight-skill-gap"
     why: "When the in-the-moment signal points to a recurring pattern, escalate to the deliberate batch scan for new or updated skills."
   - skill: new-skill-creator
     phrase: "/new-skill-creator"

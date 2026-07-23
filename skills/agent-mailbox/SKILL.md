@@ -28,7 +28,34 @@ This is an **agent operating protocol**. It is not a broker, queue, daemon, auth
 
 **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date.
 
-Templates: [`references/MESSAGE-TEMPLATE.md`](references/MESSAGE-TEMPLATE.md) and [`references/PRIMER-TEMPLATE.md`](references/PRIMER-TEMPLATE.md). Operating choices: [`references/OPERATING-MODES.md`](references/OPERATING-MODES.md). Transport and runtime diagnosis: [`references/CONNECTION-GUIDES.md`](references/CONNECTION-GUIDES.md). Field guidance: [`references/FIELD-GUIDE.md`](references/FIELD-GUIDE.md). Public evidence and known gaps: [`references/VALIDATION.md`](references/VALIDATION.md).
+First exchange: [`references/QUICKSTART.md`](references/QUICKSTART.md). Templates: [`references/MESSAGE-TEMPLATE.md`](references/MESSAGE-TEMPLATE.md) and [`references/PRIMER-TEMPLATE.md`](references/PRIMER-TEMPLATE.md). Operating choices: [`references/OPERATING-MODES.md`](references/OPERATING-MODES.md). Transport and runtime diagnosis: [`references/CONNECTION-GUIDES.md`](references/CONNECTION-GUIDES.md). Field guidance: [`references/FIELD-GUIDE.md`](references/FIELD-GUIDE.md). Public evidence and known gaps: [`references/VALIDATION.md`](references/VALIDATION.md).
+
+Before the first outbound publication in a room, reopen [`MESSAGE-TEMPLATE.md`](references/MESSAGE-TEMPLATE.md) and copy its complete canonical envelope. Do not recreate `meta.mailbox` from memory. Re-run the same outbound preflight after a protocol upgrade, resume, or validation failure.
+
+### Fast routing
+
+| Situation | Load now |
+|---|---|
+| First simple exchange | Quickstart, message template, base handshake and disposition rules |
+| Existing room | Primer, complete inbox reconciliation, resume rules |
+| Three or more agents or competing claims | FULL profile rules |
+| Local listening or scheduled checks | Matching connection blueprint and exact lazy YON package |
+| Miss, stale readiness, or cursor contradiction | `missed-message-recovery.yon` before re-arm |
+
+### Vocabulary
+
+| Term | Meaning |
+|---|---|
+| **room / mailbox** | The Handler-supplied shared folder and its contained `inbox/` |
+| **message** | One append-only Markdown envelope; every valid addressed message is a CTA |
+| **callsign** | Participant name inside one arena; identity remains self-asserted unless separately verified |
+| **arena** | Opaque shared-room label, not an authority source |
+| **locus** | Participant-local runtime and machine position used for safe state reuse |
+| **primer** | Shared rehydration checkpoint; useful orientation, never authority or proof of inbox freshness |
+| **disposition** | Durable participant-local handling result for one inbound UUID |
+| **cursor** | Compact consumed-UUID index; an accelerator, not handling authority |
+| **claim / pen** | Explicit single-writer ownership of an artifact in FULL or an agreed CORE workflow |
+| **LISTENING** | Proven end-to-end local wake/re-entry, not merely a live process or availability promise |
 
 ## 1. Required input
 
@@ -63,7 +90,9 @@ The base skill is complete by itself. It always owns authority, safe paths, atom
 | [`scheduled-collab@2`](protocols/scheduled-collab.yon) | This participant's Handler selects scheduled checks and the host exposes an authorized bounded native scheduler | Local absolute horizon, maximum checks, no-overlap, failure budget, cancellation | Base exchange plus local `PARKED` |
 | [`missed-message-recovery@1`](protocols/missed-message-recovery.yon) | A miss, cursor inconsistency, or readiness contradiction is reported | Readiness revocation, disposition/cursor audit, exact reconstruction, historical-debt quarantine | Base exchange plus `DEGRADED` |
 
-After establishment, if continuity would materially help and this participant's Handler has not already chosen, present one short recommended-first card from [`OPERATING-MODES.md`](references/OPERATING-MODES.md): Collab Window until a deadline, Standard Exchange, or Scheduled Collab when the native prerequisite exists. The selection configures only this participant. Skip the card for an explicit mode, an obvious one-shot exchange, or an unavailable option. `start`, `stop`, and `toggle` requests run the same local capability preflight; they are not safety bypasses.
+If awaiting handshake traffic would otherwise block the local turn, a participant may arm its own bounded listener before establishment after proving the selected local adapter. This changes no handshake term and creates no peer obligation. Do not claim `LISTENING` until wake or re-entry works end to end; otherwise report `PARKED`.
+
+After establishment or resume, if continuity would materially help and this participant's Handler has not already chosen, present one short recommended-first card from [`OPERATING-MODES.md`](references/OPERATING-MODES.md): Collab Window until a deadline, Standard Exchange, or Scheduled Collab when the native prerequisite exists. The selection configures only this participant. Skip the card for an explicit mode, an obvious one-shot exchange, or an unavailable option. `start`, `stop`, and `toggle` requests run the same local capability preflight; they are not safety bypasses.
 
 The advisory local post-handshake or post-resume settling horizon is ten minutes. Each participant may independently choose another bounded horizon and cadence. Longer operation uses renewable bounded leases with one absolute Handler-approved deadline. This value is neither a protocol constant nor an availability promise. Literal unbounded or “non-stop” execution is unsupported.
 

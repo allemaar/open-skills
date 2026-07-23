@@ -25,7 +25,7 @@ Divergent thinking — generate 3+ implementation options, then converge on a re
 
 > **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date.
 
-> **Brainstorming Protocol — explore before committing.** `/explore` generates alternatives (divergent). `/assess` evaluates them (convergent). `/plan-create` designs the chosen approach.
+> **Brainstorming Protocol — explore before committing.** `/insight-explore` generates alternatives (divergent). `/insight-assess` evaluates them (convergent). `/plan-create` designs the chosen approach.
 
 ## Phase 1 — Divergence
 
@@ -60,7 +60,7 @@ Output:
 
 ## Next Steps
 
-- `/assess` — evaluate the winner in depth before committing
+- `/insight-assess` — evaluate the winner in depth before committing
 - `/plan-create` — design the chosen approach
 
 > **Human output.** This skill's handler-facing output obeys the human-output

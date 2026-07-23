@@ -13,6 +13,15 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+## [1.6.5] — 2026-07-24
+
+### Fixed
+
+- **The DCO guard accepts required sign-off trailers in github-sync flows.** Landed after the v1.6.4 tag; recorded here so the consumable identity of a clone at this commit is unambiguous.
+- **Standalone skill copies now carry their required runtime companions.** The `human-*`, `orient-*`, `budget-check`, and `diff-recap` skills bundle the contracts, schemas, fixtures, and runtime checkers they rely on; repository-only release checks are labeled as such.
+- **Canonical written commands now use shipped folder names.** Frontmatter triggers remain recognition aliases, while generated next-step phrases and prose commands use the portable folder-name form.
+- **Agent Mailbox Work-or-Listen remains participant-local and non-negotiated.** The quickstart separates local listening from peer obligations, and the base protocol permits a bounded pre-establishment listener without changing handshake state.
+
 ## [1.6.4] — 2026-07-23
 
 ### Added

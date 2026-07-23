@@ -50,7 +50,7 @@ The lead agent should do the first decomposition pass locally:
 1. Identify the immediate critical-path work the lead should do directly.
 2. Identify independent helper slices that do not block the next lead action.
 3. Delegate only slices with clear ownership and acceptance criteria.
-4. Keep working locally on non-overlapping work while helpers run.
+4. Resolve whether helpers have isolated workspaces or share the lead's filesystem. Keep working locally only on work that cannot collide with their reads, writes, branch selection, staging, or cleanup.
 5. Inspect helper outputs before integrating or relying on them.
 6. Run or request final verification for the integrated result.
 
@@ -78,6 +78,8 @@ Do not delegate when:
 - MUST give each helper a self-contained brief: goal, scope, owned files, non-goals, context, acceptance criteria, verification, and expected report.
 - MUST tell helpers they are not alone in the codebase and must not revert or overwrite others' changes.
 - MUST keep helper ownership disjoint.
+- MUST resolve and state the runtime's actual workspace boundary before code-changing delegation. A worker tool or vendor name is not proof of isolation.
+- MUST, when helpers share a filesystem or working tree, restrict parallel code changes to disjoint paths with explicit shared-state coordination; otherwise serialize them. Branch switches, staging, commits, generated files, and cleanup are shared mutations even when source-file pens differ.
 - MUST inspect helper output, diffs, or changed paths before accepting.
 - MUST NOT spawn more than 3 helpers without explicit user confirmation.
 - MUST NOT recurse beyond depth 1. Helpers must not spawn their own helpers.
@@ -106,5 +108,4 @@ Final report must include: changed paths, commands run, result, unresolved risks
 
 > **Human output.** This skill's handler-facing output obeys the human-output
 > contract (`human-output/SKILL.md`).
-
 

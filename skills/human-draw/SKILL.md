@@ -4,6 +4,16 @@ description: >
   Renders information as a picture a person reads at a glance. Seven shapes — bar, spine, tree, lane, fork, matrix, small-multiple — drawn in printable ASCII on a monospace grid. Works on any subject: a budget, a harvest, a rota, a roof, a decision. Trigger phrases: "/human-draw", "draw this", "show me this visually", "make a diagram of this", "I can't hold all this in my head". Not /human-output (governs the prose around the figure, and runs alongside this skill rather than before it). Not /human-rewrite (repairs existing text, and hands material here when it turns out relational). This skill builds the text figure that survives copy-paste into any terminal.
 visibility: public
 self-improvable: true
+companions:
+  - path: references/human-contract.md
+    optional: false
+    why: "The required portable family doctrine and style floor; bundled inside this skill."
+  - path: references/tools/human-output-check.mjs
+    optional: false
+    why: "The required mechanical figure-output checker; bundled inside this skill."
+  - path: ../human-output
+    optional: true
+    why: "Optional sibling with the full prose layer; the bundled style floor is the fallback."
 triggers:
   - "/human-draw"
   - "draw this"
@@ -33,7 +43,7 @@ Two facts set every rule below.
 1. **The grid is about 80 columns wide and one character deep.** Cross it and
    the terminal wraps the line, shearing the figure into unreadable halves.
 2. **The reader stops wherever they stop** — the family's stopping-point
-   doctrine, `human-spec/human-contract.md` §2. So a figure must be correct at
+   doctrine, `references/human-contract.md` §2. So a figure must be correct at
    a glance and still correct on a second look.
 
 ## Placement: the rule that matters most
@@ -49,9 +59,11 @@ whole test, and it is the stopping-point doctrine applied to a figure. A figure
 is evidence for a claim someone else already made in words; it is never the
 claim itself.
 
-The verdict above and the caption below are prose, and prose is governed by
-`human-output/SKILL.md` — including what a caption must name (the finding, not
-the subject). This file owns only what is inside the fence.
+The verdict above and the caption below are prose. Use `human-output` when it is
+installed; otherwise use the portable style floor in
+[`references/human-contract.md`](references/human-contract.md), including what
+a caption must name (the finding, not the subject). This file owns only what is
+inside the fence.
 
 ## The default is to draw
 
@@ -128,7 +140,7 @@ a degree sign, and a spelled currency code not a symbol. Spaces only, never
 tabs — tab width varies by terminal.
 
 **One exemption.** A skill that ships its own machine-checked glyph contract
-governs its own figures; `orient-spec/orient-contract.md` is the example.
+governs its own figures; the orient family's bundled glyph contract is the example.
 Absent such a contract, stay in ASCII.
 
 ## Materials: the grid
@@ -648,14 +660,14 @@ The receipt is one line, the last line inside the fence:
 It reports what was carried, not merely that formatting passed. If a check
 fails, fix the figure — do not ship it with an apology attached.
 
-Run `tools/human-output-check.mjs` on any file containing a figure; it grades
+Resolve this installed skill's directory and run `node <skill-dir>/references/tools/human-output-check.mjs <draft-path>` on any file containing a figure; the bundled checker grades
 the mechanical half only, and alignment, ceilings and honesty stay judgement.
-Full checker contract: `human-spec/human-contract.md` §3.
+Full checker contract: `references/human-contract.md` §3.
 
 ## Boundary
 
 This skill is one member of the `human-` family. The routing table — which
-member handles which material — is `human-spec/human-contract.md` §1.
+member handles which material — is `references/human-contract.md` §1.
 
 - Not `/human-output` — that owns the words: the verdict sentence, the register,
   caveat placement, and the machine block. This skill owns what is inside the
@@ -668,7 +680,7 @@ member handles which material — is `human-spec/human-contract.md` §1.
   several *unmerged* reports would encode a combination nobody made: merge
   first, then draw. That skill hands material here when the source structure or
   the joint figure turns out relational or proportional. See
-  `human-spec/human-contract.md` §1.
+  `references/human-contract.md` §1.
 - **Not a rendered chart.** Charting for surfaces where colour, typography and
   a layout engine exist is a different craft with different rules. This skill
   targets a monospace transcript, where position and length are the only

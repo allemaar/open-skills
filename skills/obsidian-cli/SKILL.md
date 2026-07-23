@@ -14,10 +14,10 @@ next-skills:
     phrase: "/obsidian-markdown"
     why: "After opening/creating a note via the live session, write its body in valid Obsidian-flavored markdown"
   - skill: obsidian-bases
-    phrase: "make a base"
+    phrase: "/obsidian-bases"
     why: "Build a .base database view over the notes you just searched or tagged in the vault"
   - skill: json-canvas
-    phrase: "make a canvas"
+    phrase: "/json-canvas"
     why: "Lay the opened notes onto a .canvas as connected nodes"
 ---
 

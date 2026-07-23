@@ -113,7 +113,7 @@ Deliver one of three verdicts:
 
 ## Next Steps
 
-- `/execute` — if verdict is SOLID
+- `/plan-execute` — if verdict is SOLID
 - `/plan-create` — if verdict is RETHINK (redesign needed)
 
 > **Human output.** This skill's handler-facing output obeys the human-output

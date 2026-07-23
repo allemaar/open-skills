@@ -1,0 +1,91 @@
+<svg width="100%" viewBox="0 0 780 560" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>orient-roadmap reference — open-skills forward horizons</title>
+  <desc>The roadmap board for open-skills, north star one orient family with three faces machine-checked. The increment arc: status built, active current the hero, roadmap next. Now shipping: orient-status, orient-map, orient-gaps, value-gate. Gates: full validate green, cold-review pass. Next increment clusters, roadmap slice paramount, then widget parity and ascii floor. The runway: now author, gated-next cold-review, future publish. Cleanup now: stale stamp dates. Deferred and dashed: deterministic renderer, ci wiring. Tier: filled diamond attested, half diamond inferred, dotted diamond guessed.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/>
+    </marker>
+  </defs>
+
+  <!-- Band 0: title + north-star subline -->
+  <g transform="translate(0,0)">
+    <text class="th" x="40" y="20">open-skills — the roadmap</text>
+    <text class="ts" x="40" y="40">in: open-source push  ·  north star: one orient family, three faces, machine-checked</text>
+  </g>
+
+  <!-- Band 1: THE ARC — 3 increment nodes, current the hero. Trailing glyph = TIER
+       (all 3 share provenance roadmap.arc_current=artifact-stated → all ◆); role
+       (built/current/next) is carried by fill-ramp + radius, never by the tier glyph. -->
+  <g transform="translate(0,56)">
+    <text class="ts" x="40" y="12">The arc</text>
+    <g class="c-gray"><circle cx="120" cy="40" r="9"/></g>
+    <text class="ts" x="120" y="68" text-anchor="middle">status ◆</text>
+    <text class="ts" x="120" y="82" text-anchor="middle">built</text>
+    <path d="M131,40 L297,40" fill="none" stroke="var(--color-border-primary)" stroke-width="0.5" marker-end="url(#arrow)"/>
+    <g class="c-teal"><circle cx="310" cy="40" r="13"/></g>
+    <text class="th" x="310" y="72" text-anchor="middle">active ◆</text>
+    <text class="ts" x="310" y="86" text-anchor="middle">current</text>
+    <path d="M325,40 L487,40" fill="none" stroke="var(--color-border-primary)" stroke-width="0.5" marker-end="url(#arrow)"/>
+    <g class="c-gray"><circle cx="500" cy="40" r="9"/></g>
+    <text class="ts" x="500" y="68" text-anchor="middle">roadmap ◆</text>
+    <text class="ts" x="500" y="82" text-anchor="middle">next</text>
+  </g>
+
+  <!-- Band 2: NOW SHIPPING — built chips -->
+  <g transform="translate(0,118)">
+    <text class="ts" x="40" y="12">Now shipping</text>
+    <text class="ts" x="40" y="40">orient-status ◆   orient-map ◆   orient-gaps ◆   value-gate ◆</text>
+  </g>
+
+  <!-- Band 3: GATES strip — 2 boxes -->
+  <g transform="translate(0,184)">
+    <text class="ts" x="40" y="12">Gates</text>
+    <rect x="40" y="22" width="200" height="30" rx="3" fill="none" stroke="var(--color-border-primary)" stroke-width="0.5"/>
+    <text class="ts" x="140" y="41" text-anchor="middle">full validate green ◆</text>
+    <rect x="260" y="22" width="200" height="30" rx="3" fill="none" stroke="var(--color-border-primary)" stroke-width="0.5"/>
+    <text class="ts" x="360" y="41" text-anchor="middle">cold-review pass ◆</text>
+  </g>
+
+  <!-- Band 4: NEXT INCREMENT — cluster chips, paramount first -->
+  <g transform="translate(0,250)">
+    <text class="ts" x="40" y="12">Next increment</text>
+    <text class="th" x="40" y="40">roadmap slice ◐</text>
+    <text class="ts" x="220" y="40">widget parity ◐   ascii floor ◐</text>
+  </g>
+
+  <!-- Band 5: THE RUNWAY — 3 stage boxes now to gated-next to future. Trailing glyph
+       = TIER (all stages share roadmap.runway_stages=inferred → all ◐); gate-kind
+       (now/gated-next/future) is carried by dash + fade, never by the tier glyph. -->
+  <g transform="translate(0,310)">
+    <text class="ts" x="40" y="12">The runway</text>
+    <rect x="40" y="22" width="180" height="34" rx="3" fill="none" stroke="var(--color-border-primary)" stroke-width="0.5"/>
+    <text class="ts" x="130" y="43" text-anchor="middle">now: author ◐</text>
+    <path d="M221,39 L259,39" fill="none" stroke="var(--color-border-primary)" stroke-width="0.5" marker-end="url(#arrow)"/>
+    <rect x="260" y="22" width="200" height="34" rx="3" fill="none" stroke="var(--color-border-primary)" stroke-width="0.5"/>
+    <text class="ts" x="360" y="43" text-anchor="middle">gated-next: cold-review ◐</text>
+    <path d="M461,39 L499,39" fill="none" stroke="var(--color-border-tertiary)" stroke-width="0.5" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+    <rect x="500" y="22" width="180" height="34" rx="3" fill="none" stroke="var(--color-border-tertiary)" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.7"/>
+    <text class="ts" x="590" y="43" text-anchor="middle" opacity="0.7">future: publish ◐</text>
+  </g>
+
+  <!-- Band 6: CLEANUP-NOW / DEFERRED — chips. Trailing glyph = TIER (cleanup_now and
+       deferred both provenance artifact-stated → ◆); the DEFERRED role is carried by
+       dashed + faded chrome, never by the tier glyph. -->
+  <g transform="translate(0,376)">
+    <text class="ts" x="40" y="12">Cleanup-now</text>
+    <rect x="40" y="22" width="220" height="30" rx="3" fill="none" stroke="var(--color-border-primary)" stroke-width="0.5"/>
+    <text class="ts" x="150" y="41" text-anchor="middle">stale STAMP dates ◆</text>
+    <text class="ts" x="40" y="76">Deferred</text>
+    <rect x="40" y="86" width="240" height="30" rx="3" fill="none" stroke="var(--color-border-tertiary)" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.6"/>
+    <text class="ts" x="160" y="105" text-anchor="middle" opacity="0.6">deterministic renderer ◆</text>
+    <rect x="300" y="86" width="180" height="30" rx="3" fill="none" stroke="var(--color-border-tertiary)" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.6"/>
+    <text class="ts" x="390" y="105" text-anchor="middle" opacity="0.6">ci wiring ◆</text>
+  </g>
+
+  <!-- Band 7: learn-once legend -->
+  <g transform="translate(0,500)">
+    <text class="ts" x="40" y="12">Legend</text>
+    <text class="ts" x="40" y="32">tier: ◆ attested · ◐ inferred · ◌ guessed</text>
+    <text class="ts" x="40" y="48">role: filled built · hero current · hollow next-gated · dashed deferred</text>
+  </g>
+</svg>

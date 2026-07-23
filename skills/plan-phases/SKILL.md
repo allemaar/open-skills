@@ -100,7 +100,7 @@ The bad gate has no observable condition. The good gate has three specific pass/
 
 ## Next Steps
 
-- `/execute` — implement the newly phased plan
+- `/plan-execute` — implement the newly phased plan
 - `/double-check` — verify the restructured plan before executing
 
 > **Human output.** This skill's handler-facing output obeys the human-output

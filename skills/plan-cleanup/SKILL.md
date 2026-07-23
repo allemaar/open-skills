@@ -14,7 +14,7 @@ next-skills:
     phrase: "/github-sync"
     why: "Commit and push the cleaned tree once artifacts and tech debt are removed"
   - skill: insight-retro
-    phrase: "/retro"
+    phrase: "/insight-retro"
     why: "Run a retrospective on the completed work now that leftovers are cleared"
   - skill: plan-evolve
     phrase: "/plan-evolve"
@@ -31,14 +31,14 @@ Remove planning artifacts and tech debt after a plan has been executed. No new w
 
 Scan for artifacts left behind by the planning and execution cycle:
 
-**Planning docs** (created by `/plan-create`, `/phase-plan`, `/deep-dive`):
+**Planning docs** (created by `/plan-create`, `/plan-phases`, `/plan-deep-dive`):
 
 - `PLAN.md`
 - `implementation_plan.md`
 - `task.md` (if created as a plan artifact, not a pre-existing project file)
 - Any `*-plan.md` files in the project root
 
-**Execution scaffolding** (created by `/execute` or setup steps):
+**Execution scaffolding** (created by `/plan-execute` or setup steps):
 
 - Temp files, stub files, or files explicitly marked as temporary in the plan
 - Any file whose sole purpose was to scaffold or support the plan run

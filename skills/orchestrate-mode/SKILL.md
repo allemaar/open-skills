@@ -1,7 +1,7 @@
 ---
 name: orchestrate-mode
 description: >
-  Activate orchestrator mode in the current session: the lead agent dispatches isolated worker subagents and does not execute concrete work directly. Trigger on /orchestrate-mode, "become an orchestrator", "orchestrator mode", "delegate everything", or "do not execute". Use multi-agent-mode instead when the lead agent should still work directly while delegating helper slices.
+  Activate orchestrator mode in the current session: the lead agent dispatches governed worker subagents and does not execute concrete work directly. Trigger on /orchestrate-mode, "become an orchestrator", "orchestrator mode", "delegate everything", or "do not execute". Use multi-agent-mode instead when the lead agent should still work directly while delegating helper slices.
 disable-model-invocation: true
 visibility: public
 triggers:
@@ -28,11 +28,12 @@ Switch the current session into pure orchestrator behavior. The lead agent coord
 
 ## Platform mapping
 
-Use the isolated worker mechanism available in the current runtime:
+Resolve the workspace behavior the current runtime actually proves:
 
 - Claude Code: use the `Agent` tool with `isolation: "worktree"` for concrete worker tasks.
-- Codex: use `spawn_agent` with isolated/forked worker context for concrete worker tasks. For code-changing workers, instruct them to edit in their isolated workspace and report changed paths.
-- Other runtimes: use the closest isolated-workspace worker mechanism. If no isolation exists, stop and report that orchestrator mode cannot safely execute concrete work.
+- Codex and other runtimes: inspect the surfaced worker contract. Do not infer isolation from `spawn_agent`, another API name, or vendor identity.
+- Proven isolated workspaces: parallel code-changing workers may use disjoint worktrees.
+- Shared filesystem or working tree: read-only work may run concurrently. Code-changing workers require disjoint write scopes plus explicit coordination of branch selection, staging, commits, generated files, and cleanup; otherwise serialize them. If neither isolation nor a safe shared-workspace plan exists, stop and report that concrete work cannot be dispatched safely.
 
 ## Activation announcement
 
@@ -40,7 +41,7 @@ When invoked, immediately announce:
 
 > Orchestrator mode active.
 >
-> I will dispatch only, not execute. Workers will run in isolated workspaces using this runtime's worker mechanism. I will inspect worker output before accepting it. Max 3 parallel workers without confirmation; depth limit 1. To exit, say "exit orchestrator mode" or switch to another mode.
+> I will dispatch only, not execute. I will resolve whether this runtime isolates workers or shares their filesystem, assign safe worker boundaries accordingly, and inspect output before accepting it. Max 3 parallel workers without confirmation; depth limit 1. To exit, say "exit orchestrator mode" or switch to another mode.
 
 Then ask for the work item if none was provided.
 
@@ -53,12 +54,13 @@ Then ask for the work item if none was provided.
 
 ## Rules
 
-- MUST spawn an isolated worker for any concrete work action: file edits, code execution, multi-step implementation, migrations, commits, or test fixing.
+- MUST spawn a worker under a proven safe workspace boundary for any concrete work action: file edits, code execution, multi-step implementation, migrations, commits, or test fixing.
 - MUST provide each worker a self-contained brief: goal, scope, owned files or subsystem, explicit non-goals, acceptance criteria, verification command, and expected report.
-- MUST state the worker workspace path or isolation target when spawning a worker.
+- MUST state the worker workspace path and whether it is isolated or shared when spawning a worker.
 - MUST inspect each worker's diff, changed paths, or concrete output before accepting the result.
 - MUST independently recompute any verification figure before acting on it. Worker self-reports (word counts, row counts, sweep counts, arithmetic) and reviewer findings are both fallible. Recompute, do not relay.
 - MUST keep worker ownership disjoint. Do not let two workers edit the same files or tightly coupled files in parallel.
+- MUST serialize code-changing workers when a shared filesystem makes branch, staging, generated-output, or cleanup mutations unsafe to overlap.
 - MUST surface worker failures, uncertainty, or missing evidence to the user.
 - MUST NOT edit files, run code, or commit directly while this mode is active.
 - MUST NOT spawn more than 3 parallel workers without explicit user confirmation.
@@ -84,7 +86,7 @@ Final report must include: changed paths, commands run, result, cross-scope refe
 For code-changing workers, add runtime-specific workspace checks:
 
 - Verify the current branch and workspace before editing.
-- Before the first write, confirm you are operating inside your assigned isolated workspace, not the main repository. An isolated workspace can share a long path prefix with the main repository, so a slightly wrong path silently writes to the main repository instead. After writing each file, verify the written path resolves inside your isolated workspace.
+- Before the first write, confirm whether the assigned workspace is isolated or shared. In an isolated workspace, verify every written path resolves inside it. In a shared workspace, recheck branch and status before each mutation and stay inside the assigned disjoint pen.
 - Check for unexpected existing changes and report them before touching files.
 - Commit or clearly preserve completed work according to the orchestrator's instructions.
 - Before any cleanup, inspect for uncommitted changes and refuse destructive cleanup if work is present.
@@ -96,11 +98,11 @@ For mass-refactor workers, add to the "Do not touch" list by default:
 
 ## Wave consolidation
 
-When workers run in isolated worktrees (`isolation: "worktree"` on Claude Code, equivalent on other runtimes), each worktree is created from the latest commit. Uncommitted changes on `main` from a prior wave are NOT visible to a freshly spawned worker.
+When workers run in proven isolated worktrees (`isolation: "worktree"` on Claude Code, or another runtime mechanism with equivalent evidence), each worktree is created from a commit. Uncommitted changes in another worktree are not visible to a freshly spawned worker.
 
 This means: if Wave 2 depends on filesystem state Wave 1 produced (a directory rename, a regenerated file, an updated path constant), Wave 2 workers spawning from `main`'s HEAD will not see those changes unless the orchestrator consolidates them first.
 
-Pattern: between waves, spawn a NON-isolated consolidation worker whose job is to:
+For isolated worktrees, the integration pattern between waves is to spawn a consolidation worker whose job is to:
 
 1. Generate a patch from each prior-wave worker's worktree:
    ```bash
@@ -118,7 +120,7 @@ Pattern: between waves, spawn a NON-isolated consolidation worker whose job is t
 4. Run codegen scripts on main when the next wave's edits depend on regenerated output from prior waves (e.g., `npm run sync:domains` after a spec-directory rename).
 5. Leave changes staged but uncommitted unless the user has approved per-wave commits.
 
-The consolidation worker is non-isolated by necessity — its job is to merge worktrees back to main. Treat it as a distinct worker spawn, not as direct orchestrator action.
+The consolidation worker targets the integration worktree by necessity. Treat it as a distinct worker spawn, not as direct orchestrator action. In a runtime where all workers already share one worktree, do not run this patch-consolidation recipe; serialize shared Git mutations and integrate directly from the assigned pens.
 
 Skip the consolidation step between waves only when wave scopes are fully disjoint AND no later wave depends on filesystem state any earlier wave produced.
 
@@ -148,5 +150,4 @@ Use `handoff` instead when the goal is to transfer the whole task to a fresh ses
 
 > **Human output.** This skill's handler-facing output obeys the human-output
 > contract (`human-output/SKILL.md`).
-
 

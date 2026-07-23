@@ -10,13 +10,13 @@ triggers:
   - "embed this image/note"
 next-skills:
   - skill: obsidian-cli
-    phrase: "open this note in Obsidian"
+    phrase: "/obsidian-cli"
     why: "Open, search, or reload the note you just authored in a live Obsidian session"
   - skill: obsidian-bases
-    phrase: "make a base"
+    phrase: "/obsidian-bases"
     why: "Query the frontmatter properties you just set with a .base table or card view"
   - skill: json-canvas
-    phrase: "make a canvas"
+    phrase: "/json-canvas"
     why: "Wire the new notes together visually on a .canvas"
 ---
 

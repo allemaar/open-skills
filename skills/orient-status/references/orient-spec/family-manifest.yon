@@ -1,0 +1,37 @@
+@DOC ver=2.0 | id=family-manifest | title="orient- family manifest — single source of truth for the footer" | kind=spec | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Declare the orient- family roster, each skill's gate_field and trigger and one-line does, the modes, and the evidence-derived reason_code routing the footer emits. Adding, cutting, or renaming a skill is a one-file edit here." | audience=agent
+@STAMP ts:ts=2026-07-07T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@NOTE text="Apache-2.0. Reserved-tag emission (no custom tags, no domain), conformant to orient-record. Every orient- bundle reads this manifest to fill family used / suggested_next / reason_code / all; the footer renders it (human text always, --family visual opt-in, agent reads the enum, automator ignores it)."
+@NOTE text="Two cross-cutting non-skills are NOT routable: identity is the one-line banner prepended to every output; confidence is the per-field tier layer on every field."
+
+@SEC name="Roster"
+@NOTE text="STATUS: orient-status, orient-map, orient-gaps, and orient-roadmap are all shipped. The footer suggests only an installed (status=shipped) skill; an unwritten-decision reason_code still routes OUT to an installed durable-capture skill (handoff or decision-capture) when the consumer has one, else a prose hint."
+@CFG id=skill.orient-status | set=[does="status quo — position / whats-left / ETA band",gate_field=gate_status,trigger="where are we / status / how far / ETA",modes="resume",tier=skill,status=shipped]
+@CFG id=skill.orient-map | set=[does="the shape — done to here to next path / tree on a branch / delta since last look",gate_field=gate_status,primary_field=on_branch,trigger="show the map / what changed / how deep down a branch",modes="none",tier=skill,status=shipped]
+@CFG id=skill.orient-gaps | set=[does="the stall surface — blockers / open forks / loose-ends / silent gaps",gate_field=gate_status,trigger="what is stuck / not solid / not done / can I trust it",modes="audit",tier=skill,status=shipped]
+@CFG id=skill.orient-roadmap | set=[does="the horizons — increment arc / now-shipping / gates / next-increment clusters / runway lanes / deferred",gate_field=gate_status,primary_field=arc_current,trigger="show the roadmap / the runway / what's next / the plan",modes="none",tier=skill,status=shipped]
+
+@SEC name="Modes — views over a skill's sweep, not skills"
+@MAP name=modes | pairs=["orient-status --resume"->"came back lost the thread: resume-pointer + one next move + counter-case","orient-gaps --audit"->"do not trust the orientation: claim-vs-evidence + gamed-signal disclosure"]
+
+@SEC name="Reason-code routing — evidence-derived suggested_next"
+@NOTE text="family_suggested_next is a union: a skill-ref, a mode-ref, or an internal-action. stay+elicit and staleness-short-circuit are internal actions (not skills) — intentional, not routable successors."
+@NOTE text="A skill never suggests ITSELF: when the evidence-derived reason_code routes to the emitting skill (e.g. orient-gaps finds blockers_present, which routes to orient-gaps), fall through to the next best installed skill — plan-create to act on the blockers — never a self-loop."
+@MAP name=routing | pairs=["blockers_present"->"orient-gaps","claim_evidence_mismatch"->"orient-gaps --audit","intent_absent"->"stay+elicit","lost_thread"->"orient-status --resume","subject_unchanged"->"staleness-short-circuit","unwritten_decision"->"an installed durable-capture skill, else a prose hint"]
+
+@SEC name="Footer render contract"
+@RULE rid=rule:footer-faces | lvl=MUST | when="rendering the family footer" | then="give a human a one-line text footer always; the --family visual map is opt-in; an agent reads suggested_next plus reason_code; an automator ignores it"
+@RULE rid=rule:footer-evidence | lvl=MUST | when="choosing suggested_next" | then="derive reason_code from the same sweep evidence and never a static for-X-use-Y table; route an unwritten decision OUT to a durable-capture skill"
+@RULE rid=rule:footer-installed | lvl=MUST | when="the footer suggests a next skill" | then="suggest only an installed skill whose roster status is shipped and otherwise fall back to a prose hint or plan-create and never an unbuilt sibling"
+@RULE rid=rule:one-file | lvl=MUST | when="adding or cutting or renaming a family skill" | then="edit this manifest only because every skill reads it so no N-by-N cross-reference update is needed"
+
+@SEC name="Render-face — which face renders per consumer"
+@NOTE text="The bundle is one record, three faces; WHICH face renders is gated by handler_type (a render-time input, caller-supplied else inferred), the runtime, and nominal-vs-exception — not a fixed always-show-the-dashboard. No schema bump: handler_type is a render-time input (not a persisted record field) — the same consumer-role signal the footer faces already select on. Full table, dark-cockpit, and the interactivity rails are in family-behaviors.md sections 6 and 7."
+@MAP name=render-face | pairs=["agent"->"yon-record-only","human+claude+tool+explicit"->"widget+ascii-twin","human+auto-loop+nominal"->"collapsed-one-line","human+other-runtime-or-no-tool"->"ascii-twin","automator"->"ignores-visual","indeterminate"->"ascii-twin-fail-closed"]
+@RULE rid=rule:render-face | lvl=MUST | when="choosing the visual face" | then="render per the render-face map keyed on handler_type and runtime and nominal-vs-exception, an agent consumer gets the yon record only because a widget is wasted tokens it cannot read, the widget is the human-on-claude face not merely the rich face, when handler_type is neither supplied nor confidently inferred degrade to the ascii twin fail-closed"
+@RULE rid=rule:ascii-floor | lvl=MUST | when="emitting any face" | then="the ascii twin is always emitted and information-complete and is the only render in a no-svg channel, the widget is a claude-code-only enhancement over it never a replacement"
+@RULE rid=rule:widget-parity | lvl=MUST | when="emitting a widget plus its ascii twin" | then="both are projections of one node-structure; the source repository's optional orient-roundtrip release guard checks that every node and change and zone label appears in both faces with word-boundary matching and that the widget carries the tier glyphs and obeys the chrome and a11y rules; installed execution retains the emitter obligation without requiring that repository-only guard; edges and per-field tiers remain emitter obligations and are not machine-compared between faces; parity is not a yon-validate guarantee"
+@RULE rid=rule:widget-disabled | lvl=MUST | when="a render is broken or the host lacks a defined css var" | then="a single contract switch degrades the skill to the ascii twin with no code change"
+@RULE rid=rule:interactivity-rails | lvl=MUST | when="a widget offers an interactive sendPrompt control" | then="R1 exist only when handler_type is human and the visualize tool is present otherwise static, R2 invoke only an installed real action, R3 low-confidence elements are non-interactive and degraded, R4 never fire unprompted and hard-off in auto-loop, R5 compose a chat message and never execute a side-effect"
+
+@STAMP ts:ts=2026-07-23T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

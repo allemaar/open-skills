@@ -13,10 +13,10 @@ next-skills:
     phrase: "/obsidian-markdown"
     why: "A base queries note frontmatter — author/fix the notes' properties so the view populates correctly."
   - skill: obsidian-cli
-    phrase: "search my vault"
+    phrase: "/obsidian-cli"
     why: "Open and refresh the new .base in a running Obsidian to confirm the view renders."
   - skill: json-canvas
-    phrase: "make a canvas"
+    phrase: "/json-canvas"
     why: "Pair the tabular base with a visual canvas view over the same vault data."
 ---
 

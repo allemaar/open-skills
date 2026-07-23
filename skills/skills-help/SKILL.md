@@ -14,7 +14,7 @@ next-skills:
     phrase: "/new-skill-creator"
     why: "When the library menu shows no skill covers the need, create the missing one."
   - skill: insight-skill-gap
-    phrase: "/skill-gap"
+    phrase: "/insight-skill-gap"
     why: "After browsing the roster and finding a hole, run the gap analysis to decide what to add or update."
 ---
 

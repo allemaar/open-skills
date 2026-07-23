@@ -12,7 +12,8 @@
 //   3. VALIDATES that skill's declarative protocol.yon with the public YON parser.
 // No build step or local npm install. This file itself uses Node built-ins only.
 // Validation is a separate execution boundary: the first `npx` run may download
-// and execute the pinned public parser package; `--no-validate` skips it entirely.
+// and execute the public parser package (pinned to major 2, not a fixed version or
+// hash); `--no-validate` skips it entirely.
 // Stamping is local-only — it shells out to `git` in THIS clone and phones nowhere.
 //
 // Usage:
@@ -79,17 +80,37 @@ function assertChainIsReal(dir, label) {
 // removing: that is how a wipe reaches source outside the delete root. Walk the tree
 // and refuse if any descendant is a link, before rmSync is allowed to run.
 function assertNoNestedLinks(root) {
-  const stack = [path.resolve(root)];
+  const abs = path.resolve(root);
+  let rootState;
+  try { rootState = fs.lstatSync(abs); } catch (e) {
+    die(`could not inspect ${abs} before recursive removal (${e.code || e.message}) — refusing to continue.`);
+  }
+  if (rootState.isSymbolicLink() || !rootState.isDirectory()) {
+    die(`${abs} is not a real directory — refusing recursive removal.`);
+  }
+  let rootReal;
+  try { rootReal = fs.realpathSync(abs); } catch (e) {
+    die(`could not resolve ${abs} before recursive removal (${e.code || e.message}) — refusing to continue.`);
+  }
+  if (path.resolve(rootReal) !== abs) {
+    die(`${abs} resolves to ${rootReal} — refusing recursive removal through a redirected root.`);
+  }
+
+  const stack = [abs];
   while (stack.length) {
     const dir = stack.pop();
     let entries;
-    try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { continue; }
+    try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch (e) {
+      die(`could not enumerate ${dir} before recursive removal (${e.code || e.message}) — refusing to continue.`);
+    }
     for (const e of entries) {
       const full = path.join(dir, e.name);
       let st;
-      try { st = fs.lstatSync(full); } catch { continue; }
+      try { st = fs.lstatSync(full); } catch (err) {
+        die(`could not inspect ${full} before recursive removal (${err.code || err.message}) — refusing to continue.`);
+      }
       if (st.isSymbolicLink()) {
-        die(`${full} is a symlink/junction nested inside the skill folder being replaced.\n` +
+        die(`${full} is a symlink/junction nested inside a recursively managed skill folder.\n` +
           `        Refusing to delete recursively through it — it can point outside this dir.\n` +
           `        Remove the link yourself (rmdir / unlink the link only), then re-run.`);
       }
@@ -113,6 +134,27 @@ function loadCatalog() {
   for (const s of skills) {
     if (!s || typeof s.name !== "string" || !NAME_RE.test(s.name)) {
       die(`refusing a catalog entry with an unsafe skill name: ${JSON.stringify(s && s.name)}`);
+    }
+    if (s.companions !== undefined && !Array.isArray(s.companions)) {
+      die(`refusing catalog companions for ${s.name}: expected a list.`);
+    }
+    const skillRoot = path.resolve(ROOT, "skills", s.name);
+    for (const c of s.companions || []) {
+      if (!c || typeof c.path !== "string" || typeof c.optional !== "boolean" ||
+          typeof c.why !== "string" || !c.why.trim() || path.isAbsolute(c.path)) {
+        die(`refusing malformed companion metadata for ${s.name}: ${JSON.stringify(c)}`);
+      }
+      const target = path.resolve(skillRoot, c.path);
+      const repoRoot = path.resolve(ROOT);
+      if (target !== repoRoot && !target.startsWith(repoRoot + path.sep)) {
+        die(`refusing companion path that escapes this repository: ${s.name}/${c.path}`);
+      }
+      if (!c.optional && target !== skillRoot && !target.startsWith(skillRoot + path.sep)) {
+        die(`required companion must travel inside skills/${s.name}: ${c.path}`);
+      }
+      if (!fs.existsSync(target)) {
+        die(`catalog companion is missing for ${s.name}: ${c.path}`);
+      }
     }
     m.set(s.name, s);
   }
@@ -273,24 +315,102 @@ function installOne(name, catalog, runtimes, { noValidate, noStamp, force }, fai
       try { real = path.resolve(fs.realpathSync(dest)); }
       catch { refuseLink(); } // dangling/blocked link → can't prove it's safe → refuse
       if (real !== path.resolve(dest)) refuseLink(); // parent-component link, or junction lstat missed
-      // Defense-in-depth: even with the checks above, never delete outside the runtime
-      // skills dir. Unreachable while NAME_RE holds; backstops a future weakening of it.
+      // Defense-in-depth: even with the checks above, never move/delete outside the
+      // runtime skills dir. Unreachable while NAME_RE holds; backstops a future weakening.
       if (!(real + path.sep).startsWith(path.resolve(dir) + path.sep)) {
-        die(`${dest} resolves outside the ${rtName} skills dir — refusing to delete.`);
+        die(`${dest} resolves outside the ${rtName} skills dir — refusing to replace.`);
       }
-      // Nested reparse points are the remaining hazard: the checks above prove the
-      // ROOT of the delete is real, not that nothing inside it escapes.
+      // Prove the known-good tree contains no redirect before it can be moved aside
+      // and later removed. The candidate is prepared first; this copy stays live.
       assertNoNestedLinks(real);
-      fs.rmSync(real, { recursive: true, force: true });
     }
     // Guard the write path itself, not only the pre-existing-destination case: when
     // nothing is there yet, everything above still has to be a real directory.
     assertChainIsReal(dir, rtName);
     fs.mkdirSync(dir, { recursive: true });
-    fs.cpSync(src, dest, { recursive: true }); // copy-default, never a symlink
-    if (!noStamp) stampCopy(dest, name);
+
+    // Crash leftovers from an interrupted install are ours by naming convention,
+    // but not proven safe. Surface them; never silently reuse or delete them.
+    const leftovers = fs.readdirSync(dir).filter((e) =>
+      e.startsWith(`.${name}.staging-`) || e.startsWith(`.${name}.old-`));
+    if (leftovers.length) {
+      die(`${rtName}: leftover staging/backup dirs from an interrupted install:\n` +
+        `        ${leftovers.join(", ")}\n` +
+        `        Inspect and remove them inside ${dir}, then re-run.`);
+    }
+
+    // Stage -> validate -> swap. Staging lives beside the destination, so all
+    // renames stay on one volume. Collision resistance is not treated as proof:
+    // each leaf must still be absent before use.
+    const tag = `${process.pid}-${Date.now().toString(36)}`;
+    const staging = path.join(dir, `.${name}.staging-${tag}`);
+    const oldDir = path.join(dir, `.${name}.old-${tag}`);
+    for (const ownedLeaf of [staging, oldDir]) {
+      let leafState = null;
+      try {
+        leafState = fs.lstatSync(ownedLeaf);
+      } catch (e) {
+        if (e?.code !== "ENOENT") {
+          die(`could not prove ${ownedLeaf} is absent (${e.code || e.message}) — refusing to write.`);
+        }
+      }
+      if (leafState) die(`${ownedLeaf} already exists — refusing to write through or replace it.`);
+    }
+
+    fs.cpSync(src, staging, { recursive: true }); // copy-default, never a link to dest
+    assertNoNestedLinks(staging);
+    for (const c of skill.companions || []) {
+      if (!c.optional && !fs.existsSync(path.resolve(staging, c.path))) {
+        die(`${name}: required bundled companion was not copied: ${c.path}`);
+      }
+    }
+    if (!noStamp) stampCopy(staging, name);
+    if (!noValidate) {
+      const preFailures = failures.length;
+      validate(staging, skill, rtName, failures);
+      if (failures.length > preFailures) {
+        assertNoNestedLinks(staging);
+        fs.rmSync(staging, { recursive: true, force: true });
+        console.error(`  ${name} -> ${rtName}: validation failed in staging; existing install untouched.`);
+        continue;
+      }
+    }
+
+    let movedOld = false;
+    if (st) {
+      try {
+        fs.renameSync(dest, oldDir);
+        movedOld = true;
+      } catch (e) {
+        die(`${name} -> ${rtName}: could not move the existing install aside (${e.code || e.message}). ` +
+          `The existing install remains active; the staged candidate remains at ${staging} for inspection.`);
+      }
+    }
+    try {
+      fs.renameSync(staging, dest);
+    } catch (e) {
+      let restored = false;
+      if (movedOld) {
+        try { fs.renameSync(oldDir, dest); restored = true; } catch {}
+      }
+      try {
+        assertNoNestedLinks(staging);
+        fs.rmSync(staging, { recursive: true, force: true });
+      } catch {}
+      die(`${name} -> ${rtName}: swap failed (${e.code || e.message}). ` +
+        (movedOld ? (restored ? "Existing install restored." :
+          `RESTORE ALSO FAILED — the previous copy is intact at ${oldDir}.`) :
+          "Nothing was installed."));
+    }
+    if (movedOld) {
+      try {
+        assertNoNestedLinks(oldDir);
+        fs.rmSync(oldDir, { recursive: true, force: true });
+      } catch {
+        console.error(`  warning: could not remove backup ${oldDir} — the new copy is in place; remove the backup manually.`);
+      }
+    }
     console.log(`  copied ${name} -> ${rtName}`);
-    if (!noValidate) validate(dest, skill, rtName, failures);
   }
 }
 
@@ -328,10 +448,9 @@ function main() {
   // validate is not "Done", and printing that word above the failure reads as reassurance.
   // The exit code stays nonzero — it is the only machine-readable signal this tool emits.
   if (failures.length) {
-    die(`${failures.length} skill(s) copied but FAILED validation: ${failures.join(", ")}.\n` +
-        `        Those copies are on disk and your agent will load them as they are. The parser\n` +
-        `        printed why above — read that against the copied protocol.yon. Until you have,\n` +
-        `        remove the copies: a protocol that fails the weakest check is not one to trust.`);
+    die(`${failures.length} staged skill candidate(s) FAILED validation: ${failures.join(", ")}.\n` +
+        `        Failed candidates were not installed; any previous copies remain in place.\n` +
+        `        The parser printed why above — inspect the source protocol.yon before retrying.`);
   }
   console.log("Done. Copied folders are frozen snapshots — they change only when you re-copy.");
   console.log("      After a git pull, diff your copy against this clone before re-running with");

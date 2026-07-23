@@ -1,7 +1,6 @@
 {
-  "$schema": "https://yon.younndai.com/open-skills-catalog.schema.json",
   "name": "open-skills",
-  "version": "1.6.4",
+  "version": "1.6.5",
   "homepage": "https://allemaar.com",
   "repository": "https://github.com/allemaar/open-skills",
   "generated": "2026-07-23",
@@ -172,6 +171,7 @@
           "why": "Use a one-shot transfer when an ongoing mailbox is unnecessary."
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -198,6 +198,7 @@
         "mode-card-contextual=MUST",
         "explicit-mode-no-nag=MUST_NOT",
         "package-read=MUST",
+        "pre-establishment-listen=MUST",
         "local-mode-unilateral=MUST",
         "peer-duty-is-cta=MUST",
         "capability-fallback=MUST",
@@ -273,7 +274,7 @@
         "recompute=MUST",
         "room-visibility=MUST"
       ],
-      "steps": 13,
+      "steps": 14,
       "install": {
         "copy": "cp -r skills/agent-mailbox <skills-dir>/agent-mailbox",
         "validate": "npx @younndai/yon-parser validate <skills-dir>/agent-mailbox/protocol.yon --profile exec"
@@ -298,7 +299,7 @@
         },
         {
           "skill": "insight-assess",
-          "phrase": "/assess",
+          "phrase": "/insight-assess",
           "why": "Evaluate the specific options behind an escalated decision so the handler's call is grounded."
         },
         {
@@ -307,6 +308,7 @@
           "why": "If the question is the handler's but you want to surface your own assumptions first, pause before phrasing it."
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -349,10 +351,11 @@
         },
         {
           "skill": "insight-critique",
-          "phrase": "/critique",
+          "phrase": "/insight-critique",
           "why": "If the audit surfaces ambiguous sites (intentionally different vs. drift), a focused critique on the specific divergence resolves it before commit."
         }
       ],
+      "companions": [],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -389,6 +392,13 @@
           "skill": "reflect",
           "phrase": "/reflect",
           "why": "On NO-GO, pause to decide whether to trim the wave, wait for the window, or proceed anyway."
+        }
+      ],
+      "companions": [
+        {
+          "path": "references/tools/budget-check.mjs",
+          "optional": false,
+          "why": "The required bounded ccusage wrapper and verdict engine; bundled inside this skill."
         }
       ],
       "hasProtocol": true,
@@ -430,7 +440,7 @@
         {
           "skill": "orchestrate-mode",
           "phrase": "/orchestrate-mode",
-          "why": "If the caller chose pure fan-out, switch to the dispatch-only mode that governs isolated workers."
+          "why": "If the caller chose pure fan-out, switch to the dispatch-only mode that governs worker boundaries and integration."
         },
         {
           "skill": "ask-gate",
@@ -438,6 +448,7 @@
           "why": "The sibling protocol — once venue is routed, triage any handler-facing question the run raises."
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -455,7 +466,8 @@
         "depth-1-brief=MUST",
         "no-reentry=MUST_NOT",
         "caller-kind=MUST",
-        "inspect=MUST"
+        "inspect=MUST",
+        "worker-boundary=MUST"
       ],
       "steps": 6,
       "install": {
@@ -510,6 +522,7 @@
           "why": "Repair the readability of the single synthesised review once it exists — it stays long and reviewer-voiced — without softening a severity or dropping a caveat. Hand it the one synthesis, never the separate reviewer reports."
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -570,6 +583,7 @@
           "why": "Persist the cleaned article as a properly-formatted Obsidian note once it is extracted."
         }
       ],
+      "companions": [],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -609,6 +623,7 @@
           "why": "Find refactors that deepen the modules behind the interface"
         }
       ],
+      "companions": [],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -644,6 +659,18 @@
           "skill": "handoff",
           "phrase": "/handoff",
           "why": "Turn the recap into an inter-session brief — it already carries the attested change-summary the next agent needs."
+        }
+      ],
+      "companions": [
+        {
+          "path": "references/tools/diff-recap-check.mjs",
+          "optional": false,
+          "why": "The required value and git-numstat gate; bundled inside this skill."
+        },
+        {
+          "path": "references/render-face-contract.md",
+          "optional": false,
+          "why": "The required self-contained render-face behavior used by this skill."
         }
       ],
       "hasProtocol": true,
@@ -690,7 +717,7 @@
       "nextSkills": [
         {
           "skill": "insight-assess",
-          "phrase": "/assess",
+          "phrase": "/insight-assess",
           "why": "Weigh the surviving candidates against each other once availability is settled."
         },
         {
@@ -704,6 +731,7 @@
           "why": "A registration is a spend and irreversible — quality-gate the question before asking the handler to commit."
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -765,6 +793,7 @@
           "why": "If the re-check raised doubt, stress-test the output from multiple adversarial POVs"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -825,6 +854,7 @@
           "why": "When the destination is a person rather than an agent — make the signal readable while provenance, confidence and stated gaps all survive the pass"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -869,7 +899,7 @@
       "nextSkills": [
         {
           "skill": "insight-retro",
-          "phrase": "/retro",
+          "phrase": "/insight-retro",
           "why": "After the push lands, run a retrospective on what shipped this session"
         },
         {
@@ -878,6 +908,7 @@
           "why": "Hand the remaining work off to a fresh session now that committed state is the baseline"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -941,6 +972,7 @@
           "why": "Dispatch the packaged tasks to isolated worker agents from the current session"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -992,6 +1024,7 @@
           "why": "Commit and push the work the cold agent produced"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -1059,6 +1092,23 @@
           "why": "The figure made a decision visible; now it needs weighing rather than drawing."
         }
       ],
+      "companions": [
+        {
+          "path": "references/human-contract.md",
+          "optional": false,
+          "why": "The required portable family doctrine and style floor; bundled inside this skill."
+        },
+        {
+          "path": "references/tools/human-output-check.mjs",
+          "optional": false,
+          "why": "The required mechanical figure-output checker; bundled inside this skill."
+        },
+        {
+          "path": "../human-output",
+          "optional": true,
+          "why": "Optional sibling with the full prose layer; the bundled style floor is the fallback."
+        }
+      ],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -1107,6 +1157,23 @@
           "why": "The merge exposed one live conflict that governs the decision — go re-verify that claim against its source."
         }
       ],
+      "companions": [
+        {
+          "path": "references/human-contract.md",
+          "optional": false,
+          "why": "The required portable family doctrine and style floor; bundled inside this skill."
+        },
+        {
+          "path": "references/tools/human-output-check.mjs",
+          "optional": false,
+          "why": "The required mechanical merged-output checker; bundled inside this skill."
+        },
+        {
+          "path": "../human-output",
+          "optional": true,
+          "why": "Optional sibling with the full prose layer; the bundled style floor is the fallback."
+        }
+      ],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -1142,6 +1209,18 @@
           "skill": "human-draw",
           "phrase": "/human-draw",
           "why": "The material is relational, positional, or proportional — it wants a figure. Runs alongside this skill, which keeps the prose around it."
+        }
+      ],
+      "companions": [
+        {
+          "path": "references/human-contract.md",
+          "optional": false,
+          "why": "The required portable family doctrine and style floor; bundled inside this skill."
+        },
+        {
+          "path": "references/tools/human-output-check.mjs",
+          "optional": false,
+          "why": "The required mechanical output checker; bundled inside this skill."
         }
       ],
       "hasProtocol": false,
@@ -1187,6 +1266,23 @@
           "why": "The rewrite exposed a load-bearing claim whose confidence the source never justified — go re-verify it against its source."
         }
       ],
+      "companions": [
+        {
+          "path": "references/human-contract.md",
+          "optional": false,
+          "why": "The required portable family doctrine and style floor; bundled inside this skill."
+        },
+        {
+          "path": "references/tools/human-output-check.mjs",
+          "optional": false,
+          "why": "The required mechanical rewritten-output checker; bundled inside this skill."
+        },
+        {
+          "path": "../human-output",
+          "optional": true,
+          "why": "Optional sibling with the full prose layer; the bundled style floor is the fallback."
+        }
+      ],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -1228,6 +1324,7 @@
           "why": "The refactor case or RFC is long-form argument aimed at whoever approves it — repair it for a reader without weakening the coupling evidence it rests on"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -1287,6 +1384,7 @@
           "why": "Multi-pass persona output arrives long and in several voices — condense it to the objections that survived, keeping each one's force intact"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -1344,6 +1442,7 @@
           "why": "Turn a promising frame into concrete implementation options"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -1405,6 +1504,7 @@
           "why": "When the decision target is vague — clarify intent (concrete question + named sources) before evaluating options"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -1457,6 +1557,7 @@
           "why": "Apply the fixes and proceed if the verdict is Approved or Conditional"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -1517,6 +1618,7 @@
           "why": "A set weighed against shared criteria is a matrix — draw the decision surface so the trade-offs are visible in one pass"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -1573,6 +1675,7 @@
           "why": "Turn a chosen option into a phased plan"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -1616,6 +1719,7 @@
           "why": "Blast radius is proportional and positional — how far the change reached shows in a figure, not in a list of touched files"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -1659,6 +1763,7 @@
           "why": "Scaffold the new skill the gap analysis identified"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -1716,6 +1821,7 @@
           "why": "Files, dependencies and call paths are relational — a tree or lane figure lands faster than a bulleted inventory of paths"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -1753,15 +1859,16 @@
         },
         {
           "skill": "obsidian-cli",
-          "phrase": "search my vault",
+          "phrase": "/obsidian-cli",
           "why": "Open and view the freshly built .canvas in a live Obsidian session to inspect it."
         },
         {
           "skill": "obsidian-bases",
-          "phrase": "make a base",
+          "phrase": "/obsidian-bases",
           "why": "Complement the visual canvas with a queryable database view over the same vault."
         }
       ],
+      "companions": [],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -1801,6 +1908,7 @@
           "why": "Commit the lock + package.json changes and push"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -1866,6 +1974,7 @@
           "why": "Route an individual delegation's venue and mode now that helper-agent fan-out is on the table."
         }
       ],
+      "companions": [],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -1899,6 +2008,7 @@
           "why": "Review the new skill against its objectives before relying on it"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -1949,6 +2059,7 @@
           "why": "Sibling protocol hook — triage whether to ask the handler before acting on the pick."
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [],
@@ -1987,15 +2098,16 @@
         },
         {
           "skill": "obsidian-cli",
-          "phrase": "search my vault",
+          "phrase": "/obsidian-cli",
           "why": "Open and refresh the new .base in a running Obsidian to confirm the view renders."
         },
         {
           "skill": "json-canvas",
-          "phrase": "make a canvas",
+          "phrase": "/json-canvas",
           "why": "Pair the tabular base with a visual canvas view over the same vault data."
         }
       ],
+      "companions": [],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -2030,15 +2142,16 @@
         },
         {
           "skill": "obsidian-bases",
-          "phrase": "make a base",
+          "phrase": "/obsidian-bases",
           "why": "Build a .base database view over the notes you just searched or tagged in the vault"
         },
         {
           "skill": "json-canvas",
-          "phrase": "make a canvas",
+          "phrase": "/json-canvas",
           "why": "Lay the opened notes onto a .canvas as connected nodes"
         }
       ],
+      "companions": [],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -2067,20 +2180,21 @@
       "nextSkills": [
         {
           "skill": "obsidian-cli",
-          "phrase": "open this note in Obsidian",
+          "phrase": "/obsidian-cli",
           "why": "Open, search, or reload the note you just authored in a live Obsidian session"
         },
         {
           "skill": "obsidian-bases",
-          "phrase": "make a base",
+          "phrase": "/obsidian-bases",
           "why": "Query the frontmatter properties you just set with a .base table or card view"
         },
         {
           "skill": "json-canvas",
-          "phrase": "make a canvas",
+          "phrase": "/json-canvas",
           "why": "Wire the new notes together visually on a .canvas"
         }
       ],
+      "companions": [],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -2097,7 +2211,7 @@
       "name": "orchestrate-mode",
       "family": "orchestration",
       "familyLabel": "Orchestration & dispatch",
-      "description": "Activate orchestrator mode in the current session: the lead agent dispatches isolated worker subagents and does not execute concrete work directly. Trigger on /orchestrate-mode, \"become an orchestrator\", \"orchestrator mode\", \"delegate everything\", or \"do not execute\". Use multi-agent-mode instead when the lead agent should still work directly while delegating helper slices.",
+      "description": "Activate orchestrator mode in the current session: the lead agent dispatches governed worker subagents and does not execute concrete work directly. Trigger on /orchestrate-mode, \"become an orchestrator\", \"orchestrator mode\", \"delegate everything\", or \"do not execute\". Use multi-agent-mode instead when the lead agent should still work directly while delegating helper slices.",
       "visibility": "public",
       "triggers": [
         "/orchestrate-mode",
@@ -2123,6 +2237,7 @@
           "why": "Gate the assembled worker output against intent before declaring done"
         }
       ],
+      "companions": [],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -2155,6 +2270,23 @@
           "skill": "plan-create",
           "phrase": "/plan-create",
           "why": "Turn the surfaced blockers and loose ends into a phased plan to clear them"
+        }
+      ],
+      "companions": [
+        {
+          "path": "references/orient-spec",
+          "optional": false,
+          "why": "The required record, render contract, and worked fixtures; bundled inside this skill."
+        },
+        {
+          "path": "references/tools/orient-validate.mjs",
+          "optional": false,
+          "why": "The required value and fail-closed gate; bundled inside this skill."
+        },
+        {
+          "path": "../../tools/orient-roundtrip.mjs",
+          "optional": true,
+          "why": "Repository-only release evidence; installed execution retains the emitter obligation."
         }
       ],
       "hasProtocol": true,
@@ -2207,6 +2339,23 @@
           "skill": "orient-status",
           "phrase": "/orient-status",
           "why": "Once the shape is clear, get the position + remaining + banded ETA on the node you're standing on"
+        }
+      ],
+      "companions": [
+        {
+          "path": "references/orient-spec",
+          "optional": false,
+          "why": "The required record, render contract, and worked fixtures; bundled inside this skill."
+        },
+        {
+          "path": "references/tools/orient-validate.mjs",
+          "optional": false,
+          "why": "The required value and fail-closed gate; bundled inside this skill."
+        },
+        {
+          "path": "../../tools/orient-roundtrip.mjs",
+          "optional": true,
+          "why": "Repository-only release evidence; installed execution retains the emitter obligation."
         }
       ],
       "hasProtocol": true,
@@ -2262,6 +2411,23 @@
           "why": "Once the horizons are clear, get position + remaining + banded ETA on the current increment"
         }
       ],
+      "companions": [
+        {
+          "path": "references/orient-spec",
+          "optional": false,
+          "why": "The required record, render contract, and worked fixtures; bundled inside this skill."
+        },
+        {
+          "path": "references/tools/orient-validate.mjs",
+          "optional": false,
+          "why": "The required value and fail-closed gate; bundled inside this skill."
+        },
+        {
+          "path": "../../tools/orient-roundtrip.mjs",
+          "optional": true,
+          "why": "Repository-only release evidence; installed execution retains the emitter obligation."
+        }
+      ],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -2314,6 +2480,23 @@
           "why": "Turn the bearings into a phased plan for the next move"
         }
       ],
+      "companions": [
+        {
+          "path": "references/orient-spec",
+          "optional": false,
+          "why": "The required record, render contract, and worked fixtures; bundled inside this skill."
+        },
+        {
+          "path": "references/tools/orient-validate.mjs",
+          "optional": false,
+          "why": "The required value and fail-closed gate; bundled inside this skill."
+        },
+        {
+          "path": "../../tools/orient-roundtrip.mjs",
+          "optional": true,
+          "why": "Repository-only release evidence; installed execution retains the emitter obligation."
+        }
+      ],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -2364,7 +2547,7 @@
         },
         {
           "skill": "insight-retro",
-          "phrase": "/retro",
+          "phrase": "/insight-retro",
           "why": "Run a retrospective on the completed work now that leftovers are cleared"
         },
         {
@@ -2373,6 +2556,7 @@
           "why": "Treat the shipped work as v1 and plan the next iteration"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -2434,6 +2618,7 @@
           "why": "Gated phases are a spine — the approver sees the sequence and where each gate sits far faster than in nested prose"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -2492,6 +2677,7 @@
           "why": "When a phase under deep-dive touches a large unread source surface — prime via delegation before inspecting"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -2531,12 +2717,12 @@
       "nextSkills": [
         {
           "skill": "plan-deep-dive",
-          "phrase": "/deep-dive",
+          "phrase": "/plan-deep-dive",
           "why": "Inspect the new plan phase-by-phase before execution"
         },
         {
           "skill": "insight-critique",
-          "phrase": "/critique",
+          "phrase": "/insight-critique",
           "why": "Get focused review of the proposed next-version plan"
         },
         {
@@ -2545,6 +2731,7 @@
           "why": "Execute the new plan once approved"
         }
       ],
+      "companions": [],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -2587,6 +2774,7 @@
           "why": "Remove planning artifacts now the plan is done"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -2635,6 +2823,7 @@
           "why": "Inspect the phased plan before running it"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -2689,6 +2878,7 @@
           "why": "When the expansion sharpened the goal enough to plan the work directly (no priming needed)"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -2738,6 +2928,7 @@
           "why": "When the result suggests a new line of inquiry that needs to be sharpened first"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -2787,6 +2978,7 @@
           "why": "Turn primed context into a phased implementation plan"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -2843,6 +3035,7 @@
           "why": "Redesign if reflection points to a direction change"
         }
       ],
+      "companions": [],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -2873,7 +3066,7 @@
         },
         {
           "skill": "insight-skill-gap",
-          "phrase": "/skill-gap",
+          "phrase": "/insight-skill-gap",
           "why": "When the in-the-moment signal points to a recurring pattern, escalate to the deliberate batch scan for new or updated skills."
         },
         {
@@ -2882,6 +3075,7 @@
           "why": "If the detected gap is a whole missing capability rather than a tweak, scaffold it as a new skill."
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -2928,10 +3122,11 @@
         },
         {
           "skill": "insight-skill-gap",
-          "phrase": "/skill-gap",
+          "phrase": "/insight-skill-gap",
           "why": "After browsing the roster and finding a hole, run the gap analysis to decide what to add or update."
         }
       ],
+      "companions": [],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -2970,6 +3165,7 @@
           "why": "Dig deeper if the verdict surfaced issues that need fact-gathering"
         }
       ],
+      "companions": [],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -3017,6 +3213,7 @@
           "why": "Re-verify a load-bearing interpretation of the YON before acting on it."
         }
       ],
+      "companions": [],
       "hasProtocol": false,
       "profile": null,
       "gates": [],
@@ -3059,6 +3256,7 @@
           "why": "Commit and push the new .yon file once it is written and validated."
         }
       ],
+      "companions": [],
       "hasProtocol": false,
       "profile": null,
       "gates": [],

@@ -14,6 +14,7 @@
 @RULE rid=rule:no-reentry | lvl=MUST_NOT | when="the invocation carries a COP-RESOLVED marker block" | then="re-enter COP — a resolved invocation executes its fixed mode-by-venue combination directly"
 @RULE rid=rule:caller-kind | lvl=MUST | when="surfacing options" | then="for a human caller use AskUserQuestion with the recommended option first; for an agent caller state the options and the pick visibly, honoring caller-options.default-policy"
 @RULE rid=rule:inspect | lvl=MUST | when="accepting delegated or fan-out output" | then="inspect the sub-agent diff or concrete output first — never accept on narrative report alone"
+@RULE rid=rule:worker-boundary | lvl=MUST | when="enumerating or executing delegated or fan-out work" | then="resolve the runtime's proven workspace behavior; use worktree isolation when available; when workers share a filesystem allow read-only fan-out, or code-changing work only with disjoint write scopes and explicit shared-state coordination; otherwise serialize or run inline; never infer isolation from a vendor or tool name"
 
 # --- Phase 1: Triage ---
 
@@ -24,7 +25,7 @@
 # --- Phase 2: Enumerate ---
 
 @SEC name="Phase 2 — Enumerate"
-@STEP rid=step:enumerate | n:int=2 | op=std:ai.prompt@v1 | args=[task="List the viable mode-by-venue combinations. Apply VENUE-HEURISTICS: drop delegated and fan-out for never-delegate-listed or self-orchestrating skills; drop delegated and fan-out when a resolved-invocation marker is present."] | in=[ref:triage] | use=[cfg:VenueValues] | out=[ref:options] | rules=[rid:rule:never-delegate,rid:rule:self-orch,rid:rule:conservative-venue]
+@STEP rid=step:enumerate | n:int=2 | op=std:ai.prompt@v1 | args=[task="List the viable mode-by-venue combinations. Apply VENUE-HEURISTICS: drop delegated and fan-out for never-delegate-listed or self-orchestrating skills; drop delegated and fan-out when a resolved-invocation marker is present. Resolve the current runtime's workspace behavior: read-only fan-out may use a shared filesystem; code-changing fan-out requires proven isolation or disjoint write scopes with explicit shared-state coordination, otherwise serialize or run inline."] | in=[ref:triage] | use=[cfg:VenueValues] | out=[ref:options] | rules=[rid:rule:never-delegate,rid:rule:self-orch,rid:rule:conservative-venue,rid:rule:worker-boundary]
 @CHECK rid=check:depth | assert="when a resolved-invocation marker is present, ref:options contains inline venues only" | fail=ABORT | msg="Depth guard: a COP-spawned invocation must not enumerate delegated or fan-out venues."
 @NOTE text="The depth guard fires when the invocation carries a COP-RESOLVED marker block (see the ResolvedMarker note in Config). No harness signal identifies arbitrary sub-agent nesting; the marker's depth-1 field, carried in every primed brief, closes the broader case — a COP-spawned sub-agent runs any COP participant it triggers inline."
 
@@ -42,7 +43,7 @@
 # --- Phase 5: Execute ---
 
 @SEC name="Phase 5 — Execute"
-@STEP rid=step:execute | n:int=5 | op=std:ai.prompt@v1 | args=[task="Execute the chosen combination. inline: run the skill in the active agent. delegated: build a primed brief reusing the handoff brief schema and activation phrase, prepended with the COP-RESOLVED marker block (see the ResolvedMarker note); spawn one sub-agent; orchestrate; inspect its diff or output before accepting. fan-out: spawn N independent workers, each brief prepended with the COP-RESOLVED block, and reuse orchestrate-mode wave consolidation. The sub-agent receives a resolved invocation and does not re-enter COP."] | in=[ref:choice] | out=[ref:result] | rules=[rid:rule:depth-1-brief,rid:rule:no-reentry,rid:rule:inspect]
+@STEP rid=step:execute | n:int=5 | op=std:ai.prompt@v1 | args=[task="Execute the chosen combination. inline: run the skill in the active agent. delegated: build a primed brief reusing the handoff brief schema and activation phrase, prepended with the COP-RESOLVED marker block (see the ResolvedMarker note); spawn one sub-agent under the proven worker boundary; orchestrate; inspect its diff or output before accepting. fan-out: spawn N independent workers only when their read/write boundaries are safe for the runtime's actual shared or isolated workspace behavior, prepend each brief with the COP-RESOLVED block, and reuse orchestrate-mode integration. The sub-agent receives a resolved invocation and does not re-enter COP."] | in=[ref:choice] | out=[ref:result] | rules=[rid:rule:depth-1-brief,rid:rule:no-reentry,rid:rule:inspect,rid:rule:worker-boundary]
 @CHECK rid=check:delegated-gate | assert="when the venue is delegated or fan-out, the sub-agent diff or output was inspected before acceptance" | fail=ABORT | msg="Delegated work must be inspected before acceptance — no narrative-only acceptance."
 
 # --- Config ---
@@ -58,4 +59,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=6 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-07-23T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

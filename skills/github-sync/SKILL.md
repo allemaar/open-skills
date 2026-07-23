@@ -13,7 +13,7 @@ triggers:
   - "save this session to git"
 next-skills:
   - skill: insight-retro
-    phrase: "/retro"
+    phrase: "/insight-retro"
     why: "After the push lands, run a retrospective on what shipped this session"
   - skill: handoff
     phrase: "/handoff"

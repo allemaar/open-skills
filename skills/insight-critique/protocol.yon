@@ -1,5 +1,5 @@
 @DOC ver=2.0 | id=insight-critique | title="Advisory Critique — Summary/Strengths/Risks/Fixes" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
-@INTENT goal="Produce an advisory structured review of the user's last plan, code, architecture, or UI output without blocking work" | trigger="user runs /critique, asks to review/critique/poke holes in a specific output, or quality gate before /execute"
+@INTENT goal="Produce an advisory structured review of the user's last plan, code, architecture, or UI output without blocking work" | trigger="user runs /critique, asks to review/critique/poke holes in a specific output, or quality gate before /plan-execute"
 @STAMP ts:ts=2026-05-18T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Governance ---
@@ -37,14 +37,14 @@
 @SEC name="Phase 3 — Render Report"
 @STEP rid=step:render | n:int=6 | op=std:ai.prompt@v1 | args=[format="four labeled sections: Summary, Strengths, Risks, Fixes, followed by verdict line"] | in=[ref:summary,ref:strengths,ref:risks,ref:fixes] | out=[ref:report] | note="Render the structured report with all four sections."
 
-@MAP name=VerdictDecision | pairs=["all-risks-Low-or-cosmetic"->"✅ Approved","risks-present-but-fixable"->"⚠️ Conditional — apply fixes then /execute","High-risks-present"->"🚫 Not Approved — /plan-create or redesign required"]
+@MAP name=VerdictDecision | pairs=["all-risks-Low-or-cosmetic"->"✅ Approved","risks-present-but-fixable"->"⚠️ Conditional — apply fixes then /plan-execute","High-risks-present"->"🚫 Not Approved — /plan-create or redesign required"]
 
 @STEP rid=step:verdict | n:int=7 | op=std:ai.prompt@v1 | args=[task="Set verdict using VerdictDecision map based on highest risk severity."] | in=[ref:risks] | use=[cfg:VerdictDecision] | out=[ref:verdict] | rules=[rid:rule:advisory-only,rid:rule:approved-clean-only] | note="Verdict is advisory. Never blocks."
 
 # --- Downstream Suggestions ---
 
 @SEC name="Downstream"
-@MAP name=NextCommand | pairs=["redesign-needed"->"/plan-create","small-clear-fixes"->"/execute (apply targeted fixes)","verdict-approved"->"/execute"]
+@MAP name=NextCommand | pairs=["redesign-needed"->"/plan-create","small-clear-fixes"->"/plan-execute (apply targeted fixes)","verdict-approved"->"/plan-execute"]
 @STEP rid=step:downstream | n:int=8 | op=std:ai.prompt@v1 | args=[task="Suggest the natural next command using NextCommand map based on verdict and fix complexity."] | in=[ref:verdict,ref:fixes] | use=[cfg:NextCommand] | note="Suggest only — never auto-invoke."
 
 
@@ -59,4 +59,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-07-23T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

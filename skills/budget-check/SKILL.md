@@ -4,6 +4,10 @@ description: >
   Pre-wave usage gate. Before launching an expensive multi-agent wave or fan-out, check the active usage block against a threshold (default 95%) via `ccusage` and return go / no-go / unknown — fail-closed, never a fabricated go. Trigger via /budget-check, or as a reflex before any large dispatch. Not /ask-gate (governs a handler-facing question) or /orchestrate-mode and /multi-agent-mode (which run the wave) — budget-check only decides whether the wave should start.
 visibility: public
 self-improvable: true
+companions:
+  - path: references/tools/budget-check.mjs
+    optional: false
+    why: "The required bounded ccusage wrapper and verdict engine; bundled inside this skill."
 triggers:
   - "/budget-check"
 next-skills:
@@ -28,13 +32,13 @@ It is deliberately small: a concrete wrapper around the public [`ccusage`](https
 
 ## The check — one tool, three verdicts
 
-The skill runs [`tools/budget-check.mjs`](../../tools/budget-check.mjs), which wraps `ccusage blocks --json`:
+The skill ships [`references/tools/budget-check.mjs`](references/tools/budget-check.mjs) inside its own folder. Resolve the installed skill directory and run the bundled tool, which wraps `ccusage blocks --json`:
 
 ```bash
-node tools/budget-check.mjs                  # go/no-go vs 95% of your historical-peak block
-node tools/budget-check.mjs --threshold 90   # custom threshold (percent)
-node tools/budget-check.mjs --token-limit 200000000   # explicit ceiling instead of the auto peak
-node tools/budget-check.mjs --json           # machine-readable verdict
+node <skill-dir>/references/tools/budget-check.mjs                  # go/no-go vs 95% of your historical-peak block
+node <skill-dir>/references/tools/budget-check.mjs --threshold 90   # custom threshold (percent)
+node <skill-dir>/references/tools/budget-check.mjs --token-limit 200000000   # explicit ceiling instead of the auto peak
+node <skill-dir>/references/tools/budget-check.mjs --json           # machine-readable verdict
 ```
 
 - **Ceiling** = `--token-limit <N>` if you pass one, else the largest historical (non-active) block's total tokens — ccusage's own `max` notion, i.e. "your usual peak window." Without `--token-limit`, the gate measures against *your own historical peak* — a relative signal ("am I near my personal worst window"), not your real plan budget. **For a true budget gate, pass `--token-limit <N>` with your plan's actual token ceiling.**

@@ -35,6 +35,9 @@
 //                                 (name, description, visibility, triggers, next-skills)
 //   8. contract-expected  [WARN]  front-matter missing a present-or-empty field (currently none)
 //   9. taxonomy-integrity [ERROR] pack YON taxonomy has missing, duplicate, unknown, or orphan assignments
+//  10. next-phrase-drift  [ERROR] a next-skills phrase is not /<target-folder>
+//  11. command-orphan     [ERROR] a backticked /command in public Markdown names no shipped skill folder
+//  12. companion-integrity[ERROR] companion metadata is shaped, resolves in-tree, and keeps required assets inside the skill
 //
 // The front-matter contract (check 7) is the auditable root node every generated
 // discovery surface (catalog.yon/json, llms.txt, skills.graph.yon) derives from.
@@ -52,6 +55,8 @@ import { join, dirname, resolve, relative } from 'node:path';
 const ROOT = process.cwd();
 const SKILLS = 'skills';
 const TAXONOMY = join(SKILLS, 'skills-help', 'taxonomy.yon');
+const names = readdirSync(SKILLS).filter((n) => statSync(join(SKILLS, n)).isDirectory()).sort();
+const nameSet = new Set(names);
 
 // Resolve a backtick path token to an absolute path, or null when it is "not our
 // business" (an npm scope, a URL, an absolute path, an unknown shape). Deliberately
@@ -133,6 +138,14 @@ function lintMarkdown(file) {
         err(file, ln, `broken reference → ${tok}`);
       }
     }
+
+    // Check 11: written skill commands use the stable folder name. Front-matter
+    // trigger aliases remain recognition hints; prose points strangers at the
+    // portable invocation surface every runtime can locate in this pack.
+    const commandRe = /`\/([a-z0-9][a-z0-9-]*)`/g;
+    while ((m = commandRe.exec(line)) !== null) {
+      if (!nameSet.has(m[1])) err(file, ln, `written command '/${m[1]}' names no shipped skill folder`);
+    }
   });
 }
 
@@ -192,6 +205,41 @@ function lintSkill(name) {
       const target = sm[1].trim();
       if (!existsSync(join(SKILLS, target))) err(skillMd, 0, `next-skills orphan → ${target}`);
     }
+    for (const sm of nsBlock[1].matchAll(/-\s*skill:\s*(\S+)\s*\r?\n\s+phrase:\s*["']([^"']+)["']/g)) {
+      const target = sm[1].trim();
+      const phrase = sm[2].trim();
+      const expected = `/${target}`;
+      if (phrase !== expected) err(skillMd, 0, `next-skills phrase '${phrase}' != canonical '${expected}'`);
+    }
+  }
+
+  // Check 12: a required companion must travel inside the copied skill folder.
+  // Optional companions may be sibling or repository-only evidence, but still
+  // resolve inside this repository and declare why they are optional.
+  const companionBlock = fm.match(/companions:\s*\n([\s\S]*?)(?:\n\w|$)/);
+  if (companionBlock) {
+    const chunks = companionBlock[1].split(/^\s*-\s+path:/m).slice(1);
+    for (const chunk of chunks) {
+      const rel = (chunk.match(/^\s*([^\n]+)/) || [, ''])[1].trim().replace(/^["']|["']$/g, '');
+      const optional = (chunk.match(/optional:\s*(true|false)/) || [, ''])[1];
+      const why = (chunk.match(/why:\s*(.+)/) || [, ''])[1]?.trim();
+      if (!rel || optional === undefined || !why) {
+        err(skillMd, 0, `companion entry must declare path, optional: true|false, and why`);
+        continue;
+      }
+      const target = resolve(dir, rel);
+      const repoRoot = resolve(ROOT);
+      const skillRoot = resolve(dir);
+      if (target !== repoRoot && !target.startsWith(repoRoot + '\\') && !target.startsWith(repoRoot + '/')) {
+        err(skillMd, 0, `companion path escapes repository → ${rel}`);
+      } else if (!existsSync(target)) {
+        err(skillMd, 0, `companion path does not resolve → ${rel}`);
+      }
+      if (optional === 'false' && target !== skillRoot &&
+          !target.startsWith(skillRoot + '\\') && !target.startsWith(skillRoot + '/')) {
+        err(skillMd, 0, `required companion must be contained in the skill folder → ${rel}`);
+      }
+    }
   }
 
   // Check 6: dual-doc sync
@@ -229,8 +277,6 @@ if (fileArg) {
   console.log(`lint: ${n} error(s) in ${fileArg}`);
   process.exit(n > 0 ? 1 : 0);
 }
-
-const names = readdirSync(SKILLS).filter((n) => statSync(join(SKILLS, n)).isDirectory()).sort();
 
 // Check 9: the pack-level YON taxonomy is the sole family-assignment source.
 function lintTaxonomy() {
@@ -278,14 +324,17 @@ for (const doc of ['README.md', 'SKILLS.md', 'THREAT-MODEL.md', 'SECURITY.md', '
 // And the COMPANION markdown under skills/*/ — references/, personas/, profiles/,
 // examples/. lintSkill only reads each skill's own SKILL.md, so a broken ref in a
 // companion file (e.g. a rename never swept, or a private-repo path kept on export)
-// was invisible. Tracked files only, via git — never a node_modules walk.
+// was invisible. Ask git for tracked and non-ignored untracked Markdown so a
+// pre-commit run checks the same candidate that CI will see — never walk node_modules.
 // NOT scanned: CHANGELOG.md. A changelog records history, including paths that no
 // longer exist by design; linting it fights its purpose.
 let companions = [];
 try {
-  companions = execFileSync('git', ['ls-files', 'skills/**/*.md'], { cwd: ROOT, encoding: 'utf8' })
+  companions = [...new Set(execFileSync('git', [
+    'ls-files', '--cached', '--others', '--exclude-standard', '--', ':(glob)skills/**/*.md',
+  ], { cwd: ROOT, encoding: 'utf8' })
     .split(/\r?\n/)
-    .filter((f) => f && !f.endsWith('/SKILL.md'));
+    .filter((f) => f && !f.endsWith('/SKILL.md')))];
 } catch {
   warn('tools/lint.mjs', 0, 'could not enumerate companion files via git ls-files — companion coverage skipped');
 }

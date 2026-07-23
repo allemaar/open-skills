@@ -1,0 +1,24 @@
+orient-roadmap reference — the ASCII twin of orient-roadmap.widget.svg.
+Information-complete fallback for orient-roadmap.example.yon (the only render in a no-SVG channel).
+
+🧭 open-skills — public skills pack, the roadmap.   ↳ in: open-source push   [identity: ◆ git]
+North star: one orient- family, three faces, machine-checked.
+
+THE ARC:   ✅ status ──▶ ◉ active (current) ──▶ ▢ roadmap (next)          ◆ plan spine
+
+NOW SHIPPING:
+  ✅ orient-status   ✅ orient-map   ✅ orient-gaps   ✅ value-gate         ◆ git log
+
+GATES:   [ full validate green ]   [ cold-review pass ]                    ◆ CI
+
+NEXT INCREMENT:
+  ★ roadmap slice   widget parity   ascii floor                           ◐ plan
+
+THE RUNWAY:   now: author ──▶ gated-next: cold-review ──▶ future: publish  ◐ plan
+
+CLEANUP-NOW:   ⚠ stale STAMP dates
+DEFERRED:      ◌ deterministic renderer (deferred)   ◌ ci wiring (deferred)   ◆ deferred-goal
+
+**→ Next:** active is the current increment; the roadmap slice is paramount.
+Trust: ◆◐◌ · ⚠️ lean here: the runway "future: publish" stage (inferred from the plan, not a gate) · next → /orient-status
+legend: ◆ attested · ◐ inferred · ◌ guessed · ✅ built · ◉ current · 🔄 running · ★ paramount · ▢ next/gated · ◌ deferred · ⚠ promoted-cleanup

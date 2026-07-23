@@ -4,6 +4,16 @@ description: >
   The repair pass on text that already exists — an agent's own last output, a subagent's report, a supplied document, a research summary, a legal or medical paragraph — rewritten so a person can read it fast and act on it, without changing what it claims. Meaning-preserving by contract: uncertainty, scope conditions, numbers, sample sizes, attribution, absent results, and reversing caveats all survive. Works on any subject, not just software. Trigger phrases: "/human-rewrite", "translate that into human", "that was a wall of text", "I can't follow this", "say that again but readable", "shorten this without losing anything". Not /human-output (the writing contract, which this skill links to rather than restates) or /human-draw (builds a picture) — human-rewrite governs the transformation of text that already exists.
 visibility: public
 self-improvable: true
+companions:
+  - path: references/human-contract.md
+    optional: false
+    why: "The required portable family doctrine and style floor; bundled inside this skill."
+  - path: references/tools/human-output-check.mjs
+    optional: false
+    why: "The required mechanical rewritten-output checker; bundled inside this skill."
+  - path: ../human-output
+    optional: true
+    why: "Optional sibling with the full prose layer; the bundled style floor is the fallback."
 triggers:
   - "/human-rewrite"
   - "translate that into human"
@@ -33,12 +43,11 @@ world. A reader who acts on your version and a reader who acts on the original
 must take the same action, hold the same doubts, and be surprised by the same
 things.
 
-> **The style rules are not in this file.** Verdict-first ordering, sentence
-> and paragraph shape, acronym expansion, item counts, confidence labels, the
-> length-versus-fidelity ruling — all of it lives in **`human-output/SKILL.md`**.
-> Read it and apply it. Two files with one rulebook guarantees drift, so this
-> file carries only what exists *because there is a source*: what may change,
-> what may not, and how to prove it.
+> **The complete style layer lives in `human-output` when that skill is
+> installed.** Otherwise apply the portable style floor in
+> [`references/human-contract.md`](references/human-contract.md). This file
+> carries only what exists *because there is a source*: what may change, what
+> may not, and how to prove it.
 
 **If you finish a repair and only the words changed, you did the wrong pass.**
 Most broken text is already readable. It is unusable because it is ordered by
@@ -80,7 +89,7 @@ structure, vocabulary, format — is yours to change freely.
 | 7 | Verdict-reversing caveats | Any caveat that could flip the reader's decision is *part of* the verdict and moves up with it. It may never sit below the verdict it qualifies. |
 
 **Guarantee 7 is the load-bearing one**, and it is the family's stopping-point
-doctrine (`human-spec/human-contract.md` §2) in its fidelity form: a caveat
+doctrine (`references/human-contract.md` §2) in its fidelity form: a caveat
 placed further down "for completeness" is, for a reader who stops early,
 deleted.
 
@@ -161,9 +170,9 @@ work was, and the same content presented twice at the same resolution. None of
 it is in the fidelity set. Nothing in the fidelity set is cuttable here.
 
 **5. Restack by decision-relevance and choose the face.** Never by the
-chronology of the work — the ordering rule is `human-output/SKILL.md`, and the
+chronology of the work — the ordering rule is in the bundled human contract, and the
 material-shape-to-face routing is the family table at
-`human-spec/human-contract.md` §1. Apply them; do not re-derive them here.
+`references/human-contract.md` §1. Apply them; do not re-derive them here.
 
 **6. Reconcile against the inventory, and emit the trace.** Walk the step-1
 list item by item against your output. Each is present unchanged, present at
@@ -294,8 +303,8 @@ reverses anything above it.
 Cut the extraneous load — layout, jargon, ordering — and tell the reader the
 remaining density is real. Never simplify substance to hit a length target.
 
-**You were asked to shorten and fidelity forbids it.** `human-output/SKILL.md`
-already settles this — a floor never yields to a target. The rewrite-specific
+**You were asked to shorten and fidelity forbids it.** The bundled human
+contract already settles this — a floor never yields to a target. The rewrite-specific
 part is only what you hand back: the conflict *with the number*, so the handler
 can decide. *"Cut to 180 words; below that the exclusion criteria have to go,
 and they change who this applies to."*
@@ -306,15 +315,15 @@ around them and leave them intact.
 
 ## Checking
 
-Run `tools/human-output-check.mjs` on the rewritten text; it grades the
+Resolve this installed skill's directory and run `node <skill-dir>/references/tools/human-output-check.mjs <draft-path>` on the rewritten text; the bundled checker grades the
 mechanical half only. Steps 6 and 7 — reconciliation and confidence drift — are
 judgement, which is precisely why step 6 emits a visible trace. Full checker
-contract: `human-spec/human-contract.md` §3.
+contract: `references/human-contract.md` §3.
 
 ## Boundary
 
 This skill is one member of the `human-` family. The routing table — which
-member handles which material — is `human-spec/human-contract.md` §1.
+member handles which material — is `references/human-contract.md` §1.
 
 - Not `/human-output` — the contract for text you are about to write. This
   skill repairs text that exists and defers every style rule to that file.

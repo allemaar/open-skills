@@ -12,10 +12,10 @@ next-skills:
     phrase: "/obsidian-markdown"
     why: "The canvas nodes link to and embed .md notes — author those with valid Obsidian-flavored markdown next."
   - skill: obsidian-cli
-    phrase: "search my vault"
+    phrase: "/obsidian-cli"
     why: "Open and view the freshly built .canvas in a live Obsidian session to inspect it."
   - skill: obsidian-bases
-    phrase: "make a base"
+    phrase: "/obsidian-bases"
     why: "Complement the visual canvas with a queryable database view over the same vault."
 ---
 

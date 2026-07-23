@@ -12,7 +12,7 @@ next-skills:
     why: "After the caller picks a delegated/helper venue, enter the mode that owns lead-plus-helper delegation."
   - skill: orchestrate-mode
     phrase: "/orchestrate-mode"
-    why: "If the caller chose pure fan-out, switch to the dispatch-only mode that governs isolated workers."
+    why: "If the caller chose pure fan-out, switch to the dispatch-only mode that governs worker boundaries and integration."
   - skill: ask-gate
     phrase: "/ask-gate"
     why: "The sibling protocol — once venue is routed, triage any handler-facing question the run raises."
@@ -65,7 +65,7 @@ The frontmatter is **metadata** — the harness does not execute it; it is read 
 COP runs on every runtime, but two steps need a runtime-specific form:
 
 - **Surface (step 4)** — Claude Code: `AskUserQuestion`. Codex, or any runtime without a structured-question tool: present the options + recommendation in prose and wait for the caller's reply. The agent-caller path (visible pick) is already runtime-agnostic.
-- **Execute `delegated`/`fan-out` (step 5)** — Claude Code: the `Agent` tool with `isolation: "worktree"`. Codex: `spawn_agent` with a forked/isolated worker. A runtime with no isolated-worker mechanism drops `delegated`/`fan-out` at step 2 (Enumerate) and runs `inline`.
+- **Execute `delegated`/`fan-out` (step 5)** — resolve the capability the current runtime actually provides. Use proven worktree isolation when available. When workers share a filesystem or working tree, read-only work may still fan out; code-changing work requires disjoint write scopes and explicit shared-state coordination, otherwise serialize it or run `inline`. Never infer isolation from a vendor or tool name.
 
 Triage, Enumerate, Assess, and inline Execute are runtime-agnostic.
 

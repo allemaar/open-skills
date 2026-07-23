@@ -117,7 +117,7 @@ Present with actionable next steps.
 
 ## Next Steps
 
-- `/skill-gap` — create/update skills flagged in retro
+- `/insight-skill-gap` — create/update skills flagged in retro
 
 > **Human output.** This skill's handler-facing output obeys the human-output
 > contract (`human-output/SKILL.md`).

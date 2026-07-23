@@ -1,6 +1,6 @@
 # open-skills
 
-Version: 1.6.4
+Version: 1.6.5
 
 > Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; 39 of 57 also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.
 
@@ -10,7 +10,7 @@ The protocol.yon files are written in YON (https://github.com/YounndAI/yon), a s
 ## For agents — how to install
 No build step, no opaque installer. Follow these in order; the checks in step 3 are the ones that matter, because every failure mode here is SILENT.
 0. Clone this repo and work from its root: `git clone https://github.com/allemaar/open-skills && cd open-skills`. Every relative path below is from that root.
-1. Enumerate skills from catalog.json (repo root) — each record carries name, description, triggers, gates, and install commands.
+1. Enumerate skills from catalog.json (repo root) — each record carries name, description, triggers, gates, companion classification, and install commands.
 2. Choose SKILLS_DIR — the ONE directory the user's runtime actually reads. These are not interchangeable, and choosing wrong fails silently: no error, the skill simply never appears.
    - ~/.claude/skills — Claude Code, which reads this dir and no other — it does not read ~/.agents/skills
    - ~/.agents/skills — the shared cross-runtime dir — Codex (its current location), Cline, Zed, Warp
@@ -19,7 +19,7 @@ No build step, no opaque installer. Follow these in order; the checks in step 3 
 3. CHECK before you write. Both of these, in order — neither condition raises an error on its own, so if you skip the check you will not find out:
    a. `test -e "$SKILLS_DIR/<name>"` — if it exists, the user already has this skill. ASK before replacing it. Do NOT just copy: `cp -r` onto an existing directory does not fail, it nests a second copy INSIDE it and leaves the old SKILL.md exactly where the runtime will keep reading it.
    b. `test -L "$SKILLS_DIR/<name>"` (PowerShell: `(Get-Item -Force "$SKILLS_DIR/<name>").LinkType`) — if it is a symlink or junction, STOP and ask. Copying through it writes into whatever it points at, outside the skills dir, and exits 0 while doing so. Remove the link itself (`rmdir` on Windows, `unlink` on POSIX) — never delete or copy through it.
-4. COPY the folder (copy-default, never symlink): `cp -r skills/<name> "$SKILLS_DIR/<name>"` (Windows PowerShell: `Copy-Item -Recurse skills/<name> "$SKILLS_DIR/<name>"`). If it fails because SKILLS_DIR itself does not exist, create exactly that directory and retry — do not invent a different path to make the command succeed.
+4. COPY the folder (copy-default, never symlink): `cp -r skills/<name> "$SKILLS_DIR/<name>"` (Windows PowerShell: `Copy-Item -Recurse skills/<name> "$SKILLS_DIR/<name>"`). Required companions are contained in that folder and travel with it; optional companions in catalog.json are repository or sibling enhancements and do not block the core skill when absent. If the copy fails because SKILLS_DIR itself does not exist, create exactly that directory and retry — do not invent a different path to make the command succeed.
 5. If it ships a protocol.yon, validate it: `npx @younndai/yon-parser validate "$SKILLS_DIR/<name>/protocol.yon" --profile <profile>` (profile is in catalog.json).
    EXPECT exit 0 and `✓ <the path you passed>: Valid` — the parser echoes the full path, so match on `: Valid` and the exit code, not on a fixed string. Anything else — a parse error, a non-zero exit — means STOP: report the output to the user and do not claim the skill installed cleanly.
 6. VERIFY, then report the path: `$SKILLS_DIR/<name>/SKILL.md` exists and its first line is `---`. Tell the user the exact directory you installed into — that is what decides which runtime can see it. (This confirms the copy landed; it cannot tell you SKILLS_DIR was the right dir. Step 2 is what gets that right.)
@@ -71,7 +71,7 @@ Updating later: these are frozen copies — they do not change until you re-copy
 - handoff [protocol.yon] — Generate a structured cold-agent handoff brief (YAML frontmatter + Obsidian markdown + YON blocks) that any fresh LLM session can pick up and execute. — triggers: /handoff, create a handoff, dispatch to a fresh agent, hand this to a cold session
 - handoff-execute [protocol.yon] — Execute a handoff brief with enforced source-read discipline — load the brief's @SOURCES.required tier fully before planning, cite sources per plan step, run @OUTCOME.verify after, emit the retro per @GROUND_TRUTH_REQUIRED. — triggers: /handoff-execute, /handoff-execute <brief-path>
 - multi-agent-mode [md-only] — Activate multi-agent mode: the lead agent still works directly but delegates independent helper slices when useful. — triggers: /multi-agent-mode, multi-agent mode, use helper agents, work with subagents
-- orchestrate-mode [md-only] — Activate orchestrator mode in the current session: the lead agent dispatches isolated worker subagents and does not execute concrete work directly. — triggers: /orchestrate-mode, become an orchestrator, orchestrator mode, delegate everything
+- orchestrate-mode [md-only] — Activate orchestrator mode in the current session: the lead agent dispatches governed worker subagents and does not execute concrete work directly. — triggers: /orchestrate-mode, become an orchestrator, orchestrator mode, delegate everything
 
 ### Orientation
 - orient-gaps [protocol.yon] — Answers "What is stuck or missing?" on any subject — blockers (on you vs on others), open forks, loose ends, and inferred silent gaps, computed fresh via a bounded read-only subagent. — triggers: /orient-gaps, what's stuck, what's not done, what's missing here

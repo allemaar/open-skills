@@ -48,9 +48,8 @@ Read-only fact-gathering — understand the codebase before acting.
 
 1. **Search for usages** — grep for functions, components, or patterns relevant to the query. Follow call sites and import chains.
 2. **Load relevant skills** — check if a domain skill applies:
-   - UI task → `repo-ui-ux-standards`
-   - Backend task → `repo-coding-standards`
-   - Other → any matching skill for additional context
+   - If your repository maintains its own standards skills (UI conventions, coding standards), load the matching one — this pack does not ship them.
+   - Otherwise → any matching installed skill for additional context
 
 ## Phase 3 — Reporting
 
@@ -65,12 +64,6 @@ Output a structured fact report:
 
 - MUST NOT create plans or write code — read only
 - MUST include file paths in the report, not just descriptions
-
-## Next Steps
-
-- `/explore` — brainstorm implementation options based on what was found
-- `/assess` — evaluate a specific approach against the discovered constraints
-- `/plan-create` — design an implementation now that the facts are known
 
 > **Human output.** This skill's handler-facing output obeys the human-output
 > contract (`human-output/SKILL.md`).

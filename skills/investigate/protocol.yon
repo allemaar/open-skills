@@ -24,7 +24,7 @@
 # --- Phase 2: Pattern Discovery ---
 
 @SEC name="Phase 2 — Pattern Discovery"
-@MAP name=DomainSkillRouting | pairs=["UI-task"->"repo-ui-ux-standards","Backend-task"->"repo-coding-standards","Other-domain"->"any matching skill for additional context"]
+@MAP name=DomainSkillRouting | pairs=["UI-task"->"the repository's own UI/UX standards skill when one is installed; this pack ships none","Backend-task"->"the repository's own coding-standards skill when one is installed; this pack ships none","Other-domain"->"any matching installed skill for additional context"]
 
 @STEP rid=step:search-usages | n:int=4 | op=std:fs.search@v1 | args=[task="grep for functions, components, or patterns relevant to the query; follow call sites and import chains"] | in=[ref:targets,ref:entrypoints] | out=[ref:usages]
 @STEP rid=step:load-skills | n:int=5 | op=std:ai.prompt@v1 | args=[task="Identify domain skill that applies and load it for additional context."] | in=[ref:targets] | use=[cfg:DomainSkillRouting] | out=[ref:domain-skill] | note="Optional: skip if no domain skill applies."
@@ -39,7 +39,7 @@
 # --- Downstream ---
 
 @SEC name="Downstream"
-@MAP name=NextCommand | pairs=["brainstorm-options-from-facts"->"/explore","evaluate-approach-against-constraints"->"/assess","design-implementation-with-known-facts"->"/plan-create"]
+@MAP name=NextCommand | pairs=["brainstorm-options-from-facts"->"/insight-explore","evaluate-approach-against-constraints"->"/insight-assess","design-implementation-with-known-facts"->"/plan-create"]
 
 
 # --- Next Skills ---
@@ -53,4 +53,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-07-23T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

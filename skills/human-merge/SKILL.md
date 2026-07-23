@@ -4,6 +4,16 @@ description: >
   Takes several separate reports — from several agents, several sources, or several documents — and returns one surface a person can decide from. Each report may be individually fine; the pile is what defeats the reader, and the relations between reports are invisible to every author who wrote one. Collapses reports that share an upstream source into the single source they are, names what is now superseded and whether a live decision rests on the dead figure, classifies conflicts instead of averaging them away, and pools coverage so a gap no single report had becomes visible. Works on any subject: research, legal, finance, operations, conservation, code. Trigger phrases: "/human-merge", "merge these reports", "combine what the agents found", "what do all of these add up to", "the sub-agents all came back", "did anything here contradict anything else". Not /human-output (the writing contract, which this skill links to rather than restates) or /human-rewrite (repairs one existing text and explicitly refuses several) — human-merge governs the pass across many.
 visibility: public
 self-improvable: true
+companions:
+  - path: references/human-contract.md
+    optional: false
+    why: "The required portable family doctrine and style floor; bundled inside this skill."
+  - path: references/tools/human-output-check.mjs
+    optional: false
+    why: "The required mechanical merged-output checker; bundled inside this skill."
+  - path: ../human-output
+    optional: true
+    why: "Optional sibling with the full prose layer; the bundled style floor is the fallback."
 triggers:
   - "/human-merge"
   - "merge these reports"
@@ -33,11 +43,10 @@ The pile is still undecidable, because the reader cannot tell which claims are
 corroborated, which rest on one source wearing four hats, and which two reports
 quietly disagree.
 
-> **The style rules are not in this file.** Verdict-first ordering, sentence and
-> paragraph shape, acronym expansion, item counts, confidence labels, the
-> length-versus-fidelity ruling — all of it lives in **`human-output/SKILL.md`**.
-> Read it and apply it. Family doctrine, including the stopping-point rule and
-> the checker contract, lives in **`human-spec/human-contract.md`**. This file
+> **The complete style layer lives in `human-output` when that skill is
+> installed.** Otherwise apply the portable style floor, stopping-point rule,
+> and checker contract in
+> [`references/human-contract.md`](references/human-contract.md). This file
 > carries only what exists *because there is more than one report*.
 
 ## The four operations
@@ -526,7 +535,7 @@ reports, it said so and dropped the label to estimate.
 
 ## Checking
 
-Run `tools/human-output-check.mjs` on the merged draft. It grades the
+Resolve this installed skill's directory and run `node <skill-dir>/references/tools/human-output-check.mjs <draft-path>` on the merged draft. The bundled checker grades the
 mechanical half: printable characters and width inside figures, bar arithmetic,
 percentage sums, sentence length, acronym expansion, one marked recommendation.
 
@@ -534,7 +543,7 @@ It cannot grade whether independence was established, whether a conflict was
 classified honestly, or whether a dropped claim was superseded rather than
 merely inconvenient. Nor can it tell an invented figure from a traced one —
 that limit and its remedy are the checker contract,
-`human-spec/human-contract.md` section 3. So do the one check that catches the
+`references/human-contract.md` section 3. So do the one check that catches the
 worst defect: **freeze the inputs, then compare every numeral in the merge
 against them one at a time**, and print the trace where the reader can see it.
 A merge with no trace should be read as a merge whose losses were not counted.
@@ -558,7 +567,7 @@ merge that had already passed it:
 ## Boundary
 
 This skill is one member of the `human-` family. The routing table — which
-member handles which material — is `human-spec/human-contract.md` section 1.
+member handles which material — is `references/human-contract.md` section 1.
 
 - Not `/human-output` — the contract for writing one piece. A merge is written
   to it and adds only the cross-report layer. Every style rule stays there.

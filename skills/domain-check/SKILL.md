@@ -11,7 +11,7 @@ triggers:
   - "did the availability tool lie"
 next-skills:
   - skill: insight-assess
-    phrase: "/assess"
+    phrase: "/insight-assess"
     why: "Weigh the surviving candidates against each other once availability is settled."
   - skill: double-check
     phrase: "/double-check"

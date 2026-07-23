@@ -4,6 +4,13 @@ description: >
   Turn a git diff into a PR-pasteable recap — one row per changed file whose path, status, and line counts are transcribed verbatim from `git diff --numstat` (true by construction; the model writes only the labels), emitted as an inline annotated widget plus a mandatory ASCII twin and a `diff-recap/1` record whose totals equal the sum of the rows. Fills the PR-summary gap the orient- family does not cover. Not /orient-map (shape + delta of the work) or /orient-status (position + ETA) — diff-recap recaps a concrete change-set. Zero external dependency: it renders inline, never to a hosted service.
 visibility: public
 self-improvable: true
+companions:
+  - path: references/tools/diff-recap-check.mjs
+    optional: false
+    why: "The required value and git-numstat gate; bundled inside this skill."
+  - path: references/render-face-contract.md
+    optional: false
+    why: "The required self-contained render-face behavior used by this skill."
 triggers:
   - "/diff-recap"
   - "recap this diff"
@@ -47,7 +54,7 @@ Every call recomputes from the real diff; nothing is stored.
 
 5. **Fail closed.** No git, or an empty diff → `gate_status = barren`, `attested = false`, and a **NO DIFF card** — never a fabricated recap. A `clean` recap requires a real git source (`attested = true`); a partial source caps the verdict at `partial`.
 
-6. **Emit the triple bundle.** The YON record (below), the PR-pasteable markdown summary, and the visual face (Claude Code only). diff-recap honors the **three render-face branches**: a human on Claude Code with the visualize tool present on an explicit invocation gets the **widget + ASCII twin**; an **agent** gets the YON record only; any **other runtime / no tool / indeterminate `handler_type`** gets the **ASCII twin** (fail-closed). (That decision originated in the orient- family — see [`orient-spec/family-behaviors.md`](../../orient-spec/family-behaviors.md) for its full statement; diff-recap adopts only the render-face branching, **not** the orient family's footer roster, "you are here" breadcrumb, or staleness short-circuit.) The **information-complete ASCII twin is always emitted** — it carries every file row, count, group, and total the widget does (worked trio at [`examples/diff-recap.{ascii.txt,widget.svg,example.yon}`](examples/)).
+6. **Emit the triple bundle.** The YON record (below), the PR-pasteable markdown summary, and the visual face (Claude Code only). diff-recap honors the **three render-face branches**: a human on Claude Code with the visualize tool present on an explicit invocation gets the **widget + ASCII twin**; an **agent** gets the YON record only; any **other runtime / no tool / indeterminate `handler_type`** gets the **ASCII twin** (fail-closed). See the bundled, self-contained [`render-face contract`](references/render-face-contract.md). diff-recap adopts only this branching, **not** the orient family's footer roster, "you are here" breadcrumb, or staleness short-circuit. The **information-complete ASCII twin is always emitted** — it carries every file row, count, group, and total the widget does (worked trio at [`examples/diff-recap.{ascii.txt,widget.svg,example.yon}`](examples/)).
 
 ## Record emission (the YON face — reserved tags only)
 
@@ -66,10 +73,10 @@ On **barren** evidence the envelope degrades honestly: `gate_status=barren, atte
 
 ### The value gate — why the recap can't lie
 
-`yon validate` checks *structure*, not *values*: a record can be valid YON yet state `total_added=999` while its rows sum to `155`. [`tools/diff-recap-check.mjs`](../../tools/diff-recap-check.mjs) is the missing half — it asserts **Σ per-file == totals**, enum membership, and the fail-closed/attested gates, and with `--numstat` it checks every row against the real git numstat. An emitter runs it before emit; CI runs it on the worked example + two deliberately-broken fixtures, so the gate is provably alive (see [`GATE-FIRES.md`](../../GATE-FIRES.md)).
+`yon validate` checks *structure*, not *values*: a record can be valid YON yet state `total_added=999` while its rows sum to `155`. [`references/tools/diff-recap-check.mjs`](references/tools/diff-recap-check.mjs) travels inside this skill folder and is the missing half — it asserts **Σ per-file == totals**, enum membership, and the fail-closed/attested gates, and with `--numstat` it checks every row against the real git numstat. An emitter runs it before emit; the source repository additionally exercises the worked and deliberately broken fixtures as release evidence.
 
 ```bash
-node tools/diff-recap-check.mjs skills/diff-recap/examples/diff-recap.example.yon --numstat skills/diff-recap/examples/diff-recap.numstat
+node <skill-dir>/references/tools/diff-recap-check.mjs <skill-dir>/examples/diff-recap.example.yon --numstat <skill-dir>/examples/diff-recap.numstat
 ```
 
 ## Output — worked examples (markdown / ASCII face)

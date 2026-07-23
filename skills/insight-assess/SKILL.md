@@ -28,7 +28,7 @@ Structured evaluation of an approach, decision, or implementation — assess via
 
 > **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date.
 
-> **Decision Support Protocol — convergent evaluation.** `/explore` generates alternatives (divergent). `/assess` evaluates them (convergent). `/critique` reviews outputs (reactive). Three complementary tools.
+> **Decision Support Protocol — convergent evaluation.** `/insight-explore` generates alternatives (divergent). `/insight-assess` evaluates them (convergent). `/insight-critique` reviews outputs (reactive). Three complementary tools.
 
 ## Phase 1 — Frame the Decision
 
@@ -90,8 +90,8 @@ Structure:
 ## Next Steps
 
 - `/plan-create` — if verdict is PROCEED
-- `/explore` — if more options are needed before deciding
-- `/critique` — if a deeper review of specific output is needed
+- `/insight-explore` — if more options are needed before deciding
+- `/insight-critique` — if a deeper review of specific output is needed
 
 > **Human output.** This skill's handler-facing output obeys the human-output
 > contract (`human-output/SKILL.md`).

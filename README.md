@@ -43,13 +43,22 @@ These skills came from repeated work with Claude Code, Codex, and other runtimes
 | make a report easier to decide from | [`human-output`](skills/human-output/) | a writing contract built around verdict, consequence, evidence, and omissions |
 | coordinate agents through a shared folder | [`agent-mailbox`](skills/agent-mailbox/) | traceable, append-only agent communication with Handler-readable state |
 
+Throughout these docs, a skill's written command is its **folder name**
+(`/insight-explore`, `/plan-phases`) — the portable form across runtimes. Shorter
+phrases declared in frontmatter `triggers:` (/explore, /phase-plan) are
+recognition aliases that some runtimes also honor.
+
 The generated [`SKILLS.md`](SKILLS.md) catalog groups all 57 skills into twelve families. It is built from live `SKILL.md` metadata plus the pack's [`taxonomy.yon`](skills/skills-help/taxonomy.yon), so the human catalog and machine catalogs share one source rather than parallel hand-maintained menus.
 
 Inside an agent, `/skills-help` reads that same bundled taxonomy and the skills actually installed beside it. Unknown third-party skills remain visible under `Unclassified`; they are not guessed into one of this pack's families.
 
 ## What is inspectable, and what is not enforced
 
-Every skill folder contains a self-sufficient `SKILL.md` and any references or assets it needs. Thirty-nine procedural skills also carry `protocol.yon`, a declarative companion that names steps, rules (`MUST` / `MUST_NOT`), and gates (`ABORT` / `WARN`) as typed records.
+Each skill folder carries its core instructions and required runtime companions.
+Optional sibling skills and repository-only release checks are declared separately
+and do not block the core skill when absent. Thirty-nine procedural skills also carry
+`protocol.yon`, a declarative companion that names steps, rules (`MUST` /
+`MUST_NOT`), and gates (`ABORT` / `WARN`) as typed records.
 
 That distinction matters:
 
@@ -79,16 +88,25 @@ The safest first path is a frozen copy: read the source, copy only the skills yo
 git clone https://github.com/allemaar/open-skills
 cd open-skills
 
-# Choose ONE directory your runtime actually reads
-cp -r skills/cold-review ~/.claude/skills/cold-review   # Claude Code
-cp -r skills/cold-review ~/.agents/skills/cold-review
-cp -r skills/cold-review ~/.codex/skills/cold-review
+# POSIX shell. Set exactly one directory your runtime actually reads.
+# The subshell keeps a failed preflight from closing an interactive terminal.
+(
+  set -eu
+  SKILLS_DIR="$HOME/.claude/skills"
+  SRC="skills/cold-review"
+  DEST="$SKILLS_DIR/cold-review"
 
-# Windows Command Prompt
-xcopy /E /I skills\cold-review "%USERPROFILE%\.claude\skills\cold-review"
+  probe="$DEST"
+  while [ "$probe" != "/" ]; do
+    [ ! -L "$probe" ] || { echo "link in destination chain: $probe"; exit 1; }
+    probe=$(dirname "$probe")
+  done
+  [ ! -e "$DEST" ] || { echo "already installed — diff before replacing"; exit 1; }
+  cp -r "$SRC" "$DEST"
+)
 ```
 
-The directories are not interchangeable. Claude Code reads `~/.claude/skills`; current Codex installations can use `~/.agents/skills`; other tools may use their own directory. Establish the path your runtime reads rather than copying everywhere and hoping discovery happens.
+The directories are not interchangeable. Claude Code reads `~/.claude/skills`; current Codex installations can use `~/.agents/skills`; other tools may use their own directory. Establish the path your runtime reads and change `SKILLS_DIR` once. On Windows, prefer the installer below: it performs native link checks instead of relying on POSIX shell semantics.
 
 ### Optional installer
 
@@ -106,6 +124,7 @@ Important boundaries:
 - By default it targets every known skills directory that already exists. Use `--runtime claude|codex|agents` to narrow it.
 - It refuses to overwrite an existing skill unless you pass `--force`.
 - It refuses to overwrite a symlinked or junctioned skill rather than risk deleting through the link into its source.
+- With `--force`, it stages and, unless `--no-validate` is supplied, validates the candidate before moving the existing copy aside, restores that copy if the swap fails, and surfaces crash leftovers for manual inspection.
 - Its provenance stamp is an unsigned plain-text assertion, not a certificate, and makes the installed `SKILL.md` differ from this repository. `--no-stamp` preserves byte identity.
 - The installer itself uses Node built-ins; validation may still fetch and execute `@younndai/yon-parser` through `npx`.
 

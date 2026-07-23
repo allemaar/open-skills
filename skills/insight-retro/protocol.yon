@@ -77,7 +77,7 @@
 # --- Downstream ---
 
 @SEC name="Downstream"
-@MAP name=NextCommand | pairs=["create-update-flagged-skills"->"/skill-gap"]
+@MAP name=NextCommand | pairs=["create-update-flagged-skills"->"/insight-skill-gap"]
 
 
 # --- Next Skills ---
@@ -90,4 +90,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-07-23T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

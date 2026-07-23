@@ -9,7 +9,7 @@ next-skills:
     phrase: "/cold-review"
     why: "After the audit finds (or confirms zero) missed sites, a fresh-context review is the strongest sanity check that the coupled change is consistent."
   - skill: insight-critique
-    phrase: "/critique"
+    phrase: "/insight-critique"
     why: "If the audit surfaces ambiguous sites (intentionally different vs. drift), a focused critique on the specific divergence resolves it before commit."
 triggers:
   - "/audit-coupled-constant"

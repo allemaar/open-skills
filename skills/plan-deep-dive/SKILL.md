@@ -33,7 +33,7 @@ Phase-by-phase deep inspection of any multi-phase plan. Stop at each phase, asse
 
 > **Caller Options.** Before executing, run the Caller Options protocol (`caller-options/SKILL.md`): triage this invocation for material optionality across the venues declared in front-matter; if one path clearly dominates, proceed silently; otherwise surface the options. For very long plans, `delegated` keeps the main context clean while a sub-agent walks the phases and returns the verdict log.
 
-> **Iterative Depth Protocol.** `/plan-create` produces the plan. `/deep-dive` pressure-tests it phase by phase. Never batch or skip phases — the value is in the forced stops.
+> **Iterative Depth Protocol.** `/plan-create` produces the plan. `/plan-deep-dive` pressure-tests it phase by phase. Never batch or skip phases — the value is in the forced stops.
 
 ## When to escalate to plan-create
 

@@ -2,7 +2,7 @@
 // The Spine Manifest generator — one deterministic join, human + machine surfaces.
 //
 // Reads every skill's SKILL.md front-matter contract (name, description,
-// visibility, triggers, next-skills), joins the pack-level YON family taxonomy,
+// visibility, triggers, next-skills, companions), joins the pack-level YON family taxonomy,
 // extracts gate/rule facts LIVE from each protocol.yon, and emits in one pass:
 //
 //   catalog.yon   YON-primary machine catalog (one @META record per skill).
@@ -31,7 +31,7 @@ import { join } from 'node:path';
 
 const SKILLS = 'skills';
 const TAXONOMY = join(SKILLS, 'skills-help', 'taxonomy.yon');
-const PACK_VERSION = '1.6.4';
+const PACK_VERSION = '1.6.5';
 const LICENSE = 'Apache-2.0';
 const SRC = 'github.com/allemaar/open-skills';
 const ATTRIBUTION =
@@ -102,6 +102,23 @@ function nextSkills(fm) {
     const phrase = (chunk.match(/phrase:\s*(.+)/) || [, ''])[1].trim().replace(/^["']|["']$/g, '');
     const why = (chunk.match(/why:\s*(.+)/) || [, ''])[1].trim().replace(/^["']|["']$/g, '');
     if (skill) items.push({ skill, phrase, why });
+  }
+  return items;
+}
+
+// companions: list of { path, optional, why } objects. Required companions must
+// live inside the skill folder; optional entries may point at repository-only
+// release evidence or an optional sibling skill.
+function companions(fm) {
+  const b = blockAfter(fm, 'companions');
+  if (!b) return [];
+  const text = b.body.join('\n');
+  const items = [];
+  for (const chunk of text.split(/^\s*-\s+path:/m).slice(1)) {
+    const companionPath = (chunk.match(/^\s*([^\n]+)/) || [, ''])[1].trim().replace(/^["']|["']$/g, '');
+    const optionalText = (chunk.match(/optional:\s*(true|false)/) || [, ''])[1];
+    const why = (chunk.match(/why:\s*(.+)/) || [, ''])[1].trim().replace(/^["']|["']$/g, '');
+    if (companionPath) items.push({ path: companionPath, optional: optionalText === 'true', why });
   }
   return items;
 }
@@ -211,6 +228,7 @@ function collect() {
       visibility,
       triggers: simpleList(fm, 'triggers'),
       nextSkills: nextSkills(fm),
+      companions: companions(fm),
       hasProtocol: !!proto,
       profile: proto ? proto.profile : null,
       gates: proto ? proto.gates : [],
@@ -264,6 +282,7 @@ function emitYon(skills, families, stampDay) {
       `gates="${yq(s.gates.join('; '))}"`,
       `rules="${yq(s.rules.join('; '))}"`,
       `next="${yq(s.nextSkills.map((n) => n.skill).join('; '))}"`,
+      `companions="${yq(s.companions.map((c) => `${c.optional ? 'optional' : 'required'}:${c.path}`).join('; '))}"`,
       `install="${yq(s.install.copy)}"`,
       `license="${LICENSE}"`,
       `src="${SRC}"`, // per-record provenance: a lifted line is still self-attributing (strip-fork defense)
@@ -279,7 +298,6 @@ function emitJson(skills, families, stampDay) {
   return (
     JSON.stringify(
       {
-        $schema: 'https://yon.younndai.com/open-skills-catalog.schema.json',
         name: 'open-skills',
         version: PACK_VERSION,
         homepage: 'https://allemaar.com',
@@ -323,14 +341,14 @@ function emitLlms(skills, families) {
   L.push('## For agents — how to install');
   L.push('No build step, no opaque installer. Follow these in order; the checks in step 3 are the ones that matter, because every failure mode here is SILENT.');
   L.push('0. Clone this repo and work from its root: `git clone https://github.com/allemaar/open-skills && cd open-skills`. Every relative path below is from that root.');
-  L.push('1. Enumerate skills from catalog.json (repo root) — each record carries name, description, triggers, gates, and install commands.');
+  L.push('1. Enumerate skills from catalog.json (repo root) — each record carries name, description, triggers, gates, companion classification, and install commands.');
   L.push("2. Choose SKILLS_DIR — the ONE directory the user's runtime actually reads. These are not interchangeable, and choosing wrong fails silently: no error, the skill simply never appears.");
   for (const d of RUNTIME_DIRS) L.push(`   - ${d} — ${RUNTIME_READS[d]}`);
   L.push('   Other tools use a dir of their own (Cursor ~/.cursor/skills, Copilot ~/.copilot/skills). If you cannot establish which runtime you are running in, ASK the user — do not guess. NOTE: SKILLS_DIR already ends in `/skills`. Every step below uses `$SKILLS_DIR/<name>` and never appends `/skills` a second time.');
   L.push('3. CHECK before you write. Both of these, in order — neither condition raises an error on its own, so if you skip the check you will not find out:');
   L.push('   a. `test -e "$SKILLS_DIR/<name>"` — if it exists, the user already has this skill. ASK before replacing it. Do NOT just copy: `cp -r` onto an existing directory does not fail, it nests a second copy INSIDE it and leaves the old SKILL.md exactly where the runtime will keep reading it.');
   L.push('   b. `test -L "$SKILLS_DIR/<name>"` (PowerShell: `(Get-Item -Force "$SKILLS_DIR/<name>").LinkType`) — if it is a symlink or junction, STOP and ask. Copying through it writes into whatever it points at, outside the skills dir, and exits 0 while doing so. Remove the link itself (`rmdir` on Windows, `unlink` on POSIX) — never delete or copy through it.');
-  L.push('4. COPY the folder (copy-default, never symlink): `cp -r skills/<name> "$SKILLS_DIR/<name>"` (Windows PowerShell: `Copy-Item -Recurse skills/<name> "$SKILLS_DIR/<name>"`). If it fails because SKILLS_DIR itself does not exist, create exactly that directory and retry — do not invent a different path to make the command succeed.');
+  L.push('4. COPY the folder (copy-default, never symlink): `cp -r skills/<name> "$SKILLS_DIR/<name>"` (Windows PowerShell: `Copy-Item -Recurse skills/<name> "$SKILLS_DIR/<name>"`). Required companions are contained in that folder and travel with it; optional companions in catalog.json are repository or sibling enhancements and do not block the core skill when absent. If the copy fails because SKILLS_DIR itself does not exist, create exactly that directory and retry — do not invent a different path to make the command succeed.');
   L.push('5. If it ships a protocol.yon, validate it: `npx @younndai/yon-parser validate "$SKILLS_DIR/<name>/protocol.yon" --profile <profile>` (profile is in catalog.json).');
   L.push('   EXPECT exit 0 and `✓ <the path you passed>: Valid` — the parser echoes the full path, so match on `: Valid` and the exit code, not on a fixed string. Anything else — a parse error, a non-zero exit — means STOP: report the output to the user and do not claim the skill installed cleanly.');
   L.push('6. VERIFY, then report the path: `$SKILLS_DIR/<name>/SKILL.md` exists and its first line is `---`. Tell the user the exact directory you installed into — that is what decides which runtime can see it. (This confirms the copy landed; it cannot tell you SKILLS_DIR was the right dir. Step 2 is what gets that right.)');
@@ -366,11 +384,15 @@ function emitSkillsMd(skills, families) {
     '> Generated by `tools/spine.mjs` from live `SKILL.md` metadata and `skills/skills-help/taxonomy.yon`. Do not edit this catalog by hand.',
     '',
     `This pack contains **${skills.length} skills**. Install only what earns its place; every skill is readable Markdown, and ${skills.filter((s) => s.hasProtocol).length} also carry a declarative YON (YounndAI Object Notation™) protocol you can inspect and validate.`,
+    '',
+    'Required companions are bundled inside their skill folder. Optional companions are repository checks or sibling enhancements and are declared separately in the machine catalog.',
+    '',
+    'A skill folder name is its portable written command. The trigger column shows recognition aliases in plain text, not additional canonical commands.',
   ];
   for (const family of families) {
     L.push('', `## ${family.label}`, '', '| Skill | Use when | Example triggers | Format |', '|---|---|---|---|');
     for (const s of skills.filter((item) => item.family === family.id)) {
-      const triggers = s.triggers.slice(0, 3).map((t) => `\`${mdCell(t)}\``).join(', ') || '—';
+      const triggers = s.triggers.slice(0, 3).map((t) => mdCell(t)).join(', ') || '—';
       const format = s.hasProtocol ? 'Markdown + YON' : 'Markdown';
       L.push(`| [\`${s.name}\`](skills/${s.name}/) | ${mdCell(firstSentence(s.description))} | ${triggers} | ${format} |`);
     }

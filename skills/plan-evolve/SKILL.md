@@ -6,10 +6,10 @@ visibility: public
 self-improvable: true
 next-skills:
   - skill: plan-deep-dive
-    phrase: "/deep-dive"
+    phrase: "/plan-deep-dive"
     why: "Inspect the new plan phase-by-phase before execution"
   - skill: insight-critique
-    phrase: "/critique"
+    phrase: "/insight-critique"
     why: "Get focused review of the proposed next-version plan"
   - skill: plan-execute
     phrase: "/plan-execute"
@@ -70,8 +70,8 @@ Output a next-version plan. If v1 was a plan, match its format — same structur
 
 Suggest the natural next command — these mirror the `next-skills:` front-matter:
 
-- `/deep-dive` — inspect the new plan phase-by-phase
-- `/critique` — focused review of the proposed v2 plan
+- `/plan-deep-dive` — inspect the new plan phase-by-phase
+- `/insight-critique` — focused review of the proposed v2 plan
 - `/plan-execute` — execute once approved
 
 > **Human output.** This skill's handler-facing output obeys the human-output

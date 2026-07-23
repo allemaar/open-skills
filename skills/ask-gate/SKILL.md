@@ -11,7 +11,7 @@ next-skills:
     phrase: "/insight-cross-examine"
     why: "When triage escalates a high-stakes branching question, deliberate the options to a recommendation before asking."
   - skill: insight-assess
-    phrase: "/assess"
+    phrase: "/insight-assess"
     why: "Evaluate the specific options behind an escalated decision so the handler's call is grounded."
   - skill: reflect
     phrase: "/reflect"
