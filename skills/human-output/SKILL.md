@@ -182,7 +182,10 @@ machine block must still be able to decide.
 
 ## Checking
 
-Run `tools/human-output-check.mjs` on drafted text before sending. What it
+From the `open-skills` repository root, run
+`node tools/human-output-check.mjs <draft-path>` on drafted text before sending.
+From this skill directory, the equivalent command is
+`node ../../tools/human-output-check.mjs <draft-path>`. What it
 grades, and the far longer list of what no script can grade — including the
 fact that nothing verifies a number in your prose against a number in your
 source — is the family checker contract, `human-spec/human-contract.md` §3.
