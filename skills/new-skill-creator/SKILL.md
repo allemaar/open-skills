@@ -27,7 +27,7 @@ triggers:
 Creates a new skill in your skills repo, links it into all three agent runtimes (Claude Code, Codex, and the shared `.agents/` dir), commits and pushes to GitHub. Supports two formats:
 
 - **Single-doc** — one `SKILL.md` (default for short routers, triggers, mode-setters, reference cards).
-- **Dual-doc** — `SKILL.md` (human-readable, self-sufficient) + `protocol.yon` (machine-executable spec) (default for heavy procedural skills with phases, gates, severity-ranked rules). See section 2b.
+- **Dual-doc** — `SKILL.md` (human-readable, self-sufficient) + `protocol.yon` (declarative, mechanically validatable protocol) (default for heavy procedural skills with phases, gates, severity-ranked rules). See section 2b.
 
 > **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date.
 
@@ -155,7 +155,7 @@ Required elements:
 
 **Multi-runtime safety (critical):**
 
-The `SKILL.md` body MUST be execution-sufficient on its own, because Codex and the other runtimes reading the shared `.agents/` dir have no YON priming today. Treat `protocol.yon` as "extra precision when the runtime can use it" — Claude Code reads it; Codex/`.agents/` may not. Even when `runtime: [claude, codex, agents]` is declared, the `protocol.yon` body is only used effectively on Claude Code today.
+The `SKILL.md` body MUST be execution-sufficient on its own. Runtime discovery and loading behavior varies, and the presence of `protocol.yon` does not prove that a host reads or enforces it. Treat `protocol.yon` as an inspectable, mechanically validatable companion that adds precision for readers and tooling; never make operational completeness depend on implicit YON loading.
 
 ### 3. Link into all three runtimes
 

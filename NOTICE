@@ -3,12 +3,13 @@ Copyright 2026 Alexandru Mares (allemaar.com)
 
 Licensed under the Apache License, Version 2.0. See LICENSE.
 
-Each skill in this project may include a declarative `protocol.yon` file authored
-in YON, a stream-first data format. YON, the YON specification, and the
-@younndai/* tooling (including @younndai/yon-parser) are separate products of
-MARLINK TRADING SRL (YounndAI), distributed under their own licenses. "YON" and
-"YounndAI" are trademarks of MARLINK TRADING SRL.
+Skills in this project may include a declarative `protocol.yon` file authored in
+YON (YounndAI Object Notation™), a stream-first data format created by Alexandru
+Mares. He also created its Apache-2.0 reference parser. YON, its specification,
+and @younndai/* tooling (including @younndai/yon-parser) are published separately
+in the YounndAI ecosystem and distributed under their own licenses. YounndAI™,
+YounndAI Object Notation™, and Link Your Think™ are trademarks of MARLINK TRADING SRL.
 
-This is a personal, independent project authored by Alexandru Mares. It is not a
-YounndAI product and is not affiliated with or endorsed by YounndAI beyond its
-use of the public, openly licensed YON format and tooling.
+This is a personal project authored by Alexandru Mares and is separate from the
+YounndAI product portfolio. Its truthful use of public YON and Lyt tooling does
+not make open-skills a YounndAI product or imply endorsement. See TRADEMARK.md.

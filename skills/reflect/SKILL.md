@@ -31,7 +31,7 @@ This is not a status report. Be direct about uncertainty — the value is in nam
 
 ## Why no `protocol.yon`
 
-`reflect` is deliberately Markdown-only. The skills that ship a `protocol.yon` do so because they carry enforceable steps, rules, or gates a runtime can check. `reflect` carries none by design — it is a prompt to think, not a procedure to enforce. A protocol here would declare a contract the skill has no intention of keeping. For a no-gate skill, prose is the honest shape.
+`reflect` is deliberately Markdown-only. Skills that ship a `protocol.yon` use it to make procedural steps, rules, or gates explicit and mechanically validatable. `reflect` carries none by design — it is a prompt to think, not a staged procedure. A protocol here would add machinery without adding a useful audit boundary. For a no-gate skill, prose is the honest shape.
 
 ## Boundary
 

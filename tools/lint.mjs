@@ -34,6 +34,7 @@
 //   7. contract-required  [ERROR] front-matter missing a required field
 //                                 (name, description, visibility, triggers, next-skills)
 //   8. contract-expected  [WARN]  front-matter missing a present-or-empty field (currently none)
+//   9. taxonomy-integrity [ERROR] pack YON taxonomy has missing, duplicate, unknown, or orphan assignments
 //
 // The front-matter contract (check 7) is the auditable root node every generated
 // discovery surface (catalog.yon/json, llms.txt, skills.graph.yon) derives from.
@@ -50,6 +51,7 @@ import { join, dirname, resolve, relative } from 'node:path';
 
 const ROOT = process.cwd();
 const SKILLS = 'skills';
+const TAXONOMY = join(SKILLS, 'skills-help', 'taxonomy.yon');
 
 // Resolve a backtick path token to an absolute path, or null when it is "not our
 // business" (an npm scope, a URL, an absolute path, an unknown shape). Deliberately
@@ -150,7 +152,9 @@ function hasKey(fm, key) {
 }
 
 // The front-matter contract — the root node of the discovery DAG.
-const CONTRACT_REQUIRED = ['name', 'description', 'visibility', 'triggers', 'next-skills']; // fail-closed (present; empty list ok)
+const CONTRACT_REQUIRED = ['name', 'description', 'visibility', 'triggers', 'next-skills']; // fail-closed (present; list fields may be empty)
+const CONTRACT_REQUIRED_SCALARS = ['name', 'description', 'visibility'];
+const VISIBILITY_VALUES = new Set(['public']);
 const CONTRACT_EXPECTED = []; // present-or-empty (WARN) — none today; all promoted to required at 45/45
 
 function lintSkill(name) {
@@ -168,6 +172,13 @@ function lintSkill(name) {
   // Check 7: front-matter contract — required fields (fail-closed)
   for (const k of CONTRACT_REQUIRED) {
     if (!hasKey(fm, k)) err(skillMd, 0, `front-matter contract: missing required '${k}'`);
+  }
+  for (const k of CONTRACT_REQUIRED_SCALARS) {
+    if (!fmField(fm, k)) err(skillMd, 0, `front-matter contract: required '${k}' must be non-empty`);
+  }
+  const visibility = fmField(fm, 'visibility');
+  if (visibility && !VISIBILITY_VALUES.has(visibility)) {
+    err(skillMd, 0, `front-matter visibility '${visibility}' is not allowed (expected: public)`);
   }
   // Check 8: front-matter contract — present-or-empty fields (WARN until 45/45)
   for (const k of CONTRACT_EXPECTED) {
@@ -220,10 +231,47 @@ if (fileArg) {
 }
 
 const names = readdirSync(SKILLS).filter((n) => statSync(join(SKILLS, n)).isDirectory()).sort();
+
+// Check 9: the pack-level YON taxonomy is the sole family-assignment source.
+function lintTaxonomy() {
+  if (!existsSync(TAXONOMY)) { err(TAXONOMY, 0, 'family taxonomy is missing'); return; }
+  const lines = readFileSync(TAXONOMY, 'utf8').split(/\r?\n/);
+  const families = new Set();
+  const orders = new Set();
+  const assigned = new Map();
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line.startsWith('@CFG id=family:')) {
+      const m = line.match(/^@CFG id=family:([a-z0-9-]+) \| set=\[label="([^"]+)",order:int=(\d+),aliases="([^"]*)"\]$/);
+      if (!m) { err(TAXONOMY, i + 1, 'invalid family record shape'); continue; }
+      const [, id, , order] = m;
+      if (families.has(id)) err(TAXONOMY, i + 1, `duplicate family id: ${id}`);
+      if (orders.has(order)) err(TAXONOMY, i + 1, `duplicate family order: ${order}`);
+      families.add(id);
+      orders.add(order);
+    } else if (line.startsWith('@MAP name=SkillFamilies')) {
+      for (const m of line.matchAll(/"([a-z0-9-]+)"->"([a-z0-9-]+)"/g)) {
+        const [, skill, family] = m;
+        if (assigned.has(skill)) err(TAXONOMY, i + 1, `duplicate skill assignment: ${skill}`);
+        assigned.set(skill, family);
+      }
+    }
+  }
+  if (families.size === 0) err(TAXONOMY, 0, 'taxonomy defines no families');
+  if (assigned.size === 0) err(TAXONOMY, 0, 'taxonomy defines no assignments');
+  const shipped = new Set(names);
+  for (const name of names) if (!assigned.has(name)) err(TAXONOMY, 0, `missing shipped skill assignment: ${name}`);
+  for (const [name, family] of assigned) {
+    if (!shipped.has(name)) err(TAXONOMY, 0, `orphan assignment names unshipped skill: ${name}`);
+    if (!families.has(family)) err(TAXONOMY, 0, `skill ${name} uses unknown family: ${family}`);
+  }
+}
+
+lintTaxonomy();
 for (const n of names) lintSkill(n);
 
 // Also lint the root public docs for broken links/refs.
-for (const doc of ['README.md', 'THREAT-MODEL.md', 'SECURITY.md', 'CONTRIBUTING.md', 'CONFORMANCE.md']) {
+for (const doc of ['README.md', 'SKILLS.md', 'THREAT-MODEL.md', 'SECURITY.md', 'CONTRIBUTING.md', 'CONFORMANCE.md', 'TRADEMARK.md']) {
   if (existsSync(doc)) lintMarkdown(doc);
 }
 

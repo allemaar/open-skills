@@ -2,7 +2,7 @@
 
 A skill runs with your agent's permissions, so a vulnerability in a skill is a vulnerability on your machine. Reports are taken seriously and handled in the open once a fix is ready.
 
-This is a personal, independent project maintained by Alexandru Mares. It is not a YounndAI™ product. Reports route to the maintainer directly, not to any company inbox.
+This is a personal project maintained by Alexandru Mares, separate from the YounndAI™ product portfolio. Reports route to the maintainer through this repository, not to a company inbox.
 
 ## Reporting a vulnerability
 
@@ -38,7 +38,7 @@ Critical issues are prioritized and patched ahead of these targets where feasibl
 - **Data leakage** — vault paths, machine paths, credentials, or other personal data that survived the scrub.
 - **Transitive references** — a skill that points at an untrusted or unresolvable dependency.
 
-Out of scope: vulnerabilities in your agent runtime, in the YON parser, or in any third-party tool a skill invokes. Report those to their respective maintainers. The YON specification and `@younndai/yon-parser` are separate products of MARLINK TRADING SRL, with their own disclosure process.
+Out of scope: vulnerabilities in your agent runtime, in the YON parser, or in any external tool a skill invokes. Report those to their respective maintainers. Alexandru Mares created YON (YounndAI Object Notation™) and its Apache-2.0 reference parser; they are published separately in the YounndAI ecosystem and have their own disclosure process.
 
 ## Supported versions
 

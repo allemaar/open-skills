@@ -13,6 +13,23 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+## [1.6.4] — 2026-07-23
+
+### Added
+
+- **A generated human catalog now shares one YON-backed taxonomy with machine discovery.** [`SKILLS.md`](SKILLS.md), `catalog.yon`, `catalog.json`, and `llms.txt` join live skill metadata to the pack-level `skills-help/taxonomy.yon`. `/skills-help` reads the bundled taxonomy and installed siblings at use time, while unknown third-party skills remain visible under `Unclassified`.
+- **A public trademark policy now states the personal-project boundary.** It covers only the YounndAI, YON, and Lyt marks used by open-skills and keeps internal legal operations outside the repository.
+
+### Changed
+
+- **The README now starts from the reader's work.** First-use routes and the generated catalog precede the trust and installation depth; Agent Mailbox remains visible as a modest first-person account of FULL-mode orchestration with Claude Code and Codex over Handler-controlled shared folders.
+- **YON claims now distinguish declared structure from runtime behavior.** Current public, generated, installer, plugin, and skill-authoring surfaces say what parser validation proves, disclose that `npx` may fetch and execute the separately published reference parser, and identify Alexandru Mares as the creator of YON and that parser without presenting open-skills as a YounndAI product.
+- **Release consistency now has explicit candidate and release modes.** Branch and pull-request CI permit only one coherent newest changelog version to await its tag; tag CI requires strict changelog/tag bijection before the GitHub release.
+
+### Removed
+
+- **Checker self-tests and proof-of-proof fixtures no longer run in product CI.** Product validation remains focused on current protocols, references, dataflow, generated artifacts, counts, privacy, and consumed behavior.
+
 ## [1.6.3] — 2026-07-23
 
 ### Added
@@ -214,6 +231,7 @@ Initial public release of the **open-skills** pack — reusable skills for AI co
 - CI conformance — YON validation, a cross-reference/structural lint, a YON-DAG semantic check, spine-manifest sync, and a `gate-fires` proof that the guards actually reject broken input;
 - Apache-2.0 license, NOTICE, THREAT-MODEL, CONTRIBUTING (DCO), and SECURITY policy.
 
+[1.6.4]: https://github.com/allemaar/open-skills/releases/tag/v1.6.4
 [1.6.3]: https://github.com/allemaar/open-skills/releases/tag/v1.6.3
 [1.6.2]: https://github.com/allemaar/open-skills/releases/tag/v1.6.2
 [1.6.1]: https://github.com/allemaar/open-skills/releases/tag/v1.6.1

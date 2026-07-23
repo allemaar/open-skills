@@ -1,4 +1,4 @@
-# Machine-executable mirror of SKILL.md. Canonical source: this skill's SKILL.md.
+# Declarative protocol companion to SKILL.md. Canonical operational source: this skill's SKILL.md.
 @DOC ver=2.0 | id=extract-signal | title="Elastic signal-extraction methodology" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Turn a noisy source surface into a vetted signal in the requested form, without contaminating the context that must stay clean." | trigger="user runs /extract-signal, or asks to gather + vet + present a signal about X as form Y"
 @STAMP ts:ts=2026-06-04T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual

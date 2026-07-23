@@ -10,10 +10,10 @@
 //      are `gh skill`'s own, so `gh skill update --dry-run` can report staleness on
 //      these copies without us shipping an updater. `--no-stamp` skips it.
 //   3. VALIDATES that skill's declarative protocol.yon with the public YON parser.
-// No build step, no opaque binary. Zero dependencies — Node built-ins only. If you
-// don't trust it, read it. (The only network is validation: the first `npx` run
-// fetches the pinned public parser; `--no-validate` skips it entirely. Stamping is
-// local-only — it shells out to `git` in THIS clone and phones nowhere.)
+// No build step or local npm install. This file itself uses Node built-ins only.
+// Validation is a separate execution boundary: the first `npx` run may download
+// and execute the pinned public parser package; `--no-validate` skips it entirely.
+// Stamping is local-only — it shells out to `git` in THIS clone and phones nowhere.
 //
 // Usage:
 //   node install.mjs <skill> [<skill> ...]      install named skills
@@ -24,8 +24,8 @@
 //   node install.mjs --no-stamp <skill>         copy byte-for-byte; write no provenance
 //   node install.mjs --force <skill>            overwrite an already-installed skill
 //
-// Apache-2.0. "YON" and "YounndAI" are trademarks of MARLINK TRADING SRL; this repo
-// demonstrates YON and is not a YounndAI product. See NOTICE.
+// Apache-2.0. YounndAI, YounndAI Object Notation, and Link Your Think are trademarks
+// of MARLINK TRADING SRL. open-skills is a personal project. See NOTICE and TRADEMARK.md.
 
 import fs from "node:fs";
 import os from "node:os";

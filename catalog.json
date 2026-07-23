@@ -1,16 +1,147 @@
 {
   "$schema": "https://yon.younndai.com/open-skills-catalog.schema.json",
   "name": "open-skills",
+  "version": "1.6.4",
   "homepage": "https://allemaar.com",
   "repository": "https://github.com/allemaar/open-skills",
   "generated": "2026-07-23",
   "generator": "tools/spine.mjs",
   "license": "Apache-2.0",
-  "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL.",
+  "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL.",
   "runtimeDirs": [
     "~/.claude/skills",
     "~/.agents/skills",
     "~/.codex/skills"
+  ],
+  "families": [
+    {
+      "id": "planning",
+      "label": "Planning & execution",
+      "order": 1,
+      "aliases": [
+        "planning",
+        "execution",
+        "plan"
+      ]
+    },
+    {
+      "id": "insight",
+      "label": "Insight & decision",
+      "order": 2,
+      "aliases": [
+        "insight",
+        "decision",
+        "review"
+      ]
+    },
+    {
+      "id": "priming",
+      "label": "Priming",
+      "order": 3,
+      "aliases": [
+        "priming",
+        "context",
+        "signal"
+      ]
+    },
+    {
+      "id": "skill-library",
+      "label": "Skill library",
+      "order": 4,
+      "aliases": [
+        "skills",
+        "library",
+        "meta"
+      ]
+    },
+    {
+      "id": "orchestration",
+      "label": "Orchestration & dispatch",
+      "order": 5,
+      "aliases": [
+        "orchestration",
+        "dispatch",
+        "collaboration",
+        "communication",
+        "agents"
+      ]
+    },
+    {
+      "id": "orientation",
+      "label": "Orientation",
+      "order": 6,
+      "aliases": [
+        "orientation",
+        "status",
+        "map",
+        "gaps",
+        "roadmap"
+      ]
+    },
+    {
+      "id": "human-output",
+      "label": "Human output",
+      "order": 7,
+      "aliases": [
+        "human",
+        "output",
+        "writing",
+        "presentation"
+      ]
+    },
+    {
+      "id": "code-architecture",
+      "label": "Code & architecture",
+      "order": 8,
+      "aliases": [
+        "code",
+        "architecture",
+        "interface",
+        "monorepo"
+      ]
+    },
+    {
+      "id": "obsidian-vault",
+      "label": "Obsidian & vault",
+      "order": 9,
+      "aliases": [
+        "obsidian",
+        "vault",
+        "canvas",
+        "bases"
+      ]
+    },
+    {
+      "id": "yon",
+      "label": "YON",
+      "order": 10,
+      "aliases": [
+        "yon",
+        "notation",
+        "protocol"
+      ]
+    },
+    {
+      "id": "web",
+      "label": "Web",
+      "order": 11,
+      "aliases": [
+        "web",
+        "extract",
+        "domain"
+      ]
+    },
+    {
+      "id": "git-sync",
+      "label": "Git & sync",
+      "order": 12,
+      "aliases": [
+        "git",
+        "github",
+        "sync",
+        "diff"
+      ]
+    }
   ],
   "count": 57,
   "dualDoc": 39,
@@ -18,6 +149,8 @@
   "skills": [
     {
       "name": "agent-mailbox",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
       "description": "Two or more agents — any harness, any vendor — collaborate through any shared folder: share a folder, load the skill, point at it.",
       "visibility": "public",
       "triggers": [
@@ -146,10 +279,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/agent-mailbox/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "ask-gate",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
       "description": "The Ask-Gate Protocol (AGP). Before surfacing an AskUserQuestion, triage whether the question is genuinely the handler's call (anti-nag); ask routine questions directly after a quality checklist, but escalate high-stakes / branching / irreversible ones through /insight-critique then /insight-assess first. Trigger via /ask-gate, or automatically before any handler-facing question. Not /caller-options (routes a skill's venue/mode) or /next-skills (recommends successors) — AGP governs the question itself.",
       "visibility": "public",
       "triggers": [
@@ -191,10 +326,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/ask-gate/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "audit-coupled-constant",
+      "family": "code-architecture",
+      "familyLabel": "Code & architecture",
       "description": "Audit every site of a constant whose value is duplicated across multiple call sites (retry budgets, timeouts, page sizes, magic numbers, feature flags). The author-maintained `SEE ALSO` trail is documentation, not enforcement — one missed site means the trail lies. Trigger on /audit-coupled-constant, \"audit budget consistency\", \"find all sites of this value\", \"check coupled invariant\", \"before raising this constant\", or after any edit to a constant that has SEE ALSO cross-references in its comments. Pairs naturally before /cold-review on a \"raise the budget\" PR. Not for extract-constant refactors that consolidate scattered values into a single named import — use /improve-codebase-architecture. Not for constants enforced by the type system (TypeScript `as const` literal imported everywhere) where the compiler is the audit — skip.",
       "visibility": "public",
       "triggers": [
@@ -226,10 +363,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "budget-check",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
       "description": "Pre-wave usage gate. Before launching an expensive multi-agent wave or fan-out, check the active usage block against a threshold (default 95%) via `ccusage` and return go / no-go / unknown — fail-closed, never a fabricated go. Trigger via /budget-check, or as a reflex before any large dispatch. Not /ask-gate (governs a handler-facing question) or /orchestrate-mode and /multi-agent-mode (which run the wave) — budget-check only decides whether the wave should start.",
       "visibility": "public",
       "triggers": [
@@ -271,10 +410,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/budget-check/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "caller-options",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
       "description": "The Caller Options protocol (COP). When a participating skill runs, detect optionality in Venue (inline / delegated sub-agent / fan-out) and Mode, evaluate it, and surface the choice to the caller instead of picking silently. Trigger via /caller-options, or automatically when a skill carrying the COP opt-in block runs. Not a session mode — use orchestrate-mode or multi-agent-mode for that; COP routes one skill invocation.",
       "visibility": "public",
       "triggers": [
@@ -322,10 +463,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/caller-options/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "cold-review",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
       "description": "Run outside-agent review of actual work artifacts against objectives, with classification, fresh reviewer lenses, evidence-based findings (re-opened at synthesis, not recalled), scoring, and thresholds; the review self-verifies its own findings before returning. Trigger on /cold-review, \"cold review this\", \"get outside review\", \"have fresh agents inspect this work\", or \"review this with fresh context\". Use verify for self-gating intent/plan/execution; use insight-adversarial for persona critique of ideas or plans.",
       "visibility": "public",
       "triggers": [
@@ -396,10 +539,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/cold-review/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "defuddle",
+      "family": "web",
+      "familyLabel": "Web",
       "description": "Extract clean markdown from web pages via Defuddle CLI (strips nav/ads/clutter, saves tokens). Trigger whenever the user pastes a URL or says \"read this article\", \"fetch this page\", \"summarize this blog post\", \"pull this doc\"; use this instead of WebFetch for any standard article, doc, or blog. Skip for APIs/JSON/raw downloads.",
       "visibility": "public",
       "triggers": [
@@ -435,10 +580,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "design-an-interface",
+      "family": "code-architecture",
+      "familyLabel": "Code & architecture",
       "description": "Generate multiple radically different interface designs for a module, then compare and synthesize. Use when the user wants to design an API, explore interface options, compare module shapes, or says \"design it twice\" / \"give me options\" / \"what should this interface look like\". Also trigger proactively when a user is about to implement something non-trivial and hasn't locked in an interface yet. Not /insight-explore (brainstorms approaches as prose) or /plan-create (turns a chosen design into a phased plan) — this produces concrete, comparable interface designs.",
       "visibility": "public",
       "triggers": [
@@ -472,10 +619,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "diff-recap",
+      "family": "git-sync",
+      "familyLabel": "Git & sync",
       "description": "Turn a git diff into a PR-pasteable recap — one row per changed file whose path, status, and line counts are transcribed verbatim from `git diff --numstat` (true by construction; the model writes only the labels), emitted as an inline annotated widget plus a mandatory ASCII twin and a `diff-recap/1` record whose totals equal the sum of the rows. Fills the PR-summary gap the orient- family does not cover. Not /orient-map (shape + delta of the work) or /orient-status (position + ETA) — diff-recap recaps a concrete change-set. Zero external dependency: it renders inline, never to a hosted service.",
       "visibility": "public",
       "triggers": [
@@ -524,10 +673,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/diff-recap/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "domain-check",
+      "family": "web",
+      "familyLabel": "Web",
       "description": "Reconcile domain-name availability across sources that disagree. Registrar availability endpoints report registered, broker-parked domains as available; this skill fixes the precedence — RDAP (Registration Data Access Protocol) is authoritative, DNS (Domain Name System) corroborates, broker nameservers override any \"available\", and the registrar is consulted for price only. Works on one domain or a bulk candidate sweep. Trigger via /domain-check, \"is this domain available\", \"check these domain names\", \"did the availability tool lie\". Not /investigate (read-only fact-gathering over a codebase) or /double-check (re-verifies one already-stated claim) — domain-check owns the availability verdict itself.",
       "visibility": "public",
       "triggers": [
@@ -581,10 +732,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/domain-check/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "double-check",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
       "description": "Targeted re-verification of a specific claim, output, or decision. Re-read sources, challenge, cross-reference, and deliver a verdict. Trigger when the user runs /double-check or asks to \"verify this\", \"re-check this\", \"are you sure about this\", \"go over this again\", or \"make sure this is right\". Not /verify (formal phase gate needing intent+plan+execution artifacts) or /insight-critique (advisory review of an output) — double-check is a quick targeted re-read of one claim.",
       "visibility": "public",
       "triggers": [
@@ -632,10 +785,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/double-check/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "extract-signal",
+      "family": "priming",
+      "familyLabel": "Priming",
       "description": "An elastic signal-extraction methodology run under /multi-agent-mode. INFERS from the call what signal, what form, what stakes, and where output goes. Default is agentic — a normal call spawns a freshly-primed sub-agent that gathers, vets, and returns the signal; when extract-signal IS the agent (in-session / new-session) it works inline with output inline by default (or to a file if specified). Composes techniques per task: gather (/prime-sweep, /prime-fetch, /prime-expand), diverge (/insight-explore), vet (/insight-critique → /insight-assess), cold second opinion (/cold-review-style). Vetting scales with stakes; the presented signal carries provenance and is sensitivity-matched to its destination. Trigger on /extract-signal, \"extract the signal on X and present it as Y\", \"gather + vet + report the signal about X\". Not the prime-* / insight-* / cold-review skills it composes; not /multi-agent-mode (the mode it runs under).",
       "visibility": "public",
       "triggers": [
@@ -695,10 +850,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/extract-signal/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "github-sync",
+      "family": "git-sync",
+      "familyLabel": "Git & sync",
       "description": "Review the session's git changes, summarize them for approval, then commit and push to GitHub. Trigger when the user runs /github-sync or says \"sync to github\", \"commit and push\", \"push this session\", \"wrap up and push\", \"save this session to git\". For commit-only (no push) or partial staging, do not use this skill.",
       "visibility": "public",
       "triggers": [
@@ -750,10 +907,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/github-sync/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "handoff",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
       "description": "Generate a structured cold-agent handoff brief (YAML frontmatter + Obsidian markdown + YON blocks) that any fresh LLM session can pick up and execute. Trigger when the user runs /handoff or says \"create a handoff\", \"dispatch to a fresh agent\", \"hand this to a cold session\", \"switch to a new session\", \"I have N tasks for cold agents\", \"package this for another agent\". Use /orchestrate-mode instead when you want to keep the *current* session as coordinator (no artifact produced).",
       "visibility": "public",
       "triggers": [
@@ -804,10 +963,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/handoff/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "handoff-execute",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
       "description": "Execute a handoff brief with enforced source-read discipline — load the brief's @SOURCES.required tier fully before planning, cite sources per plan step, run @OUTCOME.verify after, emit the retro per @GROUND_TRUTH_REQUIRED. Trigger when the user runs /handoff-execute <brief-path>, or pastes the activation phrase emitted by /handoff. Not auto-triggered — the receiving session invokes explicitly. Use /plan-execute for PLAN.md files (different schema); use /handoff to *create* a brief; use /cold-review for outside-agent review, not for executing the work itself.",
       "visibility": "public",
       "triggers": [
@@ -868,10 +1029,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/handoff-execute/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "human-draw",
+      "family": "human-output",
+      "familyLabel": "Human output",
       "description": "Renders information as a picture a person reads at a glance. Seven shapes — bar, spine, tree, lane, fork, matrix, small-multiple — drawn in printable ASCII on a monospace grid. Works on any subject: a budget, a harvest, a rota, a roof, a decision. Trigger phrases: \"/human-draw\", \"draw this\", \"show me this visually\", \"make a diagram of this\", \"I can't hold all this in my head\". Not /human-output (governs the prose around the figure, and runs alongside this skill rather than before it). Not /human-rewrite (repairs existing text, and hands material here when it turns out relational). This skill builds the text figure that survives copy-paste into any terminal.",
       "visibility": "public",
       "triggers": [
@@ -906,10 +1069,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "human-merge",
+      "family": "human-output",
+      "familyLabel": "Human output",
       "description": "Takes several separate reports — from several agents, several sources, or several documents — and returns one surface a person can decide from. Each report may be individually fine; the pile is what defeats the reader, and the relations between reports are invisible to every author who wrote one. Collapses reports that share an upstream source into the single source they are, names what is now superseded and whether a live decision rests on the dead figure, classifies conflicts instead of averaging them away, and pools coverage so a gap no single report had becomes visible. Works on any subject: research, legal, finance, operations, conservation, code. Trigger phrases: \"/human-merge\", \"merge these reports\", \"combine what the agents found\", \"what do all of these add up to\", \"the sub-agents all came back\", \"did anything here contradict anything else\". Not /human-output (the writing contract, which this skill links to rather than restates) or /human-rewrite (repairs one existing text and explicitly refuses several) — human-merge governs the pass across many.",
       "visibility": "public",
       "triggers": [
@@ -952,10 +1117,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "human-output",
+      "family": "human-output",
+      "familyLabel": "Human output",
       "description": "The contract for writing anything a person will read and decide from — a report, a finding, an answer, a request for a decision. Works on any subject: research, legal, finance, operations, planning, code. Referenced by other skills and invocable directly before a long piece of work. Trigger phrases: \"/human-output\", \"remember I am a person not a machine\", \"write this for a human\", \"keep the reader in mind\". Not /human-rewrite (repairs text that already exists) or /human-draw (builds a picture) — human-output governs writing as it happens.",
       "visibility": "public",
       "triggers": [
@@ -987,10 +1154,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "human-rewrite",
+      "family": "human-output",
+      "familyLabel": "Human output",
       "description": "The repair pass on text that already exists — an agent's own last output, a subagent's report, a supplied document, a research summary, a legal or medical paragraph — rewritten so a person can read it fast and act on it, without changing what it claims. Meaning-preserving by contract: uncertainty, scope conditions, numbers, sample sizes, attribution, absent results, and reversing caveats all survive. Works on any subject, not just software. Trigger phrases: \"/human-rewrite\", \"translate that into human\", \"that was a wall of text\", \"I can't follow this\", \"say that again but readable\", \"shorten this without losing anything\". Not /human-output (the writing contract, which this skill links to rather than restates) or /human-draw (builds a picture) — human-rewrite governs the transformation of text that already exists.",
       "visibility": "public",
       "triggers": [
@@ -1028,10 +1197,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "improve-codebase-architecture",
+      "family": "code-architecture",
+      "familyLabel": "Code & architecture",
       "description": "Explore a codebase to find opportunities for architectural improvement by deepening shallow modules (John Ousterhout, \"A Philosophy of Software Design\"). Use when the user says \"improve architecture\", \"find refactoring opportunities\", \"make this more testable\", \"this codebase is hard to navigate\", \"consolidate these modules\", \"find coupling problems\", \"write an RFC for this refactor\", or \"help me think about module design\". Also trigger when the user asks why tests are brittle, why a module is hard to mock, or why changing one thing always breaks another.",
       "visibility": "public",
       "triggers": [
@@ -1078,10 +1249,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/improve-codebase-architecture/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "insight-adversarial",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
       "description": "Multi-pass adversarial critique from dynamically selected personas — including Claude's own POV. Trigger on: \"adversarial\", \"red team this\", \"multi-POV review\", \"stress-test\", \"poke holes\", \"what am I missing\", \"attack my plan\", \"critique from multiple angles\", \"is this solid\", \"what would a skeptic say\", or any request for rigorous structured criticism of a plan, design, doc, workflow, YON, idea, or system. Runs 1–3 passes. First pass selects 4+ personas from the roster. Each subsequent pass adds 2–4 new personas to the mix. Third pass wraps with a final verdict if all issues are within acceptable params. Do not skip this skill when the user wants real scrutiny — \"just give me feedback\" often means they need this.",
       "visibility": "public",
       "triggers": [
@@ -1138,10 +1311,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-adversarial/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "insight-angles",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
       "description": "Angle & connection discovery engine. Classifies a subject (domain, type, current trends), picks lenses from a 17-family roster AND derives dynamic subject-specific ones, then runs layered passes via a context-adaptive venue (cold fan-out for independence — the cold-review effect — or inline) to surface frames, typed connections, hidden assumptions, candidate-expansions, and second-order effects, scored by novelty × relevance. Trigger on /insight-angles, \"find unseen angles\", \"what connections am I missing\", \"what are we not seeing\", \"surface hidden assumptions\", \"reframe this\". Not insight-explore (generates solution options — angles surfaces frames & connections) or insight-adversarial (attacks for flaws via personas — angles widens via lenses). Not insight-critique (reviews an output) or insight-cross-examine (the deliberation engine that orchestrates this one).",
       "visibility": "public",
       "triggers": [
@@ -1196,10 +1371,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-angles/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "insight-assess",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
       "description": "Structured decision evaluation — pros/cons, impact assessment, quality analysis, recommendation. Trigger when the user runs /assess or asks for evaluation, comparison, or impact analysis of an approach, decision, option, or implementation. Use insight-explore for divergent option generation, insight-critique for focused output review, and insight-adversarial for multi-POV stress testing.",
       "visibility": "public",
       "triggers": [
@@ -1249,10 +1426,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-assess/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "insight-critique",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
       "description": "Advisory review workflow. Reviews the last plan, code, architecture, or UI output and returns a structured report: Summary, Strengths, Risks, Fixes. Use when the user runs /critique, asks to \"review this\", \"critique this\", or \"what's wrong with this\", or wants focused feedback on a specific output. Also trigger as a quality gate before /execute. Advisory only — never blocks unless a kernel-prime violation is present. For multi-POV adversarial stress-testing with personas, use /insight-adversarial instead.",
       "visibility": "public",
       "triggers": [
@@ -1296,10 +1475,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-critique/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "insight-cross-examine",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
       "description": "Context-routed deliberation engine. Takes a subject OR a set, routes by Form × Corpus to a graduated depth, discovers unseen angles & connections (via insight-angles), then runs critique → assess (+ explore, + typed hybrids for sets) and presents a decision surface — as an ask-gate or inline. Trigger on /insight-cross-examine, \"cross-examine this\", \"weigh these options\", \"pick between these and recommend\", \"evaluate these candidates\". Not insight-critique (single-output review) or insight-assess (single-decision eval) — cross-examine orchestrates both across one-or-many with hybrids and contextual routing. Not insight-explore (pure divergence), insight-angles (the angle/connection engine it orchestrates), ask-gate (governs the question, not the subject), or plan-deep-dive (phase-by-phase plan inspection).",
       "visibility": "public",
       "triggers": [
@@ -1365,10 +1546,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-cross-examine/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "insight-explore",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
       "description": "Brainstorm 3+ possible implementations before committing. Trigger when the user runs /explore or asks to \"brainstorm options\", \"what are the ways to do this\", \"explore approaches\", \"give me alternatives\", or wants divergent thinking before planning or assessment. Use insight-assess to evaluate known options, insight-critique to review an existing output, and plan-create to turn a chosen direction into an implementation plan.",
       "visibility": "public",
       "triggers": [
@@ -1406,10 +1589,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-explore/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "insight-retro",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
       "description": "Post-implementation retrospective — map blast radius, audit documentation, extract skills, update KIs, document lessons learned. Trigger when the user runs /retro or asks for a \"retrospective\", \"post-mortem\", \"lessons learned\", or \"what changed\" after completing significant implementation work. Use insight-skill-gap when the goal is specifically to identify new or updated skills.",
       "visibility": "public",
       "triggers": [
@@ -1453,10 +1638,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-retro/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "insight-skill-gap",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
       "description": "Scan recent work and identify if new skills should be created or existing ones updated. Trigger when the user runs /skill-gap, asks to \"check for skill gaps\", \"what skills should we add\", \"did we miss anything worth capturing\", or after /retro flags patterns worth codifying. Use insight-retro for a broader post-implementation retrospective.",
       "visibility": "public",
       "triggers": [
@@ -1491,10 +1678,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-skill-gap/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "investigate",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
       "description": "Gather facts (files, deps, patterns) without making changes. Trigger when the user runs /investigate or asks to \"look into this\", \"explore the codebase\", \"understand how this works\", \"what files are involved\", \"map the dependencies\", or wants read-only fact-gathering before deciding what to do.",
       "visibility": "public",
       "triggers": [
@@ -1542,10 +1731,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/investigate/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "json-canvas",
+      "family": "obsidian-vault",
+      "familyLabel": "Obsidian & vault",
       "description": "Create and edit JSON Canvas files (.canvas) with nodes, edges, groups, and connections. Trigger when the user opens, edits, or asks to create a .canvas file, or says \"make a canvas\", \"build a mind map\", \"draw a flowchart in Obsidian\", \"add nodes to this canvas\". Not for .md notes (use obsidian-markdown) or .base files (use obsidian-bases).",
       "visibility": "public",
       "triggers": [
@@ -1581,10 +1772,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "monorepo-deps",
+      "family": "code-architecture",
+      "familyLabel": "Code & architecture",
       "description": "End-to-end syncpack + manypkg flow for an npm monorepo: check, fix, update, and maintain `.syncpackrc.json`. Trigger on /monorepo-deps, \"update deps\", \"sync deps\", \"check deps\", \"fix syncpackrc\", \"create syncpackrc\", or \"my lock file is out of sync\". Use syncpack-usage / syncpack-cli / syncpack-config for syncpack API and config details, manypkg-usage for manypkg specifics — this skill orchestrates them.",
       "visibility": "public",
       "triggers": [
@@ -1641,10 +1834,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/monorepo-deps/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "multi-agent-mode",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
       "description": "Activate multi-agent mode: the lead agent still works directly but delegates independent helper slices when useful. Trigger on /multi-agent-mode, \"multi-agent mode\", \"use helper agents\", \"work with subagents\", or \"parallelize if useful\". Use orchestrate-mode instead when the lead agent must dispatch only and not execute.",
       "visibility": "public",
       "triggers": [
@@ -1681,10 +1876,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "new-skill-creator",
+      "family": "skill-library",
+      "familyLabel": "Skill library",
       "description": "Scaffold a new Agent Skill end-to-end into a skills repo you maintain (folder, SKILL.md, optional protocol.yon for dual-doc skills, tri-runtime links for Claude Code + Codex + the shared .agents/ dir, commit and push). The maintainer's authoring loop — it links your own clone into your runtimes because you write the changes those links carry. Trigger when the user runs /new-skill-creator or says \"create a skill\", \"make a new skill for X\", \"add a slash command\", \"turn this workflow into a skill\", \"codify this as a skill\". Not for editing existing skills — edit the SKILL.md directly. Not for installing skills you did not write — copy those, per README.md. For migrating an existing single-doc skill to the dual-doc YON pattern, see section 6 below.",
       "visibility": "public",
       "triggers": [
@@ -1724,10 +1921,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/new-skill-creator/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "next-skills",
+      "family": "skill-library",
+      "familyLabel": "Skill library",
       "description": "The Next Skills protocol (NSP). When a participating skill finishes, surface its declared follow-on skills — each with an activation phrase and a one-line why — for the caller to pick, onboarding-style. Trigger via /next-skills, or automatically when a skill carrying the NSP opt-in block completes. Not /caller-options (routes one invocation's venue/mode) or /skills-help (the static library menu) — NSP recommends successor skills after one runs.",
       "visibility": "public",
       "triggers": [
@@ -1765,10 +1964,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/next-skills/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "obsidian-bases",
+      "family": "obsidian-vault",
+      "familyLabel": "Obsidian & vault",
       "description": "Create and edit Obsidian Bases (.base YAML files) with views, filters, formulas, and summaries. Trigger when the user opens or edits a .base file, or says \"make a base\", \"build a database view of my notes\", \"add a filter/formula to this base\", \"create a table/card view\", \"query my vault\". Not for .md notes (obsidian-markdown) or .canvas files (json-canvas).",
       "visibility": "public",
       "triggers": [
@@ -1805,10 +2006,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "obsidian-cli",
+      "family": "obsidian-vault",
+      "familyLabel": "Obsidian & vault",
       "description": "Drive a running Obsidian instance via the `obsidian` CLI — search vault, open/create/move notes, toggle tasks, edit properties, reload plugins, run JS, capture errors/screenshots. Trigger when the user says \"search my vault\", \"open this note in Obsidian\", \"list notes tagged X\", \"reload my plugin\", \"run this in Obsidian\", \"screenshot the active note\", or any command-line vault operation. Use this (not obsidian-markdown) whenever the action requires a live Obsidian session; use obsidian-markdown for raw .md file edits on disk.",
       "visibility": "public",
       "triggers": [
@@ -1846,10 +2049,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "obsidian-markdown",
+      "family": "obsidian-vault",
+      "familyLabel": "Obsidian & vault",
       "description": "Write valid Obsidian-Flavored Markdown — wikilinks, embeds, callouts, frontmatter properties, tags, comments. Trigger when the user creates or edits a .md file inside an Obsidian vault, or says \"write this as an Obsidian note\", \"add a callout\", \"use wikilinks\", \"set frontmatter properties\", \"embed this image/note\". Use obsidian-cli instead when the action needs a running Obsidian (search, open, plugin reload).",
       "visibility": "public",
       "triggers": [
@@ -1886,10 +2091,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "orchestrate-mode",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
       "description": "Activate orchestrator mode in the current session: the lead agent dispatches isolated worker subagents and does not execute concrete work directly. Trigger on /orchestrate-mode, \"become an orchestrator\", \"orchestrator mode\", \"delegate everything\", or \"do not execute\". Use multi-agent-mode instead when the lead agent should still work directly while delegating helper slices.",
       "visibility": "public",
       "triggers": [
@@ -1926,10 +2133,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "orient-gaps",
+      "family": "orientation",
+      "familyLabel": "Orientation",
       "description": "Answers \"What is stuck or missing?\" on any subject — blockers (on you vs on others), open forks, loose ends, and inferred silent gaps, computed fresh via a bounded read-only subagent. `--audit` raises claim-vs-evidence + gamed-signal disclosure. Trigger phrases: \"/orient-gaps\", \"what's stuck\", \"what are the blockers\", \"can I trust this\". Not /orient-status (how far along am I and when will it be done), /orient-map (what changed since I last looked), /orient-roadmap (what comes next and what gates it), or /investigate (deep facts) — orient-gaps shows the STALL surface.",
       "visibility": "public",
       "triggers": [
@@ -1977,10 +2186,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/orient-gaps/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "orient-map",
+      "family": "orientation",
+      "familyLabel": "Orientation",
       "description": "Answers \"What changed since I last looked?\" on any subject — the delta since your last look, plus done → here → next as a path on trunk or a TREE on a branch, computed fresh via a bounded read-only subagent. Trigger phrases: \"/orient-map\", \"show me the map\", \"what changed since last look\", \"how deep down this branch am I\". Not /orient-status (how far along am I and when will it be done), /orient-gaps (what is stuck or missing), /orient-roadmap (what comes next and what gates it), an IDE file-tree, or /plan-deep-dive — orient-map shows the SHAPE and the DELTA.",
       "visibility": "public",
       "triggers": [
@@ -2028,10 +2239,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/orient-map/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "orient-roadmap",
+      "family": "orientation",
+      "familyLabel": "Orientation",
       "description": "Answers \"What comes next, and what gates it?\" on any subject — the increment arc (built → current → next), what shipped now, the gates, the next increment's clusters (paramount starred), and the runway of stage boxes (now → gated-next → future) plus the deferred lanes, computed fresh via a bounded read-only subagent. Trigger phrases: \"/orient-roadmap\", \"show me the roadmap\", \"show me the runway\", \"what's next\". Not /orient-status (how far along am I and when will it be done), /orient-map (what changed since I last looked), or /orient-gaps (what is stuck or missing) — orient-roadmap shows the FORWARD HORIZONS and the runway.",
       "visibility": "public",
       "triggers": [
@@ -2078,10 +2291,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/orient-roadmap/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "orient-status",
+      "family": "orientation",
+      "familyLabel": "Orientation",
       "description": "Answers \"How far along am I, and when will it be done?\" on any subject (repo, folder, plan, task) — current position, what's left, and a banded ETA, computed fresh via a bounded read-only subagent. `--resume` rebuilds context after a gap (one next move + counter-case). Trigger phrases: \"/orient-status\", \"where are we on this\", \"how far along\", \"what's the ETA\". Not /orient-map (what changed since I last looked), /orient-gaps (what is stuck or missing), /orient-roadmap (what comes next and what gates it), /investigate (deep facts), /reflect (thinking), or a private arc-state status skill — orient-status SEES and reports NOW.",
       "visibility": "public",
       "triggers": [
@@ -2127,10 +2342,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/orient-status/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "plan-cleanup",
+      "family": "planning",
+      "familyLabel": "Planning & execution",
       "description": "Post-execution cleanup — remove planning artifacts and tech debt left behind after a plan runs. Trigger when the user runs /plan-cleanup, says 'clean up artifacts', 'remove the plan file', or 'no tech debt'. Not /plan-evolve (plans the next version) — plan-cleanup only removes leftovers and adds no new work.",
       "visibility": "public",
       "triggers": [
@@ -2174,10 +2391,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-cleanup/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "plan-create",
+      "family": "planning",
+      "familyLabel": "Planning & execution",
       "description": "Propose a phased, gated implementation plan before any work begins. Trigger when the user runs /plan-create, says \"make a plan\", \"plan this out\", \"design before coding\", \"let's plan first\", \"architect this\", or asks for a phased approach before implementation. Also trigger proactively when a task is complex enough that jumping straight to execution would be risky — multi-file changes, new features, architectural shifts, refactors spanning multiple components, or any task where misalignment early would be expensive to fix later. Output: a structured PLAN.md with phases, changes, risks, and verification criteria. Design only — no implementation code is written during /plan-create. Use plan-phases to restructure an existing plan, plan-execute to run an approved plan, plan-deep-dive to inspect a plan, plan-evolve to evolve shipped work, and plan-cleanup after execution.",
       "visibility": "public",
       "triggers": [
@@ -2241,10 +2460,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-create/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "plan-deep-dive",
+      "family": "planning",
+      "familyLabel": "Planning & execution",
       "description": "Phase-by-phase deep inspection of any multi-phase plan — stop at each phase and assess completeness, quality, and future-readiness before advancing. Trigger when the user runs /deep-dive or asks to \"do a deep dive\", \"inspect each phase\", \"look at this more carefully\", or \"check if we're missing anything\" on an existing plan. Use plan-create to create a new plan, plan-execute to run an approved plan, and plan-phases to add gates to a plan.",
       "visibility": "public",
       "triggers": [
@@ -2292,10 +2513,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-deep-dive/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "plan-evolve",
+      "family": "planning",
+      "familyLabel": "Planning & execution",
       "description": "Evolve a target to its next version — treat what shipped as v1, plan the next iteration. The target can be a plan, a repo, a system, a document, a feature, or a skill. If a v1 plan artifact exists, evolve it; if not, the current state of the target IS v1. Trigger: 'what would v2 look like', 'evolve this', 'what's next for this', 'next iteration of this', 'plan the next version'. Use plan-deep-dive to inspect the current state, plan-execute to run the new plan, and plan-cleanup to remove artifacts after execution.",
       "visibility": "public",
       "triggers": [
@@ -2332,10 +2555,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "plan-execute",
+      "family": "planning",
+      "familyLabel": "Planning & execution",
       "description": "Apply the last approved plan exactly. Trigger when the user runs /execute or says \"execute the plan\", \"implement this\", \"do it\", or \"go ahead\" after a plan has been approved. Surface judgment calls — do not make them silently. Not /plan-create (designs the plan first) or /plan-deep-dive (inspects a plan without running it) — plan-execute runs an already-approved plan.",
       "visibility": "public",
       "triggers": [
@@ -2383,10 +2608,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-execute/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "plan-phases",
+      "family": "planning",
+      "familyLabel": "Planning & execution",
       "description": "Restructure an existing plan into phases with /verify gates after each phase and critical steps. Trigger when the user runs /phase-plan or asks to \"add phases to this plan\", \"gate this plan\", \"restructure the plan\", or \"add checkpoints\". Use plan-create for new plans and plan-deep-dive for inspection without restructuring.",
       "visibility": "public",
       "triggers": [
@@ -2433,10 +2660,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-phases/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "prime-expand",
+      "family": "priming",
+      "familyLabel": "Priming",
       "description": "Expand a vague gap into concrete questions + named source candidates via a delegated sub-agent — caller sees only the proposed pair for confirm/edit/refuse, never the expansion reasoning. Trigger /prime-expand, \"expand on this\", or auto-fire on handoff receipt with a thin brief. (Not for ambient \"I need to know X\" phrasing — that would collide with /investigate.) Single sub-agent, single turn, ≤3 candidate-source spot-checks only. Pairs with /prime-fetch (single noisy tool call) and /prime-sweep (large source-surface investigation).",
       "visibility": "public",
       "triggers": [
@@ -2486,10 +2715,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/prime-expand/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "prime-fetch",
+      "family": "priming",
+      "familyLabel": "Priming",
       "description": "Run a noisy data-fetching tool call (Grep, Glob, WebFetch, MCP search) on the caller's behalf in a sub-agent's context — only the filtered, proof-of-work-verified digest enters the caller's window. Trigger /prime-fetch, or when a planned tool call will return mostly noise. Single sub-agent, single wave, read-only tool calls only. Pairs with /prime-expand (clarify intent first) and /prime-sweep (multi-source investigation).",
       "visibility": "public",
       "triggers": [
@@ -2533,10 +2764,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/prime-fetch/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "prime-sweep",
+      "family": "priming",
+      "familyLabel": "Priming",
       "description": "Prime the calling agent with high-signal context from large source surfaces (multiple files, packages, folders) via parallel delegated sub-agents. Sub-agents absorb the noise; only digested findings + source:line pointers enter the caller's context. Trigger /prime-sweep, chained from /prime-expand when sources are too large, or auto-fire on handoff receipt with listed sources. Iterative with cap 3 / log 4-6 / ask 7 / max 8 waves total. Pairs with /prime-expand (clarify intent first) and /prime-fetch (single noisy tool call).",
       "visibility": "public",
       "triggers": [
@@ -2586,10 +2819,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/prime-sweep/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "reflect",
+      "family": "planning",
+      "familyLabel": "Planning & execution",
       "description": "Lightweight cognitive pause — surface assumptions, uncertainty, and what you'd do differently. No gate, no enforcement, no artifacts required. Trigger when the user runs /reflect or wants to step back and think before continuing. Not /verify (formal gate) or /ask-gate (question triage) — reflect is freeform thinking with no gate.",
       "visibility": "public",
       "triggers": [
@@ -2618,10 +2853,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "self-improve",
+      "family": "skill-library",
+      "familyLabel": "Skill library",
       "description": "The Self-Improvement Protocol (SIP). After a participating skill runs, detect concrete signals that the skill itself could be better — ambiguous instructions, an uncovered edge case, a misfired rule, a stale cross-reference, a user correction — and propose a specific diff to it, surfaced for approval and never auto-applied. Conservative by default: silent unless a ready, blocking, or recurring fix exists. Trigger via /self-improve, or automatically when a self-improvable skill completes. Not /insight-skill-gap (deliberate batch scan for new/updated skills) or /insight-retro (post-implementation review) — SIP is the in-the-moment, per-skill detector.",
       "visibility": "public",
       "triggers": [
@@ -2667,10 +2904,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/self-improve/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "skills-help",
+      "family": "skill-library",
+      "familyLabel": "Skill library",
       "description": "The skills library menu — every skill grouped by family, each with a one-line description and a dual-doc/single-doc marker; pass a family name to drill into one family in full detail. Trigger with /skills-help, \"list my skills\", \"which skill for X\", \"skills menu\", \"what skills do I have\". Not /new-skill-creator (which scaffolds a new skill).",
       "visibility": "public",
       "triggers": [
@@ -2703,10 +2942,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "verify",
+      "family": "planning",
+      "familyLabel": "Planning & execution",
       "description": "Formal phase gate — checks intent, plan, and execution artifacts for drift, then actively re-checks each load-bearing claim against its source (an agent's self-report of having checked is not evidence). Requires the intent and execution artifacts (the plan is optional; an absent plan short-circuits to a plan-not-found verdict). Produces structured output. Trigger when the user runs /verify or needs to decide whether to proceed to the next phase. Not /double-check (quick re-check of one claim), /reflect (informal thinking, no gate), or /insight-critique (advisory output review) — verify is the formal gate against intent, plan, and execution.",
       "visibility": "public",
       "triggers": [
@@ -2749,10 +2990,12 @@
         "validate": "npx @younndai/yon-parser validate <skills-dir>/verify/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "yon-read",
+      "family": "yon",
+      "familyLabel": "YON",
       "description": "Read, interpret, or explain existing YON content. Trigger on any .yon file, YON snippet (lines with @TAG|...|... patterns), or when the user says \"read this YON\", \"what does this YON mean\", \"explain this @DOC/@RULE/@STEP\", \"summarize this YON\", \"interpret this record\". Do NOT trigger for generic format questions (\"what is YON?\") with no YON content present — and do not trigger when the user wants to *write* YON (use yon-write).",
       "visibility": "public",
       "triggers": [
@@ -2784,10 +3027,12 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
       "name": "yon-write",
+      "family": "yon",
+      "familyLabel": "YON",
       "description": "YON Writing & Compilation Mode. Use when creating, generating, converting, or writing YON content. Triggers on: \"write YON\", \"convert to YON\", \"create a .yon file\", \"encode this as YON\", \"YON format\", or any request where the expected output is YON records. Also triggers when unstructured content should be structured into YON even without explicit keyword — e.g., working in a YON project. Use yon-read instead when reading, interpreting, explaining, or summarizing existing YON.",
       "visibility": "public",
       "triggers": [
@@ -2824,7 +3069,7 @@
         "validate": null
       },
       "license": "Apache-2.0",
-      "attribution": "open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL."
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     }
   ]
 }

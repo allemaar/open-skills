@@ -4,13 +4,13 @@
     "name": "Alexandru Mares (allemaar)",
     "url": "https://allemaar.com"
   },
-  "description": "Reusable, inspectable skills for AI coding agents — each a SKILL.md you can read and a protocol.yon you can validate. Review, planning, deliberation, orchestration, priming, and more. Apache-2.0.",
+  "description": "Reusable, inspectable skills for AI coding agents — every skill is readable Markdown, and 39 of 57 also carry a declarative YON (YounndAI Object Notation™) protocol you can validate. Review, planning, deliberation, orchestration, priming, and more. Apache-2.0.",
   "plugins": [
     {
       "name": "open-skills",
       "source": "./",
       "displayName": "open-skills",
-      "description": "Reusable skills for AI coding agents. Every skill ships a SKILL.md (plain-language protocol); 39 of 57 also ship a declarative protocol.yon (named, typed steps, MUST/MUST_NOT rules, and ABORT/WARN gates) validated by @younndai/yon-parser. Read before you trust — nothing executes on faith.",
+      "description": "Reusable skills for AI coding agents. Every skill has a readable SKILL.md; 39 of 57 also carry a declarative protocol.yon with named steps, rules, and gates validated structurally by @younndai/yon-parser. Validation does not enforce runtime obedience. Read before you trust.",
       "author": {
         "name": "Alexandru Mares",
         "url": "https://allemaar.com"

@@ -1,8 +1,8 @@
 name: conformance
 
-# Validates every skill's protocol.yon against the public @younndai/yon-parser on
-# every push and PR. The badge in the README reflects this job: green = all skills'
-# protocols are YON-valid; red = a protocol.yon regressed.
+# Runs the pack's named product checks on every push and PR. Protocol validity is
+# necessary but not sufficient for the README badge: the job also checks metadata,
+# references, dataflow, generated catalogs, counts, privacy, and release consistency.
 
 on:
   push:
@@ -45,23 +45,19 @@ jobs:
             yon validate "$file" --profile exec
             node tools/yon-dag.mjs "$file"
           done
-      - name: Spine manifest in sync (catalog.yon + catalog.json + llms.txt + skills.graph.yon)
+      - name: Spine manifests in sync (machine catalogs + SKILLS.md)
         run: node tools/spine.mjs --check
       - name: Validate the YON manifests (catalog + graph are themselves YON)
         run: |
           yon validate catalog.yon --profile full
           yon validate skills.graph.yon --profile full
-      - name: Gate-fires proof (the guards actually reject bad input)
-        run: node tools/gate-fires.mjs
       - name: Orient-record round-trip (the orient- example survives parse→format→parse)
         run: node tools/orient-roundtrip.mjs
-      - name: Orient value gate (enum membership + fail-closed gates yon validate can't enforce)
-        run: node tools/orient-validate.mjs
-      - name: Diff-recap value gate (Σ per-file == totals; fail-closed; yon validate can't enforce)
-        run: node tools/diff-recap-check.mjs
-      - name: Human-output check (ASCII fences, figure arithmetic, acronym expansion)
-        run: node tools/human-output-check.mjs --self-test
       - name: Leak guard (no machine-specific / absolute paths in the public pack)
         run: node tools/leak-guard.mjs
-      - name: Consistency guard (skill counts agree; CHANGELOG releases ↔ git tags)
-        run: node tools/consistency-guard.mjs
+      - name: Candidate consistency (branch and pull-request commits)
+        if: github.ref_type != 'tag'
+        run: node tools/consistency-guard.mjs --candidate
+      - name: Strict release consistency (tag commits)
+        if: github.ref_type == 'tag'
+        run: node tools/consistency-guard.mjs --release

@@ -14,14 +14,14 @@
 # NOTE: the 1280x640 social-preview card is uploaded manually via the GitHub web UI
 #       (Settings -> Social preview) — there is no gh/API path for it. See assets/social-preview.svg.
 #
-# Apache-2.0. open-skills is a personal allemaar project. "YON" and "YounndAI" are marks of
-# MARLINK TRADING SRL; this repo demonstrates YON but is not a YounndAI product. See NOTICE.
+# Apache-2.0. open-skills is a personal project by Alexandru Mares, separate from the
+# YounndAI product portfolio. See NOTICE and TRADEMARK.md.
 
 set -euo pipefail
 
 REPO="allemaar/open-skills"
 
-DESCRIPTION="Inspectable agent skills in two files: a Markdown doc + a declarative YON protocol you can validate yourself. No arbitrary code."
+DESCRIPTION="Readable agent skills with optional declarative YON protocols you can inspect and validate. A personal, field-used pack by Alexandru Mares."
 HOMEPAGE="https://allemaar.com"
 
 # ~12-15 on-target topics (plan Phase 4 cap = 15). Keep on-target; do not over-stuff.
@@ -63,9 +63,13 @@ case "$cmd" in
     ;;
   apply)
     args=( --description "$DESCRIPTION" --homepage "$HOMEPAGE" )
-    for t in "${TOPICS[@]}"; do args+=( --add-topic "$t" ); done
     gh repo edit "$REPO" "${args[@]}"
-    echo "applied: description, homepage, ${#TOPICS[@]} topics -> $REPO"
+    topic_args=()
+    for t in "${TOPICS[@]}"; do topic_args+=( -f "names[]=$t" ); done
+    gh api --method PUT "repos/$REPO/topics" \
+      -H "Accept: application/vnd.github+json" \
+      "${topic_args[@]}" >/dev/null
+    echo "applied: description, homepage, exact ${#TOPICS[@]}-topic set -> $REPO"
     ;;
   check)
     if diff <(declared_repr) <(live_repr) >/dev/null; then

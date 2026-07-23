@@ -1,16 +1,16 @@
 #!/usr/bin/env node
-// The Spine Manifest generator — ONE source, three machine-discovery surfaces.
+// The Spine Manifest generator — one deterministic join, human + machine surfaces.
 //
 // Reads every skill's SKILL.md front-matter contract (name, description,
-// visibility, triggers, next-skills) + extracts gate/rule facts LIVE from each
-// protocol.yon, and emits, in one pass:
+// visibility, triggers, next-skills), joins the pack-level YON family taxonomy,
+// extracts gate/rule facts LIVE from each protocol.yon, and emits in one pass:
 //
 //   catalog.yon   YON-primary machine catalog (one @META record per skill).
 //                 The index is itself a YON document — validates against the
 //                 public @younndai/yon-parser like every protocol here.
 //   catalog.json  Derived courtesy view for non-YON consumers / registries.
-//   llms.txt      Dense agent/LLM manifest: about-the-pack + about-YON + an
-//                 explicit "For agents — how to install" recipe + one line/skill.
+//   llms.txt      Dense agent/LLM manifest grouped by family.
+//   SKILLS.md     GitHub-readable human catalog grouped by the same families.
 //
 // Provenance (license + attribution + trademark) is WELDED into every record so
 // attribution survives a strip-and-fork. Generated from the front-matter contract
@@ -30,10 +30,12 @@ import { readdirSync, existsSync, readFileSync, writeFileSync, statSync } from '
 import { join } from 'node:path';
 
 const SKILLS = 'skills';
+const TAXONOMY = join(SKILLS, 'skills-help', 'taxonomy.yon');
+const PACK_VERSION = '1.6.4';
 const LICENSE = 'Apache-2.0';
 const SRC = 'github.com/allemaar/open-skills';
 const ATTRIBUTION =
-  'open-skills by Alexandru Mares (allemaar.com). Apache-2.0. Not a YounndAI product; YON and YounndAI are trademarks of MARLINK TRADING SRL.';
+  'open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL.';
 const RUNTIME_DIRS = ['~/.claude/skills', '~/.agents/skills', '~/.codex/skills'];
 // Which runtime actually reads each dir. These are NOT interchangeable, and the failure
 // is silent: copy into a dir the user's runtime doesn't read and there is no error — the
@@ -136,19 +138,77 @@ function readProtocol(file) {
   return out;
 }
 
+// --- pack-level family taxonomy --------------------------------------------
+
+function readTaxonomy(file) {
+  if (!existsSync(file)) throw new Error(`taxonomy missing: ${file}`);
+  const lines = readFileSync(file, 'utf8').split(/\r?\n/);
+  const families = [];
+  const familyIds = new Set();
+  const orders = new Set();
+  const assignments = new Map();
+
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (line.startsWith('@CFG id=family:')) {
+      const m = line.match(/^@CFG id=family:([a-z0-9-]+) \| set=\[label="([^"]+)",order:int=(\d+),aliases="([^"]*)"\]$/);
+      if (!m) throw new Error(`invalid family record: ${line}`);
+      const [, id, label, orderText, aliasText] = m;
+      const order = Number(orderText);
+      if (familyIds.has(id)) throw new Error(`duplicate family id: ${id}`);
+      if (orders.has(order)) throw new Error(`duplicate family order: ${order}`);
+      familyIds.add(id);
+      orders.add(order);
+      families.push({ id, label, order, aliases: aliasText.split(',').map((s) => s.trim()).filter(Boolean) });
+    } else if (line.startsWith('@MAP name=SkillFamilies')) {
+      for (const m of line.matchAll(/"([a-z0-9-]+)"->"([a-z0-9-]+)"/g)) {
+        const [, skill, family] = m;
+        if (assignments.has(skill)) throw new Error(`duplicate taxonomy assignment: ${skill}`);
+        assignments.set(skill, family);
+      }
+    }
+  }
+
+  if (families.length === 0) throw new Error('taxonomy defines no families');
+  if (assignments.size === 0) throw new Error('taxonomy defines no skill assignments');
+  for (const [skill, family] of assignments) {
+    if (!familyIds.has(family)) throw new Error(`taxonomy assigns ${skill} to unknown family ${family}`);
+  }
+  families.sort((a, b) => a.order - b.order);
+  return { families, assignments };
+}
+
 // --- collect every skill ----------------------------------------------------
 
 function collect() {
   const names = readdirSync(SKILLS)
     .filter((n) => existsSync(join(SKILLS, n, 'SKILL.md')))
     .sort();
-  return names.map((name) => {
+  const taxonomy = readTaxonomy(TAXONOMY);
+  const shipped = new Set(names);
+  for (const name of names) {
+    if (!taxonomy.assignments.has(name)) throw new Error(`taxonomy missing shipped skill: ${name}`);
+  }
+  for (const name of taxonomy.assignments.keys()) {
+    if (!shipped.has(name)) throw new Error(`taxonomy names unshipped skill: ${name}`);
+  }
+  const skills = names.map((name) => {
     const fm = frontMatter(readFileSync(join(SKILLS, name, 'SKILL.md'), 'utf8'));
     const proto = readProtocol(join(SKILLS, name, 'protocol.yon'));
+    const family = taxonomy.assignments.get(name);
+    const declaredName = scalar(fm, 'name');
+    const description = scalar(fm, 'description');
+    const visibility = scalar(fm, 'visibility');
+    if (!declaredName) throw new Error(`skill ${name} has missing or empty front-matter name`);
+    if (declaredName !== name) throw new Error(`skill ${name} declares front-matter name ${declaredName}`);
+    if (!description) throw new Error(`skill ${name} has missing or empty front-matter description`);
+    if (visibility !== 'public') throw new Error(`skill ${name} must declare visibility=public`);
     return {
-      name,
-      description: scalar(fm, 'description') || '',
-      visibility: scalar(fm, 'visibility') || 'public',
+      name: declaredName,
+      family,
+      familyLabel: taxonomy.families.find((f) => f.id === family).label,
+      description,
+      visibility,
       triggers: simpleList(fm, 'triggers'),
       nextSkills: nextSkills(fm),
       hasProtocol: !!proto,
@@ -166,6 +226,7 @@ function collect() {
       attribution: ATTRIBUTION,
     };
   });
+  return { skills, families: taxonomy.families };
 }
 
 // --- emit catalog.yon -------------------------------------------------------
@@ -180,13 +241,13 @@ function firstSentence(s) {
   return (m ? m[0] : String(s || '')).trim();
 }
 
-function emitYon(skills, stampDay) {
+function emitYon(skills, families, stampDay) {
   const L = [];
   L.push(
-    `@DOC ver=2.0 | id=open-skills-catalog | title="open-skills — machine catalog" | kind=catalog | profile=full | fmt=min | license="${LICENSE}" | guide="https://yon.younndai.com/yon-guide.txt"`
+    `@DOC ver=2.0 | id=open-skills-catalog | title="open-skills — machine catalog" | kind=catalog | profile=full | fmt=min | pack_version=${PACK_VERSION} | license="${LICENSE}" | guide="https://yon.younndai.com/yon-guide.txt"`
   );
   L.push(
-    `@INTENT goal="Machine-readable catalog of the open-skills pack — one record per skill — for agent and registry discovery and install. Generated by tools/spine.mjs from each skill's SKILL.md front-matter contract plus live protocol.yon facts."`
+    `@INTENT goal="Machine-readable catalog of the open-skills pack — one record per skill — for agent and registry discovery and install. Generated by tools/spine.mjs from each skill's SKILL.md front-matter, the pack-level YON taxonomy, and live protocol.yon facts."`
   );
   L.push(`@STAMP ts:ts=${stampDay} | src=tool | method=generated | scope="tools/spine.mjs"`);
   L.push(`@NOTE text="${yq(ATTRIBUTION)} Generated — do not edit by hand; run tools/spine.mjs."`);
@@ -194,6 +255,7 @@ function emitYon(skills, stampDay) {
   for (const s of skills) {
     const fields = [
       `@META id=${s.name}`,
+      `family=${s.family}`,
       `visibility=${s.visibility}`,
       `protocol=${s.hasProtocol ? 'yes' : 'no'}`,
       `profile=${s.profile || 'none'}`,
@@ -213,12 +275,13 @@ function emitYon(skills, stampDay) {
 
 // --- emit catalog.json ------------------------------------------------------
 
-function emitJson(skills, stampDay) {
+function emitJson(skills, families, stampDay) {
   return (
     JSON.stringify(
       {
         $schema: 'https://yon.younndai.com/open-skills-catalog.schema.json',
         name: 'open-skills',
+        version: PACK_VERSION,
         homepage: 'https://allemaar.com',
         repository: 'https://github.com/allemaar/open-skills',
         generated: stampDay,
@@ -226,6 +289,7 @@ function emitJson(skills, stampDay) {
         license: LICENSE,
         attribution: ATTRIBUTION,
         runtimeDirs: RUNTIME_DIRS,
+        families,
         count: skills.length,
         dualDoc: skills.filter((s) => s.hasProtocol).length,
         install:
@@ -240,18 +304,20 @@ function emitJson(skills, stampDay) {
 
 // --- emit llms.txt ----------------------------------------------------------
 
-function emitLlms(skills) {
+function emitLlms(skills, families) {
   const dual = skills.filter((s) => s.hasProtocol).length;
   const L = [];
   L.push('# open-skills');
   L.push('');
+  L.push(`Version: ${PACK_VERSION}`);
+  L.push('');
   L.push(
-    `> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Each skill is a folder under skills/ with a SKILL.md (plain-language what/when) and, for ${dual} of ${skills.length}, a protocol.yon — a declarative, machine-validatable contract of its steps, rules, and gates. Apache-2.0. Read before you trust: nothing executes that you cannot read first.`
+    `> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; ${dual} of ${skills.length} also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.`
   );
   L.push('');
-  L.push('## About YON');
+  L.push('## About YON (YounndAI Object Notation™)');
   L.push(
-    'The protocol.yon files are written in YON (https://github.com/YounndAI/yon), a stream-first data format for AI-agent workflows with a public spec (https://github.com/YounndAI/yon-spec) and an Apache-2.0 reference parser (@younndai/yon-parser). YON is what makes each skill auditable: its rules (MUST / MUST_NOT) and gates (ABORT / WARN) are named, typed objects, not prose.'
+    'The protocol.yon files are written in YON (https://github.com/YounndAI/yon), a stream-first data format for AI-agent workflows with a public spec (https://github.com/YounndAI/yon-spec) and an Apache-2.0 reference parser (@younndai/yon-parser). YON makes a skill\'s declared rules (MUST / MUST_NOT) and gates (ABORT / WARN) inspectable as named, typed objects; it does not enforce runtime obedience.'
   );
   L.push('');
   L.push('## For agents — how to install');
@@ -268,19 +334,49 @@ function emitLlms(skills) {
   L.push('5. If it ships a protocol.yon, validate it: `npx @younndai/yon-parser validate "$SKILLS_DIR/<name>/protocol.yon" --profile <profile>` (profile is in catalog.json).');
   L.push('   EXPECT exit 0 and `✓ <the path you passed>: Valid` — the parser echoes the full path, so match on `: Valid` and the exit code, not on a fixed string. Anything else — a parse error, a non-zero exit — means STOP: report the output to the user and do not claim the skill installed cleanly.');
   L.push('6. VERIFY, then report the path: `$SKILLS_DIR/<name>/SKILL.md` exists and its first line is `---`. Tell the user the exact directory you installed into — that is what decides which runtime can see it. (This confirms the copy landed; it cannot tell you SKILLS_DIR was the right dir. Step 2 is what gets that right.)');
-  L.push('That is the whole install: copy a readable folder, validate its declarative contract. No code runs on faith.');
+  L.push('That is the basic install: copy a readable folder, then optionally validate its declarative protocol. The npx validation command may download and execute the separately published parser package; inspect that boundary before using it.');
   L.push('Updating later: these are frozen copies — they do not change until you re-copy. `git pull` in the clone, then diff before you accept: `git diff --no-index "$SKILLS_DIR/<name>" skills/<name>` — silence means identical; read anything it prints before re-copying. Do NOT filter that diff. A `cp -r` install carries no `metadata:` provenance block, so filtering those lines buys nothing and would hide one APPEARING — which is a change you want to see, since that block is an unsigned claim other tooling will act on.');
   L.push('');
-  L.push('## Skills');
-  for (const s of skills) {
-    const trg = s.triggers.length ? ` — triggers: ${s.triggers.slice(0, 4).join(', ')}` : '';
-    const tag = s.hasProtocol ? ' [protocol.yon]' : ' [md-only]';
-    L.push(`- ${s.name}${tag} — ${firstSentence(s.description)}${trg}`);
+  L.push('## Skills by family');
+  for (const family of families) {
+    L.push('');
+    L.push(`### ${family.label}`);
+    for (const s of skills.filter((item) => item.family === family.id)) {
+      const trg = s.triggers.length ? ` — triggers: ${s.triggers.slice(0, 4).join(', ')}` : '';
+      const tag = s.hasProtocol ? ' [protocol.yon]' : ' [md-only]';
+      L.push(`- ${s.name}${tag} — ${firstSentence(s.description)}${trg}`);
+    }
   }
   L.push('');
   L.push('---');
   L.push(ATTRIBUTION);
   return L.join('\n') + '\n';
+}
+
+// --- emit SKILLS.md ---------------------------------------------------------
+
+function mdCell(s) {
+  return String(s || '').replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim();
+}
+
+function emitSkillsMd(skills, families) {
+  const L = [
+    '# Skills',
+    '',
+    '> Generated by `tools/spine.mjs` from live `SKILL.md` metadata and `skills/skills-help/taxonomy.yon`. Do not edit this catalog by hand.',
+    '',
+    `This pack contains **${skills.length} skills**. Install only what earns its place; every skill is readable Markdown, and ${skills.filter((s) => s.hasProtocol).length} also carry a declarative YON (YounndAI Object Notation™) protocol you can inspect and validate.`,
+  ];
+  for (const family of families) {
+    L.push('', `## ${family.label}`, '', '| Skill | Use when | Example triggers | Format |', '|---|---|---|---|');
+    for (const s of skills.filter((item) => item.family === family.id)) {
+      const triggers = s.triggers.slice(0, 3).map((t) => `\`${mdCell(t)}\``).join(', ') || '—';
+      const format = s.hasProtocol ? 'Markdown + YON' : 'Markdown';
+      L.push(`| [\`${s.name}\`](skills/${s.name}/) | ${mdCell(firstSentence(s.description))} | ${triggers} | ${format} |`);
+    }
+  }
+  L.push('', '---', '', ATTRIBUTION, '');
+  return L.join('\n');
 }
 
 // --- emit skills.graph.yon --------------------------------------------------
@@ -325,14 +421,15 @@ function normalize(s) {
 
 function main() {
   const check = process.argv.includes('--check');
-  const skills = collect();
+  const { skills, families } = collect();
   const stampDay = new Date().toISOString().slice(0, 10);
 
   const outputs = {
-    'catalog.yon': emitYon(skills, stampDay),
-    'catalog.json': emitJson(skills, stampDay),
-    'llms.txt': emitLlms(skills),
+    'catalog.yon': emitYon(skills, families, stampDay),
+    'catalog.json': emitJson(skills, families, stampDay),
+    'llms.txt': emitLlms(skills, families),
     'skills.graph.yon': emitGraph(skills, stampDay),
+    'SKILLS.md': emitSkillsMd(skills, families),
   };
 
   if (check) {
@@ -353,7 +450,7 @@ function main() {
 
   for (const [file, content] of Object.entries(outputs)) writeFileSync(file, content);
   console.log(
-    `spine: wrote catalog.yon + catalog.json + llms.txt + skills.graph.yon — ${skills.length} skills, ${skills.filter((s) => s.hasProtocol).length} with protocol.yon`
+    `spine: wrote catalog.yon + catalog.json + llms.txt + skills.graph.yon + SKILLS.md — ${skills.length} skills in ${families.length} families, ${skills.filter((s) => s.hasProtocol).length} with protocol.yon`
   );
 }
 

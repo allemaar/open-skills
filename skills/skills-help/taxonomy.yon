@@ -1,0 +1,22 @@
+@DOC ver=2.0 | id=open-skills-taxonomy | title="open-skills family taxonomy" | kind=sidecar | profile=decl | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@STAMP ts:ts=2026-07-23T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@INTENT goal="Declare the public family order, labels, aliases, and exactly one family assignment for every skill shipped by open-skills without changing skill instruction files"
+
+@SEC name="Families"
+@CFG id=family:planning | set=[label="Planning & execution",order:int=1,aliases="planning,execution,plan"]
+@CFG id=family:insight | set=[label="Insight & decision",order:int=2,aliases="insight,decision,review"]
+@CFG id=family:priming | set=[label="Priming",order:int=3,aliases="priming,context,signal"]
+@CFG id=family:skill-library | set=[label="Skill library",order:int=4,aliases="skills,library,meta"]
+@CFG id=family:orchestration | set=[label="Orchestration & dispatch",order:int=5,aliases="orchestration,dispatch,collaboration,communication,agents"]
+@CFG id=family:orientation | set=[label="Orientation",order:int=6,aliases="orientation,status,map,gaps,roadmap"]
+@CFG id=family:human-output | set=[label="Human output",order:int=7,aliases="human,output,writing,presentation"]
+@CFG id=family:code-architecture | set=[label="Code & architecture",order:int=8,aliases="code,architecture,interface,monorepo"]
+@CFG id=family:obsidian-vault | set=[label="Obsidian & vault",order:int=9,aliases="obsidian,vault,canvas,bases"]
+@CFG id=family:yon | set=[label="YON",order:int=10,aliases="yon,notation,protocol"]
+@CFG id=family:web | set=[label="Web",order:int=11,aliases="web,extract,domain"]
+@CFG id=family:git-sync | set=[label="Git & sync",order:int=12,aliases="git,github,sync,diff"]
+
+@SEC name="Assignments"
+@MAP name=SkillFamilies | pairs=["agent-mailbox"->"orchestration","ask-gate"->"orchestration","audit-coupled-constant"->"code-architecture","budget-check"->"orchestration","caller-options"->"orchestration","cold-review"->"insight","defuddle"->"web","design-an-interface"->"code-architecture","diff-recap"->"git-sync","domain-check"->"web","double-check"->"insight","extract-signal"->"priming","github-sync"->"git-sync","handoff"->"orchestration","handoff-execute"->"orchestration","human-draw"->"human-output","human-merge"->"human-output","human-output"->"human-output","human-rewrite"->"human-output","improve-codebase-architecture"->"code-architecture","insight-adversarial"->"insight","insight-angles"->"insight","insight-assess"->"insight","insight-critique"->"insight","insight-cross-examine"->"insight","insight-explore"->"insight","insight-retro"->"insight","insight-skill-gap"->"insight","investigate"->"insight","json-canvas"->"obsidian-vault","monorepo-deps"->"code-architecture","multi-agent-mode"->"orchestration","new-skill-creator"->"skill-library","next-skills"->"skill-library","obsidian-bases"->"obsidian-vault","obsidian-cli"->"obsidian-vault","obsidian-markdown"->"obsidian-vault","orchestrate-mode"->"orchestration","orient-gaps"->"orientation","orient-map"->"orientation","orient-roadmap"->"orientation","orient-status"->"orientation","plan-cleanup"->"planning","plan-create"->"planning","plan-deep-dive"->"planning","plan-evolve"->"planning","plan-execute"->"planning","plan-phases"->"planning","prime-expand"->"priming","prime-fetch"->"priming","prime-sweep"->"priming","reflect"->"planning","self-improve"->"skill-library","skills-help"->"skill-library","verify"->"planning","yon-read"->"yon","yon-write"->"yon"]
+
+@NOTE text="Unknown installed third-party skills are not added to this pack taxonomy; skills-help renders them under Unclassified at read time."

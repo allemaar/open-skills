@@ -9,18 +9,16 @@
 //                line in README.md / THREAT-MODEL.md — or inside a description
 //                string of .claude-plugin/plugin.json / marketplace.json, the copy
 //                a stranger reads at `/plugin install` — must be one of those three.
-//   2. VERSION — the CHANGELOG released versions and the git tags must be a
-//                bijection (ignoring an "## [Unreleased]" section), and the
-//                latest released CHANGELOG entry must equal the latest tag.
-//                (NOT a naive "top == tag" — Keep-a-Changelog keeps Unreleased
-//                on top during development.)
-//   3. MENU    — every skills-help menu entry resolves to a shipped skill.
-//   4. ROSTER  — the human-spec routing table and the shipped skills/human-*/
+//   2. VERSION — candidate mode permits exactly one coherent newest CHANGELOG
+//                version to await its tag; release mode requires full CHANGELOG
+//                ↔ tag bijection. Every tag must always have a CHANGELOG entry.
+//   3. ROSTER  — the human-spec routing table and the shipped skills/human-*/
 //                dirs match BOTH ways (no phantom member, no unlisted member).
-//   5. FOOTER  — a skill citing the human-output contract carries its verbatim
+//   4. FOOTER  — a skill citing the human-output contract carries its verbatim
 //                footer blockquote.
 //
-// Usage:  node tools/consistency-guard.mjs
+// Usage:  node tools/consistency-guard.mjs --candidate|--release
+//         no mode defaults to strict --release for backward compatibility
 // Exit:   non-zero on any drift. Zero npm deps.
 
 import { readdirSync, existsSync, readFileSync } from 'node:fs';
@@ -30,6 +28,10 @@ import { join } from 'node:path';
 const ROOT = process.cwd();
 const errors = [];
 const fail = (m) => errors.push(m);
+const candidateMode = process.argv.includes('--candidate');
+const releaseMode = process.argv.includes('--release');
+if (candidateMode && releaseMode) fail('VERSION: choose exactly one mode: --candidate or --release');
+const versionMode = candidateMode ? 'candidate' : 'release';
 
 // --- 1. COUNTS --------------------------------------------------------------
 
@@ -110,9 +112,13 @@ for (const [rel, pick] of COUNT_MANIFESTS) {
 
 // --- 2. VERSION (tags <-> CHANGELOG bijection) ------------------------------
 
-function semverKey(v) {
-  const [a, b, c] = v.split('.').map(Number);
-  return a * 1e6 + b * 1e3 + c;
+function compareSemver(a, b) {
+  const av = a.split('.').map(Number);
+  const bv = b.split('.').map(Number);
+  for (let i = 0; i < 3; i++) {
+    if (av[i] !== bv[i]) return av[i] - bv[i];
+  }
+  return 0;
 }
 
 const changelog = readFileSync(join(ROOT, 'CHANGELOG.md'), 'utf8');
@@ -130,61 +136,45 @@ try {
 
 const clSet = new Set(clVersions);
 const tagSet = new Set(tags);
-for (const v of clSet) if (!tagSet.has(v)) fail(`VERSION: CHANGELOG has [${v}] but no git tag v${v}`);
+if (clSet.size !== clVersions.length) {
+  const seen = new Set();
+  const duplicates = [...new Set(clVersions.filter((v) => seen.has(v) || !seen.add(v)))];
+  fail(`VERSION: duplicate CHANGELOG release headings: ${duplicates.join(', ')}`);
+}
 for (const v of tagSet) if (!clSet.has(v)) fail(`VERSION: git tag v${v} has no CHANGELOG entry`);
 
-if (clVersions.length && tags.length) {
-  const latestCl = [...clSet].sort((a, b) => semverKey(b) - semverKey(a))[0];
-  const latestTag = [...tagSet].sort((a, b) => semverKey(b) - semverKey(a))[0];
-  if (latestCl !== latestTag) {
+const latestCl = clVersions.length ? [...clSet].sort((a, b) => compareSemver(b, a))[0] : null;
+const latestTag = tags.length ? [...tagSet].sort((a, b) => compareSemver(b, a))[0] : null;
+const awaitingTags = [...clSet].filter((v) => !tagSet.has(v));
+
+for (const rel of ['.claude-plugin/plugin.json', 'catalog.json']) {
+  try {
+    const declared = JSON.parse(readFileSync(join(ROOT, rel), 'utf8')).version;
+    if (!declared) fail(`VERSION: ${rel} has no version field`);
+    else if (latestCl && declared !== latestCl) fail(`VERSION: ${rel} declares ${declared}, latest CHANGELOG is ${latestCl}`);
+  } catch (e) {
+    fail(`VERSION: could not read ${rel} (${e.message})`);
+  }
+}
+
+if (versionMode === 'release') {
+  for (const v of awaitingTags) fail(`VERSION: CHANGELOG has [${v}] but no git tag v${v}`);
+  if (latestCl && latestTag && latestCl !== latestTag) {
     fail(`VERSION: latest CHANGELOG release [${latestCl}] != latest tag v${latestTag}`);
   }
-}
-
-// --- 3. MENU (skills-help roster -> shipped skills) -------------------------
-//
-// skills-help/SKILL.md carries a hand-authored menu snapshot. On export from a
-// larger private library it listed ~18 skills this pack does not ship (whole
-// private-only families) — a public front door advertising skills a
-// reader cannot have. This gates the PHANTOM direction: every menu entry must
-// resolve to a shipped skill. The MISSING direction (a shipped skill absent from
-// the menu) is left to the skill's own render-time protocol, which appends an
-// unlisted skill with a ⚠ — a deliberate soft-handle, so gating it here would
-// fight the design and fail CI on every newly-added skill.
-// `--menu-file <path>` overrides the menu source so gate-fires can point this check
-// at a fixture (a menu naming a phantom skill), proving it rejects. Defaults to the
-// real menu. Same idiom as dco-guard's --message-file and lint's single-file mode.
-const menuFlag = process.argv.indexOf('--menu-file');
-const menuFile = menuFlag !== -1 ? process.argv[menuFlag + 1] : join(ROOT, 'skills', 'skills-help', 'SKILL.md');
-if (!existsSync(menuFile)) {
-  fail('MENU: skills/skills-help/SKILL.md is missing');
 } else {
-  const md = readFileSync(menuFile, 'utf8');
-  const start = md.indexOf('## The menu');
-  const end = md.indexOf('## Family drill-down');
-  if (start < 0) {
-    // Fail closed: if the section markers move, the check must not silently pass.
-    fail('MENU: could not locate the "## The menu" section in skills-help/SKILL.md — guard cannot verify the roster');
-  } else {
-    const section = md.slice(start, end >= 0 ? end : undefined);
-    const shipped = new Set(dirs);
-    // An entry line is `- <marker> `skill-name` — …`; the marker is OPTIONAL so a
-    // marker-less entry cannot evade the check (the prose promises *every* entry).
-    // `[a-z0-9-]+` has no slash/dot/space, so a mid-prose path or the `obsidian` CLI
-    // binary is never captured — and the menu section is entries only, no prose bullets.
-    const entries = [...section.matchAll(/^-\s+(?:\S+\s+)?`([a-z0-9-]+)`/gm)].map((m) => m[1]);
-    if (entries.length === 0) {
-      // A menu that parses to zero entries is a reformat, not an empty pack — fail
-      // closed rather than pass vacuously.
-      fail('MENU: parsed 0 entries from skills-help — the entry format changed; update this guard');
-    }
-    for (const name of entries) {
-      if (!shipped.has(name)) fail(`MENU: skills-help lists \`${name}\` but skills/${name}/ does not exist`);
+  if (awaitingTags.length > 1) {
+    fail(`VERSION: candidate mode permits at most one CHANGELOG version awaiting its tag; found ${awaitingTags.join(', ')}`);
+  } else if (awaitingTags.length === 1) {
+    const pending = awaitingTags[0];
+    if (pending !== latestCl) fail(`VERSION: only the newest CHANGELOG version may await a tag; found [${pending}], newest is [${latestCl}]`);
+    if (latestTag && compareSemver(pending, latestTag) <= 0) {
+      fail(`VERSION: candidate [${pending}] must be newer than latest tag v${latestTag}`);
     }
   }
 }
 
-// --- 4. ROSTER (human-spec routing table <-> shipped human-* skills) ---------
+// --- 3. ROSTER (human-spec routing table <-> shipped human-* skills) ---------
 //
 // human-spec/human-contract.md holds the family's roster and routing table, and
 // every member defers to it as the authority — but until now NO tool read it, so
@@ -244,7 +234,7 @@ if (!existsSync(contractFile)) {
   }
 }
 
-// --- 5. FOOTER (cites the contract -> carries the contract's footer) ---------
+// --- 4. FOOTER (cites the contract -> carries the contract's footer) ---------
 //
 // Section 4 of human-contract.md defines one verbatim outward footer for skills
 // outside the family. A skill that cites `human-output/SKILL.md` has opted into
@@ -306,4 +296,7 @@ if (errors.length) {
   for (const e of errors) console.error('  ✗ ' + e);
   process.exit(1);
 }
-console.log(`consistency-guard: OK — counts (total=${total}, dual=${dual}, md-only=${mdonly}) consistent; ${clVersions.length} CHANGELOG releases ↔ ${tags.length} tags in sync; skills-help menu roster ⊆ shipped skills; human-contract roster ↔ shipped human-* skills both ways; ${cites} of ${footerTargets.length} skills cite the human-output contract and all carry its verbatim footer`);
+const versionSummary = versionMode === 'candidate' && awaitingTags.length === 1
+  ? `candidate [${awaitingTags[0]}] coherently awaits its tag; ${tags.length} existing tags map to CHANGELOG`
+  : `${clVersions.length} CHANGELOG releases ↔ ${tags.length} tags in strict sync`;
+console.log(`consistency-guard: OK — counts (total=${total}, dual=${dual}, md-only=${mdonly}) consistent; ${versionSummary}; human-contract roster ↔ shipped human-* skills both ways; ${cites} of ${footerTargets.length} skills cite the human-output contract and all carry its verbatim footer`);

@@ -4,7 +4,7 @@
 
 An agent skill is a small document your AI agent reads and then acts on. It can tell the agent to run commands, edit files, and reach the network — using whatever access you have given the agent. That is the point of skills, and it is also the risk. A skill you did not read is code you did not read, running where you work.
 
-Most skills travel as opaque bundles or as prose you skim once. open-skills takes the opposite stance: every skill is plain text you can read before you trust it, and the enforceable part of each skill is a declarative protocol you can validate with a public tool. Inspection is the defense. This document explains what that defends against, and — just as important — what it does not.
+Most skills travel as opaque bundles or as prose you skim once. open-skills takes the opposite stance: every skill is plain text you can read before you trust it, and 39 of 57 add a declarative protocol you can inspect and validate with a public tool. Inspection is the defense. This document explains what that defends against, and — just as important — what it does not.
 
 ## The attack surface
 
@@ -22,9 +22,9 @@ These are supply-chain risks. They are the same shape as installing an unread de
 
 The design answers the threats with **inspectability**, not with a sandbox.
 
-- **Everything is readable text.** Every skill is a folder of Markdown and YON. No build step, no minified blob, no binary. You can read every line before you grant trust, and diff every line on update.
-- **The enforceable part is a declarative protocol.** Of the 57 skills here, 39 ship a [`protocol.yon`](CONFORMANCE.md). In those files the control flow, the rules (`MUST` / `MUST_NOT`), and the gates (`ABORT` / `WARN`) are named, typed records — not prose you hope the model follows. Behavior you can name is behavior you can audit.
-- **You can validate it yourself, with a tool that is not ours.** Each `protocol.yon` validates against the public YON™ parser:
+- **Everything is readable text.** Every skill is a folder of Markdown and, for 39 skills, YON. No build step, no minified blob, no binary. You can read every line before you grant trust, and diff every line on update.
+- **The declared protocol is mechanically inspectable.** Of the 57 skills here, 39 ship a [`protocol.yon`](CONFORMANCE.md). In those files the control flow, rules (`MUST` / `MUST_NOT`), and gates (`ABORT` / `WARN`) are named, typed records. That gives readers and tooling a stable object to audit; it does not make the declaration self-enforcing.
+- **You can validate it yourself.** Each `protocol.yon` validates against the public Apache-2.0 reference parser for YON (YounndAI Object Notation™), created by Alexandru Mares and published separately in the YounndAI ecosystem:
 
   ```bash
   npx @younndai/yon-parser validate skills/cold-review/protocol.yon --profile exec
@@ -32,8 +32,8 @@ The design answers the threats with **inspectability**, not with a sandbox.
   ```
 
   The trust does not route through the author. It routes through a public specification and an Apache-2.0 reference parser.
-- **Conformance is enforced in CI.** Every `protocol.yon` is validated on every push; [`CONFORMANCE.md`](CONFORMANCE.md) tracks the result. The badge is green only when all 39 validate. A protocol that stops parsing breaks the build, in the open.
-- **The install path is inspectable too.** Installing is itself a supply-chain step, so the installer is not exempt from the rule. [`install.mjs`](install.mjs) is a single zero-dependency file you read before you run it; it copies a skill folder, stamps that copy with where it came from, and validates its `protocol.yon` against the pinned public parser — there is no opaque `npx`-published step that runs code you have not seen. It copies by default (a frozen snapshot, so a later upstream change cannot drift underneath you), and it **refuses to overwrite a symlinked or junctioned skill** rather than risk a recursive delete traversing the link into the source tree. Be precise about the stamp, because it means the installed file is **not** byte-identical to this repo's: it adds a `metadata:` block to the copy's `SKILL.md` recording the repo, ref, and tree SHA it came from — and nothing else. That is what lets you (and `gh skill update`) tell later whether the copy has gone stale. When this clone cannot honestly support that claim it records a plain `local-path` instead — that is, whenever the origin is not GitHub (a GitLab mirror or private fork cannot be a `github-repo`), the HEAD is detached, the skill has local edits (**including ignored files, which are still copied**, so a clean `git status` would not notice), or the commit is not yet pushed and the tree therefore exists here but not at `github-repo`. `--no-stamp` copies byte-for-byte and records nothing.
+- **Conformance is enforced in CI.** Every `protocol.yon` is validated on every push; [`CONFORMANCE.md`](CONFORMANCE.md) tracks the structural result. Protocol validity is one part of the workflow badge, alongside metadata, reference, dataflow, generated-catalog, count, privacy, and release-consistency checks. A protocol that stops parsing breaks the build, in the open.
+- **The install path is inspectable too.** Installing is itself a supply-chain step, so the installer is not exempt from the rule. [`install.mjs`](install.mjs) is one Node file with zero local npm dependencies; it copies a skill folder, stamps that copy with where it came from, and may invoke `npx` to download and execute the pinned public parser for `protocol.yon` validation. Read both trust surfaces or use `--no-validate`. It copies by default and **refuses to overwrite a symlinked or junctioned skill** rather than risk a recursive delete traversing the link into the source tree. Be precise about the stamp, because it means the installed file is **not** byte-identical to this repo's: it adds a `metadata:` block to the copy's `SKILL.md` recording the repo, ref, and tree SHA it came from — and nothing else. That is what lets you (and `gh skill update`) tell later whether the copy has gone stale. When this clone cannot honestly support that claim it records a plain `local-path` instead — that is, whenever the origin is not GitHub, the HEAD is detached, the skill has local edits (**including ignored files, which are still copied**), or the commit is not yet pushed. `--no-stamp` copies byte-for-byte and records nothing.
 
 ## What this does NOT claim
 
@@ -41,10 +41,10 @@ Inspectability is a real defense with precise edges. Naming the edges is part of
 
 - **YON is an audit primitive, not a sandbox.** A `protocol.yon` makes a skill's intent legible. It does not execute in a jail and does not constrain what your agent runtime can do. The protection is that you can *see* the intent before you trust it — not that an unread intent is contained.
 - **Validation proves structure, not safety.** A `protocol.yon` that validates is well-formed. It is not therefore benign. A well-formed protocol can still describe a harmful step. Validation narrows what you must read; it does not replace reading.
-- **18 of 57 skills are Markdown-only.** They carry no `protocol.yon`, so their behavior is prose. They are useful skills, but they get no more enforceable-control-flow guarantee than any other prose skill. Read them as such.
+- **18 of 57 skills are Markdown-only.** They carry no `protocol.yon`, so their behavior is described only in prose. The 39 dual-document skills add a checkable declaration, not a runtime-obedience guarantee. Read both forms as instructions granted your agent's permissions.
 - **This is one author's vetted set.** The skills here were scrubbed of personal data and reviewed before release. A fork is not. Trust is yours to grant, per skill, per version.
 
-The honest summary: open-skills removes the excuse not to read, and gives the enforceable parts a checkable shape. It does not remove the responsibility to read.
+The honest summary: open-skills removes the excuse not to read and gives many skills a checkable declared shape. It does not remove the responsibility to read or make a runtime obey.
 
 ## Agent Mailbox threat boundary
 
@@ -64,7 +64,7 @@ YON keeps these rules inspectable. It still does not force an agent runtime to o
 The workflow the design is built for:
 
 1. **Read `SKILL.md`.** Know what it claims to do and when it runs.
-2. **Read `protocol.yon`, if present.** The steps, rules, and gates are the enforceable contract. Confirm they match the prose.
+2. **Read `protocol.yon`, if present.** Its declared steps, rules, and gates should match the operational `SKILL.md`; validation cannot prove that an agent will obey either one.
 3. **Validate it.** `npx @younndai/yon-parser validate <skill>/protocol.yon --profile exec`.
 4. **Follow the references.** A skill that points at others is trusted only as far as those are.
 5. **Diff on update.** Your copy is frozen — it will not change until you re-copy it. That makes the re-copy the moment to look, and it is the only moment there is. `git pull` in your clone, then diff what you have installed against what you are about to accept:

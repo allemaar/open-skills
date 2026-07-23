@@ -36,7 +36,7 @@ The check is **forward-only**: it grades commits after the floor recorded in the
 
 - **A folder under `skills/`** named for the skill, matching its `name` field.
 - **`SKILL.md`** — what it does and when to use it, in plain language, in the [institutional voice the repo uses](README.md): state the thing before the feeling, quantify with baselines, disclose trade-offs, no hype words.
-- **`protocol.yon`** (encouraged) — the same skill's steps, rules (`MUST` / `MUST_NOT`), and gates (`ABORT` / `WARN`) as a declarative protocol. This is what makes a skill auditable rather than merely described. A skill that carries one moves the whole pack's promise forward.
+- **`protocol.yon`** (encouraged) — the same skill's steps, rules (`MUST` / `MUST_NOT`), and gates (`ABORT` / `WARN`) as a declarative, mechanically validatable protocol. It gives readers and tooling an inspectable contract; it does not enforce runtime obedience.
 - **No personal data.** No vault paths, machine paths, private cross-references, real names, or credentials. Use placeholders (`<vault>`, `<skills-repo>`). This is a hard gate — see [SECURITY.md](SECURITY.md) and [THREAT-MODEL.md](THREAT-MODEL.md).
 
 ## Front-matter contract
@@ -69,23 +69,30 @@ next-skills:
 ---
 ```
 
-All five fields are **required** and **fail** the lint (and CI) if absent — `triggers` and `next-skills` may be an empty list (`[]`) but the key must be present. The catalog, agent manifest, and recommendation graph are generated from this contract, so a missing field would make them lie.
+All five fields are **required** and **fail** the lint (and CI) if absent. `name`, `description`, and `visibility` must also be non-empty; repository skills must declare `visibility: public`. `triggers` and `next-skills` may be an empty list (`[]`) but the key must be present. The catalog, agent manifest, and recommendation graph are generated from this contract, so a missing or empty scalar would make them lie.
+
+## Family taxonomy
+
+Family membership is presentation metadata for this pack, not part of a skill's runtime-facing frontmatter. The canonical source is [`skills/skills-help/taxonomy.yon`](skills/skills-help/taxonomy.yon).
+
+When adding a skill, add exactly one assignment to `SkillFamilies` using an existing family. Add or rename a family only as an explicit catalog-design change: update its ID, public label, aliases, and display order together. `tools/lint.mjs` and `tools/spine.mjs` fail closed on missing, duplicate, unknown, or orphan assignments. Individually installed third-party skills remain valid and appear under `Unclassified` in `/skills-help`; do not add them to this pack's taxonomy.
 
 ## Checklist before you open a PR
 
 - [ ] Commits are signed off (`git commit -s`)
 - [ ] The skill folder name matches the `name` field
 - [ ] Front-matter meets the contract above (`name`/`description`/`visibility` required; `triggers` + `next-skills` present-or-empty) — `node tools/lint.mjs` shows no new warnings for your skill
+- [ ] The skill has exactly one assignment in `skills/skills-help/taxonomy.yon`
 - [ ] `SKILL.md` reads in the repo's voice and is honest about limits
 - [ ] If a `protocol.yon` is included, it validates:
       `npx @younndai/yon-parser validate skills/<name>/protocol.yon --profile exec`
 - [ ] No personal or machine-specific data anywhere in the contribution
 - [ ] Conformance stays green — your change does not break [CONFORMANCE.md](CONFORMANCE.md) or the CI check
-- [ ] Trademark indicators (™) on first prominent use of a YON or YounndAI mark in any new prose
+- [ ] First prominent public uses follow the canonical forms `YON (YounndAI Object Notation™)`, `Lyt (Link Your Think™)`, and `YounndAI™`; see [`TRADEMARK.md`](TRADEMARK.md)
 
 ## Conformance is the gate
 
-Every `protocol.yon` is validated in CI on every push. The badge is green only when all of them validate. A contribution that adds or edits a protocol must leave the board green. Conformance is the property that lets a reader trust the pack without trusting you.
+Every `protocol.yon` is validated in CI on every push. Protocol validity is necessary but not sufficient for the workflow badge: the same job also checks metadata, references, dataflow, generated catalogs, counts, privacy, and release consistency. A contribution must leave that full named job green. Conformance lets readers inspect and validate declared structure without trusting an assertion; it does not establish safety or runtime behavior.
 
 ## Code of conduct
 
@@ -93,7 +100,7 @@ This project follows the [Contributor Covenant](https://www.contributor-covenant
 
 ## Trademarks
 
-"YON" and "YounndAI" are trademarks of MARLINK TRADING SRL. This project uses the public, openly licensed YON format and tooling; it does not claim those marks. Acknowledge them with ™ on first prominent use, and do not imply endorsement or affiliation. See [NOTICE](NOTICE).
+**YounndAI™**, **YON (YounndAI Object Notation™)**, and **Lyt (Link Your Think™)** are trademarks of MARLINK TRADING SRL. Alexandru Mares created YON and its Apache-2.0 reference parser; those are published separately in the YounndAI ecosystem. open-skills is his personal project, not a YounndAI product. Preserve the canonical first-use forms and do not imply endorsement. See [NOTICE](NOTICE) and [TRADEMARK.md](TRADEMARK.md).
 
 ## Questions
 

@@ -16,9 +16,9 @@
   <text x="98" y="206" fill="#8B949E" font-size="30" font-weight="500" letter-spacing="0.5">by allemaar.com</text>
 
   <!-- tagline -->
-  <text x="96" y="300" fill="#C9D1D9" font-size="42" font-weight="600">Inspectable agent skills in two files.</text>
+  <text x="96" y="300" fill="#C9D1D9" font-size="42" font-weight="600">Readable skills. Inspectable protocols.</text>
 
-  <!-- two-file chips -->
+  <!-- format chips -->
   <g transform="translate(96,360)">
     <rect x="0" y="0" width="500" height="120" rx="14" fill="#1B2230" stroke="#30363D"/>
     <text x="28" y="50" fill="#7AA2F7" font-size="30" font-weight="700" font-family="'SFMono-Regular', Consolas, monospace">SKILL.md</text>
@@ -26,9 +26,9 @@
 
     <rect x="540" y="0" width="544" height="120" rx="14" fill="#1B2230" stroke="#30363D"/>
     <text x="568" y="50" fill="#8CC265" font-size="30" font-weight="700" font-family="'SFMono-Regular', Consolas, monospace">protocol.yon</text>
-    <text x="568" y="92" fill="#8B949E" font-size="24">a declarative contract you can validate</text>
+    <text x="568" y="92" fill="#8B949E" font-size="24">39 of 57 · declared structure you can validate</text>
   </g>
 
   <!-- footer -->
-  <text x="96" y="566" fill="#8B949E" font-size="26" font-weight="500">No arbitrary code   ·   Apache-2.0   ·   validate with npx @younndai/yon-parser</text>
+  <text x="96" y="566" fill="#8B949E" font-size="26" font-weight="500">Personal and field-used   ·   Apache-2.0   ·   validate declared structure</text>
 </svg>
