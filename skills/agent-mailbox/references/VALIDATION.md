@@ -10,6 +10,7 @@ This public record separates transport materialization, message detection, consu
 | Observed | A specific behavior was seen, but the run does not support a general guarantee |
 | Negative | A required capability failed or was not demonstrated |
 | Attributed field report | Operationally useful self-report; not independently reproduced here |
+| Capability-confirmed | A named host mechanism was inspected in a current runtime; no complete mailbox flow is implied |
 | Design-validated | The written contract covers the case; no consumed field run yet |
 | Pending | Neither field evidence nor sufficient design evidence supports a stronger claim |
 
@@ -25,6 +26,11 @@ This public record separates transport materialization, message detection, consu
 | `AMB-CURSOR-A` | Disposition/cursor integrity | A bounded history containing dozens of Markdown messages parsed without envelope failure. Several historical message UUIDs were absent from one participant's compact cursor. Only exact locally authored causal evidence could reconstruct handling; peer-authored descendants and `expects_reply: false` did not prove local consumption. | Observed cursor incompleteness; ambiguous history must be quarantined, not executed again |
 | `AMB-MODE-A` | Work-or-Listen interpretation | In an attributed bounded field incident, two established participants repeatedly proposed, crossed, accepted, expired, and renewed availability windows because participant-local monitoring was interpreted as a bilateral commitment. Useful product traffic was already present while availability traffic accumulated. | Attributed field report; operating mode and cadence must be unilateral, while actual peer duties use ordinary CTAs |
 | `AMB-ROOM-A` | Existing room with a new conversation | The same attributed incident reused an established room containing prior-protocol messages. Rehydration, legacy mode traffic, and a new work request were represented too closely, making old availability heads compete with current work. | Attributed field report; use `resume → state`, then a fresh CTA root with new conversation identifiers and separate legacy debt |
+| `AMB-CLAUDE-A` | Claude Code Monitor wake | An attributed bounded field case used a Monitor-owned snapshot loop whose stdout caused another agent turn while the Claude session remained live. Closely emitted records could batch into one notification, and chatty monitors were subject to rate limiting or automatic stop. Restart recovery required a Handler-triggered re-arm plus a gap check; it was not autonomous persistence. The loop had no durable cursor, skipped startup history into its baseline, and lacked a hard horizon, heartbeat, and explicit failure budget. | Attributed field report for live-session Monitor wake; notification count is not message count, volume stops require degradation and gap reconciliation, and the field loop cannot resurrect a closed session |
+| `AMB-CODEX-A` | Codex active-turn polling | A bounded PowerShell poll inside an active tool turn detected a cross-machine response within roughly two minutes, emitted periodic heartbeats, and exited at the match. Shell output did not establish post-turn wake. | Observed active-turn polling for that run; not evidence for post-turn `LISTENING` |
+| `AMB-CODEX-SCHED-A` | Codex scheduled re-entry | A disposable native thread heartbeat re-entered the originating task, loaded durable mailbox state, scanned the whole synthetic addressed inbox, persisted one new terminal disposition before cursor advancement, recorded zero parse failures, and removed its own schedule. | Observed one bounded scheduled re-entry and reconciliation with verified automation cleanup; not evidence for provider materialization or event-driven latency |
+| `AMB-LISTENER-POLL-A` | Portable snapshot construction | A bounded synthetic run reconciled one addressed message that existed before inventory capture and one later atomically published message. Both UUIDs received durable dispositions before cursor advancement; the listener emitted heartbeats and exited cleanly. | Observed startup and inventory-signal behavior for the portable blueprint; not transport or post-turn wake evidence |
+| `AMB-LISTENER-EVENT-A` | Native event construction | A bounded synthetic run armed an exact-inbox watcher before atomic publication, observed a `Created` event, reconciled the whole addressed inbox by UUID, persisted the new disposition and cursor entry, and verified watcher plus publisher-job cleanup. | Observed `Created`-signal behavior; `Renamed` was not exercised in this run, and no runtime re-entry claim follows |
 
 ## Aggregate field calibration
 
@@ -54,6 +60,11 @@ This is an aggregate attributed finding. It intentionally omits participants, pr
 | OneDrive local materialization | Observed in a bounded cross-machine run; first-class sync-share route |
 | OneDrive latency or event SLA | Not established |
 | Autonomous background task wake | Runtime-dependent; negative/not demonstrated in the OneDrive field workflow |
+| Claude Code Monitor wake | Attributed bounded field evidence inside a live session; closed-session resurrection is unavailable |
+| Codex active-turn poll | Observed in a bounded run; ends with the active tool turn |
+| Codex thread heartbeat | Observed for one bounded scheduled re-entry and whole-inbox reconciliation with verified schedule cleanup; provider materialization not exercised |
+| Portable snapshot listener construction | Observed in a bounded synthetic run, including startup history and delayed atomic publication |
+| Native filesystem event construction | `Created` observed in a bounded synthetic run; `Renamed` not exercised in that run |
 | Google Drive, Dropbox, SMB/network-share delivery | Design-validated, field evidence pending |
 | Provider conflict-copy behavior | Design-validated, field evidence pending |
 | Simultaneous empty-arena bootstrap and deterministic primer winner | Design-validated, field evidence pending |

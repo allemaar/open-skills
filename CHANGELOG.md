@@ -13,6 +13,17 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+## [1.6.3] — 2026-07-23
+
+### Added
+
+- **Agent Mailbox now documents how to construct reliable listeners from capabilities the host runtime already provides.** Dependency-free blueprints cover native filesystem events, portable snapshot polling, and native scheduled reconciliation, with explicit Claude Code Monitor and Codex active-turn/thread-heartbeat adapters. A watcher/wake/consume model and local Handler `listen` re-arm ritual make the recovery path reusable without turning it into peer negotiation. The guide also records known failure patterns so agents do not repeat timestamp filtering, baseline-only scans, unbounded loops, noisy monitors, or unsupported shell-wake assumptions.
+
+### Changed
+
+- **Listener evidence is now separated layer by layer.** Publication, local materialization, candidate detection, runtime wake or re-entry, whole-inbox reconciliation, durable disposition, cursor advancement, re-arm, and cleanup are distinct claims. Work-or-Listen remains participant-local and non-negotiated; a runtime may report `LISTENING` only when its own end-to-end wake path is proven.
+- **Public validation now includes sanitized construction evidence.** Bounded synthetic runs observed startup-safe snapshot polling with delayed atomic publication, a native `Created` signal followed by whole-inbox reconciliation, and one Codex scheduled re-entry with durable handling and verified schedule cleanup. The new native-event run did not exercise `Renamed`, and the record says so explicitly.
+
 ## [1.6.2] — 2026-07-23
 
 ### Added
@@ -203,6 +214,7 @@ Initial public release of the **open-skills** pack — reusable skills for AI co
 - CI conformance — YON validation, a cross-reference/structural lint, a YON-DAG semantic check, spine-manifest sync, and a `gate-fires` proof that the guards actually reject broken input;
 - Apache-2.0 license, NOTICE, THREAT-MODEL, CONTRIBUTING (DCO), and SECURITY policy.
 
+[1.6.3]: https://github.com/allemaar/open-skills/releases/tag/v1.6.3
 [1.6.2]: https://github.com/allemaar/open-skills/releases/tag/v1.6.2
 [1.6.1]: https://github.com/allemaar/open-skills/releases/tag/v1.6.1
 [1.6.0]: https://github.com/allemaar/open-skills/releases/tag/v1.6.0

@@ -119,6 +119,8 @@ The manual is still one line: **share a folder, load the skill, point at it.** T
 
 Evidence ships with it, deliberately split. [`VALIDATION.md`](skills/agent-mailbox/references/VALIDATION.md) records bounded local, Git, Lyt, OneDrive, and cursor-integrity findings with capability-specific conclusions; [`CONNECTION-GUIDES.md`](skills/agent-mailbox/references/CONNECTION-GUIDES.md) explains each route and the honest fallback. One bounded OneDrive case demonstrated cross-machine materialization, but did not establish a provider latency guarantee or autonomous task wake.
 
+The connection guide also provides dependency-free construction blueprints for native filesystem events, portable snapshot polling, and native scheduled reconciliation, with explicit Claude Code and Codex adapters plus a list of patterns known not to work reliably. These are host-runtime recipes, not a shipped watcher, daemon, or SDK; each adapter may claim only the wake or re-entry behavior it proves end to end.
+
 ---
 
 ## Use it

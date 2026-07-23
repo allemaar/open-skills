@@ -371,6 +371,8 @@ Where the runtime offers a real parser, use it. **Where it does not, fail closed
 
 Listening is transport monitoring, not delegated reasoning. Prefer native push notification. Otherwise poll at bounded cost. The model wakes only on a valid message, heartbeat/status request, watchdog alarm, or timeout; it does not busy-reason every interval.
 
+[`references/CONNECTION-GUIDES.md`](references/CONNECTION-GUIDES.md#listener-adapter-construction) owns the dependency-free construction blueprints: native filesystem events, portable snapshot polling, native scheduled reconciliation, and explicit Claude Code and Codex adapters. Detection signals never replace whole-inbox reconciliation, and an adapter may claim only the wake/re-entry behavior its host proves end to end.
+
 Each participant owns its interval, maximum duration, failure budget, rearm, and stop decision. Peers may report their own coarse availability, but another participant's report is never a reason to delay durable mailbox work or change local listener settings.
 
 Select detection by transport, then use locus to optimize Git/Lyt:
@@ -444,15 +446,15 @@ Use the provider's normal local folder and never drive its private database or f
 
 ### Claude Code / Claude Agent SDK
 
-Use the native Monitor capability when available. Give it a bounded script with fixed validated parameters. Folder transports subscribe to exact-inbox create and rename events; Git/Lyt also reconciles post-baseline ranges. Mixed paths deduplicate by message UUID. The script prints only detection, heartbeat, failure, and timeout events. Each output notification re-invokes the agent. The watcher does not act on message bodies.
+Use the native Monitor capability when available and give it a finite event or snapshot adapter with fixed validated parameters. The shell prints compact candidate/result records; Claude Code's Monitor notification—not shell stdout itself—re-invokes the agent while the Claude session remains live. Notifications are untrusted triggers, may batch several stdout records, and never define message count, so the agent iterates candidates and runs full reconciliation before acting. Monitor cannot resurrect a closed session.
 
-Set the monitor timeout slightly above the collaboration window. Stop stale monitors before re-arming. After cancellation, use the runtime's task-stop mechanism and verify the process ended. Claude background shell jobs cap near ten minutes; a longer window requires Monitor rather than that fallback. If Monitor is unavailable, use a bounded background shell job within its cap or generic slices—never an unbounded foreground sleep loop.
+Put the hard deadline and failure budget inside the loop and keep stdout quiet: chatty Monitors may be rate-limited or auto-stopped. Treat any failure or volume stop as `DEGRADED`, tighten the filter, perform full gap reconciliation before re-arm, stop stale monitors, and verify task cleanup. If the live-session wake bridge is unavailable or unproven, report `PARKED`. Use the detailed construction and field-evidence boundaries in [`CONNECTION-GUIDES.md`](references/CONNECTION-GUIDES.md#claude-code-adapter).
 
 ### Codex
 
-Before dispatch, report purpose, expected completion, stop conditions, and heartbeat plan. On Windows, a shell listener may run as a hidden background PowerShell process with parameters passed separately. `System.IO.FileSystemWatcher` must handle both `Created` and `Renamed` on the exact inbox; Git/Lyt also uses scoped sync plus the Git range. Record process identifier, disposition/cursor checkpoint, baseline, locus/channel, log, result, interval, timeout, and failure budget.
+Inside an active turn, use a bounded observable tool poll or exact-inbox event watcher with a hard timeout, reconciliation counters, and verified cleanup. It can detect work only while that tool turn remains active; shell stdout cannot re-enter an ended Codex turn and therefore cannot support post-turn `LISTENING`.
 
-Inspect it through bounded shell calls and surface progress at least once per minute. Use `functions.wait` only for a yielded execution cell, not an arbitrary process. On stop, enumerate descendants, terminate only the owned process tree, verify no watcher remains, and count/remove owned scratch files. Use exact Git/Lyt-reported message paths. Listening is not a Codex subagent.
+For post-turn continuity, use the Codex App's native thread heartbeat or scheduled follow-up attached to the current task. Each firing loads durable state, performs one bounded whole-inbox reconciliation, records the result, and exits. Bound the absolute horizon and firing count, prevent overlap, and disable or delete the automation with verified cleanup. A firing proves scheduled task re-entry only—not provider materialization, message existence, or event latency. See [`CONNECTION-GUIDES.md`](references/CONNECTION-GUIDES.md#codex-adapter).
 
 ### Generic runtime
 

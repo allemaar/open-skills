@@ -71,6 +71,16 @@ When diagnosing a miss, ask in order:
 
 Do not switch protocols until the failed layer is identified. A folder can sync correctly while a watcher, cursor, wake hook, or re-arm path is wrong.
 
+## Do not copy a field loop as the recipe
+
+A field loop can prove one connection layer and still be unsafe as a listener. Before reusing any shell loop, watcher, or scheduled job, check it against the construction contract in [`CONNECTION-GUIDES.md`](CONNECTION-GUIDES.md#listener-adapter-construction).
+
+Reject or harden a loop that baselines existing files without reconciling them, keeps only a process-memory filename snapshot, filters to one expected request, lacks an absolute deadline or failure budget, advances the cursor before a durable disposition, cannot prove task wake/re-entry, or does not reconcile gaps before re-arm. Shell stdout, a result file, and a live process are detection evidence only; none proves that an ended agent turn will resume.
+
+Do not equate notification count with message count. A runtime may batch several candidates into one notification, coalesce events, drop noisy output, or stop a chatty monitor. Any volume stop or dropped-event warning revokes readiness: report `DEGRADED`, tighten the output filter, run a full gap reconciliation, and only then re-arm inside the remaining bound.
+
+Use field implementations as attributed evidence for the layer they actually demonstrated. The reusable product is the bounded construction contract, not the incidental loop syntax.
+
 ## Availability claims
 
 Use `LISTENING` only when detection, full reconciliation, heartbeat, deadline, cancellation, and end-to-end runtime wake/re-entry are currently proven. Use `PARKED` when the thread is open but the runtime cannot provide continuity. Use `DEGRADED` when a promised capability failed or state is inconsistent.
