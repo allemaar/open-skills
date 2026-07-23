@@ -58,7 +58,7 @@ Excluded Changes:
 - <path> — <reason>
 ```
 
-Commit messages match recent repo style; subject lines concise (≤72 chars when practical); no attribution trailer. The `Full commit message` block is the exact message to be committed: if the commit will have a body, include the full body; if it will be subject-only, show only the subject line. Before asking for approval, scan every proposed full message block and STOP if it contains `Co-Authored-By`, `Signed-off-by`, `Generated-by`, `Assisted-by`, "generated with AI", assistant/tool attribution text, or any similar attribution or ownership trailer. The `Verification` line states what was run, what should run before/after, or that this sync is message-only. Then ask:
+Commit messages match recent repo style; subject lines concise (≤72 chars when practical); no unsolicited attribution trailer. The sole exception is a `Signed-off-by` line when current repository policy or CI explicitly requires DCO. In that case, read the configured commit identity, never invent one, and include the exact line in the `Full commit message` block for approval. The block is the exact message to be committed: if the commit will have a body or required DCO line, include every line; if it will be subject-only, show only the subject. Before asking for approval, scan every proposed full message block and STOP if it contains `Co-Authored-By`, `Generated-by`, `Assisted-by`, "generated with AI", assistant/tool attribution text, any similar attribution or ownership trailer, or a `Signed-off-by` line without an explicit repository DCO requirement. The `Verification` line states what was run, what should run before/after, or that this sync is message-only. Then ask:
 
 > Ready to commit and push this plan? Reply **yes** to proceed, or tell me what to change.
 
@@ -76,8 +76,8 @@ Once approved:
 3. If it does not match, STOP. Unstage or revise only with explicit user approval.
 4. Commit with only the exact approved `Full commit message` block. Do not invent, shorten, expand, template, or append any subject, body, or trailer line that was not visible in the approved plan.
 5. Run the exact-message check: `git log -1 --format=%B`. Verify the message exactly matches the approved `Full commit message` block.
-6. Run the attribution-trailer check against the same output. Verify the message contains no co-author, signed-off-by, generated-by, assisted-by, assistant/tool/AI attribution, or similar attribution or ownership trailer.
-7. If the message differs or any attribution text is present, STOP. Do not push. Remove it with `git commit --amend` using only the clean approved message, then rerun both checks. Repeat until exact and clean.
+6. Run the attribution-trailer check against the same output. Verify the message contains no co-author, generated-by, assisted-by, assistant/tool/AI attribution, or similar attribution or ownership trailer. A `Signed-off-by` line is clean only when repository policy requires DCO and that exact line appeared in the approved message.
+7. If the message differs or contains unsolicited attribution or an unapproved sign-off, STOP. Do not push. Remove it with `git commit --amend` using only the clean approved message, then rerun both checks. Repeat until exact and clean.
 8. Run `git status --short --branch`. Confirm the remaining dirty state matches `Excluded Changes` plus expected post-commit state.
 9. After all approved commits are clean, `git push`.
 
@@ -101,7 +101,7 @@ Done.
 - NEVER stage files not listed in the approved plan, or `.env` files, binaries, or debug artifacts.
 - NEVER commit a subject, body, or trailer line that was not shown in the approved `Full commit message` block.
 - NEVER force-push.
-- NEVER add `Co-Authored-By`, `Signed-off-by`, `Generated-by`, `Assisted-by`, assistant/tool/AI attribution, or similar attribution or ownership trailers. If one appears in the proposed message, generated command, commit template, editor buffer, or final message: STOP and remove it. If a commit was already created with one, amend it away before any push.
+- NEVER add `Co-Authored-By`, `Generated-by`, `Assisted-by`, assistant/tool/AI attribution, or similar attribution or ownership trailers. Add `Signed-off-by` only when current repository policy or CI explicitly requires DCO, using the configured commit identity and showing the exact line in the approved full message. Any unsolicited or unapproved trailer must be removed before push.
 - NEVER push a commit until the exact-message check confirms the committed message is byte-for-byte the approved full message and the attribution-trailer check confirms the message is clean.
 - Message-only verification is the default unless the user requested tests/builds or they were already part of the session.
 - If new dirty files appear, branch state changes, staged files mismatch, or the approved plan no longer matches reality: STOP and ask for a revised plan.
