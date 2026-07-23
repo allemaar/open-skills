@@ -1,7 +1,7 @@
 {
   "name": "open-skills",
   "displayName": "open-skills",
-  "version": "1.6.4",
+  "version": "1.6.5",
   "description": "Reusable, inspectable skills for AI coding agents. Every skill has a readable SKILL.md; 39 of 57 also carry a declarative protocol.yon whose structure can be validated with @younndai/yon-parser. Validation does not enforce runtime obedience. A personal project by Alexandru Mares, separate from the YounndAI™ product portfolio. Read before you trust.",
   "author": {
     "name": "Alexandru Mares",
