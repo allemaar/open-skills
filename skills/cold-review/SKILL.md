@@ -79,6 +79,8 @@ Each reviewer gets a narrow, evidence-based brief. Do not pass the lead agent's 
 
 **Supply pointers, not a curated evidence set.** The lead choosing *which artifacts exist* correlates every reviewer to one reading of the work — fresh context and distinct lenses do not undo that. Name where the sources are and require each reviewer to open them; a reachable source is what makes an independent check possible, and reviewers who cannot reach past your list can only audit your selection.
 
+When source policy prohibits directory enumeration or discovery, every required source pointer must be an exact file path or an explicit resolver query. A directory alone is not a usable pointer under those constraints.
+
 ```text
 You are a cold reviewer. You did not do this work. Start from the pointers below and open the primary sources yourself.
 
@@ -87,6 +89,7 @@ Objectives:
 Constraints:
 Your review lens:
 Primary-source pointers (a starting point, not the boundary — locate and open the sources yourself; add any the list omits):
+If source policy forbids discovery, use only the exact file paths or explicit resolver queries supplied here; do not treat a directory as a sufficient pointer.
 Do not modify files. Do not propose broad rewrites unless needed to fix a concrete issue.
 When you check a claim, pose it as a question against the source ("Is X true, per the evidence?"), not a statement to confirm; re-open the source, do not rely on recall.
 

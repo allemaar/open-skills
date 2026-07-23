@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=cold-review | title="Cold Review — Outside-Agent Review of Work Artifacts" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Run an independent review of actual work artifacts using fresh context, surfacing issues the owning agent misses through context bias. Classify the work, size the reviewer pool, brief fresh reviewers on evidence only, synthesize one report with severity-tagged findings, a numeric score, and a threshold verdict." | trigger="user runs /cold-review, says cold review this, get outside review, have fresh agents inspect this work, or review this with fresh context"
-@STAMP ts:ts=2026-05-18T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-07-21T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Boundary ---
 
@@ -39,7 +39,7 @@
 # --- Step 4: Brief Reviewers ---
 
 @SEC name="Step 4 — Brief Reviewers"
-@RULE rid=rule:narrow-evidence-brief | lvl=MUST | when="briefing each reviewer" | then="give a narrow, evidence-based brief — supply primary-source pointers rather than a curated evidence set, and require each reviewer to open the sources themselves; do not pass the lead agent's conclusions as ground truth; instruct reviewers to pose each checked claim as a question against the source (re-open, not recall)"
+@RULE rid=rule:narrow-evidence-brief | lvl=MUST | when="briefing each reviewer" | then="give a narrow, evidence-based brief — supply primary-source pointers rather than a curated evidence set, and require each reviewer to open the sources themselves; when source policy prohibits directory enumeration or discovery, give every required source as an exact file path or explicit resolver query, never only a directory; do not pass the lead agent's conclusions as ground truth; instruct reviewers to pose each checked claim as a question against the source (re-open, not recall)"
 @RULE rid=rule:reviewers-read-only | lvl=MUST_NOT | when="reviewers run" | then="let reviewers modify files or propose broad rewrites unless needed to fix a concrete issue — cold-review reviews only"
 @MAP name=LensGroups | pairs=["backend-code"->"Correctness Reviewer, Architecture Reviewer, Security Reviewer, Test Coverage Reviewer, Performance Reviewer","frontend-ui"->"UX Reviewer, Visual/Layout Reviewer, Accessibility Reviewer, Responsive States Reviewer, Product Friction Reviewer","plan-spec"->"Scope Reviewer, Pragmatist, Sequencing Reviewer, Assumption Reviewer, Executability Reviewer","agent-skill-workflow"->"Trigger Auditor, Runtime Portability Reviewer, Agent Runtime Reviewer, Process Auditor, Failure-Mode Reviewer"]
 @STEP rid=step:brief | n:int=4 | op=std:ai.prompt@v1 | args=[task="Brief each reviewer using the reviewer prompt template in SKILL.md, assigning one lens per reviewer from LensGroups for the classified target type. Each reviewer returns: findings grouped Critical/Major/Minor/Interesting; evidence for every finding with file paths, commands, screenshots, or artifact references; missing evidence or uncertainty; a suggested 0-100 score with rationale."] | in=[ref:classification,ref:reviewer-plan] | use=[cfg:LensGroups] | out=[ref:reviewer-reports] | rules=[rid:rule:narrow-evidence-brief,rid:rule:reviewers-read-only]

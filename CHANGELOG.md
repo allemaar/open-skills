@@ -26,6 +26,7 @@ or guard changes that neither add nor remove a skill.
 
 - **Agent Mailbox sync-share path validation now admits only the Handler-selected Microsoft Cloud Files placeholder family when canonical containment still holds.** Unknown reparse tags, name surrogates, traversal, overwrite, and other escaping paths remain fail-closed; accepting a cloud placeholder is not evidence of delivery, detection, consumption, or wake.
 - **CI records the published unsigned `88d44f0` exception without rewriting public history.** The DCO enforcement floor advances to that commit, which remains unsigned and uncertified; every later non-merge commit must still carry a valid `Signed-off-by` trailer.
+- **`cold-review` no longer gives unusable directory-only source pointers when discovery is prohibited.** If a source policy forbids directory enumeration or discovery, every required reviewer source must now be supplied as an exact file path or an explicit resolver query. This preserves independent source gathering where it is allowed without forcing a reviewer to violate the evidence surface's access rules merely to locate a named companion file.
 
 ## [1.6.1] — 2026-07-21
 
