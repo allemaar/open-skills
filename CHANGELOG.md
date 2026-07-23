@@ -13,9 +13,11 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+## [1.6.2] — 2026-07-23
+
 ### Added
 
-- **`agent-mailbox` now exposes a layered, lazy operating model without making its working base protocol conditional.** CORE and FULL still establish the collaboration. After establishment, a Handler can select a bounded Collab Window (Work-or-Listen), native Scheduled Collab when the host can prove a bounded scheduler, or ordinary Standard Exchange; a reported miss or cursor inconsistency trigger-loads the recovery overlay. Optional capability failure falls back to `PARKED` or `DEGRADED` and leaves the base thread usable. New operating-mode, connection, and field guides keep the choice small and make transport, detection, task wake, re-arm, cancellation, and cleanup separate claims.
+- **`agent-mailbox` now exposes a layered, lazy operating model without making its working base protocol conditional.** CORE and FULL still establish the collaboration. After establishment, each participant can independently select a bounded Collab Window (Work-or-Listen), native Scheduled Collab when its host proves a bounded scheduler, or ordinary Standard Exchange; a reported miss or cursor inconsistency trigger-loads the recovery overlay. Optional capability failure falls back locally to `PARKED` or `DEGRADED` and leaves the base thread usable. New operating-mode, connection, and field guides keep the choice small and make transport, detection, task wake, re-arm, cancellation, and cleanup separate claims.
 
 ### Changed
 
@@ -25,6 +27,7 @@ or guard changes that neither add nor remove a skill.
 ### Fixed
 
 - **Agent Mailbox sync-share path validation now admits only the Handler-selected Microsoft Cloud Files placeholder family when canonical containment still holds.** Unknown reparse tags, name surrogates, traversal, overwrite, and other escaping paths remain fail-closed; accepting a cloud placeholder is not evidence of delivery, detection, consumption, or wake.
+- **Work-or-Listen and Scheduled Collab no longer enter bilateral package negotiation.** Each participant owns its mode, cadence, horizon, rearm, expiry, and cleanup; mode changes never alter establishment, lifecycle, callsigns, claims, reply debt, or conversation state. Optional availability is a no-reply `state` FYI, while real peer duties remain ordinary scoped CTAs. Returning holders use `resume → state` and a fresh CTA root for new work; legacy mode proposals receive at most one compatibility notice instead of restarting proposal, counter, renewal, and expiry loops.
 - **CI records the published unsigned `88d44f0` exception without rewriting public history.** The DCO enforcement floor advances to that commit, which remains unsigned and uncertified; every later non-merge commit must still carry a valid `Signed-off-by` trailer.
 - **`cold-review` no longer gives unusable directory-only source pointers when discovery is prohibited.** If a source policy forbids directory enumeration or discovery, every required reviewer source must now be supplied as an exact file path or an explicit resolver query. This preserves independent source gathering where it is allowed without forcing a reviewer to violate the evidence surface's access rules merely to locate a named companion file.
 
@@ -200,6 +203,7 @@ Initial public release of the **open-skills** pack — reusable skills for AI co
 - CI conformance — YON validation, a cross-reference/structural lint, a YON-DAG semantic check, spine-manifest sync, and a `gate-fires` proof that the guards actually reject broken input;
 - Apache-2.0 license, NOTICE, THREAT-MODEL, CONTRIBUTING (DCO), and SECURITY policy.
 
+[1.6.2]: https://github.com/allemaar/open-skills/releases/tag/v1.6.2
 [1.6.1]: https://github.com/allemaar/open-skills/releases/tag/v1.6.1
 [1.6.0]: https://github.com/allemaar/open-skills/releases/tag/v1.6.0
 [1.5.0]: https://github.com/allemaar/open-skills/releases/tag/v1.5.0

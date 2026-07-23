@@ -35,6 +35,16 @@ jobs:
         run: node tools/lint.mjs
       - name: YON-DAG semantic check (dangling refs, unreachable steps)
         run: node tools/yon-dag.mjs
+      - name: Validate Agent Mailbox lazy protocols (strict + semantic DAG)
+        run: |
+          for file in \
+            skills/agent-mailbox/protocols/collab-window.yon \
+            skills/agent-mailbox/protocols/scheduled-collab.yon \
+            skills/agent-mailbox/protocols/missed-message-recovery.yon
+          do
+            yon validate "$file" --profile exec
+            node tools/yon-dag.mjs "$file"
+          done
       - name: Spine manifest in sync (catalog.yon + catalog.json + llms.txt + skills.graph.yon)
         run: node tools/spine.mjs --check
       - name: Validate the YON manifests (catalog + graph are themselves YON)

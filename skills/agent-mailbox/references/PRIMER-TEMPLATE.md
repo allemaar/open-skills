@@ -7,7 +7,7 @@ purpose: Rehydrate an authorized agent into this project's mailbox collaboration
 topic: reference
 mesh-visibility: local
 weight: 5
-meta: {"mailbox":{"version":1,"profile":"CORE","single_writer":"<CALLSIGN>","status":"active","extension":{"id":"<none|collab-window|scheduled-collab>","version":"<n/a|1>","state":"<OFF|PROPOSED|ACCEPTED|WORKING|LISTENING|ACTIVE|FOUND|PARKED|DEGRADED|EXPIRED|STOPPED|CANCELLED>"}}}
+meta: {"mailbox":{"version":1,"profile":"CORE","single_writer":"<CALLSIGN>","status":"active","availability":{"<CALLSIGN>":{"package":"<none|collab-window|scheduled-collab>","version":"<n/a|2>","state":"<OFF|WORKING|LISTENING|ACTIVE|FOUND|PARKED|DEGRADED|EXPIRED|STOPPED|CANCELLED>","reported_at":"<ISO-8601 timestamp>","reported_until":"<bounded ISO-8601 deadline or n/a>"}}}}
 ---
 
 # Agent Mailbox Project Primer
@@ -30,9 +30,6 @@ meta: {"mailbox":{"version":1,"profile":"CORE","single_writer":"<CALLSIGN>","sta
 - Callsign TTL: `30 days | Handler-set duration`
 - Callsign settle interval: `one complete sync round | Handler-set duration`
 - Per-thread exchange budget: `20 | Handler-set count`
-- Requested operating mode: `standard | collab-window | scheduled-collab`
-- Selected package/version: `none | collab-window@1 | scheduled-collab@1`
-- Absolute package horizon: `<deadline or n/a>`
 
 ## Participants
 
@@ -64,23 +61,25 @@ Declared succession appends a lineage entry instead of overwriting the row. The 
 ## Live collaboration state
 
 - Status: `discovered | establishing | active | waiting | blocked | closing | closed`
-- Thread UUIDv7: `<id>`
 - Session UUIDv7, FULL or when used: `<id>`
 - Current phase/gate: `<phase>`
-- Live thread heads: `[[latest-message-file]]`
 - Current primer writer: `<CALLSIGN>`
 - Latest synchronized head: `<commit>`
 - Updated: `<ISO-8601 timestamp>`
 
-## Operating capability state
+| Conversation | Root CTA UUIDv7 | Live head | State | Unresolved predecessor debt |
+|---|---|---|---|---|
+| `<short label>` | `<fresh request/propose/claim id>` | `[[latest-message-file]]` | `active | waiting | blocked | closing | closed` | `<none or separate debt reference>` |
 
-- Requested state: `standard | collab-window | scheduled-collab`
-- Collab Window state: `OFF | WORKING | LISTENING | PARKED | DEGRADED | EXPIRED | STOPPED | n/a`
-- Scheduled Collab state: `OFF | ACTIVE | FOUND | PARKED | DEGRADED | EXPIRED | CANCELLED | n/a`
-- Capability evidence: `<detection; reconciliation; heartbeat; scheduler/job; wake or re-entry; cancellation>`
-- Package terminal/cleanup condition: `<condition and evidence>`
-- Authority-grant reference: `<current Handler decision reference or n/a; reference is a pointer, not authority by itself>`
-- Disposition-ledger locus: `<same-locus host-local state | Handler-authorized private transfer | unavailable>`
+## Optional participant availability summaries
+
+| Participant | Self-reported package | Coarse state | Reported at | Reported until |
+|---|---|---|---|---|
+| `<CALLSIGN>` | `none | collab-window@2 | scheduled-collab@2` | `OFF | WORKING | LISTENING | ACTIVE | FOUND | PARKED | DEGRADED | EXPIRED | STOPPED | CANCELLED` | `<timestamp>` | `<bounded timestamp or n/a>` |
+
+These summaries are optional sender-local orientation, not verified capability, an SLA, a handshake term, or a peer obligation. Different participants may use different modes and cadences. Detailed interval, heartbeat, scheduler/job, process, failure-budget, wake, cancellation, and cleanup evidence remains participant-local.
+
+Disposition-ledger locus by participant: `<same-locus host-local state | Handler-authorized private transfer | unavailable>`
 
 ## Settled decisions
 
@@ -112,28 +111,16 @@ Participant-local append-only disposition transitions are authoritative handling
 
 Historical debt: `<none | item count plus historical-debt/needs-audit status; do not place private ledger contents here>`
 
-## Listener contract
-
-- Interval: `<seconds>`
-- Maximum window: `<duration>`
-- Consecutive transport failure budget: `<count>`
-- Fresh-file parse retry window: `<duration/backoff>`
-- Expected peer/kind/thread: `<filter>`
-- Per-peer channel: `event watch | sync+range | event + reconciliation`
-- Addressed-message selection and prioritization filters: `<recipient selection; current thread/reply_to priority>`
-- Heartbeat/progress mechanism: `<runtime adapter>`
-- End-to-end task wake/re-entry evidence: `<proof or unavailable>`
-- Cleanup requirement: owned process tree gone and scratch count returned to baseline
-
 ## Resume procedure
 
 1. Read `/agent-mailbox` and this primer completely.
 2. Resolve and synchronize the exact live mailbox.
 3. Verify the repository head, artifact existence/hashes, open claims, all addressed messages, disposition checkpoint, compact cursor, ledger locus/transfer status, and unresolved debt.
-4. Send `resume` with reconstructed state and next intended action.
-5. Receive peer `state`; reconcile discrepancies before work.
-6. Load only the selected capability package, when any, and re-prove its prerequisites.
-7. Update this primer through its declared single writer when shared durable state changes.
+4. If returning to an established room, send `resume` with reconstructed state and next intended action; use `hello` only for a genuinely new participant or unestablished room.
+5. Receive peer `state`; reconcile discrepancies without reopening establishment.
+6. Start a new conversation, when needed, with a fresh ordinary CTA root carrying new `thread` and `request_id` UUIDv7 values. Old heads remain history and unresolved non-mode CTAs remain separate debt.
+7. Load only the participant-local capability package selected by this participant, when any, and re-prove its prerequisites without proposing or negotiating it.
+8. Update this primer through its declared single writer when shared durable state changes. A local mode transition needs an update only when the participant elects to publish a coarse availability FYI.
 
 ## Next bounded action
 

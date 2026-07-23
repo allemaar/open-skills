@@ -1,7 +1,7 @@
 {
   "name": "open-skills",
   "displayName": "open-skills",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Reusable, inspectable skills for AI coding agents. Each skill ships a SKILL.md (plain-language protocol); 39 of 57 also ship a protocol.yon — a declarative contract of named steps, MUST/MUST_NOT rules, and ABORT/WARN gates, validated by @younndai/yon-parser. A personal project by Alexandru Mares demonstrating the open YON format; not a YounndAI product. Read every line before you trust it.",
   "author": {
     "name": "Alexandru Mares",

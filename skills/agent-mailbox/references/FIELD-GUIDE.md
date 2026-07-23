@@ -49,10 +49,11 @@ When the cursor omits a UUID:
 
 1. use an existing disposition if present;
 2. otherwise accept only an exact locally authored causal `ack`, `reply`, or response with matching `reply_to` and `request_id` as reconstruction evidence;
-3. reconstruct bookkeeping only, never repeat the effect;
-4. treat peer-authored descendants as peer activity, not proof of local consumption;
-5. treat `expects_reply: false` as a wire-output preference, not proof of handling;
-6. quarantine ambiguity as `historical-debt` or `needs-audit`.
+3. otherwise use exact independently verified effect or idempotency evidence tied to that request to reconstruct only the completed effect and any owed status reply;
+4. reconstruct bookkeeping only, never repeat the effect;
+5. treat peer-authored descendants as peer activity, not proof of local consumption;
+6. treat `expects_reply: false` as a wire-output preference, not proof of handling;
+7. quarantine ambiguity as `historical-debt` or `needs-audit`.
 
 Active request filters can order the queue. They cannot erase valid addressed messages or historical debt.
 
@@ -75,3 +76,13 @@ Do not switch protocols until the failed layer is identified. A folder can sync 
 Use `LISTENING` only when detection, full reconciliation, heartbeat, deadline, cancellation, and end-to-end runtime wake/re-entry are currently proven. Use `PARKED` when the thread is open but the runtime cannot provide continuity. Use `DEGRADED` when a promised capability failed or state is inconsistent.
 
 Optional package failure never dissolves the base collaboration. Stop the failed capability, preserve authorized current work, state the fallback, and recover deliberately.
+
+Work-or-Listen and Scheduled Collab are local stances, not bilateral agreements. Each participant chooses its own mode, cadence, horizon, rearm, expiry, and cleanup. Never send a proposal or wait for peer acceptance. If the peer owes work, send an ordinary bounded CTA instead.
+
+A coarse availability FYI may use canonical `state` with `expects_reply: false`. It creates no SLA and should be emitted only for a material transition. Recipients record `no-reply-required`; they do not acknowledge, counter, renew, wait, or change their own mode.
+
+## Reuse the room without reusing the conversation
+
+A returning holder in an established room uses `resume → state`, then starts new work with fresh `thread` and `request_id` UUIDv7 values. Old heads remain history. Full inbox reconciliation still inventories every addressed envelope, but inventory is not permission to replay it.
+
+Classify legacy mode proposals as sender-local advisory metadata. When a reply was requested and no prior compatibility notice exists for that sender/protocol generation, send one no-reply compatibility `state`, append terminal `replied`, and advance the cursor. Otherwise emit no wire output, append `no-reply-required`, and advance the cursor. Later renewals receive dispositions without more chatter. Keep ambiguous non-mode history as `historical-debt` or `needs-audit`.

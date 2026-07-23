@@ -61,6 +61,8 @@ Runtime-native notification, monitoring, scheduling, cancellation, and task wake
 
 When the runtime cannot keep a task reachable, use Handler-mediated turn-taking or report `PARKED`. Never claim a listener survives the process or session that owns it.
 
+The participant that owns the runtime also owns its mode, cadence, horizon, rearm, expiry, and cleanup. These settings are never negotiated across the mailbox. Use an ordinary scoped CTA when another participant must perform work or meet a deadline.
+
 ## Participant succession and local state
 
 A same-locus successor may reuse a disposition ledger only after declared succession and an exact owner/arena/root match. A cross-locus successor needs an explicit Handler-authorized private state transfer. Without one, reconcile shared causal evidence, mark missing local dispositions `DEGRADED: disposition-unavailable`, quarantine ambiguity as `historical-debt` or `needs-audit`, and do not claim `LISTENING`.
@@ -74,4 +76,5 @@ A Handler report that a message exists but was not detected is an incident, not 
 3. Identify which connection layer failed: materialization, event detection, full reconciliation, disposition/cursor integrity, task wake, or re-arm.
 4. Load [`../protocols/missed-message-recovery.yon`](../protocols/missed-message-recovery.yon).
 5. Reconcile the full addressed inbox age-independently. Current-request filters may prioritize; they may not erase history.
-6. Restore `LISTENING` only after one fresh real addressed message proves the complete path. Otherwise remain `PARKED` or `DEGRADED` and explain the missing capability.
+6. In a reused room, separate `resume → state` rehydration from new work: give the new CTA fresh `thread` and `request_id` values, keep old non-mode debt separate, and treat legacy mode proposals as non-negotiable sender-local advisory metadata.
+7. Restore `LISTENING` only after one fresh real addressed message proves the complete path. Otherwise remain `PARKED` or `DEGRADED` and explain the missing capability.

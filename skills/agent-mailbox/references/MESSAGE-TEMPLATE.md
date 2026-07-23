@@ -47,8 +47,9 @@ Verdict: the example artifact is complete and ready for independent review.
 - Handler objective, authority, privacy, and prohibited scope;
 - corpus paths and numbered positions;
 - proposed roles and single-writer state;
-- listener bounds, per-thread exchange budget, and expected reply shape.
-- requested operating mode/horizon as Handler context when one was selected; this is not a package proposal or acceptance, and otherwise no extension is invented.
+- per-thread exchange budget and expected reply shape.
+
+Operating mode, cadence, horizon, listener, and scheduler settings are participant-local and never handshake terms.
 
 ### `welcome`
 
@@ -58,17 +59,21 @@ Verdict: the example artifact is complete and ready for independent review.
 - accepted role, baseline head, and runtime adapter.
 - responder locus and independently computed channel classification.
 - accepted collaboration tag set.
-- acknowledge the requested operating-mode context when useful, but do not accept or activate an optional package inside the base handshake.
+- do not counter or amend the handshake solely because local operating choices differ.
 
-### Post-establishment package negotiation
+### Post-establishment local operating package
 
-When a selected package changes peer obligations, the established base thread continues and a distinct causal `propose` message carries the package identifier, version, horizon, obligations, fallback, and terminal conditions. The peer accepts, counters, or rejects in a separate message whose `reply_to` points to that proposal. Activate the package only after causal acceptance.
+After establishment, each participant may load `collab-window@2` or `scheduled-collab@2` for itself. Starting, rearming, renewing, expiring, stopping, and cleaning up the package produces no mode proposal and requires no peer reply. Different participants may use different modes and cadences.
 
-Only later messages in that accepted package exchange carry extension metadata, for example:
+When a peer duty is needed, send an ordinary scoped CTA. Do not turn “review by this deadline” or “please remain available” into mode negotiation.
+
+An optional coarse availability FYI uses canonical `kind: state`, `expects_reply: false`, and sender-local metadata. The following is only the relevant `meta.mailbox` fragment; retain every required field from the complete envelope above:
 
 ```json
-{"extensions":[{"id":"collab-window","version":1,"state":"proposed|accepted|parked|degraded|stopped"}]}
+{"mailbox":{"version":1,"kind":"state","expects_reply":false,"availability":{"package":"collab-window","version":2,"state":"WORKING|LISTENING|PARKED|DEGRADED|EXPIRED|STOPPED","reported_at":"<ISO-8601 timestamp>","reported_until":"<bounded ISO-8601 deadline>"}}}
 ```
+
+This report creates no SLA or obligation. Emit it only when the coarse reported state materially changes; the recipient records `no-reply-required` and does not acknowledge, counter, renew, wait, or change its own mode.
 
 ### `deliver`
 
@@ -94,7 +99,12 @@ Only later messages in that accepted package exchange carry extension metadata, 
 - latest accepted message per participant;
 - next intended bounded action and reconciliation request.
 - when succeeding a prior holder: Handler authorization, new session/provenance, prior last accepted message, and inherited obligations accepted or released.
-- requested versus proven operating state, selected package/horizon, capability evidence, disposition checkpoint, compact cursor checkpoint, and unresolved historical debt.
+- disposition checkpoint, compact cursor checkpoint, and unresolved historical debt;
+- optional sender-local availability summary only in `state`, using `expects_reply: false` when no other reply is owed.
+
+In an established room, `resume → state` rehydrates the returning holder without reopening the handshake. A new conversation then starts with a fresh ordinary CTA root and new `thread` and `request_id` UUIDv7 values. Old thread heads remain history; unresolved non-mode CTAs remain separate debt.
+
+A legacy listener or mode proposal is sender-local advisory metadata. If it expects a reply, send at most one causal compatibility `state` per sender and legacy protocol generation with `expects_reply: false`; otherwise dispose it as `no-reply-required`. Never accept, counter, or renew it.
 
 ### `blocked` for an out-of-scope request
 

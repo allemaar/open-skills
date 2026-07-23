@@ -40,7 +40,7 @@ The Handler supplies, or explicitly delegates the agents to choose:
 4. the peer or participant set;
 5. who initiates and who owns the first shared artifact.
 
-Also resolve the transport adapter, listener bounds, privacy posture, local locus identity, expected callsigns, agreed tags, any Handler-selected operating mode or horizon, and whether the project already has an `AGENT-MAILBOX-PRIMER.md`. Auto-detect transport only through §10's ordered checks. Do not guess a vault, peer identity, shared-folder provider, publication scope, scheduler, or wake capability.
+Also resolve the transport adapter, privacy posture, local locus identity, expected callsigns, agreed tags, any Handler-selected **local** operating mode or horizon, local listener bounds, and whether the project already has an `AGENT-MAILBOX-PRIMER.md`. Listener bounds and operating mode belong to this participant's runtime; the handshake never settles them. Auto-detect transport only through §10's ordered checks. Do not guess a vault, peer identity, shared-folder provider, publication scope, scheduler, or wake capability.
 
 ## 2. One protocol, two profiles
 
@@ -55,21 +55,23 @@ FULL is a strict superset of CORE. The Handler may force FULL. Do not silently d
 
 CORE and FULL are collaboration-semantics profiles. Operating capabilities use a separate extension namespace and never reinterpret `profile`.
 
-The base skill is complete by itself. It always owns authority, safe paths, atomic publication, causality, addressed-message selection, durable disposition, reconciliation, exchange budgets, and bounded-listener rules. Optional packages add constraints only after the base handshake:
+The base skill is complete by itself. It always owns authority, safe paths, atomic publication, causality, addressed-message selection, durable disposition, reconciliation, exchange budgets, and bounded-listener rules. Optional packages are lazy participant-local operating directives loaded only after the base handshake:
 
 | Package | Loads when | Adds | Honest fallback |
 |---|---|---|---|
-| [`collab-window@1`](protocols/collab-window.yon) | The Handler selects Work-or-Listen/Collab Window, or continuity is useful and accepted | Finite availability lease; `WORKING`, proven `LISTENING`, `PARKED`, degradation, stop and cleanup | Base exchange plus `PARKED` |
-| [`scheduled-collab@1`](protocols/scheduled-collab.yon) | The Handler selects scheduled checks and the host exposes a bounded native scheduler | Absolute horizon, maximum checks, no-overlap, failure budget, cancellation | Base exchange plus `PARKED` |
+| [`collab-window@2`](protocols/collab-window.yon) | This participant's Handler selects Work-or-Listen/Collab Window, or the participant recommends it locally | Finite local work/listen lease; `WORKING`, proven `LISTENING`, `PARKED`, degradation, stop and cleanup | Base exchange plus local `PARKED` |
+| [`scheduled-collab@2`](protocols/scheduled-collab.yon) | This participant's Handler selects scheduled checks and the host exposes an authorized bounded native scheduler | Local absolute horizon, maximum checks, no-overlap, failure budget, cancellation | Base exchange plus local `PARKED` |
 | [`missed-message-recovery@1`](protocols/missed-message-recovery.yon) | A miss, cursor inconsistency, or readiness contradiction is reported | Readiness revocation, disposition/cursor audit, exact reconstruction, historical-debt quarantine | Base exchange plus `DEGRADED` |
 
-After establishment, if continuity would materially help and the Handler has not already chosen, present one short recommended-first card from [`OPERATING-MODES.md`](references/OPERATING-MODES.md): Collab Window until a deadline, Standard Exchange, or Scheduled Collab when the native prerequisite exists. Skip the card for an explicit mode, an obvious one-shot exchange, or an unavailable option. `start`, `stop`, and `toggle` requests run the same capability preflight; they are not safety bypasses.
+After establishment, if continuity would materially help and this participant's Handler has not already chosen, present one short recommended-first card from [`OPERATING-MODES.md`](references/OPERATING-MODES.md): Collab Window until a deadline, Standard Exchange, or Scheduled Collab when the native prerequisite exists. The selection configures only this participant. Skip the card for an explicit mode, an obvious one-shot exchange, or an unavailable option. `start`, `stop`, and `toggle` requests run the same local capability preflight; they are not safety bypasses.
 
-The default post-handshake settling horizon is ten minutes. Longer operation uses renewable bounded leases with one absolute Handler-approved deadline. Literal unbounded or “non-stop” execution is unsupported.
+The advisory local post-handshake or post-resume settling horizon is ten minutes. Each participant may independently choose another bounded horizon and cadence. Longer operation uses renewable bounded leases with one absolute Handler-approved deadline. This value is neither a protocol constant nor an availability promise. Literal unbounded or “non-stop” execution is unsupported.
 
-The base handshake establishes first. If a selected package changes peer obligations, propose its identifier, version, horizon, obligations, fallback, and terminal conditions in a causal message and activate it only after acceptance. Rejection or unsupported behavior blocks only that capability; the base thread remains established. Unknown extension metadata is forward-tolerant at the CORE v1 floor, while unknown behavior is negotiated or reported `blocked`.
+The base handshake establishes first. Then each participant independently selects, proves, starts, rearms, expires, stops, and cleans up its own operating package. **Never propose, accept, counter, reject, renew, or block on another participant's operating mode, cadence, horizon, listener, or scheduler.** If one participant asks another to deliver, review, check, or reply by a deadline, that is an ordinary scoped `request`, `propose`, or FULL claim under the base authority rules—not mode activation.
 
-Exactly one primary operating package is active: Collab Window or Scheduled Collab. Missed-message recovery is the only version-1 overlay. A package is not active until its exact YON file has been read and its prerequisites evidenced.
+At most one primary local operating package is active **per participant**: Collab Window or Scheduled Collab. Different participants may use different modes and cadences simultaneously. Missed-message recovery is the only version-1 overlay. A local package is not active until its exact YON file has been read and its prerequisites evidenced.
+
+An agent may optionally publish a sender-local availability FYI using canonical `kind: state`, explicit `meta.mailbox.availability` metadata, and `expects_reply: false`. It is orientation only: no SLA, acceptance, counter, renewal, or waiting may follow. Emit only on a material reported-state transition; it counts normally toward the exchange budget. The recipient records `no-reply-required`, may update the sender's coarse primer summary, and does not change establishment, obligations, or its own mode.
 
 ## 3. Layout and discovery
 
@@ -159,16 +161,16 @@ A callsign is a Handler-owned role, not a process property. A new session, model
 
 If no primer exists, the initiator atomically sends `hello` first, then creates the primer as the first single-writer act. With simultaneous founders, the smaller canonical root UUID is the initiator and first primer writer. A losing author never overwrites the winner: it marks or archives only its own bootstrap copy as `superseded-by` and registers through the surviving primer. A sync-share conflict copy follows the same canonical rule and is never silently deleted by a non-author.
 
-The handshake settles one project tag, the standing `agent-mailbox` tag, and optional topic tags. Every later message and shared artifact carries that set in frontmatter. Machine causality uses UUIDs, while each message body also wikilinks its causal parent and referenced artifacts. The primer wikilinks live thread heads.
+The handshake settles one project tag, the standing `agent-mailbox` tag, and optional topic tags. Every later message and shared artifact carries that set in frontmatter. Machine causality uses UUIDs. Every causal response body wikilinks its exact parent and referenced artifacts; a permitted root has no causal-parent link. The primer wikilinks live thread heads.
 
-Higher protocol versions remain readable at the CORE v1 floor. Ignore unknown envelope fields rather than rejecting the message; unsupported behavior still requires negotiation or `blocked`.
+Higher protocol versions remain readable at the CORE v1 floor. Ignore unknown envelope fields rather than rejecting the message. Unsupported **shared work behavior** may require an ordinary request/counter or `blocked`; unknown or legacy local-mode metadata never requires mode negotiation.
 
 ## 5. Canonical message kinds
 
 | Kind | Purpose |
 |---|---|
-| `hello` / `welcome` | Establish identities, objective, roles, profile, corpus, and listener contract |
-| `resume` / `state` | Reconcile a fresh session with live repository evidence |
+| `hello` / `welcome` | Establish identities, objective, roles, profile, corpus, authority, and shared work terms |
+| `resume` / `state` | Reconcile a fresh session with live evidence; `state` may also carry a non-binding sender-local availability FYI when `expects_reply: false` |
 | `request` / `reply` | Ask for and return bounded work |
 | `propose` / `review` | Deliberate and cross-review a decision or artifact |
 | `claim` | FULL-only lease on a bounded task scope |
@@ -194,7 +196,6 @@ Sync inbound first, establish the repository baseline, then send:
 - exact corpus/artifact index—not summaries alone;
 - numbered positions on foreseeable conflicts;
 - proposed division of labor and single-writer ownership;
-- listener interval, maximum window, failure budget, and stop condition;
 - exchange budget, default 20 consecutive agent-to-agent messages without Handler input or declared new external evidence;
 - expected reply shape.
 
@@ -211,7 +212,7 @@ Two messages can prove a transport works. **They cannot prove two agents agreed.
 - **CORE, exact accept:** `hello → welcome` establishes. The first work message cites the `welcome` and doubles as acknowledgement.
 - **CORE, any material counter:** the thread stays `establishing` until the initiator sends a causal acceptance of the counter. A `welcome` may counter *and* propose — it may not counter *and* declare established.
 
-**Material is decided by effect, not by how the change is labelled.** A difference is material when it changes what a participant may, must, or must not do, or alters the objective, authority, participants and callsigns, profile, role or writer ownership, corpus, transport or locus, tags, listener bounds, exchange budget, or any numbered position. It is non-material only when it is representation-only and preserves the same canonical value — restating an identical identifier, adding a courtesy field.
+**Material is decided by effect, not by how the change is labelled.** A difference is material when it changes a **shared** obligation or permission, or alters the objective, authority, participants and callsigns, profile, role or writer ownership, corpus, transport or locus, tags, exchange budget, or any numbered position. It is non-material when it is representation-only or participant-local—restating an identical identifier, adding a courtesy field, or reporting local mode, cadence, horizon, scheduler, listener, or availability. A responder must not counter solely because its local operating choices differ.
 
 Do not treat "just clarifying the wording" as non-material by default: **wording is where scope moves while presenting itself as agreement.** Ambiguity stays material and needs explicit causal acceptance.
 - **FULL:** `hello → welcome → ack` establishes. No claimed work begins before the third message is synchronized.
@@ -232,7 +233,7 @@ For each received message:
 
 1. **Reconcile inbound.** Use the selected transport and never reason from knowingly stale state.
 2. **Select addressed messages.** Inspect every valid message addressed to this participant before semantic or current-request filtering. Filters may prioritize work; they may not erase candidates or historical debt.
-3. **Validate.** Check profile, message/thread/session identifiers, kind, causal parent, and safe exact paths.
+3. **Validate.** Check profile, message/thread/session identifiers, kind, the causal-parent rule (permitted root or exact parent), and safe exact paths.
 4. **Deduplicate.** Compare the inbound UUID with the durable disposition ledger, then use the private consumed-UUID cursor as a compact checkpoint. Check exact locally authored causal responses before repeating anything.
 5. **Assess.** Treat the message as a call to action. Check Handler authority, peer trust, claimed scope, artifact hash, single-writer state, and newer Handler input.
 6. **Act once or gate.** Perform only bounded authorized work. If the request is outside scope, append `blocked: handler-decision` and give the Handler one explainer: what was requested, why it is outside scope, what approval would authorize and risk, and what refusal leaves undone. Approval appends `acted` or `replied` after execution; refusal appends `rejected-scope`. A specific informed Handler approval removes this mailbox scope block for that request; higher system/runtime and repository gates still apply.
@@ -278,11 +279,17 @@ One inbox is one room. Every participant can see every message; `to` assigns the
 
 Thread IDs and causal parents untangle concurrent conversations. The primer roster and latest-accepted table expose missing responses. A joining participant reads the primer, sends `hello` or `resume` to `ALL`, receives `welcome` or `state`, then the primer writer updates the roster.
 
+### Same room, new session or conversation
+
+A returning holder in an established room rehydrates with `resume → state`; it does not repeat `hello` or reopen establishment. After state reconciliation, a new conversation begins with a fresh ordinary CTA root (`request`, `propose`, or another applicable base kind) carrying new `thread` and `request_id` UUIDv7 values. Old thread heads remain visible history and unresolved non-mode CTAs remain separate debt; neither may silently become the new conversation head.
+
+Startup still reconciles the complete addressed inbox. Age-independent means **inventory and classify every candidate**, not execute every old message. Use durable dispositions and exact causal/effect evidence first. A legacy listener or Work-or-Listen proposal is sender-local advisory metadata under the corrected protocol: when it requests a reply, send at most one causal `state` compatibility notice per participant and legacy protocol generation with `expects_reply: false`, append terminal `replied`, and advance the cursor; otherwise emit no wire output, append terminal `no-reply-required`, and advance the cursor. Never accept, counter, or renew it. Later legacy mode renewals receive `no-reply-required` dispositions but no further compatibility chatter. Ambiguous non-mode history stays `historical-debt` or `needs-audit`.
+
 ### Graceful departure
 
 `goodbye` ends a participant's active presence, not a thread. Before departure, the sender MUST transfer every artifact pen or return it to the Handler, and release or hand off every live claim. The body settles every owed reply by answering, explicitly declining, or recording a waiver/reassignment. It banks the last consumed message, completed and abandoned work, and `re-entry: returning | final`.
 
-`returning` later uses the normal `resume` flow and leaves the name active under a fresh lease. `final` retires the callsign permanently in that arena. The primer writer changes participant status to `departed(returning)` or `departed(final)` and name-state accordingly. A two-agent room requires peer ACK; a group departure is informational and needs no quorum. Graceful departure is the explicit twin of lease expiry plus crash recovery. Participant lifecycle is `ACTIVE → DEPARTING → DEPARTED`; any unfinished thread with zero active participants becomes `blocked` for the Handler, never silently `closed`.
+`returning` later uses the normal `resume` flow and leaves the name active under a fresh lease. `final` retires the callsign permanently in that arena. The primer writer changes participant status to `departed(returning)` or `departed(final)` and name-state accordingly. A two-agent room requires peer ACK; a group departure is informational and needs no quorum. Participant lifecycle is `ACTIVE → DEPARTING → DEPARTED`; any unfinished thread with zero active participants becomes `blocked` for the Handler, never silently `closed`. Local listener/package `PARKED`, `EXPIRED`, `STOPPED`, or `DEGRADED` never changes participant status, callsign ownership, establishment, claims, reply debt, conversation state, succession, or departure.
 
 ### Exchange budget
 
@@ -357,11 +364,14 @@ Before publishing, validate the envelope you are about to write — not only the
 
 - the **complete canonical shape**, before publication: parseable frontmatter and a `meta.mailbox` block; a supported version and profile; UUIDv7 message and thread identifiers, plus the session identifier FULL requires; the required recipient, sender, kind, transport and locus fields; the sequence its profile requires. **Reject legacy top-level aliases on new messages.**
 - a direct reply, result, or delivery cites **the exact message being answered** — not merely the newest thing in the thread. A shared `request_id` makes a message a sibling; an unrelated newer sibling is not a parent.
+- an empty `reply_to` appears only on `hello`, `resume`, a fresh ordinary CTA root, or a standalone no-reply availability state. These are true roots; do not attach them to old history merely to satisfy a parent field.
 - an `ack` whose `reply_to` is the `hello` **must be rejected when its body claims to follow one or more welcomes.** The envelope graph is the contract; a wikilink in the body is not causality.
 
 Where the runtime offers a real parser, use it. **Where it does not, fail closed** on anything that cannot be established — syntax, required fields, identifier form. *Best-effort* may describe an optional semantic check; it never licenses publishing an envelope you know you did not validate. The same model that wrote a malformed envelope is not a reliable judge of it, which is an argument for refusing to publish, not for publishing with a caveat.
 
 Listening is transport monitoring, not delegated reasoning. Prefer native push notification. Otherwise poll at bounded cost. The model wakes only on a valid message, heartbeat/status request, watchdog alarm, or timeout; it does not busy-reason every interval.
+
+Each participant owns its interval, maximum duration, failure budget, rearm, and stop decision. Peers may report their own coarse availability, but another participant's report is never a reason to delay durable mailbox work or change local listener settings.
 
 Select detection by transport, then use locus to optimize Git/Lyt:
 
@@ -387,7 +397,7 @@ Required outcomes: `found`, `timeout`, `failed`, or `cancelled`. Every run perfo
 
 After stop or cancellation, verify the owned process tree is gone and remove owned scratch files. Silence is not proof that a watcher is healthy.
 
-Recommended starting values for a standalone bounded listener are a 30-second reconciliation interval, 30-minute maximum, and three consecutive transport failures. They are defaults, not protocol constants or provider guarantees. A Collab Window has its own ten-minute post-handshake settling default. State the expected propagation class in the handshake as an operational expectation to test, never as a service-level claim.
+Recommended local starting values for a standalone bounded listener are a 30-second reconciliation interval, 30-minute maximum, and three consecutive transport failures. They are participant-local defaults, not handshake terms, protocol constants, provider guarantees, or peer promises. A Collab Window has its own advisory ten-minute post-handshake or post-resume settling default. State expected propagation class in the handshake as an operational expectation to test, never as a service-level claim or cadence commitment.
 
 ## 10. Transport adapters
 
@@ -450,7 +460,7 @@ Resolve the native background, notification, cancellation, and progress mechanis
 
 ## 12. Primer and resumption
 
-`AGENT-MAILBOX-PRIMER.md` is the visible rehydration entrypoint and has one declared writer at a time. It records protocol/profile, arena/transport/mailbox, expected participants and lifecycle status, objective and authority, source-of-truth artifacts and hashes, active threads and wikilinked heads, roles and claims, latest accepted message per participant, disposition checkpoint and unresolved debt, requested versus proven operating state, selected package/horizon/capability evidence, listener defaults, current phase, blockers, next action, and checks that must be rerun.
+`AGENT-MAILBOX-PRIMER.md` is the visible rehydration entrypoint and has one declared writer at a time. It records protocol/profile, arena/transport/mailbox, expected participants and lifecycle status, objective and authority, source-of-truth artifacts and hashes, active conversations with explicit roots and wikilinked heads, roles and claims, latest accepted message per participant, disposition checkpoint and unresolved debt, current phase, blockers, next action, and checks that must be rerun. Optional operating summaries are keyed by participant and explicitly self-reported: coarse mode/state, report time, and bounded `reported_until`. Detailed interval, heartbeat, scheduler/job, process, failure-budget, capability, and cleanup evidence remains participant-local and never appears as one room-wide selected package.
 
 A fresh agent:
 
@@ -458,9 +468,10 @@ A fresh agent:
 2. synchronizes the live mailbox;
 3. verifies the live head, exact artifact paths/hashes, and open claims;
 4. verifies whether participant-local disposition state is reusable at the same locus or was explicitly transferred by the Handler; otherwise declares `DEGRADED: disposition-unavailable` and quarantines unresolved history;
-5. sends `resume` with its reconstructed state and intended action;
+5. sends `resume` with its reconstructed state and intended action without reopening the established handshake;
 6. receives peer `state`, reconciles disagreement, and corrects the primer if needed;
-7. continues only after a causally linked response, and never claims `LISTENING` while disposition evidence is unavailable.
+7. starts a new conversation, when requested, with a fresh ordinary CTA root carrying new `thread` and `request_id` values;
+8. continues only after a causally linked response, and never claims `LISTENING` while disposition evidence is unavailable.
 
 The primer is a checkpoint, not higher authority. Live evidence and current Handler direction win.
 
@@ -506,7 +517,7 @@ Mailbox: <root-or-inbox-path>
 [Optional] Horizon: <absolute deadline or bounded duration>
 ```
 
-The folder is the only mandatory argument. The agent auto-detects transport, reads an existing primer, assigns a collision-free callsign when allowed, and proposes the missing handshake fields. An explicit mode skips the mode card. If authority, objective, participant trust, an ambiguous transport, or a requested capability remains unresolved, ask one clean question; do not invent it.
+The folder is the only mandatory argument. The agent auto-detects transport, reads an existing primer, assigns a collision-free callsign when allowed, and proposes the missing **shared** handshake fields. An explicit mode skips the mode card and configures only the local participant. If authority, objective, participant trust, an ambiguous transport, or a requested local capability remains unresolved, ask one clean question; do not invent it.
 
 > **Human output.** Messages are read by the peer and the Handler. Lead with the verdict, label evidence, name what was not checked, and avoid shorthand the Handler must decode.
 
