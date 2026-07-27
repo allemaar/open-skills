@@ -13,6 +13,22 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+## [1.6.7] — 2026-07-27
+
+### Added
+
+- **Agent Mailbox now includes an operation-first collaboration resource spine.** Active resources cover activation, a worked CTA Signal Extraction example, Working Agreements, acknowledged handoff, counsel and verification, blind or fresh challenge, bounded Fan-Out/Fan-In, provisional representational self-healing, and postmortem learning. Named patterns remain optional presets over ordinary mailbox operations.
+- **A disconnected experimental bank preserves later patterns without routing agents into them.** Incident Command, Contract Net, Blackboard, Delphi, Follow-the-Sun, Adversarial Collaboration, and Redundant Independent Implementation carry evidence, bounded experiment, and promotion criteria while remaining unavailable for normal loading or recommendation.
+- **The Agent Mailbox kernel is summarized at the point of use.** Handler authority, canonical envelopes, contained atomic writes, exact causality, durable dispositions, whole-inbox reconciliation, cursor-as-accelerator, recomputed reliance, bounded capability claims, and untrusted-content handling stay visible without turning optional resources into another operating system.
+
+### Changed
+
+- **Collaboration composition is diagnostic rather than combinatorial.** Pen holder, challenge path, and optional continuity identify what an arrangement is missing; they do not assemble another protocol or configuration matrix. Active and experimental resources have explicit evidence-backed promotion and demotion paths.
+- **Participant workspace recovery is explicit and bounded.** Pen transfer now handles existing, absent, and ambiguous predecessors; callsign-collision residue stays quarantined; scratch cleanup gates departure; and one finite Handler-scoped remediation route can address exact collision, orphan, retirement, or privacy-incident paths without granting ongoing ownership.
+- **Mailbox and workspace safety fail independently.** Unsafe workspace writes abort only that operation while separately safe inbox work remains available, and the workspace check now preserves the verified Microsoft Cloud Files carve-out used by sync-share transports.
+- **Workspace ownership and remediation fail closed on the live target.** Ordinary writes are anchored to the participant's own settled callsign tree; owner scratch cleanup remains ordinary; destructive directory remediation inventories descendant reparse points, matches live fingerprints, defines quarantine destinations, and causally invalidates changed deliveries.
+- **Independent review requires observable challenge behavior.** Separate tasks, vendors, or model labels alone do not establish useful independence; direct inspection, recomputation, blind deposit, or another concrete challenge behavior does.
+
 ## [1.6.6] — 2026-07-27
 
 ### Changed
@@ -249,6 +265,7 @@ Initial public release of the **open-skills** pack — reusable skills for AI co
 - CI conformance — YON validation, a cross-reference/structural lint, a YON-DAG semantic check, spine-manifest sync, and a `gate-fires` proof that the guards actually reject broken input;
 - Apache-2.0 license, NOTICE, THREAT-MODEL, CONTRIBUTING (DCO), and SECURITY policy.
 
+[1.6.7]: https://github.com/allemaar/open-skills/releases/tag/v1.6.7
 [1.6.6]: https://github.com/allemaar/open-skills/releases/tag/v1.6.6
 [1.6.5]: https://github.com/allemaar/open-skills/releases/tag/v1.6.5
 [1.6.4]: https://github.com/allemaar/open-skills/releases/tag/v1.6.4

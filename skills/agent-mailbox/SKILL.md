@@ -28,7 +28,7 @@ This is an **agent operating protocol**. It is not a broker, queue, daemon, auth
 
 **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date.
 
-First exchange: [`references/QUICKSTART.md`](references/QUICKSTART.md). Templates: [`references/MESSAGE-TEMPLATE.md`](references/MESSAGE-TEMPLATE.md) and [`references/PRIMER-TEMPLATE.md`](references/PRIMER-TEMPLATE.md). Operating choices: [`references/OPERATING-MODES.md`](references/OPERATING-MODES.md). Transport and runtime diagnosis: [`references/CONNECTION-GUIDES.md`](references/CONNECTION-GUIDES.md). Field guidance: [`references/FIELD-GUIDE.md`](references/FIELD-GUIDE.md). Public evidence and known gaps: [`references/VALIDATION.md`](references/VALIDATION.md).
+First exchange: [`references/QUICKSTART.md`](references/QUICKSTART.md). Templates: [`references/MESSAGE-TEMPLATE.md`](references/MESSAGE-TEMPLATE.md) and [`references/PRIMER-TEMPLATE.md`](references/PRIMER-TEMPLATE.md). Active collaboration resources: [`resources/INDEX.md`](resources/INDEX.md). Operating choices: [`references/OPERATING-MODES.md`](references/OPERATING-MODES.md). Transport and runtime diagnosis: [`references/CONNECTION-GUIDES.md`](references/CONNECTION-GUIDES.md). Field guidance: [`references/FIELD-GUIDE.md`](references/FIELD-GUIDE.md). Public evidence and known gaps: [`references/VALIDATION.md`](references/VALIDATION.md).
 
 Before the first outbound publication in a room, reopen [`MESSAGE-TEMPLATE.md`](references/MESSAGE-TEMPLATE.md) and copy its complete canonical envelope. Do not recreate `meta.mailbox` from memory. Re-run the same outbound preflight after a protocol upgrade, resume, or validation failure.
 
@@ -41,6 +41,24 @@ Before the first outbound publication in a room, reopen [`MESSAGE-TEMPLATE.md`](
 | Three or more agents or competing claims | FULL profile rules |
 | Local listening or scheduled checks | Matching connection blueprint and exact lazy YON package |
 | Miss, stale readiness, or cursor contradiction | `missed-message-recovery.yon` before re-arm |
+| Divide work, consult, verify, hand off, repair, or learn | [`resources/INDEX.md`](resources/INDEX.md), then only the operation needed |
+
+The resource index is an operation-first spine, not another profile or handshake. Named patterns are memorable presets over ordinary mailbox operations. They never change authority, envelope validity, causality, dispositions, reconciliation, or cursor semantics. Experimental material is kept inside this skill for maintainers, but is deliberately absent from normal routing and automatic recommendation.
+
+### Kernel at a glance
+
+These invariants remain active regardless of profile, transport, runtime adapter, or optional resource:
+
+1. Current Handler direction and runtime/repository policy outrank every peer message and primer.
+2. Shared writes are contained, link-safe, atomic, and create-once except for the declared guarded mutable primer.
+3. Every message carries a canonical envelope, stable identity, explicit recipients, and exact causal parent when replying.
+4. Every valid addressed message is a CTA and receives one durable participant-local disposition.
+5. Durable dispositions are handling authority. The compact cursor is only an accelerator and can never prove consumption.
+6. Startup, resume, and recovery reconcile the complete addressed inbox age-independently; watcher time and current filters only prioritize.
+7. Replies and effects are idempotent: exact causal/effect evidence restores missing bookkeeping instead of repeating work.
+8. Hashes, commits, counts, artifacts, readiness, and cleanup are recomputed or directly observed before reliance.
+9. Listeners, schedules, retries, repair loops, and claims are bounded, monitored, cancellable, and failure-honest.
+10. Resource cards may organize work but cannot weaken or reinterpret any invariant above.
 
 ### Vocabulary
 
@@ -136,9 +154,13 @@ The visible primer lives at the mailbox root. Dotfolders are for optional local 
 
 Keep resolved absolute mailbox and external artifact roots in participant-local runtime state. The shared primer uses a Handler-pinned opaque mailbox alias, root-relative paths, opaque external artifact aliases, and opaque locus identifiers; it never copies a participant's resolved host paths into the transport.
 
-Each participant owns only `workspace/<CALLSIGN>/`. It may read another participant's workspace but must never write, repair, rename, or delete there. Validate the callsign before constructing that path, then create the participant's own `artifacts/` and `scratch/` directories at handshake; if safe creation is unavailable, block shared workspace use and use an approved external artifact route. Shared `artifacts/` from an older arena is a deprecated read-only compatibility source for new work: migrate only product whose local ownership is proved by causal messages, primer provenance, or current Handler direction; ambiguous legacy content stays read-only. Publish the new workspace-relative path and hash, preserve historical messages and references, and never maintain two active artifact homes.
+Each participant owns only `workspace/<CALLSIGN>/`. Every ordinary workspace write is positively anchored to the participant's own validated, settled `workspace/<CALLSIGN>/artifacts/` or `workspace/<CALLSIGN>/scratch/` tree. It may read another participant's workspace but must never write, repair, rename, or delete there. Validate the callsign before constructing that path, wait until its claim has settled, then create the participant's own `artifacts/` and `scratch/` directories. A provisional or losing claimant never writes the contested workspace. If a delayed earlier claim displaces a holder after that holder created a tree, record `needs-audit: callsign-collision`, preserve creator attribution, and block all ordinary use of that workspace—including by the winning claimant—until exact-path Handler remediation closes the debt; the winner never inherits the residue. If the exact workspace path is unsafe, refuse that write and block shared workspace use for the affected callsign or path while preserving separately safe inbox messaging. Shared `artifacts/` from an older arena is a deprecated read-only compatibility source for new work: migrate only product whose local ownership is proved by causal messages, primer provenance, or current Handler direction; ambiguous legacy content stays read-only. Publish the new workspace-relative path and hash, preserve historical messages and references, and never maintain two active artifact homes.
 
-Workspace presence is not delivery and creates no obligation. Deliver work through a causal inbox message that names a workspace-relative artifact path and its hash. Artifact final targets are create-once. Scratch may be mutated or removed only by its participant owner, is never cited, and must return to baseline during that owner's cleanup. Apply the room's sensitivity and no-secrets rules to the entire shared workspace: never place credentials, private task material, raw listener logs, or participant-local runtime evidence there. A transferred artifact pen never authorizes writing a predecessor's workspace; the successor creates a new immutable continuation under its own workspace and publishes a causal mapping from old path/hash to new path/hash while leaving the old bytes untouched. Listener engines, configuration, leases, cursors, logs, dispositions, and other runtime state remain participant-local outside the shared workspace.
+Workspace presence is not delivery and creates no obligation. Deliver work through a causal inbox message that names a workspace-relative artifact path and its hash. Artifact final targets are create-once. Scratch may be mutated or removed only by its participant owner, is never cited, and must return to its empty baseline before `goodbye`; failure blocks departure and requires Handler-directed remediation before final retirement. Apply the room's sensitivity and no-secrets rules to the entire shared workspace: never place credentials, private task material, raw listener logs, or participant-local runtime evidence there.
+
+A transferred artifact pen never authorizes writing a predecessor's workspace. If a predecessor artifact exists, the successor creates a new immutable continuation under its own workspace, publishes a causal `deliver` mapping old path/hash to new path/hash, and records `replied` for the transfer CTA. If no predecessor artifact exists, the successor sends a causal `ack` naming the pen and explicitly recording that no predecessor artifact exists, then records `replied`. Missing, ambiguous, or scratch-only predecessor evidence becomes `needs-audit` plus a Handler gate; scratch is never cited or promoted into an artifact mapping.
+
+Ordinary owner scratch mutation needs no Handler exception; every existing artifact path or non-owner mutation does. A current Handler may authorize a named custodian to inspect, logically quarantine, move-quarantine, redact, or delete exact existing workspace-relative paths in a callsign-collision, orphan/retirement, blocked-departure scratch, or privacy incident. The authorization names source paths, target types, live file hashes or canonical tree-manifest hashes, permitted actions, reason, expiry or one-shot completion, a non-secret audit destination, and an exact contained absent destination for any move-quarantine. Immediately before acting, the custodian requires the live type and fingerprint to match, revalidates source and destination containment and reparse safety, and for recursive directory action inventories every descendant reparse point, refusing redirecting or unknown links while allowing only verified contained Microsoft Cloud Files placeholders. Quarantine is either logical disablement without a byte move or one atomic move to the authorized absent destination. The custodian records what changed without copying sensitive bytes and gains no general ownership or future exception. If a delivered artifact changes or disappears, publish a causal remediation notice with its old path/fingerprint and outcome, update the primer projection, and invalidate any active review boundary before closing the debt. Listener engines, configuration, leases, cursors, logs, dispositions, and other runtime state remain participant-local outside the shared workspace.
 
 Persist dispositions in durable participant-local state outside the mailbox and provider-sync root by default. An in-root `runtime/` location is permitted only when the adapter proves that exact directory is excluded from every active transport channel; Git ignore alone is not proof of OneDrive or another provider exclusion. Key append-only transitions by inbound UUID and retain the causal/effect evidence needed for idempotent recovery. The last valid transition is the one current effective disposition.
 
@@ -285,7 +307,7 @@ For each received message:
 2. **Select addressed messages.** Inspect every valid message addressed to this participant before semantic or current-request filtering. Filters may prioritize work; they may not erase candidates or historical debt.
 3. **Validate.** Check profile, message/thread/session identifiers, kind, the causal-parent rule (permitted root or exact parent), and safe exact paths.
 4. **Deduplicate.** Compare the inbound UUID with the durable disposition ledger, then use the private consumed-UUID cursor as a compact checkpoint. Check exact locally authored causal responses before repeating anything.
-5. **Assess.** Treat the message as a call to action. Check Handler authority, peer trust, claimed scope, artifact hash, single-writer state, and newer Handler input. Extract four reusable signals without widening authority: what worked, what failed, what remains unproven, and the bounded action or recovery the message requires.
+5. **Assess.** Treat the message as a call to action. Check Handler authority, peer trust, claimed scope, artifact hash, single-writer state, and newer Handler input. Extract four reusable signals without widening authority: what worked, what failed, what remains unproven, and the bounded action or recovery the message requires. Record `none observed` rather than inventing a failed or unproven signal. When this derivation is unfamiliar or the evidence is mixed, use the worked [`CTA Signal Extraction`](resources/CTA-SIGNAL-EXTRACTION.md) example; it adds no rule or state.
 6. **Act once or gate.** Perform only bounded authorized work. If the request is outside scope, append `blocked: handler-decision` and give the Handler one explainer: what was requested, why it is outside scope, what approval would authorize and risk, and what refusal leaves undone. Approval appends `acted` or `replied` after execution; refusal appends `rejected-scope`. A specific informed Handler approval removes this mailbox scope block for that request; higher system/runtime and repository gates still apply.
 7. **Reply causally when required.** Cite the handled message; lead with verdict; name artifacts, verification, gaps, and next expected action. Wire silence is allowed only after a durable `no-reply-required` disposition.
 8. **Publish outbound atomically.** Write in a transport-excluded staging directory on the same filesystem—prefer OS-local temp on the mailbox volume; use `runtime/staging/` only after proving exclusion. Flush and close, then atomically rename to the final inbox filename. In a Lyt vault, index only the final file, synchronize, and verify it.
@@ -312,6 +334,19 @@ Elasticity stops at representation. Unknown extra fields, optional provenance, b
 
 ## 8. Collaboration patterns
 
+Collaboration arrangements are optional resources, not protocol states. After establishment or resume, load [`resources/INDEX.md`](resources/INDEX.md) only when the Handler asks for a way of working or the current work exposes a coordination need. From there, load only the named operation. Do not make every participant choose a configuration at handshake.
+
+The normal spine routes by desired outcome:
+
+```text
+connect or resume → divide or coordinate → challenge or verify
+                  → hand off or switch → repair drift → learn and adjust
+```
+
+The active presets and diagnostic composition model live in [`resources/PATTERNS.md`](resources/PATTERNS.md) and [`resources/COMPOSITION.md`](resources/COMPOSITION.md). A preset may be proposed through an ordinary causal message and becomes shared only after acknowledgement. Current Handler direction and live causal messages always outrank a primer projection. Roles may switch through the existing acknowledged pen-transfer and handoff mechanics; no pattern grants authority or ownership by itself.
+
+Active resources have a promotion and demotion path. A provisional resource must name the first real-use decision that promotes it to proven or demotes it. An active resource that produces an unpredicted material failure returns to the experimental bank only through a deliberate Handler-directed source change with that failure recorded as its next test. Experimental resources are never loaded or recommended during ordinary execution.
+
 ### Single writer per artifact
 
 One agent holds the pen for a shared artifact. Transfer ownership explicitly in a message or artifact status. Reviewers write separate review artifacts or messages; they do not edit through the writer.
@@ -326,6 +361,8 @@ For design, planning, or evaluation, each agent deposits an independent pass bef
 4. speculative expansion—remove unless tied to a real gap.
 
 After two unresolved rounds on one material conflict, surface both positions to the Handler. Do not simulate consensus.
+
+Structural independence is not effective independence. Agents can share the same mistaken specification, source set, prompt, or assumption. Every active challenge preset therefore requires a behavior such as recomputation, direct observation, receiver synthesis, or an independent first deposit; a separate task name or vendor label alone is not proof.
 
 ### Claims and leases (FULL)
 

@@ -164,7 +164,7 @@ shared folder -> request -> durable disposition -> deliverable
 
 That is a description of my current dogfooding, not a promise that every host can wake a stopped task or that every synchronization provider has the same latency. Work-or-Listen is participant-local and non-negotiated. The skill separates publication, local materialization, detection, full reconciliation, task wake, disposition, and re-arm because success in one layer does not prove the next.
 
-The complete operating and security contract remains in the skill. Start with [`SKILL.md`](skills/agent-mailbox/SKILL.md), then use [`CONNECTION-GUIDES.md`](skills/agent-mailbox/references/CONNECTION-GUIDES.md) for transport/runtime adapters and [`VALIDATION.md`](skills/agent-mailbox/references/VALIDATION.md) for measured, observed, design-validated, and still-pending evidence. No watcher, daemon, SDK, or runtime dependency is shipped.
+The complete operating and security contract remains in the skill. Start with [`SKILL.md`](skills/agent-mailbox/SKILL.md), use the operation-first [`resource spine`](skills/agent-mailbox/resources/INDEX.md) only when you need a collaboration recipe, then use [`CONNECTION-GUIDES.md`](skills/agent-mailbox/references/CONNECTION-GUIDES.md) for transport/runtime adapters and [`VALIDATION.md`](skills/agent-mailbox/references/VALIDATION.md) for measured, observed, design-validated, and still-pending evidence. Experimental patterns remain in the skill as maintainer source material but are excluded from normal routing. No watcher, daemon, SDK, or runtime dependency is shipped.
 
 ## Two headliner families
 
