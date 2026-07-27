@@ -13,6 +13,15 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+## [1.6.6] — 2026-07-27
+
+### Changed
+
+- **Agent Mailbox now treats native wake as a two-phase operation.** A submitted task message remains `wake-pending` until every candidate has a durable outcome and a clean same-run recheck arrives; the protocol now requires bounded timeout to expose failure and release damping for correctness retry.
+- **Listener lifecycle and authority are more precise.** No-overlap leases include arena and canonical mailbox root, Handler stale-clear uses the same identity-bound atomic recovery primitive, task-creation authority is consumed per run, and task archival is informational rather than a replacement blocker.
+- **Listener construction is reuse-aware without making model tier a gate.** Implementations inspect proven compatible engines before rebuilding, record capability/cost selection, and keep mechanical duties plus honest failure reporting mandatory.
+- **Shared work product is participant-owned and path-safe.** Portable callsigns determine isolated `workspace/<CALLSIGN>/` trees; artifacts are create-once, scratch mutation stays owner-only, pen transfer creates immutable successor continuations, causal messages—not folder presence—create obligations, and legacy flat `artifacts/` remains read-only unless ownership is proven.
+
 ## [1.6.5] — 2026-07-24
 
 ### Fixed
@@ -240,6 +249,7 @@ Initial public release of the **open-skills** pack — reusable skills for AI co
 - CI conformance — YON validation, a cross-reference/structural lint, a YON-DAG semantic check, spine-manifest sync, and a `gate-fires` proof that the guards actually reject broken input;
 - Apache-2.0 license, NOTICE, THREAT-MODEL, CONTRIBUTING (DCO), and SECURITY policy.
 
+[1.6.6]: https://github.com/allemaar/open-skills/releases/tag/v1.6.6
 [1.6.5]: https://github.com/allemaar/open-skills/releases/tag/v1.6.5
 [1.6.4]: https://github.com/allemaar/open-skills/releases/tag/v1.6.4
 [1.6.3]: https://github.com/allemaar/open-skills/releases/tag/v1.6.3

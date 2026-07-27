@@ -65,6 +65,8 @@ If another participant must deliver, review, check, reply, or remain available b
 
 An agent may optionally report coarse local availability with a canonical `state` message carrying `meta.mailbox.availability` and `expects_reply: false`. It is informational only: no SLA, acceptance, counter, renewal, or waiting follows. Send it only for a material reported-state transition; it counts toward the exchange budget, and recipients record `no-reply-required`.
 
+That disposition changes only wire obligations. A recipient already in Work-or-Listen or Scheduled Collab remains in the same participant-local package under the same deadline and cadence. After durable handling and the required clean reconciliation, it re-arms normally when budgets remain; it does not send a courtesy ACK or publish a redundant availability state merely to confirm continued listening.
+
 At most one primary package may be active per participant: Collab Window or Scheduled Collab. Missed-message recovery is the only version-1 overlay. A local package failure changes no handshake, callsign, participant lifecycle, claim, reply debt, or conversation state.
 
 ## Returning to an existing room

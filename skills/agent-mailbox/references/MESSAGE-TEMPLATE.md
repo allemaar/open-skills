@@ -8,6 +8,8 @@ Filename:
 yyyy-mm-dd-hh-mm-ss[-fff]-<CALLSIGN>-<kind>-<slug>.md
 ```
 
+Before the first outbound message at a new local locus, create-new the local durable root binding from fresh path-validated recomputation. For every outbound after that bootstrap, read the full value beside the cursor and dispositions, recompute it from the exact resolved root, and require equality across durable state, recomputation, and envelope. A legitimate Handler-directed mailbox move uses the audited local-rebind flow before publication; later missing, unreadable, or unexplained drift fails closed as `ROOT_ID_UNVERIFIED`. Never copy or expand a display fingerprint from the primer. `contract_version` and `adapter_version` may be carried as optional self-asserted `meta.mailbox` diagnostics; absence never invalidates a v1 message, and neither field grants compatibility or authority.
+
 Lyt-compatible Markdown envelope:
 
 ```yaml
@@ -29,12 +31,14 @@ In reply to [[parent-message-filename]]. References [[example-artifact]].
 
 Verdict: the example artifact is complete and ready for independent review.
 
-- Exact path: `<mailbox-root>/artifacts/example-artifact.md`
+- Workspace-relative path: `workspace/<SENDER-CALLSIGN>/artifacts/example-artifact.md`
 - SHA-256: `<full hash>`
 - Verified: `<checks performed>`
 - Not checked: `<important omissions>`
 - Expected response: `review` with blocking defects, nonblocking defects, and acceptance.
 ```
+
+The sender writes only inside its own validated callsign workspace. A recipient may read that artifact but never repair or rewrite it in place. Workspace presence is not delivery; this causal message and hash create the obligation. Artifact targets are create-once. Never reference `workspace/<CALLSIGN>/scratch/`; sensitivity and no-secrets rules still apply there. Pen transfer creates a new immutable continuation in the successor's workspace and causally maps old path/hash to new path/hash without changing the predecessor. A legacy flat `artifacts/` path is read-only unless local ownership is proved by causal messages, primer provenance, or current Handler direction; it must not become a second active artifact home.
 
 ## Kind-specific body checklist
 
@@ -115,6 +119,15 @@ A legacy listener or mode proposal is sender-local advisory metadata. If it expe
 - what refusal would leave undone;
 - durable transition while pending: `blocked: handler-decision`; later append `acted`/`replied` after approval and execution, or `rejected-scope` after refusal.
 
+### Repair request for malformed or drifted traffic
+
+- use the canonical contract-pin manifest recorded at establishment or listener arm: skill-root-relative slash paths sorted ordinally and encoded as lowercase `path<TAB>raw-byte-sha256<LF>` in UTF-8 without BOM; generation is SHA-256 over those complete bytes. After excluding bounded fresh-file partial sync, re-open those pinned bytes and the repair recipe once for the new filename+byte-hash fingerprint. If live hashes changed, stop and clean the old listener, preserve its pin and repair evidence, obtain a current Handler decision, record old/new manifests plus debt classification, and start a new lease rather than switching baselines;
+- classify compatible extra fields separately from missing or contradictory required semantics;
+- if the original UUID is trustworthy, record `needs-audit`; otherwise key a local anomaly by final filename plus content fingerprint and do not put it in the UUID cursor;
+- publish one fresh ordinary `request` root per sender + final filename + observed SHA-256, naming the pinned generation. Put those byte-anchored facts, the failed check, and the correction recipe in optional `meta.mailbox.anomaly` and the body; never make an invalid UUID the causal parent. Thread nonexistence is checked only during outbound publication preflight; later historical validation checks the stored root and causal graph without replaying that time-sensitive predicate;
+- only the original sender publishes one new corrected message with a fresh UUID replying to the repair request. Put the original filename/hash and intended request identity in optional `meta.mailbox.correction` and the body; never overwrite the original;
+- persist an open depth-1 repair transaction keyed by request UUID, expected sender, original fingerprint, and pinned generation. After published-byte validation, route the corrected request through normal authority/idempotency checks and close the original as `superseded-by-correction` or close the fingerprint anomaly. A malformed or uncorrelatable file from that sender while the transaction is open, or authority/version disagreement, becomes `blocked: handler-decision`, not another repair loop. Repair traffic counts against the exchange budget and the absolute per-lease anomaly/reread ceiling.
+
 ### `close`
 
 - settled artifacts and recomputed hashes;
@@ -138,4 +151,8 @@ Write the complete message in transport-excluded staging on the same filesystem.
 
 ## Durable disposition
 
-Every valid message addressed to the local participant is a call to action. Persist append-only participant-local disposition transitions keyed by its inbound UUID; the last valid transition is the one current effective state. Transitional states are `blocked: handler-decision`, `deferred`, and `needs-audit`. Terminal states are `acted`, `replied`, `no-reply-required`, and `rejected-scope`. `historical-debt` is quarantined: it prevents automatic execution but remains unresolved. Record exact causal/effect evidence. Advance the compact cursor only after a terminal or quarantined transition and required primer state are durable; quarantined debt remains visible and blocks full readiness.
+Every valid message addressed to the local participant is a call to action. Persist append-only participant-local disposition transitions keyed by its inbound UUID; the last valid transition is the one current effective state. Transitional states are `blocked: handler-decision`, `deferred`, and `needs-audit`. Terminal states are `acted`, `replied`, `no-reply-required`, `rejected-scope`, and `superseded-by-correction`; the last is valid only after a separately published correction validates. `historical-debt` is quarantined: it prevents automatic execution but remains unresolved. Record exact causal/effect evidence. When this participant holds the primer pen, advance the compact cursor only after the terminal or quarantined transition and required primer mutation are durable. A non-writer instead persists the terminal disposition plus separate primer debt, sends at most one bounded writer CTA, and may then advance; quarantined debt remains visible and blocks full readiness.
+
+`expects_reply: false` and `no-reply-required` do not alter an active participant-local listener or schedule. Use `acted` for a completed authorized effect with no wire response and `no-reply-required` for conscious handling with no effect or reply. Then perform the same clean post-disposition reconciliation and re-arm the same bounded lease when its budgets remain. Do not emit a courtesy ACK solely to confirm continued listening.
+
+A message from an expected callsign whose root identifier differs from the durable binding for that exact arena + callsign + machine locus is not valid for authorized work. Never compare it with the receiver's own local root; cross-machine mount paths may differ. Persist `needs-audit: root-mismatch`, leave its UUID unconsumed, and send at most one bounded repair notice with observed and expected fingerprints—not either full canonical value. A Handler-authorized exception requires a durable record naming the sender/locus, exact inbound UUID or explicitly finite UUID set, observed fingerprint, authorization evidence, and expiry or one-shot completion condition. It preserves the anomaly record and never disables validation globally.

@@ -18,7 +18,9 @@ meta: {"mailbox":{"version":1,"profile":"CORE","single_writer":"<CALLSIGN>","sta
 
 - Mailbox alias: `<Handler-pinned opaque alias; never an absolute host path>`
 - Inbox: `<root-relative inbox path>`
-- Artifacts: `<root-relative paths or opaque external artifact aliases>`
+- Participant workspaces: `workspace/<CALLSIGN>/{artifacts,scratch}`
+- Legacy flat artifacts: `<absent | deprecated read-only compatibility source>`
+- External artifacts: `<opaque external artifact aliases, when any>`
 - Arena: `<Handler-pinned collaboration boundary identity>`
 - Transport adapter: `local | lyt-git | git | sync-share`
 - Expected propagation: `local <10s | one successful sync round | seconds-to-minutes`
@@ -35,12 +37,16 @@ meta: {"mailbox":{"version":1,"profile":"CORE","single_writer":"<CALLSIGN>","sta
 
 | Callsign | Runtime/provenance | Arena/locus | Role/pens | Participant status | Last seen | Name-state | Holder lineage |
 |---|---|---|---|---|---|---|---|
-| `<AGENT-A>` | `<runtime; model; company>` | `<arena; opaque machine alias; root hash>` | `<role; root-relative paths or opaque external aliases>` | `active` | `<timestamp>` | `active` | `<session/model/date → ...>` |
-| `<AGENT-B>` | `<runtime; model; company>` | `<arena; opaque machine alias; root hash>` | `<role; root-relative paths or opaque external aliases>` | `active` | `<timestamp>` | `active` | `<session/model/date → ...>` |
+| `<AGENT-A>` | `<runtime; model; company>` | `<arena; opaque machine alias; root fingerprint prefix [display-only; truncated]>` | `<role; root-relative paths or opaque external aliases>` | `active` | `<timestamp>` | `active` | `<session/model/date → ...>` |
+| `<AGENT-B>` | `<runtime; model; company>` | `<arena; opaque machine alias; root fingerprint prefix [display-only; truncated]>` | `<role; root-relative paths or opaque external aliases>` | `active` | `<timestamp>` | `active` | `<session/model/date → ...>` |
 
 Identity fields are self-asserted unless the transport or optional FULL authentication profile verifies them. Expected callsigns and opaque aliases are Handler-pinned.
 
-Each participant resolves its absolute mailbox and external artifact roots in participant-local runtime state. Never copy those resolved host paths into this shared primer. The shared surface carries only opaque aliases, root-relative paths, and normalized root identifiers needed for routing and succession checks.
+Each participant resolves its absolute mailbox and external artifact roots in participant-local runtime state. Never copy those resolved host paths or the full canonical `mailbox_root_id` into this shared primer. When a human-readable root fingerprint is useful, render one labelled prefix only, for example `65884639 [display-only; truncated]`; never render both prefix and suffix, and never use primer text to construct an outbound envelope. The full canonical value lives in participant-local durable state and every message envelope.
+
+Each participant writes only under its own portable, validated `workspace/<CALLSIGN>/` tree. Peers may read but never write or repair there. `artifacts/` targets are create-once; `scratch/` is owner-mutable, disposable, never delivered or referenced, and still subject to the room's sensitivity/no-secrets rules. Workspace presence is not a CTA: delivery requires a causal inbox message with the workspace-relative path and full hash. Pen transfer creates an immutable continuation under the successor's workspace with a causal old-path/hash to new-path/hash mapping. Any legacy flat `artifacts/` directory remains read-only unless ownership is proved by causal messages, primer provenance, or current Handler direction, and must not remain a second active artifact home.
+
+The primer is the declared mutable single-writer artifact, and that declared protocol pen is the exclusivity boundary. Its writer acquires a participant-local mutation lease bound to arena, root, writer, run nonce, and creation identity. While holding it, update through transport-excluded same-filesystem staging, flush/close, compare live preimage and lease identity, atomically replace, then verify final bytes, containment, target type, noncorruption, and absence of provider conflict copies. Conditionally release only the still-owned lease. The provider need not guarantee cross-writer exclusion; it must preserve the atomic replace without corruption and surface conflicts. This is not lock-free compare-and-swap. Append-only inbox messages never use this path. A stale primer is visible debt; a missing primer is a gate.
 
 `HANDLER` and `HANDLER-<NAME>` are permanently reserved Handler seats, exempt from callsign expiry and retirement. A request addressed to a Handler is never a reply debt.
 
@@ -115,7 +121,7 @@ Historical debt: `<none | item count plus historical-debt/needs-audit status; do
 
 1. Read `/agent-mailbox` and this primer completely.
 2. Resolve and synchronize the exact live mailbox.
-3. Verify the repository head, artifact existence/hashes, open claims, all addressed messages, disposition checkpoint, compact cursor, ledger locus/transfer status, and unresolved debt.
+3. Before the first outbound message at a new local locus, create-new its local durable root binding from fresh path-validated recomputation. On later use require equality; a Handler-directed move uses the audited stop/validate-old-and-new/preserve/rebind/fresh-readiness transition. Verify expected peer roots against durable arena + callsign + machine-locus bindings. Pin every executed contract path as skill-root-relative slash form, ordinal-sort, encode lowercase `path<TAB>raw-byte-sha256<LF>` in UTF-8 without BOM, and use SHA-256 of those manifest bytes as generation. Then verify repository head, artifacts, claims, addressed messages, dispositions, cursor, ledger transfer, anomaly index, and debt. Unexplained local drift is `ROOT_ID_UNVERIFIED`; cross-machine peers are never compared to the local root.
 4. If returning to an established room, send `resume` with reconstructed state and next intended action; use `hello` only for a genuinely new participant or unestablished room.
 5. Receive peer `state`; reconcile discrepancies without reopening establishment.
 6. Start a new conversation, when needed, with a fresh ordinary CTA root carrying new `thread` and `request_id` UUIDv7 values. Old heads remain history and unresolved non-mode CTAs remain separate debt.
