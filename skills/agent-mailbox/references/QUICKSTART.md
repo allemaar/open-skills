@@ -53,10 +53,15 @@ If the runtime cannot establish the required shape, fail closed. The same agent 
 
 Do not repeat the handshake merely because the agent session changed.
 
-1. Read the primer and reconcile the entire addressed inbox against durable local dispositions.
-2. Rehydrate with `resume` followed by causal `state` reconciliation.
-3. Preserve unresolved historical CTAs as separate debt.
-4. Start new work with a fresh ordinary CTA root carrying new `thread` and `request_id` values.
+1. Load the primer, root binding, durable dispositions, and cursor.
+2. Materialize or sync through the already-recorded transport, then reconcile the entire addressed inbox age-independently.
+3. Rehydrate with `resume` followed by causal `state` reconciliation when peer state is needed; preserve unresolved CTAs as separate debt.
+4. If continuity was requested, start the runtime's one default bounded adapter. Otherwise keep Standard Exchange.
+5. Return to the project objective. Start new work with a fresh ordinary CTA root carrying new `thread` and `request_id` values.
+
+At a new Handler turn, first check continuity health locally when a collaboration package is active. Recheck the room only when local durable state shows an open CTA, a due deferral, `wake-pending`, or listener-recorded candidates. After mailbox-derived work, perform one final complete addressed-inbox and non-terminal-CTA reconciliation after the last effect and before saying it is done.
+
+Do not reload every construction guide on this fast path. Load deeper references only for a new room, malformed or unsafe state, transport/contract drift, missed-message recovery, or explicit mailbox-infrastructure work.
 
 Old Work-or-Listen proposals are sender-local advisory history. Never accept, counter, renew, or wait on them.
 
@@ -70,7 +75,11 @@ Listening is a stance each participant chooses for itself. It is never negotiate
 - A peer availability FYI is optional, coarse, no-reply, and non-binding.
 - When the peer owes work, send an ordinary bounded CTA instead of negotiating modes.
 
-Choose the relevant blueprint in [`CONNECTION-GUIDES.md`](CONNECTION-GUIDES.md): native filesystem events, portable snapshot polling, or native scheduled reconciliation. Detection is only a latency signal; whole-inbox UUID-versus-disposition reconciliation supplies correctness.
+Use native Monitor for Claude Code/Claude Agent SDK when the host exposes it and native bounded Scheduled Collab for Codex. Other runtimes use Standard Exchange unless the Handler explicitly authorizes continuity construction around a documented, proven native mechanism. Detection is only a latency signal; whole-inbox UUID-versus-disposition reconciliation supplies correctness. For that explicit infrastructure work, load [`CONNECTION-GUIDES.md`](CONNECTION-GUIDES.md); it is not part of ordinary activation.
+
+Allow one bounded activation or repair attempt, recorded participant-locally by arena plus runtime. On failure, fall back and resume project work. A fresh explicit Handler mailbox-infrastructure task may authorize one exact replacement run; consume that authority when the run ends.
+
+When continuity is active, check its participant-local health on each Handler/model re-entry. Monitor requires its independent heartbeat by the bounded deadline. Scheduled Collab measures idle time: a due firing during foreground work is suppressed and restarts at turn end; only an unobserved firing across a genuine idle window degrades. Repeated busy suppression reports health unevaluated, never green. A health contradiction triggers one complete gap reconciliation; silence from a dead consumer is not health.
 
 ## If a message appears to be missed
 

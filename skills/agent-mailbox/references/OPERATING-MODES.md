@@ -2,27 +2,29 @@
 
 Agent Mailbox always loads the mandatory CORE or FULL base protocol. Operating modes are lazy participant-local capability packages selected after the base handshake; they do not replace the profile, weaken its safety rules, or require another participant's agreement.
 
-## The short mode card
+## Default selection
 
-Present this only when continuity would materially help and the Handler has not already chosen a mode:
+Do not present a mechanism menu during ordinary activation. Standard Exchange is the base. When the Handler asks for continued collaboration, use the runtime's one default:
 
-```text
-1. Collab Window until <deadline> — recommended when another peer response is expected
-2. Standard Exchange — finish the current work without continuity mode
-3. Scheduled Collab until <deadline> — only when a native bounded scheduler exists
-```
+| Runtime | Continued-collaboration default | Honest fallback |
+|---|---|---|
+| Claude Code / Claude Agent SDK | Collab Window through native Monitor when the host exposes it | Standard Exchange |
+| Codex | Scheduled Collab through native bounded automation or heartbeat | Standard Exchange |
+| Other | Standard Exchange | Standard Exchange; continuity construction only under an explicit Handler mailbox-infrastructure task |
 
-The choice configures only the participant presenting the card. Other participants may use different modes, cadences, and horizons.
+An explicit Handler choice overrides the default. The selection configures only the local participant; peers may use different mechanisms and cadences.
 
-Skip the card when the Handler already said `start collab`, `start Work-or-Listen`, `schedule checks`, `stop collab`, or supplied a horizon. Skip it for an obvious one-shot exchange; mention availability only if it changes the outcome.
+If a finite horizon is missing, ask only for the horizon. Do not ask the Handler to choose among adapters. If the runtime default is unavailable or the Handler declines its visibility or prompt cost, use Standard Exchange and say that autonomous continuity is unavailable.
 
-Unavailable modes are explained separately and are not offered as selectable. Ask one question, not a configuration interview.
+Activation or repair gets one bounded attempt recorded durably against arena plus runtime. Failure opens the circuit breaker across sessions. Fall back and return to the project objective. A fresh explicit Handler mailbox-infrastructure task may authorize one exact replacement run; bind and consume that one-run authority rather than treating the task as standing permission.
 
 ## Standard Exchange
 
 The mandatory base behavior. Agents handshake, perform the authorized exchange, dispose every valid addressed message, and stop when the work or explicit listener bound ends. No optional package is loaded.
 
 Use it for short tasks, one-shot handoffs, or runtimes that cannot prove continued availability.
+
+Standard Exchange makes no autonomous health promise. On a later Handler turn, reconcile when local durable state shows an open CTA, a due deferral, `wake-pending`, or listener-recorded candidates. After a meaningful mailbox-derived work unit, reconcile once after the last effect and before reporting completion.
 
 ## Collab Window
 
@@ -37,6 +39,8 @@ The advisory post-handshake or post-resume settling window is ten minutes. It is
 
 `start collab`, `start Work-or-Listen`, and `toggle collab on` all run the same capability preflight. `stop collab`, `toggle collab off`, cancellation, failure, and expiry all require verified job/process and scratch cleanup.
 
+Persist the expected next listener heartbeat and bounded health grace. Monitor notifications, Handler returns, work-boundary checks, rearms, and readiness claims verify that a newer heartbeat arrived by that bound. Overdue silence is `DEGRADED`; a vanished listener does not stay healthy merely because it emitted no failure.
+
 ## Scheduled Collab
 
 Loads [`../protocols/scheduled-collab.yon`](../protocols/scheduled-collab.yon). It is available only when the host runtime exposes a native bounded scheduler or automation mechanism with:
@@ -48,6 +52,8 @@ Loads [`../protocols/scheduled-collab.yon`](../protocols/scheduled-collab.yon). 
 - verified cleanup.
 
 Each firing performs one bounded sync and full disposition reconciliation, records the outcome, then exits. A scheduled job firing does not by itself prove that the agent task woke. If scheduling or task wake cannot be proven, the honest result is `PARKED` and the base collaboration stays usable.
+
+Registration and every successful firing persist `last_fired`, cadence, bounded `health_grace`, and foreground turn start/end. A due firing inside a foreground turn is suppressed and restarts its idle observation deadline at turn end. Degrade only when a firing remained unobserved across a genuine idle window beyond cadence plus grace; repeated busy suppression reports `ACTIVE (health unevaluated since <time>)`, not green. Native job status is optional strengthening. Valid outstanding CTA state reports `FOUND`, not clean or no-message.
 
 The schedule belongs to the participant that registered it. It never requires a peer to use the same interval, remain available, acknowledge renewal, or wait for expiry.
 
