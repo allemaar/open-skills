@@ -24,7 +24,7 @@ The mandatory base behavior. Agents handshake, perform the authorized exchange, 
 
 Use it for short tasks, one-shot handoffs, or runtimes that cannot prove continued availability.
 
-Standard Exchange makes no autonomous health promise. On a later Handler turn, reconcile when local durable state shows an open CTA, a due deferral, `wake-pending`, or listener-recorded candidates. After a meaningful mailbox-derived work unit, reconcile once after the last effect and before reporting completion.
+Standard Exchange makes no autonomous health promise. On a later Handler turn, reconcile when local durable state shows an actionable non-deferred pending or active CTA, a blocked CTA whose named gate current Handler input may answer, a due deferral, `wake-pending`, or listener-recorded candidates. After a meaningful mailbox-derived work unit, reconcile once after the last effect and before reporting completion.
 
 ## Collab Window
 
@@ -53,7 +53,7 @@ Loads [`../protocols/scheduled-collab.yon`](../protocols/scheduled-collab.yon). 
 
 Each firing performs one bounded sync and full disposition reconciliation, records the outcome, then exits. A scheduled job firing does not by itself prove that the agent task woke. If scheduling or task wake cannot be proven, the honest result is `PARKED` and the base collaboration stays usable.
 
-Registration and every successful firing persist `last_fired`, cadence, bounded `health_grace`, and foreground turn start/end. A due firing inside a foreground turn is suppressed and restarts its idle observation deadline at turn end. Degrade only when a firing remained unobserved across a genuine idle window beyond cadence plus grace; repeated busy suppression reports `ACTIVE (health unevaluated since <time>)`, not green. Native job status is optional strengthening. Valid outstanding CTA state reports `FOUND`, not clean or no-message.
+Registration and every successful firing persist `last_fired`, cadence, bounded `health_grace`, and exact local turn nonce/origin/start/end. A scheduled-origin turn observes its own firing. A due firing is suppressed only inside the exact current live Handler-origin turn and restarts its idle observation deadline at normal end. At the next re-entry, a prior unmatched start with a different nonce transitions to `DEGRADED` with one gap reconciliation. Degrade when a firing remained unobserved across a proven idle window beyond cadence plus grace; suppression by the current live turn reports `ACTIVE (health unevaluated since <time>)`, not green. Native job status is optional strengthening. Valid outstanding CTA state reports `FOUND`; dormant audit debt reports `WORK_CLEAN_WITH_AUDIT_DEBT`, never readiness or no-message.
 
 The schedule belongs to the participant that registered it. It never requires a peer to use the same interval, remain available, acknowledge renewal, or wait for expiry.
 

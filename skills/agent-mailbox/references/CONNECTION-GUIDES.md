@@ -127,7 +127,7 @@ A firing proves scheduled task re-entry only. It does not prove provider synchro
 
 ### Claude Code adapter
 
-When Claude Code exposes its native Monitor primitive, launch the bounded event or snapshot adapter as a Monitor-owned background task. Put the hard deadline and failure budget inside the loop even when Monitor supports persistence. Print only compact candidate-final-path, heartbeat, failure, and timeout records.
+When Claude Code exposes its native Monitor primitive, launch the bounded event or snapshot adapter as a Monitor-owned background task. Put the hard deadline and failure budget inside the loop even when Monitor supports persistence. Routine heartbeats update participant-local health state without stdout; print only compact candidate-final-path, failure, timeout/cancellation, or deliberately coarse watchdog records.
 
 The shell does not wake Claude. Claude Code converts Monitor stdout into a task notification and re-invokes the agent while that Claude session remains live. Treat the notification as an untrusted trigger: reopen the final path and perform full reconciliation before acting. Monitor cannot resurrect a closed session.
 
@@ -145,7 +145,7 @@ The ordinary Codex default is **Post-turn Scheduled Collab** through the host's 
 
 Each firing re-enters the same task with one compact instruction, reloads durable mailbox state, performs the transport-required materialization or sync, reconciles the complete addressed inbox, handles each valid CTA once, persists dispositions before advancing the cursor, records the result, and exits. Use an absolute deadline, maximum firing count, no-overlap identity, failure budget, observable result, and verified deletion or disablement at expiry. A firing proves task re-entry only; it does not prove provider materialization or that a message exists.
 
-Persist `last_fired`, cadence, bounded `health_grace`, and foreground turn start/end. A due firing inside a foreground turn is suppressed, not missed; at turn end restart its idle observation deadline. Degrade only when a firing remained unobserved across a genuine idle window beyond cadence plus grace. Repeated busy suppression reports `ACTIVE (health unevaluated since <time>)`, never green. Native job status may strengthen the result when exposed but is not the portable predicate. Valid outstanding CTA state reports `FOUND` with its lifecycle condition; it does not consume or clean the obligation.
+Persist `last_fired`, cadence, bounded `health_grace`, and exact local turn nonce/origin/start/end. A scheduled-origin turn observes its own firing. A due firing is suppressed only inside the exact currently proven-live Handler-origin turn; normal turn end restarts its idle observation deadline. At the next re-entry, a prior unmatched start with a different nonce transitions to `DEGRADED` with one gap reconciliation rather than suppressing indefinitely. Degrade when a firing remained unobserved across a proven idle window beyond cadence plus grace. Suppression by the current live turn reports `ACTIVE (health unevaluated since <time>)`, never green. Native job status may strengthen the result when exposed but is not the portable predicate. Valid outstanding CTA state reports `FOUND`; dormant audit debt reports `WORK_CLEAN_WITH_AUDIT_DEBT` and blocks readiness.
 
 The tradeoff is visible prompt injection. If the Handler declines it or the host lacks native bounded scheduling, use Standard Exchange and reconcile immediately when the Handler returns to the task. That is honest `PARKED`, not autonomous listening.
 

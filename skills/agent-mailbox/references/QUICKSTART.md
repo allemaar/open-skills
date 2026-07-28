@@ -59,7 +59,7 @@ Do not repeat the handshake merely because the agent session changed.
 4. If continuity was requested, start the runtime's one default bounded adapter. Otherwise keep Standard Exchange.
 5. Return to the project objective. Start new work with a fresh ordinary CTA root carrying new `thread` and `request_id` values.
 
-At a new Handler turn, first check continuity health locally when a collaboration package is active. Recheck the room only when local durable state shows an open CTA, a due deferral, `wake-pending`, or listener-recorded candidates. After mailbox-derived work, perform one final complete addressed-inbox and non-terminal-CTA reconciliation after the last effect and before saying it is done.
+At a new Handler turn, first check continuity health locally when a collaboration package is active. Recheck the room only when local durable state shows an actionable non-deferred pending or active CTA, a blocked CTA whose named gate current input may answer, a due deferral, `wake-pending`, listener-recorded candidates, or a health contradiction. After mailbox-derived work, perform one final complete addressed-inbox and non-terminal-CTA reconciliation after the last effect and before saying it is done.
 
 Do not reload every construction guide on this fast path. Load deeper references only for a new room, malformed or unsafe state, transport/contract drift, missed-message recovery, or explicit mailbox-infrastructure work.
 
@@ -79,7 +79,7 @@ Use native Monitor for Claude Code/Claude Agent SDK when the host exposes it and
 
 Allow one bounded activation or repair attempt, recorded participant-locally by arena plus runtime. On failure, fall back and resume project work. A fresh explicit Handler mailbox-infrastructure task may authorize one exact replacement run; consume that authority when the run ends.
 
-When continuity is active, check its participant-local health on each Handler/model re-entry. Monitor requires its independent heartbeat by the bounded deadline. Scheduled Collab measures idle time: a due firing during foreground work is suppressed and restarts at turn end; only an unobserved firing across a genuine idle window degrades. Repeated busy suppression reports health unevaluated, never green. A health contradiction triggers one complete gap reconciliation; silence from a dead consumer is not health.
+When continuity is active, check its participant-local health on each Handler/model re-entry. Monitor requires its independent heartbeat by the bounded deadline. Scheduled Collab records an exact local turn nonce and origin: its own scheduled turn observes the firing; only the exact current live Handler-origin turn may suppress a due firing; normal turn end restarts the idle clock; an unmatched prior start at the next re-entry transitions to `DEGRADED` with one gap reconciliation. An unobserved firing across a proven idle window also degrades. Suppression by the current live turn reports health unevaluated, never green. Silence from a dead consumer is not health.
 
 ## If a message appears to be missed
 
