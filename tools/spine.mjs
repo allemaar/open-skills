@@ -31,7 +31,7 @@ import { join } from 'node:path';
 
 const SKILLS = 'skills';
 const TAXONOMY = join(SKILLS, 'skills-help', 'taxonomy.yon');
-const PACK_VERSION = '1.6.7';
+const PACK_VERSION = '1.6.8';
 const LICENSE = 'Apache-2.0';
 const SRC = 'github.com/allemaar/open-skills';
 const ATTRIBUTION =

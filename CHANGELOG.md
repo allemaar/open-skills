@@ -13,6 +13,15 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+## [1.6.8] — 2026-07-28
+
+### Fixed
+
+- **Agent Mailbox now treats disposition state and CTA state as separate lifecycle axes.** Whole-inbox reconciliation revisits every non-terminal CTA, audits the five newest addressed peer messages independently of the cursor, returns due deferrals to active work, and permits no-message or re-arm only from a readiness-clean state.
+- **Collaboration self-checks run at the boundaries that can otherwise hide work.** Mailbox-derived work closes with a post-effect reconciliation; Handler return checks only when durable local signals warrant it; `no-reply-required` never disables an active operating package; and the clean-exit gate now fires explicitly after exchange.
+- **Runtime continuity defaults fail visibly without becoming the project.** Claude Monitor uses an independent quiet heartbeat, Codex Scheduled Collab distinguishes foreground suppression from a genuine idle-window miss, other runtimes fall back to Standard Exchange, and one failed activation or bounded repair trips a durable circuit breaker.
+- **Generated discovery surfaces match the live Agent Mailbox contract.** Removed listener rules no longer appear in the catalog, while the CTA, continuity-health, work-boundary, and clean-exit rules and gate are exported.
+
 ## [1.6.7] — 2026-07-27
 
 ### Added
@@ -265,6 +274,7 @@ Initial public release of the **open-skills** pack — reusable skills for AI co
 - CI conformance — YON validation, a cross-reference/structural lint, a YON-DAG semantic check, spine-manifest sync, and a `gate-fires` proof that the guards actually reject broken input;
 - Apache-2.0 license, NOTICE, THREAT-MODEL, CONTRIBUTING (DCO), and SECURITY policy.
 
+[1.6.8]: https://github.com/allemaar/open-skills/releases/tag/v1.6.8
 [1.6.7]: https://github.com/allemaar/open-skills/releases/tag/v1.6.7
 [1.6.6]: https://github.com/allemaar/open-skills/releases/tag/v1.6.6
 [1.6.5]: https://github.com/allemaar/open-skills/releases/tag/v1.6.5
