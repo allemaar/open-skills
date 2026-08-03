@@ -80,14 +80,28 @@ availability. Bootstrap first, then query.
 **two resolvers, one of which is `8.8.8.8`**. A delegated nameserver is strong
 evidence of registration. Absence of one is weak evidence of anything.
 
+**Never treat an `NXDOMAIN` as final without an authoritative query.** Under
+RFC 2308, negative answers are cached, and a resolver can keep serving
+`NXDOMAIN` for a name that has since been registered. A stale negative reads as
+availability — the same error class this skill exists to prevent, arriving from
+the DNS side instead of the registrar side. Query an authoritative server
+before believing a negative, and let RDAP settle it either way.
+
 **3. Broker override.** If the nameservers match a known aftermarket operator,
 the verdict is **registered and brokered**, and it overrides any registrar
-claim of availability. Match on these substrings:
+claim of availability. Match on these operators:
 
 ```
 afternic   sedo        dan.com     domainmarket
 bodis      namefind    sedoparking
 ```
+
+**Match the nameserver's registrable domain, not a raw substring.** Reduce each
+nameserver hostname to its registrable domain first (`ns1.sedo.com` →
+`sedo.com`) and compare against that. A naive substring test produces real
+false positives: `sedo` matches `ns1.sedona.com`, and `dan.com` matches
+`ns1.sheridan.com`. Both are ordinary registered domains, and flagging one as
+brokered is the same false verdict running in the opposite direction.
 
 Also treat a `domain-is-4-sale`-style hostname as a broker marker. These
 domains are buyable, but through a broker at an aftermarket price — not at
@@ -114,6 +128,20 @@ returns RDAP 200 and looks taken — it is taken, but it is also not yet
 registrable by you, and it may become free later. And a **registered domain
 with no delegated nameservers** looks empty to DNS. That is the false-negative
 case, and it is the reason DNS never outranks RDAP.
+
+**A forward expiry date is not a renewal.** A `.com` auto-renews at its
+expiration date by registry default, so the expiry event advances a year
+whether or not anyone paid to keep the name. Reading that as "the registrant
+renewed" is the standard trap on an expiring domain. The registrar then holds a
+45-day grace in which it may delete the name for a credit — so the expiry date
+later *reverting* is not a data error, it is the registrar releasing the name
+toward deletion.
+
+**A third-party mirror is not a live source.** WHOIS mirrors and lookup sites
+serve cached records stamped with their own fetch date, sometimes weeks stale.
+When a mirror disagrees with RDAP, the mirror is stale — that is not new
+information. Read the mirror's fetch timestamp before believing anything it
+reports, and let the registry-direct RDAP answer stand.
 
 ## Coverage and rate limits
 
