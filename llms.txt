@@ -2,7 +2,7 @@
 
 Version: 1.6.8
 
-> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; 39 of 57 also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.
+> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; 40 of 62 also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.
 
 ## About YON (YounndAI Object Notation™)
 The protocol.yon files are written in YON (https://github.com/YounndAI/yon), a stream-first data format for AI-agent workflows with a public spec (https://github.com/YounndAI/yon-spec) and an Apache-2.0 reference parser (@younndai/yon-parser). YON makes a skill's declared rules (MUST / MUST_NOT) and gates (ABORT / WARN) inspectable as named, typed objects; it does not enforce runtime obedience.
@@ -93,6 +93,11 @@ Updating later: these are frozen copies — they do not change until you re-copy
 
 ### Obsidian & vault
 - json-canvas [md-only] — Create and edit JSON Canvas files (.canvas) with nodes, edges, groups, and connections. — triggers: make a canvas, build a mind map, draw a flowchart in Obsidian, add nodes to this canvas
+- map-check [md-only] — The honest inspector for Map Your Knowledge — read-only conformance checks of an organized scope via a small bundled script, always reporting what was checked AND what was not; it can never claim an unqualified "all clear". — triggers: /map-check, check this map, check the graph, is this vault healthy
+- map-init [md-only] — Onboard Map Your Knowledge into a user's agent directives — check whether it is already installed, or offer to add the routing rules globally or per-project, for EVERY agent platform on the machine, with explicit consent and a per-platform manual fallback. — triggers: /map-init, install map your knowledge, set up myk, make mapping my agents' default
+- map-maintain [protocol.yon] — Run one bounded MYK stewardship cycle: map-check, Handler-selected repairs through map-this semantics, then targeted recheck. — triggers: /map-maintain, maintain this map, tend this graph, repair these map findings
+- map-rules [md-only] — The shared Map Your Knowledge (MYK) rulebook for maps, frontmatter, filenames, titles, tags, rollups, archives, and semantic proposals — runtime-neutral rules any agent loads before touching organized vault Markdown. — triggers: /map-rules, follow my map rules, structure this note, organize vault data
+- map-this [md-only] — Plan and organize a bounded folder, project, or vault using map-rules; audit first, show simple proposals, and apply only selected changes. — triggers: /map-this, organize this scope, map this project, housekeep this vault
 - obsidian-bases [md-only] — Create and edit Obsidian Bases (.base YAML files) with views, filters, formulas, and summaries. — triggers: make a base, build a database view of my notes, add a filter/formula to this base, create a table/card view
 - obsidian-cli [md-only] — Drive a running Obsidian instance via the `obsidian` CLI — search vault, open/create/move notes, toggle tasks, edit properties, reload plugins, run JS, capture errors/screenshots. — triggers: search my vault, open this note in Obsidian, list notes tagged X, reload my plugin
 - obsidian-markdown [md-only] — Write valid Obsidian-Flavored Markdown — wikilinks, embeds, callouts, frontmatter properties, tags, comments. — triggers: write this as an Obsidian note, add a callout, use wikilinks, set frontmatter properties

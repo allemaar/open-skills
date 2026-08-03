@@ -1,0 +1,37 @@
+@DOC ver=2.0 | kind=skill | id=map-maintain | title="Map Maintain Execution Protocol" | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@STAMP ts:ts=2026-08-02T01:55:00Z | src=human | method=manual
+@INTENT goal="Run one explicit bounded MYK stewardship cycle from qualified findings through Handler-selected repair and targeted recheck" | trigger="Handler or agent explicitly invokes /map-maintain for an exact target"
+
+@SEC name="Authority and bounds"
+@RULE rid=rule:invoke | lvl=MUST | when="starting map-maintain" | then="require an explicit invocation naming the exact target from the Handler or the working agent; never from a schedule, timer, or prior finding; the Handler selection gate before mutation is unchanged"
+@RULE rid=rule:no-autonomy | lvl=MUST_NOT | when="map-maintain is available" | then="schedule, watch, daemonize, repeat automatically, or act on future findings"
+@RULE rid=rule:no-work-state | lvl=MUST_NOT | when="checking or maintaining organization" | then="read, infer, record, or report work-state"
+@RULE rid=rule:single-engine | lvl=MUST | when="checking conformance" | then="use map-check as the single read-only conformance engine and preserve every qualification"
+@RULE rid=rule:apply-boundary | lvl=MUST | when="applying selected repairs" | then="inherit map-this apply and environment semantics without expanding authority"
+@RULE rid=rule:one-round | lvl=MUST | when="running one invocation" | then="stop after one Handler-selected apply and one targeted recheck"
+@CFG id=default-bounds | set=[files:int=50,findings:int=30,proposals_per_page:int=10,elapsed_minutes:int=30,repair_rounds:int=1]
+
+@SEC name="Execution"
+@STEP rid=step:resolve | n:int=1 | op=resolve-scope | args=[source=handler,target=exact] | in=[ref:map-rules] | out=[ref:scope,ref:mode,ref:inventory]
+@CHECK rid=check:scope | assert="scope is exact, declared, uncontested, and within the displayed bounds" | fail=ABORT | msg="Stop without mutation and surface the target or declaration remedy"
+@STEP rid=step:check | n:int=2 | op=run-map-check | args=[mode=read-only,verdict=qualified] | in=[ref:scope] | out=[ref:findings,ref:qualifications,ref:resolution-records]
+@CATCH target=step:check | on="operational or resolution error envelope" | do="stop without mutation and surface the typed remedy"
+@STEP rid=step:propose | n:int=3 | op=prepare-repair-proposals | args=[source=confirmed-findings-and-resolution-records,shape=map-this,scope=exact,healing-classes="create-alias-at-target|retarget|disambiguate-ambiguous|rewrite-vs-forward|tag-and-defer|no-repair-needed|creation-queue",evidence-ladder="STRONG|MEDIUM|WEAK|ABSTAIN",dedupe=raw-missing-target] | in=[ref:findings,ref:qualifications,ref:resolution-records] | out=[ref:proposal-set]
+@CHECK rid=check:no-creep | assert="every proposal maps to one confirmed finding or one resolution occurrence record and names exact files and mutations" | fail=ABORT | msg="Remove unmapped cleanup, migration, or restructuring work"
+@RULE rid=rule:heal-order | lvl=MUST | when="generating enrichment suggestions" | then="run only after selected healing, targeted re-resolution, and graph rebuild; ABSTAIN without a stable resolved component; print thresholds as hypotheses; report separately from repair"
+@RULE rid=rule:mech-half | lvl=MUST | when="alias-chain collapse is computable" | then="auto-execute only as the mechanical half of an already Handler-selected exact set under existing preimage and resume rules"
+@STEP rid=step:gate | n:int=4 | op=request-handler-selection | args=[choices=accept-reject-modify-defer-unresolved] | in=[ref:proposal-set] | out=[ref:selected-set]
+@CHECK rid=check:selection | assert="the Handler selected an exact bounded set and it was restated before mutation" | fail=ABORT | msg="No repair is self-authorizing"
+@STEP rid=step:preimage | n:int=5 | op=verify-preimages-and-write-paths | args=[lstat_chain:bool=true,fail_closed:bool=true] | in=[ref:selected-set] | out=[ref:verified-set]
+@CHECK rid=check:write-path | assert="preimages are unchanged and no target leaf or parent is a symlink, junction, mount point, name-surrogate reparse point, or unknown reparse point" | fail=ABORT | msg="Stop and refresh the proposal"
+@STEP rid=step:apply | n:int=6 | op=apply-map-this-semantics | args=[idempotent:bool=true,scope=selected-only,coupled-change-sets:bool=true] | in=[ref:verified-set] | out=[ref:changed-paths,ref:index-handoff]
+@CATCH target=step:apply | on="drift, overlap, ambiguity, or out-of-set mutation" | do="stop and report the partial state without expanding scope"
+@STEP rid=step:recheck | n:int=7 | op=run-targeted-map-check | args=[affected-only:bool=true,broad-rerun:bool=false] | in=[ref:changed-paths,ref:findings] | out=[ref:recheck-verdict,ref:remaining-findings,ref:re-resolution-records,ref:held-fingerprints,ref:rebuilt-graph-components]
+@STEP rid=step:enrich | n:int=8 | op=suggest-link-enrichment | args=[mode=suggestion-only,generation=2-hop,filter=resolved-component,abstain-without-component:bool=true,handoff-when-bounds-spent:bool=true] | in=[ref:re-resolution-records,ref:held-fingerprints,ref:rebuilt-graph-components,ref:changed-paths] | out=[ref:enrichment-suggestions,ref:enrichment-handoff-or-null]
+@CATCH target=step:enrich | on="missing re-resolution records, unheld fingerprints, or no rebuilt component" | do="emit the named later-invocation handoff instead of suggestions; never run enrichment degraded"
+@CHECK rid=check:enrich | assert="enrichment suggestions carry no mutation authority and are reported separately from repair" | fail=ABORT | msg="Enrichment expresses new intent; it is never repair and never self-authorizing"
+@STEP rid=step:report | n:int=9 | op=report-and-stop | args=[preserve-qualifications:bool=true,name-not-run:bool=true] | in=[ref:scope,ref:findings,ref:selected-set,ref:changed-paths,ref:recheck-verdict,ref:remaining-findings,ref:enrichment-suggestions] | out=[ref:handler-report]
+@STEP rid=step:nsp | n:int=10 | op=offer-next-skills | args=[source=frontmatter,mode=offer-only] | in=[ref:handler-report] | out=[ref:next-skill-options]
+@STEP rid=step:sip | n:int=11 | op=run-self-improvement-protocol | args=[threshold=concrete-blocking-or-recurring,apply=never] | in=[ref:handler-report] | out=[ref:fix-proposal-or-silence]
+
+@STAMP ts:ts=2026-08-02T01:55:00Z | src=human | method=manual

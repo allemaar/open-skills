@@ -4,7 +4,7 @@
 
 An agent skill is a small document your AI agent reads and then acts on. It can tell the agent to run commands, edit files, and reach the network — using whatever access you have given the agent. That is the point of skills, and it is also the risk. A skill you did not read is code you did not read, running where you work.
 
-Most skills travel as opaque bundles or as prose you skim once. open-skills takes the opposite stance: every skill is plain text you can read before you trust it, and 39 of 57 add a declarative protocol you can inspect and validate with a public tool. Inspection is the defense. This document explains what that defends against, and — just as important — what it does not.
+Most skills travel as opaque bundles or as prose you skim once. open-skills takes the opposite stance: every skill is plain text you can read before you trust it, and 40 of 62 add a declarative protocol you can inspect and validate with a public tool. Inspection is the defense. This document explains what that defends against, and — just as important — what it does not.
 
 ## The attack surface
 
@@ -22,8 +22,8 @@ These are supply-chain risks. They are the same shape as installing an unread de
 
 The design answers the threats with **inspectability**, not with a sandbox.
 
-- **Everything is readable text.** Every skill is a folder of Markdown and, for 39 skills, YON. No build step, no minified blob, no binary. You can read every line before you grant trust, and diff every line on update.
-- **The declared protocol is mechanically inspectable.** Of the 57 skills here, 39 ship a [`protocol.yon`](CONFORMANCE.md). In those files the control flow, rules (`MUST` / `MUST_NOT`), and gates (`ABORT` / `WARN`) are named, typed records. That gives readers and tooling a stable object to audit; it does not make the declaration self-enforcing.
+- **Everything is readable text.** Every skill is a folder of Markdown and, for 40 skills, YON. No build step, no minified blob, no binary. You can read every line before you grant trust, and diff every line on update.
+- **The declared protocol is mechanically inspectable.** Of the 62 skills here, 40 ship a [`protocol.yon`](CONFORMANCE.md). In those files the control flow, rules (`MUST` / `MUST_NOT`), and gates (`ABORT` / `WARN`) are named, typed records. That gives readers and tooling a stable object to audit; it does not make the declaration self-enforcing.
 - **You can validate it yourself.** Each `protocol.yon` validates against the public Apache-2.0 reference parser for YON (YounndAI Object Notation™), created by Alexandru Mares and published separately in the YounndAI ecosystem:
 
   ```bash
@@ -41,7 +41,7 @@ Inspectability is a real defense with precise edges. Naming the edges is part of
 
 - **YON is an audit primitive, not a sandbox.** A `protocol.yon` makes a skill's intent legible. It does not execute in a jail and does not constrain what your agent runtime can do. The protection is that you can *see* the intent before you trust it — not that an unread intent is contained.
 - **Validation proves structure, not safety.** A `protocol.yon` that validates is well-formed. It is not therefore benign. A well-formed protocol can still describe a harmful step. Validation narrows what you must read; it does not replace reading.
-- **18 of 57 skills are Markdown-only.** They carry no `protocol.yon`, so their behavior is described only in prose. The 39 dual-document skills add a checkable declaration, not a runtime-obedience guarantee. Read both forms as instructions granted your agent's permissions.
+- **22 of 62 skills are Markdown-only.** They carry no `protocol.yon`, so their behavior is described only in prose. The 40 dual-document skills add a checkable declaration, not a runtime-obedience guarantee. Read both forms as instructions granted your agent's permissions.
 - **This is one author's vetted set.** The skills here were scrubbed of personal data and reviewed before release. A fork is not. Trust is yours to grant, per skill, per version.
 
 The honest summary: open-skills removes the excuse not to read and gives many skills a checkable declared shape. It does not remove the responsibility to read or make a runtime obey.

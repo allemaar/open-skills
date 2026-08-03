@@ -9,7 +9,7 @@
 <p align="center">
   <strong>open-skills</strong><br />
   A personal, field-used pack of reusable skills for AI coding agents.<br />
-  Every skill is readable Markdown; 39 of 57 also carry a declarative <strong>YON (YounndAI Object Notation™)</strong> protocol you can validate.<br />
+  Every skill is readable Markdown; 40 of 62 also carry a declarative <strong>YON (YounndAI Object Notation™)</strong> protocol you can validate.<br />
   <em>Read before you trust.</em>
 </p>
 
@@ -29,7 +29,7 @@
 
 A skill is instructions handed to an agent that may be able to touch your files. My rule is simple: you should be able to **read a skill before you trust it**.
 
-These skills came from repeated work with Claude Code, Codex, and other runtimes that read the open Agent Skills format: planning, investigation, review, writing, orchestration, priming, architecture, and knowledge work. Some have been in daily use and evolution for more than 18 months; others were added when the work demanded them. That is my account, not a benchmark. What is published here is the working set, not a demo.
+These skills came from repeated work with Claude Code, Codex, and other runtimes that read the open Agent Skills format: planning, investigation, review, writing, orchestration, priming, architecture, and knowledge work. Some have been in daily use and evolution since well over a year ago; others were added when the work demanded them. That is my account, not a benchmark. What is published here is the working set, not a demo.
 
 **Composable, not a framework.** Install one or install fifty. Each skill is its own decision, and your agent keeps room to think between them. Take what earns its place.
 
@@ -48,7 +48,7 @@ Throughout these docs, a skill's written command is its **folder name**
 phrases declared in frontmatter `triggers:` (/explore, /phase-plan) are
 recognition aliases that some runtimes also honor.
 
-The generated [`SKILLS.md`](SKILLS.md) catalog groups all 57 skills into twelve families. It is built from live `SKILL.md` metadata plus the pack's [`taxonomy.yon`](skills/skills-help/taxonomy.yon), so the human catalog and machine catalogs share one source rather than parallel hand-maintained menus.
+The generated [`SKILLS.md`](SKILLS.md) catalog groups all 62 skills into twelve families. It is built from live `SKILL.md` metadata plus the pack's [`taxonomy.yon`](skills/skills-help/taxonomy.yon), so the human catalog and machine catalogs share one source rather than parallel hand-maintained menus.
 
 Inside an agent, `/skills-help` reads that same bundled taxonomy and the skills actually installed beside it. Unknown third-party skills remain visible under `Unclassified`; they are not guessed into one of this pack's families.
 
@@ -165,6 +165,18 @@ shared folder -> request -> durable disposition -> deliverable
 That is a description of my current dogfooding, not a promise that every host can wake a stopped task or that every synchronization provider has the same latency. Work-or-Listen is participant-local and non-negotiated. The skill separates publication, local materialization, detection, full reconciliation, task wake, disposition, and re-arm because success in one layer does not prove the next.
 
 The complete operating and security contract remains in the skill. Start with [`SKILL.md`](skills/agent-mailbox/SKILL.md), use the operation-first [`resource spine`](skills/agent-mailbox/resources/INDEX.md) only when you need a collaboration recipe, then use [`CONNECTION-GUIDES.md`](skills/agent-mailbox/references/CONNECTION-GUIDES.md) for transport/runtime adapters and [`VALIDATION.md`](skills/agent-mailbox/references/VALIDATION.md) for measured, observed, design-validated, and still-pending evidence. Experimental patterns remain in the skill as maintainer source material but are excluded from normal routing. No watcher, daemon, SDK, or runtime dependency is shipped.
+
+## Map Your Knowledge
+
+The `map-` family is a system: **[Map Your Knowledge (MYK)](MapYourKnowledge.md)** — a protocol that makes any folder of markdown navigable cold, for people and agents alike. Every file declares its home map, every map lists its members, and new data is born mapped. Its first law is elasticity: existing conventions outrank MYK's defaults, verdicts are always human-confirmed, and a "no" is remembered forever.
+
+- [`map-rules`](skills/map-rules/) — the shared rulebook every agent loads before touching organized markdown
+- [`map-this`](skills/map-this/) — "map this project": zero-write assessment → proposal table → you pick → careful apply
+- [`map-init`](skills/map-init/) — consent-first onboarding of the routing rules into your agents' directives, every platform
+- [`map-check`](skills/map-check/) — the honest inspector: read-only health checks via a bundled deterministic script, never an unqualified "all clear"
+- [`map-maintain`](skills/map-maintain/) — the gardener: one bounded check → you pick the repairs → it mends and rechecks
+
+The full story, diagrams included: [`MapYourKnowledge.md`](MapYourKnowledge.md).
 
 ## Two headliner families
 

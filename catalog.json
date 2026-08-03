@@ -3,7 +3,7 @@
   "version": "1.6.8",
   "homepage": "https://allemaar.com",
   "repository": "https://github.com/allemaar/open-skills",
-  "generated": "2026-07-28",
+  "generated": "2026-08-01",
   "generator": "tools/spine.mjs",
   "license": "Apache-2.0",
   "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL.",
@@ -142,8 +142,8 @@
       ]
     }
   ],
-  "count": 57,
-  "dualDoc": 39,
+  "count": 62,
+  "dualDoc": 40,
   "install": "Copy a skill folder into your runtime skills dir (copy-default, not symlink), then validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.",
   "skills": [
     {
@@ -1937,6 +1937,193 @@
       "steps": 0,
       "install": {
         "copy": "cp -r skills/json-canvas <skills-dir>/json-canvas",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "map-check",
+      "family": "obsidian-vault",
+      "familyLabel": "Obsidian & vault",
+      "description": "The honest inspector for Map Your Knowledge — read-only conformance checks of an organized scope via a small bundled script, always reporting what was checked AND what was not; it can never claim an unqualified \"all clear\". Trigger when the user says \"check this map\", \"check the graph\", \"is this vault still healthy\", \"run map-check\", or \"/map-check\". Read-only forever; repairs belong to map-this and map-maintain.",
+      "visibility": "public",
+      "triggers": [
+        "/map-check",
+        "check this map",
+        "check the graph",
+        "is this vault healthy"
+      ],
+      "nextSkills": [
+        {
+          "skill": "map-maintain",
+          "phrase": "/map-maintain",
+          "why": "Run one Handler-gated repair-and-recheck cycle for confirmed findings."
+        },
+        {
+          "skill": "map-this",
+          "phrase": "/map-this",
+          "why": "Re-organize or extend the scope the check just measured."
+        }
+      ],
+      "companions": [],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/map-check <skills-dir>/map-check",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "map-init",
+      "family": "obsidian-vault",
+      "familyLabel": "Obsidian & vault",
+      "description": "Onboard Map Your Knowledge into a user's agent directives — check whether it is already installed, or offer to add the routing rules globally or per-project, for EVERY agent platform on the machine, with explicit consent and a per-platform manual fallback. Trigger when the user says \"install map your knowledge\", \"set up myk\", \"make this my agents' default\", or \"/map-init\". Idempotent and consent-first; per-file atomic and mixed-state honest.",
+      "visibility": "public",
+      "triggers": [
+        "/map-init",
+        "install map your knowledge",
+        "set up myk",
+        "make mapping my agents' default"
+      ],
+      "nextSkills": [
+        {
+          "skill": "map-this",
+          "phrase": "/map-this",
+          "why": "With the directives installed, map the first project to see the system work."
+        },
+        {
+          "skill": "map-rules",
+          "phrase": "/map-rules",
+          "why": "Read the shared protocol rules the directives now route every agent into."
+        }
+      ],
+      "companions": [],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/map-init <skills-dir>/map-init",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "map-maintain",
+      "family": "obsidian-vault",
+      "familyLabel": "Obsidian & vault",
+      "description": "Run one bounded MYK stewardship cycle: map-check, Handler-selected repairs through map-this semantics, then targeted recheck. Trigger on \"maintain this map\", \"tend this graph\", or \"/map-maintain\". Not for autonomous monitoring.",
+      "visibility": "public",
+      "triggers": [
+        "/map-maintain",
+        "maintain this map",
+        "tend this graph",
+        "repair these map findings"
+      ],
+      "nextSkills": [
+        {
+          "skill": "map-check",
+          "phrase": "/map-check",
+          "why": "Run a later read-only health check without entering another repair cycle."
+        }
+      ],
+      "companions": [],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "scope=ABORT",
+        "no-creep=ABORT",
+        "selection=ABORT",
+        "write-path=ABORT"
+      ],
+      "rules": [
+        "invoke=MUST",
+        "no-autonomy=MUST_NOT",
+        "no-work-state=MUST_NOT",
+        "single-engine=MUST",
+        "apply-boundary=MUST",
+        "one-round=MUST"
+      ],
+      "steps": 10,
+      "install": {
+        "copy": "cp -r skills/map-maintain <skills-dir>/map-maintain",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/map-maintain/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "map-rules",
+      "family": "obsidian-vault",
+      "familyLabel": "Obsidian & vault",
+      "description": "The shared Map Your Knowledge (MYK) rulebook for maps, frontmatter, filenames, titles, tags, rollups, archives, and semantic proposals — runtime-neutral rules any agent loads before touching organized vault Markdown. Trigger when the user says \"follow the map rules\", \"structure this note\", or \"organize vault data\". Not for sync or topology.",
+      "visibility": "public",
+      "triggers": [
+        "/map-rules",
+        "follow my map rules",
+        "structure this note",
+        "organize vault data"
+      ],
+      "nextSkills": [
+        {
+          "skill": "map-this",
+          "phrase": "/map-this",
+          "why": "Run the full plan-first audit-and-organize workflow on a bounded scope under these directives."
+        }
+      ],
+      "companions": [],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/map-rules <skills-dir>/map-rules",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "map-this",
+      "family": "obsidian-vault",
+      "familyLabel": "Obsidian & vault",
+      "description": "Plan and organize a bounded folder, project, or vault using map-rules; audit first, show simple proposals, and apply only selected changes. Trigger when the Handler says \"organize this scope\", \"map this project\", or \"housekeep this vault\".",
+      "visibility": "public",
+      "triggers": [
+        "/map-this",
+        "organize this scope",
+        "map this project",
+        "housekeep this vault"
+      ],
+      "nextSkills": [
+        {
+          "skill": "map-rules",
+          "phrase": "/map-rules",
+          "why": "Reload the organization kernel these workflows apply."
+        },
+        {
+          "skill": "cold-review",
+          "phrase": "/cold-review",
+          "why": "Get outside review of a completed organization pass before broad rollout."
+        }
+      ],
+      "companions": [],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/map-this <skills-dir>/map-this",
         "validate": null
       },
       "license": "Apache-2.0",

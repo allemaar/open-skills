@@ -13,6 +13,14 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+### Added
+
+- **Map Your Knowledge (MYK) — a new skill family.** [`MapYourKnowledge.md`](MapYourKnowledge.md) introduces the system: a protocol that makes any folder of markdown navigable cold (every file declares its home map, every map lists its members, new files are born mapped), governed by an elasticity law — existing house styles outrank MYK defaults, verdicts are always human-confirmed, and a decline is remembered and never re-offered. Three skills ship now: [`map-rules`](skills/map-rules/) (the shared kernel), [`map-this`](skills/map-this/) (assess → propose → select → apply, including unstructured piles and additive README care), and [`map-init`](skills/map-init/) (consent-first onboarding of the routing rules into agent directive files, across every agent platform on the machine). `map-check` (a read-only validator with a small bundled script) and `map-maintain` (the maintenance loop) are designed and follow separately.
+
+### Changed
+
+- **Renames from the pre-release working set:** `map-directives` → `map-rules`, `map-scope` → `map-this` (never in a tagged release; noted for anyone tracking the working tree). Skill catalogs, taxonomy, and cross-references updated; repository skill count is now 62 after adding `map-check` and `map-maintain`.
+
 ## [1.6.8] — 2026-07-28
 
 ### Fixed
