@@ -312,6 +312,7 @@
         "dedupe-by-uuid=MUST",
         "readiness-evidence=MUST",
         "codex-scheduled-default=MUST",
+        "codex-no-dedicated-task=MUST_NOT",
         "experimental-listener-boundary=MUST_NOT",
         "codex-cli-resume-boundary=MUST_NOT",
         "consume-after-durable=MUST",
