@@ -70,9 +70,10 @@ Do NOT proceed until the user explicitly says yes. Approval applies only to the 
 
 Once approved:
 
-1. For each commit in approved order, stage only the listed file paths — no blind `git add .`.
+1. For each commit in approved order, stage only the listed file paths — no blind `git add .`. Use a deletion-aware, path-limited form such as `git add -A -- <approved-paths>` so approved removals enter the index as well.
    - When deriving staging paths from Git output, use unquoted or NUL-safe path output such as `git -c core.quotePath=false ls-files ...`; default quoted paths can break Unicode or space-containing paths when passed back to `git add`.
-2. Run `git diff --cached --name-status`. Confirm the cached list exactly matches that commit's `Files to stage`.
+   - Before staging byte-sealed evidence (for example, files covered by a SHA-256 manifest), inspect its effective attributes with `git check-attr -a -- <path>`. If text conversion would alter the declared bytes, STOP and request approval for a scoped `.gitattributes` correction. After staging, verify the declared hash against the staged blob before committing.
+2. Run `git diff --cached --name-status --no-renames`. Confirm the resulting logical path list exactly matches that commit's `Files to stage`. Normal name-status output may collapse an approved deletion/addition pair into one rename record, so it is display-only for this comparison.
 3. If it does not match, STOP. Unstage or revise only with explicit user approval.
 4. Commit with only the exact approved `Full commit message` block. Do not invent, shorten, expand, template, or append any subject, body, or trailer line that was not visible in the approved plan.
 5. Run the exact-message check: `git log -1 --format=%B`. Verify the message exactly matches the approved `Full commit message` block.
