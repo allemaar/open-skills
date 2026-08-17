@@ -13,13 +13,17 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+## [1.7.0] — 2026-08-17
+
 ### Added
 
-- **Map Your Knowledge (MYK) — a new skill family.** [`MapYourKnowledge.md`](MapYourKnowledge.md) introduces the system: a protocol that makes any folder of markdown navigable cold (every file declares its home map, every map lists its members, new files are born mapped), governed by an elasticity law — existing house styles outrank MYK defaults, verdicts are always human-confirmed, and a decline is remembered and never re-offered. Three skills ship now: [`map-rules`](skills/map-rules/) (the shared kernel), [`map-this`](skills/map-this/) (assess → propose → select → apply, including unstructured piles and additive README care), and [`map-init`](skills/map-init/) (consent-first onboarding of the routing rules into agent directive files, across every agent platform on the machine). `map-check` (a read-only validator with a small bundled script) and `map-maintain` (the maintenance loop) are designed and follow separately.
+- **Six skills extend output, evidence, and delegation work.** [`agent-output`](skills/agent-output/) defines compact agent-to-agent reports; [`prose-audit`](skills/prose-audit/) diagnoses repetition and filler without rewriting; [`synthesize`](skills/synthesize/) compiles faithful, purpose-matched Handler-facing output; [`synthesize-init`](skills/synthesize-init/) installs that report layer into standing directives through an explicit reversible gate; [`freshness-contract`](skills/freshness-contract/) decides when cached evidence must be refreshed; and [`route-task`](skills/route-task/) records experimental capability-based delegation decisions.
+- **Map Your Knowledge (MYK) ships as a complete five-skill family.** [`MapYourKnowledge.md`](MapYourKnowledge.md) introduces the system, with [`map-rules`](skills/map-rules/), [`map-this`](skills/map-this/), [`map-init`](skills/map-init/), [`map-check`](skills/map-check/), and [`map-maintain`](skills/map-maintain/) all present in this release. This corrects the earlier Unreleased note that described only three as shipped and two as future work.
 
 ### Changed
 
-- **Renames from the pre-release working set:** `map-directives` → `map-rules`, `map-scope` → `map-this` (never in a tagged release; noted for anyone tracking the working tree). Skill catalogs, taxonomy, and cross-references updated; repository skill count is now 62 after adding `map-check` and `map-maintain`.
+- **The human-output family and report layer now share one public routing model.** `/synthesize` is the front door for purpose-matched delivery, `/human-output` retains deep writing craft, `/human-rewrite` owns repair, and the adjacent audit and agent-report skills keep their narrower jobs.
+- **Public and generated discovery surfaces now agree on 68 skills.** Forty include `protocol.yon`; 28 are Markdown-only. Catalogs, taxonomy, plugin metadata, README, threat model, conformance report, and social-preview source carry the same live inventory.
 
 ## [1.6.8] — 2026-07-28
 
@@ -282,6 +286,7 @@ Initial public release of the **open-skills** pack — reusable skills for AI co
 - CI conformance — YON validation, a cross-reference/structural lint, a YON-DAG semantic check, spine-manifest sync, and a `gate-fires` proof that the guards actually reject broken input;
 - Apache-2.0 license, NOTICE, THREAT-MODEL, CONTRIBUTING (DCO), and SECURITY policy.
 
+[1.7.0]: https://github.com/allemaar/open-skills/compare/v1.6.8...v1.7.0
 [1.6.8]: https://github.com/allemaar/open-skills/releases/tag/v1.6.8
 [1.6.7]: https://github.com/allemaar/open-skills/releases/tag/v1.6.7
 [1.6.6]: https://github.com/allemaar/open-skills/releases/tag/v1.6.6

@@ -175,6 +175,30 @@ when the thing that determines the decision is unchecked, say the decision is
 not ready: *"You should not decide this yet — X is unverified and it governs
 the answer."* That is a legitimate deliverable, not a failure.
 
+**Density.** Every sentence performs one unique job: verdict, claim, evidence,
+consequence, necessary qualification, action, or navigation in a genuinely long
+artifact. Cut immediate paraphrases, repeated summaries, meta-announcements,
+decorative transitions, synonym stacks, fake balance, and structure that carries
+no distinction. Litotes, triads, and contrast formulas stay only when their
+effect is deliberate. Once the answer and its necessary boundary are present,
+stop. Do not append an unsolicited offer to continue. This is a composition
+constraint applied before sending, not a cleanup pass the Handler must request.
+When `prose-audit` is installed, its P001-P258 index is the complete diagnostic
+reference. Do not load or recite that index for an ordinary response.
+
+**Reporting face.** Plain prose is the default for a simple answer. Active
+multi-step work uses the Handler's compact progress grammar. Several independent
+results use the compact status list. Exact mappings use a table. Relationships
+use a figure only when the figure lowers reading load. Never give a short answer
+the ceremony of a report.
+
+This contained rule is complete on its own — a standalone install needs nothing
+else. When the `synthesize` skill is installed, route the output through its
+FULL procedure: the reader's need selects the recipe and minimum spine from its
+output map, and its grammar renders the result — grammar alone is the render
+layer, never the route. When it is not installed, this paragraph is the whole
+contract.
+
 **Conditionals.** When the honest answer depends, say so: *"Ship it if the
 migration window holds; hold otherwise — and right now it holds."* Inventing
 certainty to satisfy the one-sentence shape breaks rule 1 rather than

@@ -1,8 +1,8 @@
 # open-skills
 
-Version: 1.6.8
+Version: 1.7.0
 
-> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; 40 of 62 also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.
+> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; 40 of 68 also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.
 
 ## About YON (YounndAI Object Notation™)
 The protocol.yon files are written in YON (https://github.com/YounndAI/yon), a stream-first data format for AI-agent workflows with a public spec (https://github.com/YounndAI/yon-spec) and an Apache-2.0 reference parser (@younndai/yon-parser). YON makes a skill's declared rules (MUST / MUST_NOT) and gates (ABORT / WARN) inspectable as named, typed objects; it does not enforce runtime obedience.
@@ -29,6 +29,7 @@ Updating later: these are frozen copies — they do not change until you re-copy
 ## Skills by family
 
 ### Planning & execution
+- freshness-contract [md-only] — Categorical decision table for reusing cached evidence — when an artifact you already read, a banked test result, a primer, a worker report, or a probe verdict is still trustworthy, and when it must be spot-checked or re-verified. — triggers: /freshness-contract, is this still current, can I trust what I read earlier, do I need to re-check this
 - plan-cleanup [protocol.yon] — Post-execution cleanup — remove planning artifacts and tech debt left behind after a plan runs. — triggers: /plan-cleanup, clean up artifacts, remove the plan file, no tech debt
 - plan-create [protocol.yon] — Propose a phased, gated implementation plan before any work begins. — triggers: /plan-create, make a plan, plan this out, design before coding
 - plan-deep-dive [protocol.yon] — Phase-by-phase deep inspection of any multi-phase plan — stop at each phase and assess completeness, quality, and future-readiness before advancing. — triggers: /deep-dive, do a deep dive, inspect each phase, look at this more carefully
@@ -72,6 +73,7 @@ Updating later: these are frozen copies — they do not change until you re-copy
 - handoff-execute [protocol.yon] — Execute a handoff brief with enforced source-read discipline — load the brief's @SOURCES.required tier fully before planning, cite sources per plan step, run @OUTCOME.verify after, emit the retro per @GROUND_TRUTH_REQUIRED. — triggers: /handoff-execute, /handoff-execute <brief-path>
 - multi-agent-mode [md-only] — Activate multi-agent mode: the lead agent still works directly but delegates independent helper slices when useful. — triggers: /multi-agent-mode, multi-agent mode, use helper agents, work with subagents
 - orchestrate-mode [md-only] — Activate orchestrator mode in the current session: the lead agent dispatches governed worker subagents and does not execute concrete work directly. — triggers: /orchestrate-mode, become an orchestrator, orchestrator mode, delegate everything
+- route-task [md-only] — EXPERIMENTAL capability-routing rubric — score a task on five task-readable axes (Risk, Uncertainty, Scope, Coupling, Verification) to derive WHO should execute (capability band 0–3) and HOW HARD they should try (volume 0–24), plus an evidence-derived plan gate. — triggers: /route-task, which model should handle this, how should I route this task, score this task
 
 ### Orientation
 - orient-gaps [protocol.yon] — Answers "What is stuck or missing?" on any subject — blockers (on you vs on others), open forks, loose ends, and inferred silent gaps, computed fresh via a bounded read-only subagent. — triggers: /orient-gaps, what's stuck, what's not done, what's missing here
@@ -80,10 +82,14 @@ Updating later: these are frozen copies — they do not change until you re-copy
 - orient-status [protocol.yon] — Answers "How far along am I, and when will it be done?" on any subject (repo, folder, plan, task) — current position, what's left, and a banded ETA, computed fresh via a bounded read-only subagent. — triggers: /orient-status, where are we on this, status quo and eta, how far along
 
 ### Human output
+- agent-output [md-only] — Compact agent-to-agent communication contract for worker reports, handoffs, status, blockers, and review findings. — triggers: /agent-output, brief the worker, make agent reports terse, compress the subagent report
 - human-draw [md-only] — Renders information as a picture a person reads at a glance. — triggers: /human-draw, draw this, draw it for me, show me this visually
 - human-merge [md-only] — Takes several separate reports — from several agents, several sources, or several documents — and returns one surface a person can decide from. — triggers: /human-merge, merge these reports, combine what the agents found, what do all of these add up to
 - human-output [md-only] — The contract for writing anything a person will read and decide from — a report, a finding, an answer, a request for a decision. — triggers: /human-output, remember I am a person not a machine, write this for a human, keep the reader in mind
 - human-rewrite [md-only] — The repair pass on text that already exists — an agent's own last output, a subagent's report, a supplied document, a research summary, a legal or medical paragraph — rewritten so a person can read it fast and act on it, without changing what it claims. — triggers: /human-rewrite, translate that into human, that was a wall of text, I can't follow this
+- prose-audit [md-only] — Diagnose semantic repetition, filler, fake structure, stock AI rhetoric, and avoidable reading load in existing text. — triggers: /prose-audit, find the AI filler, audit this for bloat, identify repetition and token padding
+- synthesize [md-only] — Synthesize any agent output into a scannable, faithful, purpose-matched delivery. — triggers: /synthesize, synthesize this, make this scannable, I can't read this wall
+- synthesize-init [md-only] — Opt-in installer that sets /synthesize as the standing output default in an agent's directive files (CLAUDE.md, AGENTS.md, or equivalent), telling each future session to load it before its first nontrivial reply — a standing instruction, not deterministic enforcement; the live skill's best-effort boundary for later turns stays as it is. — triggers: /synthesize-init, make synthesize my default, wire synthesize into my directives, inject synthesize
 
 ### Code & architecture
 - audit-coupled-constant [md-only] — Audit every site of a constant whose value is duplicated across multiple call sites (retry budgets, timeouts, page sizes, magic numbers, feature flags). — triggers: /audit-coupled-constant, audit budget consistency, find all sites of this value, check coupled invariant

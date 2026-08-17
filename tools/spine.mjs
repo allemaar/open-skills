@@ -31,7 +31,7 @@ import { join } from 'node:path';
 
 const SKILLS = 'skills';
 const TAXONOMY = join(SKILLS, 'skills-help', 'taxonomy.yon');
-const PACK_VERSION = '1.6.8';
+const PACK_VERSION = '1.7.0';
 const LICENSE = 'Apache-2.0';
 const SRC = 'github.com/allemaar/open-skills';
 const ATTRIBUTION =
@@ -73,7 +73,7 @@ function unquote(s) {
 function scalar(fm, key) {
   const b = blockAfter(fm, key);
   if (!b) return null;
-  if (b.headRest && b.headRest !== '>' && b.headRest !== '|') return unquote(b.headRest);
+  if (b.headRest && !/^[>|][+-]?$/.test(b.headRest)) return unquote(b.headRest);
   const joined = b.body.map((l) => l.trim()).filter(Boolean).join(' ').trim();
   return joined || null;
 }

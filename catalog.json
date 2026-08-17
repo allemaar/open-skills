@@ -1,9 +1,9 @@
 {
   "name": "open-skills",
-  "version": "1.6.8",
+  "version": "1.7.0",
   "homepage": "https://allemaar.com",
   "repository": "https://github.com/allemaar/open-skills",
-  "generated": "2026-08-01",
+  "generated": "2026-08-17",
   "generator": "tools/spine.mjs",
   "license": "Apache-2.0",
   "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL.",
@@ -142,7 +142,7 @@
       ]
     }
   ],
-  "count": 62,
+  "count": 68,
   "dualDoc": 40,
   "install": "Copy a skill folder into your runtime skills dir (copy-default, not symlink), then validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.",
   "skills": [
@@ -340,6 +340,32 @@
       "install": {
         "copy": "cp -r skills/agent-mailbox <skills-dir>/agent-mailbox",
         "validate": "npx @younndai/yon-parser validate <skills-dir>/agent-mailbox/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "agent-output",
+      "family": "human-output",
+      "familyLabel": "Human output",
+      "description": "Compact agent-to-agent communication contract for worker reports, handoffs, status, blockers, and review findings. Trigger phrases: \"/agent-output\", \"brief the worker\", \"make agent reports terse\". Not a transport; use /agent-mailbox for delivery.",
+      "visibility": "public",
+      "triggers": [
+        "/agent-output",
+        "brief the worker",
+        "make agent reports terse",
+        "compress the subagent report"
+      ],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/agent-output <skills-dir>/agent-output",
+        "validate": null
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -809,6 +835,7 @@
         "registrar-price-only=MUST_NOT",
         "two-resolvers=MUST",
         "404-is-not-purchase=MUST",
+        "expiry-not-renewal=MUST_NOT",
         "whois-confidence=MUST",
         "rate-limit=MUST",
         "hypothesis-not-fact=MUST_NOT",
@@ -945,6 +972,39 @@
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
+      "name": "freshness-contract",
+      "family": "planning",
+      "familyLabel": "Planning & execution",
+      "description": "Categorical decision table for reusing cached evidence — when an artifact you already read, a banked test result, a primer, a worker report, or a probe verdict is still trustworthy, and when it must be spot-checked or re-verified. Inputs are observable (artifact class, age anchors, intervening writes, named invalidators); output is reuse / spot-check / re-verify / accept-labeled-risk. Conservative by construction — unclassified artifacts and conflicting signals always take the more restrictive path; no invented TTLs. Trigger when the user runs /freshness-contract, asks \"is this still current\", \"can I trust what I read earlier\", \"do I need to re-check this\", or before reusing prior evidence for a decision after time, writes, or environment changes. Not /double-check (re-verifies one claim's content) or /verify (formal phase gate) — freshness-contract decides whether OLD evidence still counts before those tools decide what NEW evidence shows.",
+      "visibility": "public",
+      "triggers": [
+        "/freshness-contract",
+        "is this still current",
+        "can I trust what I read earlier",
+        "do I need to re-check this",
+        "is this stale"
+      ],
+      "nextSkills": [
+        {
+          "skill": "double-check",
+          "phrase": "/double-check",
+          "why": "When the table says re-verify, double-check is the targeted re-read that satisfies it"
+        }
+      ],
+      "companions": [],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/freshness-contract <skills-dir>/freshness-contract",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
       "name": "github-sync",
       "family": "git-sync",
       "familyLabel": "Git & sync",
@@ -987,6 +1047,7 @@
         "no-vague-groups=MUST_NOT",
         "no-unlisted-files=MUST_NOT",
         "path-output-literal=SHOULD",
+        "byte-sealed-evidence=MUST",
         "no-hidden-message-lines=MUST_NOT",
         "no-force-push=MUST_NOT",
         "no-attribution=MUST_NOT",
@@ -2043,7 +2104,8 @@
         "scope=ABORT",
         "no-creep=ABORT",
         "selection=ABORT",
-        "write-path=ABORT"
+        "write-path=ABORT",
+        "enrich=ABORT"
       ],
       "rules": [
         "invoke=MUST",
@@ -2051,9 +2113,11 @@
         "no-work-state=MUST_NOT",
         "single-engine=MUST",
         "apply-boundary=MUST",
-        "one-round=MUST"
+        "one-round=MUST",
+        "heal-order=MUST",
+        "mech-half=MUST"
       ],
-      "steps": 10,
+      "steps": 11,
       "install": {
         "copy": "cp -r skills/map-maintain <skills-dir>/map-maintain",
         "validate": "npx @younndai/yon-parser validate <skills-dir>/map-maintain/protocol.yon --profile exec"
@@ -3263,6 +3327,49 @@
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
+      "name": "prose-audit",
+      "family": "human-output",
+      "familyLabel": "Human output",
+      "description": "Diagnose semantic repetition, filler, fake structure, stock AI rhetoric, and avoidable reading load in existing text. Trigger phrases: \"/prose-audit\", \"find the AI filler\", \"audit this for bloat\". Not for rewriting text; use /human-rewrite after diagnosis.",
+      "visibility": "public",
+      "triggers": [
+        "/prose-audit",
+        "find the AI filler",
+        "audit this for bloat",
+        "identify repetition and token padding"
+      ],
+      "nextSkills": [
+        {
+          "skill": "human-rewrite",
+          "phrase": "/human-rewrite",
+          "why": "Remove the diagnosed load while preserving every claim and caveat."
+        }
+      ],
+      "companions": [
+        {
+          "path": "references/pattern-catalog.md",
+          "optional": false,
+          "why": "The grouped pattern taxonomy used during diagnosis."
+        },
+        {
+          "path": "references/pattern-index.md",
+          "optional": false,
+          "why": "The complete 258-item coverage index from the originating discussion."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/prose-audit <skills-dir>/prose-audit",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
       "name": "reflect",
       "family": "planning",
       "familyLabel": "Planning & execution",
@@ -3292,6 +3399,44 @@
       "steps": 0,
       "install": {
         "copy": "cp -r skills/reflect <skills-dir>/reflect",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "route-task",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
+      "description": "EXPERIMENTAL capability-routing rubric — score a task on five task-readable axes (Risk, Uncertainty, Scope, Coupling, Verification) to derive WHO should execute (capability band 0–3) and HOW HARD they should try (volume 0–24), plus an evidence-derived plan gate. Recommends, never mandates; bands name ladder positions, never models, self-resolved from the runtime's own live roster; any doubt means session model. Trigger when the user runs /route-task, asks \"which model should handle this\", \"how should I route this task\", \"score this task\", or before dispatching workers, sizing workflow model/effort options, or deciding whether a plan phase precedes build. Not /plan-create (builds the plan itself), /caller-options (venue/isolation choice — capability does not determine isolation), or /budget-check (spend governance).",
+      "visibility": "public",
+      "triggers": [
+        "/route-task",
+        "which model should handle this",
+        "how should I route this task",
+        "score this task",
+        "capability band"
+      ],
+      "nextSkills": [
+        {
+          "skill": "plan-create",
+          "phrase": "/plan-create",
+          "why": "If the plan gate fired (design_open), draft the phased plan before build"
+        },
+        {
+          "skill": "caller-options",
+          "phrase": "/caller-options",
+          "why": "Route the venue/isolation decision separately — capability band does not determine it"
+        }
+      ],
+      "companions": [],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/route-task <skills-dir>/route-task",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -3383,6 +3528,88 @@
       "steps": 0,
       "install": {
         "copy": "cp -r skills/skills-help <skills-dir>/skills-help",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "synthesize",
+      "family": "human-output",
+      "familyLabel": "Human output",
+      "description": "Synthesize any agent output into a scannable, faithful, purpose-matched delivery. Append /synthesize to a brief to govern the pending output, or invoke it on an existing wall of text to restructure it. Designed for any subject and any reader. Trigger phrases: \"synthesize this\", \"make this scannable\", \"I can't read this wall\", \"use the synthesize format\".",
+      "visibility": "public",
+      "triggers": [
+        "/synthesize",
+        "synthesize this",
+        "make this scannable",
+        "I can't read this wall",
+        "use the synthesize format"
+      ],
+      "nextSkills": [
+        {
+          "skill": "human-rewrite",
+          "phrase": "/human-rewrite",
+          "why": "An existing text needs repair under this contract — human-rewrite owns the after-writing mode when installed."
+        },
+        {
+          "skill": "human-merge",
+          "phrase": "/human-merge",
+          "why": "Several source reports must be reconciled before one synthesis can honestly stand."
+        }
+      ],
+      "companions": [
+        {
+          "path": "references/grammar.md",
+          "optional": false,
+          "why": "The required visual grammar read fresh for every synthesis."
+        },
+        {
+          "path": "references/output-map.md",
+          "optional": false,
+          "why": "The required need-to-shape routing map used to select one output recipe."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/synthesize <skills-dir>/synthesize",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "synthesize-init",
+      "family": "human-output",
+      "familyLabel": "Human output",
+      "description": "Opt-in installer that sets /synthesize as the standing output default in an agent's directive files (CLAUDE.md, AGENTS.md, or equivalent), telling each future session to load it before its first nontrivial reply — a standing instruction, not deterministic enforcement; the live skill's best-effort boundary for later turns stays as it is. Shows the exact per-file diff first, backs the file up, writes between managed markers, and reports how to undo. Trigger phrases: \"/synthesize-init\", \"make synthesize my default\", \"wire synthesize into my directives\", \"inject synthesize\", \"synthesize on every session\".",
+      "visibility": "public",
+      "triggers": [
+        "/synthesize-init",
+        "make synthesize my default",
+        "wire synthesize into my directives",
+        "inject synthesize",
+        "synthesize on every session"
+      ],
+      "nextSkills": [
+        {
+          "skill": "synthesize",
+          "phrase": "/synthesize",
+          "why": "The skill this installer wires in — use it directly for the current output without touching any directive file."
+        }
+      ],
+      "companions": [],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/synthesize-init <skills-dir>/synthesize-init",
         "validate": null
       },
       "license": "Apache-2.0",

@@ -9,7 +9,7 @@
 <p align="center">
   <strong>open-skills</strong><br />
   A personal, field-used pack of reusable skills for AI coding agents.<br />
-  Every skill is readable Markdown; 40 of 62 also carry a declarative <strong>YON (YounndAI Object Notation™)</strong> protocol you can validate.<br />
+  Every skill is readable Markdown; 40 of 68 also carry a declarative <strong>YON (YounndAI Object Notation™)</strong> protocol you can validate.<br />
   <em>Read before you trust.</em>
 </p>
 
@@ -40,6 +40,7 @@ These skills came from repeated work with Claude Code, Codex, and other runtimes
 | turn an objective into an executable plan | [`plan-create`](skills/plan-create/) | a phased plan with explicit gates and verification |
 | establish facts before deciding | [`investigate`](skills/investigate/) | read-only evidence gathering with provenance and gaps |
 | challenge work with fresh eyes | [`cold-review`](skills/cold-review/) | bounded outside review against actual artifacts |
+| make any agent output scannable and decision-ready | [`synthesize`](skills/synthesize/) | an output compiler: bottom line first, protected facts preserved, one visual grammar |
 | make a report easier to decide from | [`human-output`](skills/human-output/) | a writing contract built around verdict, consequence, evidence, and omissions |
 | coordinate agents through a shared folder | [`agent-mailbox`](skills/agent-mailbox/) | traceable, append-only agent communication with Handler-readable state |
 
@@ -48,15 +49,21 @@ Throughout these docs, a skill's written command is its **folder name**
 phrases declared in frontmatter `triggers:` (/explore, /phase-plan) are
 recognition aliases that some runtimes also honor.
 
-The generated [`SKILLS.md`](SKILLS.md) catalog groups all 62 skills into twelve families. It is built from live `SKILL.md` metadata plus the pack's [`taxonomy.yon`](skills/skills-help/taxonomy.yon), so the human catalog and machine catalogs share one source rather than parallel hand-maintained menus.
+The generated [`SKILLS.md`](SKILLS.md) catalog groups all 68 skills into twelve families. It is built from live `SKILL.md` metadata plus the pack's [`taxonomy.yon`](skills/skills-help/taxonomy.yon), so the human catalog and machine catalogs share one source rather than parallel hand-maintained menus.
 
 Inside an agent, `/skills-help` reads that same bundled taxonomy and the skills actually installed beside it. Unknown third-party skills remain visible under `Unclassified`; they are not guessed into one of this pack's families.
+
+## New in 1.7.0
+
+Four output skills now form a coherent path from diagnosis to delivery: [`agent-output`](skills/agent-output/) keeps worker reports dense and operational; [`prose-audit`](skills/prose-audit/) finds semantic repetition and stock AI filler without rewriting; [`synthesize`](skills/synthesize/) turns source material into a faithful, purpose-matched decision surface; and [`synthesize-init`](skills/synthesize-init/) can opt a directive file into that report layer through an explicit, reversible install. Two supporting skills strengthen the evidence path: [`freshness-contract`](skills/freshness-contract/) decides when cached evidence must be refreshed, while [`route-task`](skills/route-task/) records an experimental capability-based routing decision before delegation.
+
+**Why output drifts.** Style contagion is ambient formatting pulling an agent away from its declared grammar. Context or content contagion is nearby exemplars, values, names, and wrong premises leaking into later output. `/synthesize` counters both by reading its grammar fresh, inventorying protected facts atomically, rederiving values from source, preserving the source's confidence, and stopping when another sentence would change neither understanding nor action.
 
 ## What is inspectable, and what is not enforced
 
 Each skill folder carries its core instructions and required runtime companions.
 Optional sibling skills and repository-only release checks are declared separately
-and do not block the core skill when absent. Thirty-nine procedural skills also carry
+and do not block the core skill when absent. Forty procedural skills also carry
 `protocol.yon`, a declarative companion that names steps, rules (`MUST` /
 `MUST_NOT`), and gates (`ABORT` / `WARN`) as typed records.
 
@@ -197,6 +204,11 @@ The `human-` family treats presentation as part of correctness:
 - [`human-rewrite`](skills/human-rewrite/) — repair text without changing substance
 - [`human-draw`](skills/human-draw/) — use a figure only when relationships need one
 - [`human-merge`](skills/human-merge/) — combine several reports into one decision surface
+
+Adjacent to the family, self-sufficient on its own:
+
+- [`synthesize`](skills/synthesize/) — the output compiler: route by what the reader will do, bottom line first with its confidence, protected facts and reversing caveats preserved, rendered in one tested visual grammar. Works alone; with the family installed it acts as the front door. Field-tested against human scoring and adversarial fixture matrices; one logged limit — dense many-option comparisons can still drop facts (a redesign cycle exists for it).
+- [`synthesize-init`](skills/synthesize-init/) — opt-in installer that wires `/synthesize` into your standing directives (CLAUDE.md, AGENTS.md, or equivalent): shows the exact block first, backs your file up, writes between managed markers, tells you how to undo. Approval binds to the shown current file hash and exact bytes; the source is rechecked before replacement, and the final bytes are verified.
 
 The full breadth remains in [`SKILLS.md`](SKILLS.md).
 

@@ -165,14 +165,24 @@ would change the reader's action if they knew it. Those are not caveats, they
 are part of the verdict. Fold them into it now, before any reordering.
 
 **4. Cut what is genuinely additive noise.** Process narration ("I began by
-examining"), restatement of the question, meta-commentary about how hard the
-work was, and the same content presented twice at the same resolution. None of
-it is in the fidelity set. Nothing in the fidelity set is cuttable here.
+examining"), restatement of the question, meta-commentary, immediate
+paraphrases, repeated summaries, decorative transitions, synonym stacks, fake
+balance, excess examples, and structure that carries no distinction. None of
+it is in the fidelity set. Nothing in the fidelity set is cuttable here. When
+`prose-audit` is installed, use its pattern catalog as the search surface. Do
+not turn the audit taxonomy into output.
 
 **5. Restack by decision-relevance and choose the face.** Never by the
 chronology of the work — the ordering rule is in the bundled human contract, and the
 material-shape-to-face routing is the family table at
 `references/human-contract.md` §1. Apply them; do not re-derive them here.
+
+When this skill is invoked through `/synthesize`, preserve the recipe and
+minimum spine synthesize already selected — do not re-route. When repairing
+independently and `synthesize` is installed, extract ONE anchored recipe through
+the synthesize procedure (fixed-string search for its `[need:…]` token; never
+load the whole output map). Without synthesize, the table above is the whole
+rule.
 
 **6. Reconcile against the inventory, and emit the trace.** Walk the step-1
 list item by item against your output. Each is present unchanged, present at

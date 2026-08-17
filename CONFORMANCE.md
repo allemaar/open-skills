@@ -1,6 +1,6 @@
 # YON Conformance
 
-**39 / 39** skills that ship a `protocol.yon` pass YON conformance validation, checked with the public [`@younndai/yon-parser`](https://www.npmjs.com/package/@younndai/yon-parser) using the `exec` profile. 18 skills are Markdown-only.
+**40 / 40** skills that ship a `protocol.yon` pass YON conformance validation, checked with the public [`@younndai/yon-parser`](https://www.npmjs.com/package/@younndai/yon-parser) using the `exec` profile. 28 skills are Markdown-only.
 
 > Run it yourself: `npx @younndai/yon-parser validate skills/<skill>/protocol.yon --profile exec`.
 > Regenerate this table: `node tools/conformance.mjs`. Enforced in CI on every push.
@@ -8,6 +8,7 @@
 | Skill | Profile | Conformance |
 |---|---|---|
 | `agent-mailbox` | exec | ✅ valid |
+| `agent-output` | — | — (md-only) |
 | `ask-gate` | exec | ✅ valid |
 | `audit-coupled-constant` | — | — (md-only) |
 | `budget-check` | exec | ✅ valid |
@@ -19,6 +20,7 @@
 | `domain-check` | exec | ✅ valid |
 | `double-check` | exec | ✅ valid |
 | `extract-signal` | exec | ✅ valid |
+| `freshness-contract` | — | — (md-only) |
 | `github-sync` | exec | ✅ valid |
 | `handoff` | exec | ✅ valid |
 | `handoff-execute` | exec | ✅ valid |
@@ -37,6 +39,11 @@
 | `insight-skill-gap` | exec | ✅ valid |
 | `investigate` | exec | ✅ valid |
 | `json-canvas` | — | — (md-only) |
+| `map-check` | — | — (md-only) |
+| `map-init` | — | — (md-only) |
+| `map-maintain` | exec | ✅ valid |
+| `map-rules` | — | — (md-only) |
+| `map-this` | — | — (md-only) |
 | `monorepo-deps` | exec | ✅ valid |
 | `multi-agent-mode` | — | — (md-only) |
 | `new-skill-creator` | exec | ✅ valid |
@@ -58,9 +65,13 @@
 | `prime-expand` | exec | ✅ valid |
 | `prime-fetch` | exec | ✅ valid |
 | `prime-sweep` | exec | ✅ valid |
+| `prose-audit` | — | — (md-only) |
 | `reflect` | — | — (md-only) |
+| `route-task` | — | — (md-only) |
 | `self-improve` | exec | ✅ valid |
 | `skills-help` | — | — (md-only) |
+| `synthesize` | — | — (md-only) |
+| `synthesize-init` | — | — (md-only) |
 | `verify` | exec | ✅ valid |
 | `yon-read` | — | — (md-only) |
 | `yon-write` | — | — (md-only) |
