@@ -1,41 +1,69 @@
 #!/usr/bin/env node
 // map-check.mjs — the Map Your Knowledge (MYK) deterministic conformance checker.
-// Read-only forever. Unqualified CLEAN is banned. kernel-version: MYK v2.3
-// f2f96f2de49b4863bca55ee8f6004d24e00574a7db5e7e5ef0e3cb28c42510cf
+// Read-only forever. Unqualified CLEAN is banned.
+// Protocol source: MYK v2.4, skills/map-rules/SKILL.md and routed references.
 // Usage: map-check.mjs <target-path> [--root-map <scope-relative>] [--json]
 //   FULL mode: a .myk/README.md (or legacy scope.md) governs, found by walk-up.
 //   DEGRADED mode: no contract; the caller supplies the declared root map
-//   (--root-map) from kernel markers 2/3. No declaration at all = outside
+//   (--root-map) from map-rules/references/scope.md — Organized-scope evidence. No declaration at all = outside
 //   jurisdiction (resolution error, never a finding).
 // Exit: 0 clean-for-checks · 1 findings · 2 operational error · 3 resolution error
 import { readFileSync, readdirSync, lstatSync, existsSync, realpathSync } from "node:fs";
 import { join, relative, basename, resolve, sep, isAbsolute } from "node:path";
 import { createHash } from "node:crypto";
 
-const KV = "MYK v2.3 f2f96f2de49b4863bca55ee8f6004d24e00574a7db5e7e5ef0e3cb28c42510cf";
+const KV = "MYK v2.4";
+const KERNEL_SOURCE = "skills/map-rules/SKILL.md and routed references";
 const NOT_CHECKED = [
   "prose quality and curation",
   "semantic-role presence in free-form maps",
   "earned-scope judgment (absence of a declaration is never a finding)",
   "tag semantics beyond syntax",
   "positive cross-vault reference validity (the raw-wikilink PROHIBITION is checked; positive syntax is not)",
-  "frontmatter-contained links (resolution parses note bodies only; YAML-frontmatter links are invisible to R2 and map-scan)",
+  "frontmatter-contained links (resolution parses note bodies only; YAML-frontmatter links are outside link-resolution.md and map-scan)",
   "frontmatter-exemption classes beyond M3 declarations (a vault-policy question)",
-  "C6 lifecycle value legality (runs only where the scope declares the layer; v1: not checked)",
-  "C9 8-field frontmatter ceremony (vault-policy-dependent; v1: not checked)",
-  "C10 snapshot exemptions (needs Handler-declared pairs; v1: not checked)",
-  "qualified-Lyt-vault target resolution (design T3; v1: pass a path — resolver integration later)",
+  "optional lifecycle value legality where the scope declares the layer",
+  "8-field frontmatter ceremony (vault-policy-dependent)",
+  "snapshot exemptions (needs Handler-declared pairs)",
+  "qualified-Lyt-vault target resolution (pass an exact path; resolver integration is not implemented)",
   "work-state of any kind (permanently out of scope)",
 ];
-const RULES = { C1: "kernel rule 1 (eligible owner declaration)", C2: "kernel rule 2 (reciprocal spine, member-side authoritative)",
-  C3: "kernel rules 3/10/12b (address form, ambiguity, cross-vault prohibition)", C4: "kernel rules 10/14 + rule 1 legacy key (meta container)",
-  C5: "kernel rule 11 / M4 (archive signals)", C7: "kernel rename rule (case-fold collisions)", C8: "kernel 2b/2c + annex 6 (exclusions & managed artifacts)" };
+const RULES = {
+  "owner-declaration": "skills/map-rules/references/ownership.md — Eligibility and ownership",
+  "reciprocal-spine": "skills/map-rules/references/ownership.md — Eligibility and ownership",
+  "address-form": "skills/map-rules/references/naming.md — Address rules; skills/map-rules/references/lyt.md — Cross-vault references",
+  "meta-container": "skills/map-rules/references/frontmatter.md — Additional constraints; skills/map-rules/references/ownership.md — Shared meta",
+  "archive-consistency": "skills/map-rules/references/lifecycle.md — Currentness and archive evidence",
+  "case-fold-collisions": "skills/map-rules/references/naming.md — Sibling case-fold collisions",
+  "exclusion-integrity": "skills/map-rules/references/ownership.md — Managed artifacts and Excluded subtrees",
+  "link-contract-grammar": "skills/map-rules/references/link-resolution.md — Scope-contract grammar",
+  "link-occurrence-closure": "skills/map-rules/references/link-resolution.md — Terminal classes and closure",
+};
 
 const wantJson = process.argv.includes("--json");
 function emit(objOrText, code) { console.log(typeof objOrText === "string" ? objOrText : JSON.stringify(objOrText, null, 2)); process.exit(code); }
 function opError(code, cls, message, remedy) {
-  const env = { schema_version: 1, kernel_version: KV, error: { code: cls, message, remedy: remedy || "see map-check SKILL.md" } };
+  const env = { schema_version: 1, kernel_version: KV, kernel_source: KERNEL_SOURCE, error: { code: cls, message, remedy: remedy || "see map-check SKILL.md" } };
   emit(wantJson ? env : `map-check ERROR [${cls}] ${message}\n  remedy: ${env.error.remedy}`, code);
+}
+
+function caseFoldCollisions(names) {
+  const seen = new Map(), collisions = [];
+  for (const displayName of names) {
+    const key = displayName.replace(/\/$/, "").toLowerCase();
+    const prior = seen.get(key);
+    if (prior !== undefined && prior !== displayName) collisions.push({ a: prior, b: displayName });
+    seen.set(key, displayName);
+  }
+  return collisions;
+}
+
+if (process.env.MYK_CASE_FOLD_REGRESSION === "1") {
+  const collisions = caseFoldCollisions(["Notes", "notes/"]);
+  const duplicates = caseFoldCollisions(["Notes", "Notes"]);
+  if (collisions.length !== 1 || collisions[0].a !== "Notes" || collisions[0].b !== "notes/" || duplicates.length !== 0) process.exit(1);
+  console.log("MYK_CASE_FOLD_COLLISION_OK");
+  process.exit(0);
 }
 
 function main() {
@@ -44,7 +72,7 @@ function main() {
   const rmIdx = argv.indexOf("--root-map");
   let declaredRootArg = null;
   if (rmIdx >= 0) { declaredRootArg = argv[rmIdx + 1] || null; argv.splice(rmIdx, 2); }
-  // bounded walk (settled plan §D): same defaults and validation grammar as map-scan
+  // Bounded walk: same defaults and validation grammar as map-scan.
   const takeN = (flag, dflt) => { const i = argv.indexOf(flag); if (i < 0) return dflt; const v = Number(argv[i + 1]) || dflt; argv.splice(i, 2); return v; };
   const MAXF = takeN("--max-files", 20000), MAXMS = takeN("--max-ms", 60000);
   const T0 = Date.now();
@@ -83,7 +111,7 @@ function main() {
     rootMapRel = norm(rm[1].trim());
     if (!containedRel(rootMapRel)) return opError(2, "malformed-contract", `root-map locator violates the containment grammar: ${rootMapRel}`);
     if (!existsSync(join(scopeRoot, rootMapRel))) return opError(2, "malformed-contract", `declared root map does not exist: ${rootMapRel}`);
-    if (found.legacy) contractFindingsSeed.push({ check: "C8", class: "legacy-contract-name", path: ".myk/scope.md", evidence: "legacy entrypoint filename — the ruled name is .myk/README.md", rule: RULES.C8 });
+    if (found.legacy) contractFindingsSeed.push({ check: "exclusion-integrity", class: "legacy-contract-name", path: ".myk/scope.md", evidence: "legacy entrypoint filename — scope.md — Scope contract names .myk/README.md", rule: RULES["exclusion-integrity"] });
     // per-entry M3 parse (path + fields), indentation-scoped
     function entries(section) {
       const out = []; let inSec = false, cur = null;
@@ -103,11 +131,11 @@ function main() {
     for (const e of excl) {
       const missing = ["owner", "prohibition", "graph-entry", "reason", "established-by"].filter(k => !e[k]);
       if (e["graph-entry"] && !["single-entrypoint", "individually-indexed", "none"].includes(e["graph-entry"]))
-        contractFindingsSeed.push({ check: "C8", class: "malformed-exclusion", path: e.path, evidence: `graph-entry outside the closed vocabulary: ${e["graph-entry"]}`, rule: RULES.C8 });
+        contractFindingsSeed.push({ check: "exclusion-integrity", class: "malformed-exclusion", path: e.path, evidence: `graph-entry outside the closed vocabulary: ${e["graph-entry"]}`, rule: RULES["exclusion-integrity"] });
       if (e["graph-entry"] === "single-entrypoint" && !e.entrypoint)
-        contractFindingsSeed.push({ check: "C8", class: "malformed-exclusion", path: e.path, evidence: "graph-entry single-entrypoint requires an entrypoint", rule: RULES.C8 });
-      if (!containedRel(e.path)) contractFindingsSeed.push({ check: "C8", class: "malformed-exclusion", path: e.path, evidence: "path violates containment grammar", rule: RULES.C8 });
-      else if (missing.length) contractFindingsSeed.push({ check: "C8", class: "malformed-exclusion", path: e.path, evidence: `missing required fields: ${missing.join(", ")}`, rule: RULES.C8 });
+        contractFindingsSeed.push({ check: "exclusion-integrity", class: "malformed-exclusion", path: e.path, evidence: "graph-entry single-entrypoint requires an entrypoint", rule: RULES["exclusion-integrity"] });
+      if (!containedRel(e.path)) contractFindingsSeed.push({ check: "exclusion-integrity", class: "malformed-exclusion", path: e.path, evidence: "path violates containment grammar", rule: RULES["exclusion-integrity"] });
+      else if (missing.length) contractFindingsSeed.push({ check: "exclusion-integrity", class: "malformed-exclusion", path: e.path, evidence: `missing required fields: ${missing.join(", ")}`, rule: RULES["exclusion-integrity"] });
     }
     const SURFACES = ["frontmatter", "body", "locator", "whole-file"];
     const GE_POLICIES = ["single-entrypoint", "individually-indexed", "none"];
@@ -116,26 +144,26 @@ function main() {
       if (!e.map && !e["graph-entry"]) missing.push("graph-entry (map/section)");
       if (e.map && !e.section) missing.push("section (a structured graph entry requires both map and section)");
       if (e["owned-surfaces"]) { const bad = e["owned-surfaces"].replace(/[\[\]"]/g, "").split(",").map(s => s.trim()).filter(s => s && !SURFACES.includes(s));
-        if (bad.length) contractFindingsSeed.push({ check: "C8", class: "malformed-exclusion", path: e.path, evidence: `owned-surfaces outside the closed vocabulary: ${bad.join(", ")}`, rule: RULES.C8 }); }
+        if (bad.length) contractFindingsSeed.push({ check: "exclusion-integrity", class: "malformed-exclusion", path: e.path, evidence: `owned-surfaces outside the closed vocabulary: ${bad.join(", ")}`, rule: RULES["exclusion-integrity"] }); }
       // exact-file vs subtree is the RESOLVED TARGET TYPE, never the filename
       // extension; a nonexistent target gets its own finding below, not a guess here.
       const entrySt = containedRel(e.path) ? safeLstat(join(scopeRoot, e.path)) : null;
       const isSubtree = !!entrySt && entrySt.isDirectory();
       if (isSubtree && !e.entrypoint) missing.push("entrypoint (required for subtree entries)");
-      if (!containedRel(e.path)) contractFindingsSeed.push({ check: "C8", class: "malformed-exclusion", path: e.path, evidence: "managed path violates containment grammar", rule: RULES.C8 });
-      else if (missing.length) contractFindingsSeed.push({ check: "C8", class: "malformed-exclusion", path: e.path, evidence: `managed entry missing: ${missing.join(", ")}`, rule: RULES.C8 });
+      if (!containedRel(e.path)) contractFindingsSeed.push({ check: "exclusion-integrity", class: "malformed-exclusion", path: e.path, evidence: "managed path violates containment grammar", rule: RULES["exclusion-integrity"] });
+      else if (missing.length) contractFindingsSeed.push({ check: "exclusion-integrity", class: "malformed-exclusion", path: e.path, evidence: `managed entry missing: ${missing.join(", ")}`, rule: RULES["exclusion-integrity"] });
     }
     exclusions = excl.map(e => e.path).filter(containedRel);
     exclusionEntriesFull = excl;
   } else if (declaredRootArg) {
-    mode = "DEGRADED"; discovery = "declared-argument (kernel markers 2/3 — supplied by the caller, exclusions audit-scoped only)";
+    mode = "DEGRADED"; discovery = "declared argument from scope.md — Organized-scope evidence; exclusions audit-scoped only";
     scopeRoot = safeLstat(target).isDirectory() ? target : resolve(target, "..");
     rootMapRel = norm(declaredRootArg);
     if (!containedRel(rootMapRel) || !existsSync(join(scopeRoot, rootMapRel)))
       return opError(3, "bad-declared-root", `--root-map must be a contained scope-relative path to an existing file: ${declaredRootArg}`);
   } else {
     return opError(3, "no-declared-scope", "no .myk/ contract found by walk-up and no --root-map supplied — undeclared trees are outside map-check's jurisdiction",
-      "establish the scope with map-this (Handler-gated), or pass --root-map <declared-root> from kernel markers 2/3");
+      "establish the scope with map-this (Handler-gated), or pass --root-map <declared-root> from scope.md — Organized-scope evidence");
   }
 
   const isUnder = (rel, entry) => rel === entry || rel.startsWith(entry.replace(/\/$/, "") + "/");
@@ -184,7 +212,7 @@ function main() {
     const metaLines = fm.match(/^meta:.*$/mg) || [];
     const inline = fm.match(/^meta:\s*\{([\s\S]*?)\}\s*$/m);
     // one meta body for BOTH container forms: inline {…} and nested block — every
-    // C4 derivation below (map value, raw keys, dup keys, legacy parent) reads it.
+    // meta-container derivation below reads map values, raw keys, duplicate keys, and legacy parent.
     let metaBody = inline ? inline[1] : null, nested = false;
     if (metaBody === null && /^meta:\s*$/m.test(fm)) {
       const lines = fm.split("\n"); const at = lines.findIndex(l => /^meta:\s*$/.test(l));
@@ -208,20 +236,20 @@ function main() {
     });
   }
 
-  // C1 + C4
+  // owner-declaration + meta-container
   const rootRel = rootMapRel;
   for (const rel of mdFiles) {
     const m = meta.get(rel); if (!m) continue;
     const managedHere = isManaged(rel);
-    if (!m.parsed) { if (!managedHere && rel !== rootRel) F("C4", "parse-error", rel, "frontmatter block missing or unterminated"); continue; }
-    if (m.metaCount > 1) F("C4", "duplicate-key", rel, `${m.metaCount} meta lines`);
-    if (m.dupKeys?.length) F("C4", "duplicate-key", rel, `duplicate keys inside meta: ${m.dupKeys.join(", ")}`);
-    if (m.rawMapKeys > (m.mapCount || 0)) F("C4", "malformed-map-value", rel, "meta.map present but not a quoted [[wikilink]] value");
-    if (m.legacyParent) F("C4", "legacy-owner-key", rel, "exact key meta.parent present inside meta");
-    if (rel === rootRel) { if (m.map) F("C1", "root-declares-owner", rel, `root map declares meta.map → ${m.map}`); continue; }
+    if (!m.parsed) { if (!managedHere && rel !== rootRel) F("meta-container", "parse-error", rel, "frontmatter block missing or unterminated"); continue; }
+    if (m.metaCount > 1) F("meta-container", "duplicate-key", rel, `${m.metaCount} meta lines`);
+    if (m.dupKeys?.length) F("meta-container", "duplicate-key", rel, `duplicate keys inside meta: ${m.dupKeys.join(", ")}`);
+    if (m.rawMapKeys > (m.mapCount || 0)) F("meta-container", "malformed-map-value", rel, "meta.map present but not a quoted [[wikilink]] value");
+    if (m.legacyParent) F("meta-container", "legacy-owner-key", rel, "exact key meta.parent present inside meta");
+    if (rel === rootRel) { if (m.map) F("owner-declaration", "root-declares-owner", rel, `root map declares meta.map → ${m.map}`); continue; }
     if (managedHere) continue;
-    if (m.mapCount > 1) F("C1", "multiple-owners", rel, `${m.mapCount} map declarations`);
-    else if (!m.map && !m.rawMapKeys) F("C1", "missing-owner", rel, "no meta.map declaration");
+    if (m.mapCount > 1) F("owner-declaration", "multiple-owners", rel, `${m.mapCount} map declarations`);
+    else if (!m.map && !m.rawMapKeys) F("owner-declaration", "missing-owner", rel, "no meta.map declaration");
   }
 
   // link matcher: exact wikilink whose target ends at the stem or equals the path
@@ -232,7 +260,7 @@ function main() {
     const s = stem(targetRel), noExt = targetRel.replace(/\.md$/, "");
     const re = /\[\[([^\]|#]+)(?:[|#][^\]]*)?\]\]/g; let m;
     while ((m = re.exec(body))) {
-      const t = norm(m[1].trim()).replace(/[\\/]+$/, ""); // strip table-escaped-pipe residue (house dialect R3; norm turns the trailing backslash into "/")
+      const t = norm(m[1].trim()).replace(/[\\/]+$/, ""); // strip table-escaped-pipe residue; norm turns the trailing backslash into "/"
       if (t === noExt) return true;                                   // exact scope-relative path
       if (t.endsWith("/" + noExt)) return true;                       // vault-relative link whose tail IS this member's scope path
       if (!t.includes("/") && t === s && stemCounts.get(s) === 1) return true; // bare stem, unique in scope
@@ -257,54 +285,54 @@ function main() {
     return byStem.length === 1 ? byStem[0] : byStem.length > 1 ? "__AMBIGUOUS__" : null;
   };
 
-  // C2 + C3
+  // reciprocal-spine + address-form
   for (const rel of mdFiles) {
     const m = meta.get(rel);
     if (!m?.map || rel === rootRel || isManaged(rel)) continue;
-    if (basename(norm(m.map)) === "README" && !norm(m.map).includes("/")) F("C3", "bare-duplicate-basename", rel, "owner declared as bare [[README]]");
+    if (basename(norm(m.map)) === "README" && !norm(m.map).includes("/")) F("address-form", "bare-duplicate-basename", rel, "owner declared as bare [[README]]");
     const owner = resolveOwner(m.map);
-    if (owner === null) { F("C2", "dangling-owner", rel, `declared owner not found in scope: ${m.map}`); continue; }
-    if (owner === "__AMBIGUOUS__") { F("C3", "ambiguous-target", rel, `owner reference resolves to multiple files: ${m.map}`); continue; }
-    if (!linksTo(bodyOf.get(owner), rel)) F("C2", "spine-drift-mapside", owner, `member ${rel} declares this map but has no exact structural link here`);
+    if (owner === null) { F("reciprocal-spine", "dangling-owner", rel, `declared owner not found in scope: ${m.map}`); continue; }
+    if (owner === "__AMBIGUOUS__") { F("address-form", "ambiguous-target", rel, `owner reference resolves to multiple files: ${m.map}`); continue; }
+    if (!linksTo(bodyOf.get(owner), rel)) F("reciprocal-spine", "spine-drift-mapside", owner, `member ${rel} declares this map but has no exact structural link here`);
   }
   // raw cross-vault wikilinks (prohibition; positive syntax stays not-checked)
-  for (const rel of mdFiles) { const b = bodyOf.get(rel) || ""; if (/\[\[lyt:vault:[^\]]+\]\]/.test(b)) F("C3", "raw-cross-vault-wikilink", rel, "raw cross-vault wikilink present (kernel 12b prohibits; use prose vault + path)"); }
+  for (const rel of mdFiles) { const b = bodyOf.get(rel) || ""; if (/\[\[lyt:vault:[^\]]+\]\]/.test(b)) F("address-form", "raw-cross-vault-wikilink", rel, "raw cross-vault wikilink present; lyt.md — Cross-vault references requires prose vault + path"); }
 
-  // C5 — archive signals (all instances; both directions)
+  // archive-consistency — all instances, both directions
   for (const rel of mdFiles) {
     const m = meta.get(rel); const b = bodyOf.get(rel) || "";
     const hasCallout = /\[!archive\]/.test(b);
-    if (m?.archived && !hasCallout) F("C5", "missing-callout", rel, "meta.archived without a visible archive callout");
-    if (!m?.archived && hasCallout) F("C5", "signal-disagreement", rel, "archive callout present without meta.archived");
+    if (m?.archived && !hasCallout) F("archive-consistency", "missing-callout", rel, "meta.archived without a visible archive callout");
+    if (!m?.archived && hasCallout) F("archive-consistency", "signal-disagreement", rel, "archive callout present without meta.archived");
   }
-  for (const rel of mdFiles) if (rel.split("/").slice(0, -1).includes("archive") && !meta.get(rel)?.archived) F("C5", "unsignalled-archive", rel, "lives under archive/ without an archive signal (Handler review)");
+  for (const rel of mdFiles) if (rel.split("/").slice(0, -1).includes("archive") && !meta.get(rel)?.archived) F("archive-consistency", "unsignalled-archive", rel, "lives under archive/ without an archive signal (Handler review)");
 
-  // C7 — case-fold collisions incl. directory names
+  // case-fold-collisions, including directory names
   const byDir = new Map();
   const add = (rel, isDir) => { const d = rel.includes("/") ? rel.slice(0, rel.lastIndexOf("/")) : "."; if (!byDir.has(d)) byDir.set(d, []); byDir.get(d).push(basename(rel) + (isDir ? "/" : "")); };
   files.forEach(f => add(f, false)); dirs.forEach(d => add(d, true));
-  for (const [d, names] of byDir) { const seen = new Map(); for (const n of names) { const k = n.toLowerCase(); if (seen.has(k) && seen.get(k) !== n) F("C7", "case-fold-collision", d === "." ? "(scope root)" : d, `${seen.get(k)} vs ${n}`); seen.set(k, n); } }
+  for (const [d, names] of byDir) for (const { a, b } of caseFoldCollisions(names)) F("case-fold-collisions", "case-fold-collision", d === "." ? "(scope root)" : d, `${a} vs ${b}`);
 
-  // C8 — managed coverage at each entry's DECLARED map/section (design classes)
+  // exclusion-integrity — managed coverage at each entry's declared map/section
   for (const e of managedEntries) {
-    if (!containedRel(e.path) || !existsSync(join(scopeRoot, e.path))) { if (containedRel(e.path)) F("C8", "malformed-exclusion", e.path, "declared managed path does not exist"); continue; }
+    if (!containedRel(e.path) || !existsSync(join(scopeRoot, e.path))) { if (containedRel(e.path)) F("exclusion-integrity", "malformed-exclusion", e.path, "declared managed path does not exist"); continue; }
     const covMapRel = e.map ? norm(e.map) : rootRel;
     const covBody = safeRead(join(scopeRoot, covMapRel));
-    if (covBody === null) { F("C8", "mapside-coverage-missing", e.path, `declared covering map unreadable: ${covMapRel}`); continue; }
+    if (covBody === null) { F("exclusion-integrity", "mapside-coverage-missing", e.path, `declared covering map unreadable: ${covMapRel}`); continue; }
     let region = covBody;
     if (e.section) {
       const idx = covBody.indexOf(e.section);
-      if (idx < 0) { F("C8", "mapside-coverage-missing", e.path, `declared section heading not found in ${covMapRel}: "${e.section}"`); continue; }
+      if (idx < 0) { F("exclusion-integrity", "mapside-coverage-missing", e.path, `declared section heading not found in ${covMapRel}: "${e.section}"`); continue; }
       const next = covBody.indexOf("\n#", idx + e.section.length);
       region = covBody.slice(idx, next < 0 ? undefined : next);
     }
     const targetForLink = e.entrypoint && containedRel(norm(e.entrypoint)) ? norm(e.entrypoint) : e.path;
-    if (!linksTo(region, targetForLink) && !region.includes(targetForLink)) F("C8", "mapside-coverage-missing", e.path, `no link to ${targetForLink} in ${covMapRel}${e.section ? ` §"${e.section}"` : ""}`);
+    if (!linksTo(region, targetForLink) && !region.includes(targetForLink)) F("exclusion-integrity", "mapside-coverage-missing", e.path, `no link to ${targetForLink} in ${covMapRel}${e.section ? ` heading "${e.section}"` : ""}`);
   }
-  for (const e of exclusions) if (!existsSync(join(scopeRoot, e))) F("C8", "malformed-exclusion", e, "declared excluded path does not exist");
+  for (const e of exclusions) if (!existsSync(join(scopeRoot, e))) F("exclusion-integrity", "malformed-exclusion", e, "declared excluded path does not exist");
 
-  // ---------- R — resolution conformance (v2.4 link-resolution rider; INDEPENDENT implementation) ----------
-  // Grammar, inventory, and resolution re-implemented from the RIDER TEXT — no scanner
+  // ---------- link resolution conformance (independent implementation) ----------
+  // Grammar, inventory, and resolution re-implemented from link-resolution.md — no scanner
   // code, no scanner output as truth. Normalized records exist so a reviewer can compare
   // the two tools' outputs under matching fingerprints.
   const NB = String.fromCharCode(0);
@@ -314,7 +342,7 @@ function main() {
   let contractFingerprint = null, resInvFp = null, gbtFp = null, occTotal = 0;
   if (mode === "FULL") {
     let grammarErrors = 0;
-    const gerr = m => { F("R1", "malformed-contract", ".myk contract", m); grammarErrors++; };
+    const gerr = m => { F("link-contract-grammar", "malformed-contract", ".myk contract", m); grammarErrors++; };
     const idEq = (a, b) => a.split(sep).join("/").toLowerCase() === b.split(sep).join("/").toLowerCase();
     { const str = safeLstat(scopeRoot); if (!str || str.isSymbolicLink()) return opError(2, "check-incomplete", "scope root is a reparse point or unreadable — safety cannot be established");
       let rr = null; try { rr = realpathSync.native(scopeRoot); } catch { }
@@ -418,7 +446,8 @@ function main() {
       }
       if (grammarErrors) { dialectDecl = []; accepts = []; gbt = []; }
     }
-    // canonical inventory + fingerprints (ordinal path sort per rider §B)
+    gbt = [...new Set(gbt)].sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
+    // Canonical inventory and fingerprints from link-resolution.md — Resolution inventory and fingerprints.
     const invSorted = files.filter(f => !isExcluded(f)).slice().sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
     const metaOf = r => fileMeta.get(r) || (() => { const s = safeLstat(join(scopeRoot, r)); return s ? { size: s.size, mtime: Math.round(s.mtimeMs) } : { size: 0, mtime: 0 }; })();
     const fpOf = arr => createHash("sha256").update(arr.map(r => { const m2 = metaOf(r); return r + NB + m2.size + NB + m2.mtime; }).map(l => l + "\n").join("")).digest("hex");
@@ -449,6 +478,9 @@ function main() {
     const managedNoParse = rel => managedEntries.some(e => (e["owned-surfaces"] || "").match(/body|whole-file/) && (rel === e.path || rel.startsWith(e.path.replace(/\/$/, "") + "/")));
     const srcDir = r => r.includes("/") ? r.slice(0, r.lastIndexOf("/")) : "";
     const relJoin = (dir, t) => { const parts = dir ? dir.split("/") : []; for (const seg of norm(t).split("/")) { if (!seg || seg === ".") continue; if (seg === "..") { if (!parts.length) return null; parts.pop(); } else parts.push(seg); } return parts.join("/"); };
+    const acceptMatch = (src, target) =>
+      accepts.find(a => a.target === target && a.source === src)
+      || accepts.find(a => a.target === target && !a.source);
     for (const src of mdFiles) {
       if (managedNoParse(src)) continue;
       const body = bodyOf.get(src) || "";
@@ -464,7 +496,7 @@ function main() {
         const rec = { source: src, raw_target: o.escapes ? "(escapes scope root)" : o.target, fragment: o.fragment || null, form: o.form, class: null, canonical_target: null, rule_id: null, interpretations: null };
         const done = cls => { occ[cls]++; rec.class = cls; resolutionRecords.push(rec); };
         if (o.escapes) { done("missing-file"); continue; }
-        const acc = accepts.find(a => a.target === o.target && (!a.source || a.source === src));
+        const acc = acceptMatch(src, o.target);
         if (acc) { done(acc.class); continue; }
         if (/^[a-z][a-z0-9+.-]*:/i.test(o.target)) { done("missing-file"); continue; }
         const interp = [{ rule: "plain", c: rlv(o.target) }];
@@ -484,16 +516,16 @@ function main() {
       }
     }
     if (Object.values(occ).reduce((a, b) => a + b, 0) !== occTotal)
-      F("R2", "occurrence-closure-broken", "(scope)", `occurrence class sums do not equal observed occurrences (${occTotal})`);
+      F("link-occurrence-closure", "occurrence-closure-broken", "(scope)", `occurrence class sums do not equal observed occurrences (${occTotal})`);
   }
 
   // ---------- envelope ----------
-  const checksRun = ["C1 owner-declaration", "C2 reciprocal spine", "C3 address form + cross-vault prohibition", "C4 meta container", "C5 archive consistency", "C7 case-fold collisions", "C8 exclusion & managed integrity",
-    ...(mode === "FULL" ? ["R1 declaration grammar (independent parse)", "R2 occurrence closure (independent resolution)"] : [])];
+  const checksRun = ["owner-declaration", "reciprocal-spine", "address-form", "meta-container", "archive-consistency", "case-fold-collisions", "exclusion-integrity",
+    ...(mode === "FULL" ? ["link-contract-grammar", "link-occurrence-closure"] : [])];
   const verdict = findings.length === 0
-    ? `clean for checks [${checksRun.map(c => c.split(" ")[0]).join(", ")}] over walker inventory (${files.length} files, ${skipped.length} skipped boundaries), mode ${mode}; not checked: ${NOT_CHECKED.length} classes — NOT an unqualified all-clear`
+    ? `clean for checks [${checksRun.join(", ")}] over walker inventory (${files.length} files, ${skipped.length} skipped boundaries), mode ${mode}; not checked: ${NOT_CHECKED.length} classes — NOT an unqualified all-clear`
     : `${findings.length} finding(s) across ${new Set(findings.map(f => f.check)).size} check(s), mode ${mode}; not checked: ${NOT_CHECKED.length} classes`;
-  const env = { schema_version: 1, kernel_version: KV, target: norm(relative(scopeRoot, target)) || ".", scope: scopeRoot, mode, discovery,
+  const env = { schema_version: 1, kernel_version: KV, kernel_source: KERNEL_SOURCE, target: norm(relative(scopeRoot, target)) || ".", scope: scopeRoot, mode, discovery,
     inventory: { source: "walker", complete: skipped.length === 0, scanned: files.length, markdown_members: mdFiles.length, skipped_boundaries: skipped },
     checks: checksRun, not_checked: NOT_CHECKED, exclusions_honored: exclusions, managed_declared: managedPaths,
     resolution: mode === "FULL" ? { pinned_to: { resolution_inventory_fingerprint: resInvFp, contract_fingerprint: contractFingerprint, governed_boundary_target_fingerprint: gbtFp },
@@ -510,7 +542,7 @@ function main() {
 }
 
 try { main(); } catch (err) {
-  const env = { schema_version: 1, kernel_version: KV, error: { code: "unexpected-operational-error", message: String(err && err.message || err), remedy: "report with the target path; the checker wrote nothing" } };
+  const env = { schema_version: 1, kernel_version: KV, kernel_source: KERNEL_SOURCE, error: { code: "unexpected-operational-error", message: String(err && err.message || err), remedy: "report with the target path; the checker wrote nothing" } };
   console.log(wantJson ? JSON.stringify(env, null, 2) : `map-check ERROR [unexpected-operational-error] ${env.error.message}`);
   process.exit(2);
 }

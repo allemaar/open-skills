@@ -3,6 +3,10 @@ name: map-maintain
 description: Run one bounded MYK stewardship cycle: map-check, Handler-selected repairs through map-this semantics, then targeted recheck. Trigger on "maintain this map", "tend this graph", or "/map-maintain". Not for autonomous monitoring.
 visibility: public
 self-improvable: true
+requires-skills:
+  - map-rules
+  - map-check
+  - map-this
 triggers:
   - "/map-maintain"
   - "maintain this map"
@@ -24,7 +28,7 @@ map-check → findings → Handler selection → map-this apply semantics → ta
 
 This skill is invoked work, never a daemon, schedule, watcher, background loop, or authority to repair future findings. It never reads, infers, records, or reports work-state. It does not replace `map-check` or `map-this`: it composes their accepted boundaries into one controlled maintenance pass.
 
-> kernel-version: MYK v2.3 `f2f96f2de49b4863bca55ee8f6004d24e00574a7db5e7e5ef0e3cb28c42510cf`
+> **Protocol provenance.** MYK v2.4 comes from [`map-rules/SKILL.md`](../map-rules/SKILL.md) and its routed references. Checking comes from [`map-check/SKILL.md`](../map-check/SKILL.md) and its required checker companion. Mutation semantics come from [`map-this/SKILL.md`](../map-this/SKILL.md).
 
 **Base kernel:** load and obey [`map-rules`](../map-rules/SKILL.md). Use [`map-check`](../map-check/SKILL.md) as the single read-only conformance engine. Any selected mutation inherits the apply and environment rules in [`map-this`](../map-this/SKILL.md); this skill grants no broader write authority.
 
@@ -32,7 +36,7 @@ This skill is invoked work, never a daemon, schedule, watcher, background loop, 
 
 ## Preconditions and bounds
 
-- Start only from an explicit invocation naming the target scope or path — the Handler's, or an agent's when the current task plainly calls for a maintenance cycle (Handler ruling 2026-08-02: agents may trigger this skill). Never auto-trigger from elapsed time, repository activity, a schedule, or a prior finding; the Handler selection gate before any mutation is unchanged.
+- Start only from an explicit invocation naming the target scope or path, from the Handler or from an agent whose current task plainly requires a maintenance cycle. Never auto-trigger from elapsed time, repository activity, a schedule, or a prior finding; the Handler selection gate before mutation remains unchanged.
 - Resolve the exact governing scope and its contract before checking. Ambiguity, target drift, missing declaration, or a `map-check` operational/resolution error stops the run without mutation.
 - Show the bounded run before execution: target, discovery mode, inventory source, file cap, finding cap, proposal page cap, elapsed-time cap, stop condition, and the Handler selection point. Defaults: 50 files, 30 findings, 10 proposals per page, 30 minutes, one repair-and-recheck round.
 - Preserve every `map-check` qualification: checks run, not checked, exclusions honored, skipped boundaries, inventory completeness, mode, and discovery source. Never upgrade a partial or qualified result into an all-clear.
@@ -49,7 +53,7 @@ Translate confirmed findings AND the check's normalized resolution occurrence re
 
 Group coupled halves as one proposal: member ownership plus owner-map membership; archive metadata plus callout plus map relocation; rename/move plus every affected declaration and link. Preserve M3 exclusions and managed surfaces. A finding never authorizes its own repair.
 
-Link-healing findings use the classes and rules `map-this` owns (its "Link healing and enrichment proposals" section governs): `create-alias-at-target` (collision-checked), evidence-laddered `retarget` (STRONG/MEDIUM/WEAK/ABSTAIN — deduplicated by raw missing target, never one-to-one), `disambiguate-ambiguous` (ranked menu incl. the hub-note alternative), rewrite-vs-typed-forwarding by measured fan-in (rewrite = closed-world default), `tag-and-defer` disposition on `accepted-unresolved`, `no-repair-needed` as a fingerprint-bound cached verdict, and inbound-ranked creation queues. Enrichment suggestions are generated only AFTER selected healing, targeted re-resolution, and graph rebuild — a separate report, ABSTAIN without a stable resolved component; thresholds print as hypotheses. `alias-chain-collapse` may auto-execute only as the mechanical half of an already Handler-selected exact set.
+Link-healing findings use the occurrence contract in [`link-resolution.md`](../map-rules/references/link-resolution.md) and the proposal classes owned by [`map-this` — Link healing and enrichment proposals](../map-this/SKILL.md#link-healing-and-enrichment-proposals): `create-alias-at-target`, evidence-laddered `retarget`, `disambiguate-ambiguous`, rewrite-versus-typed-forwarding by measured fan-in, `tag-and-defer`, fingerprint-bound `no-repair-needed`, and inbound-ranked creation queues. Enrichment follows selected healing, targeted re-resolution, and graph rebuild as a separate report; without a stable resolved component it abstains. `alias-chain-collapse` may execute only as the mechanical half of an already Handler-selected exact set.
 
 ### 3. Handler gate
 

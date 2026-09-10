@@ -13,6 +13,15 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+### Added
+
+- **Instruction quality control is public and portable.** [`skills-audit`](skills/skills-audit/) moved from the maintainer-only library into this pack, and [`directives-audit`](skills/directives-audit/) adds the same audit-first, explicitly gated housekeeping model for agent directives.
+
+### Changed
+
+- **The MYK kernel moves to v2.4 and its tools stop trusting prose.** `map-check` and `map-scan` now name `map-rules` and its routed references as their protocol source instead of a hashed kernel string, detect file-versus-directory case-fold collisions without requiring those leaves on disk, and keep unqualified `CLEAN` banned. Lint and the spine generator gain first-class `requires-skills` support so a skill's declared dependencies are validated and projected onto every generated surface.
+- **MYK and synthesis now load only the rules needed for the task.** `map-rules` routes from a small core into operation-specific references; `synthesize` loads one need-specific shape plus its grammar for substantive output. Their opt-in installers now add minimal routes only to selected, supported directive surfaces.
+
 ## [1.7.0] — 2026-08-17
 
 ### Added

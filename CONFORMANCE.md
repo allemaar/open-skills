@@ -1,6 +1,6 @@
 # YON Conformance
 
-**40 / 40** skills that ship a `protocol.yon` pass YON conformance validation, checked with the public [`@younndai/yon-parser`](https://www.npmjs.com/package/@younndai/yon-parser) using the `exec` profile. 28 skills are Markdown-only.
+**40 / 40** skills that ship a `protocol.yon` pass YON conformance validation, checked with the public [`@younndai/yon-parser`](https://www.npmjs.com/package/@younndai/yon-parser) using the `exec` profile. 30 skills are Markdown-only.
 
 > Run it yourself: `npx @younndai/yon-parser validate skills/<skill>/protocol.yon --profile exec`.
 > Regenerate this table: `node tools/conformance.mjs`. Enforced in CI on every push.
@@ -17,6 +17,7 @@
 | `defuddle` | — | — (md-only) |
 | `design-an-interface` | — | — (md-only) |
 | `diff-recap` | exec | ✅ valid |
+| `directives-audit` | — | — (md-only) |
 | `domain-check` | exec | ✅ valid |
 | `double-check` | exec | ✅ valid |
 | `extract-signal` | exec | ✅ valid |
@@ -69,6 +70,7 @@
 | `reflect` | — | — (md-only) |
 | `route-task` | — | — (md-only) |
 | `self-improve` | exec | ✅ valid |
+| `skills-audit` | — | — (md-only) |
 | `skills-help` | — | — (md-only) |
 | `synthesize` | — | — (md-only) |
 | `synthesize-init` | — | — (md-only) |

@@ -1,6 +1,8 @@
 @DOC ver=2.0 | kind=skill | id=map-maintain | title="Map Maintain Execution Protocol" | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
-@STAMP ts:ts=2026-08-02T01:55:00Z | src=human | method=manual
+@STAMP ts:ts=2026-08-28T00:00:00Z | src="skills/map-maintain/SKILL.md" | method=manual
 @INTENT goal="Run one explicit bounded MYK stewardship cycle from qualified findings through Handler-selected repair and targeted recheck" | trigger="Handler or agent explicitly invokes /map-maintain for an exact target"
+@MAP name=RequiredSkills | pairs=["map-rules"->"MYK v2.4 scope and organization contract","map-check"->"qualified read-only checker and required script companion","map-this"->"proposal and selected-mutation semantics"]
+@MAP name=ProtocolSources | pairs=["MYK"->"skills/map-rules/SKILL.md and routed references","check"->"skills/map-check/SKILL.md and references/tools/map-check.mjs","apply"->"skills/map-this/SKILL.md"]
 
 @SEC name="Authority and bounds"
 @RULE rid=rule:invoke | lvl=MUST | when="starting map-maintain" | then="require an explicit invocation naming the exact target from the Handler or the working agent; never from a schedule, timer, or prior finding; the Handler selection gate before mutation is unchanged"
@@ -34,4 +36,4 @@
 @STEP rid=step:nsp | n:int=10 | op=offer-next-skills | args=[source=frontmatter,mode=offer-only] | in=[ref:handler-report] | out=[ref:next-skill-options]
 @STEP rid=step:sip | n:int=11 | op=run-self-improvement-protocol | args=[threshold=concrete-blocking-or-recurring,apply=never] | in=[ref:handler-report] | out=[ref:fix-proposal-or-silence]
 
-@STAMP ts:ts=2026-08-02T01:55:00Z | src=human | method=manual
+@STAMP ts:ts=2026-08-28T00:00:00Z | src="skills/map-maintain/SKILL.md" | method=manual

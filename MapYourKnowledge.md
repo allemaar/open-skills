@@ -53,13 +53,13 @@ Three more promises, each a hard rule: **first value costs zero writes** (the fi
 
 | Skill | What it does |
 |---|---|
-| [`map-rules`](skills/map-rules/) | The shared rulebook agents load before touching organized markdown — ownership, linking, naming, tagging, archiving, and the elastic verdicts. Works with nothing but markdown. |
+| [`map-rules`](skills/map-rules/) | The router agents load before organizational reasoning or work. It loads the scope contract, then only the matching ownership, metadata, naming, navigation, lifecycle, or Lyt references. |
 | [`map-this`](skills/map-this/) | The workhorse: "map this project." Pre-flight → zero-write assessment → proposal table → you pick → careful apply. Structures unstructured data, improves READMEs additively, asks once which files deserve shortcuts. |
-| [`map-init`](skills/map-init/) | The onboarding door: checks whether MYK is already in your agents' directives ("nothing to do — you already have it") or offers to add it — globally or per-project, for EVERY agent platform on your machine (one uninformed agent can undo what the others maintain). Optional, consent-first, with a paste-this-yourself fallback per platform. |
+| [`map-init`](skills/map-init/) | The optional installer: detect supported directive surfaces, let you select targets, show exact diffs, then add or remove one minimal route after scoped approval. Unsupported surfaces get a manual block and verification step. |
 | [`map-check`](skills/map-check/) | The honest inspector: read-only health checks via a small bundled script, always reporting what it checked *and what it cannot check* — forbidden from ever claiming an unqualified "all clear." |
 | [`map-maintain`](skills/map-maintain/) | The gardener: these are living graphs that need tending — one bounded cycle of health check and repair proposals per invocation. You select; it mends. |
 
-Two names that look alike, kept deliberately distinct: **`map-rules`** is the shared protocol everyone loads; a scope's **House Rules** are that one folder's local guidance ("drafts live in sketches/; never rename the exports") — written in the owner's voice, read by every agent, and never confused with the protocol itself.
+Two names that look alike, kept deliberately distinct: **`map-rules`** routes into the shared protocol; a scope's **House Rules** are that one folder's local guidance ("drafts live in sketches/; never rename the exports") — written in the owner's voice, read by every agent, and never confused with the protocol itself.
 
 ## What MYK deliberately is NOT
 

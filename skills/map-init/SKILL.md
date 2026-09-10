@@ -1,8 +1,12 @@
 ---
 name: map-init
-description: Onboard Map Your Knowledge into a user's agent directives — check whether it is already installed, or offer to add the routing rules globally or per-project, for EVERY agent platform on the machine, with explicit consent and a per-platform manual fallback. Trigger when the user says "install map your knowledge", "set up myk", "make this my agents' default", or "/map-init". Idempotent and consent-first; per-file atomic and mixed-state honest.
+description: Install or remove the MYK directive route on selected agent surfaces. Detect first, show exact diffs, require scoped approval, write atomically, and report each result.
+disable-model-invocation: true
 visibility: public
 self-improvable: true
+requires-skills:
+  - map-rules
+  - map-this
 triggers:
   - "/map-init"
   - "install map your knowledge"
@@ -11,54 +15,69 @@ triggers:
 next-skills:
   - skill: map-this
     phrase: "/map-this"
-    why: "With the directives installed, map the first project to see the system work."
+    why: "Map a bounded scope after installation."
   - skill: map-rules
     phrase: "/map-rules"
-    why: "Read the shared protocol rules the directives now route every agent into."
+    why: "Inspect the rules installed directives route into."
 ---
 
 # /map-init
 
-The onboarding door for **Map Your Knowledge (MYK)**. It does exactly one job: make MYK the default way of working for the user's agents — with their explicit consent, on every agent platform they use, with every outcome reported exactly.
+Install or remove the Map Your Knowledge (MYK) route on explicitly selected directive surfaces. Never touch vault content.
 
-> kernel-version: MYK v2.3 `f2f96f2de49b4863bca55ee8f6004d24e00574a7db5e7e5ef0e3cb28c42510cf`
+## Managed block
 
-## Why every platform matters (say this to the user)
+Use these marker strings exactly. Adapt placement only.
 
-A knowledge graph is maintained by every agent that touches the vault. If one agent carries the rules and another does not, the uninformed one can undo in a session what the others maintain carefully. MYK works as a modus operandi only when EVERY resident agent loads it — that is why this skill offers the installation for all detected platforms, not just the one running it.
-
-## Steps
-
-1. **Detect platforms.** Identify every agent platform configured on this machine by its directive surface — e.g. Claude (`~/.claude/CLAUDE.md`, project `CLAUDE.md`/`.claude/`), Codex (`~/.codex/AGENTS.md`, project `AGENTS.md`), and any other agent instruction file the user names. Read-only detection; never guess at unfamiliar formats — ask.
-2. **Check idempotently.** For each platform, check whether the FULL payload is already present — all three elements: the load-the-rules routing clause, the orient-from-the-root-map clause, AND the born-mapped clause (a mere `map-rules` name reference is NOT installed; partial presence = offer to complete the missing clauses, shown as a diff). If the full payload is present everywhere: report **"Nothing to do — you already have Map Your Knowledge installed"** per platform, and stop.
-3. **Offer, with the choice and the benefits.** For each platform missing the rules, present: (a) the choice — **global** (all projects) or **project-local** (this project's directive file only); (b) the exact text to be added (small, shown in full — see the payload below); (c) the benefits in plain words: agents orient from the scope's map before acting, new data is born mapped, existing structures are respected via the elastic verdicts, and every agent behaves consistently. **This is optional and the user decides — per platform.**
-4. **Apply exactly what was consented.** Insert the payload into the consented file(s) only. Show the diff before writing. Pre-check every consented target is writable BEFORE the first write; each file write is atomic; if a later platform's write still fails, report precisely which platforms succeeded and which did not, and offer the paste-fallback for the failed ones — the user is never left uninformed about a mixed state.
-5. **Fallback: instruct, never force.** Where automation cannot edit a platform's directives (unknown format, no file access, a hosted agent like a web UI), print the exact snippet plus per-platform instructions: where the file lives, where to paste, and how to verify (ask the agent "what do you do before organizing vault markdown?" — the answer should name the map rules).
-
-## The payload (what actually gets injected)
-
-Two sentences, adapted to the platform's convention:
-
-```text
-- [myk.routing] Before creating, editing, moving, renaming, classifying, mapping,
-  rolling up, archiving, or evaluating the organization of vault or project
-  Markdown, load the map-rules skill and obey it; use map-this for bounded
-  organize/housekeep work. When entering an organized scope, orient from its
-  declared root map before acting; new files inside an organized scope are
-  born mapped (creation and mapping are one approved set).
+```markdown
+<!-- map-init:begin -->
+Before reasoning about whether Markdown is organized, unstructured, or a candidate for organization, or assessing, planning, creating, editing, naming, moving, linking, mapping, checking, or maintaining it, load `map-rules` and every reference it selects. Use `map-this` for bounded organization and zero-write assessment. If either skill or required content is unavailable, stop. Never reconstruct it from memory.
+<!-- map-init:end -->
 ```
 
-Plus, where the platform supports skills, a pointer to install the `map-*` family if absent.
+Parse only exact marker-only lines outside fenced code. One begin followed by one end, without nesting, is managed. Zero marker lines means absent. Every other marker arrangement is `MALFORMED` and stops.
 
-## Safety invariants
+## State model
 
-- Idempotent: running twice changes nothing the second time.
-- Consent-first, per platform, with the exact diff shown; global-vs-project is the user's call.
-- Per-file atomic and mixed-state honest: every write is atomic per file, and the user always receives exact per-platform outcomes — never an unreported mixed state.
-- Never touches vault content, other directives, or any file beyond the consented directive files.
-- The user's existing directives are house style: if their file has its own structure/conventions, the insertion adapts to it (placement, list style) — the elasticity rules apply to THIS file too.
+Classify each selected existing directive file before proposing a change:
+
+- `INSTALL`: install requested; no markers, legacy clause, or untagged equivalent exists.
+- `UPDATE`: install requested; exactly one well-formed managed block is stale, or exactly one legacy `[myk.routing]` clause is present.
+- `REMOVE`: removal requested; exactly one well-formed managed block or one legacy clause is present.
+- `NO-OP`: the requested end state already matches exactly.
+- `CONFLICT`: an untagged equivalent, competing route, unsupported placement, missing directive file, or unresolved target authority prevents exclusive management.
+- `MALFORMED`: marker count, order, nesting, or fenced-code parsing is invalid.
+
+Never create a directive file. A selected surface without an existing directive file is `CONFLICT`; provide manual placement instructions only.
+
+## Install
+
+1. Detect directive surfaces supported by the active runtime, repository instructions, or explicit user input. Do not guess unfamiliar formats. Report detected surfaces; note that unselected or unconfigured surfaces remain unaffected.
+2. Offer detected targets and their supported scope, such as global or project-local. Do not force an every-platform sweep.
+3. For each selected target, verify that its agent can resolve both required skills, `map-rules` and `map-this`. If either is unavailable, stop for that target and state the prerequisite.
+4. Read each target, apply the marker parser, and report its state. An exact body is `NO-OP`. An existing `[myk.routing]` clause with zero markers is legacy-tagged and may be `UPDATE`; show its exact replacement. Never treat an untagged paraphrase as managed.
+5. Build the complete candidate from the current source bytes. Show its exact per-file diff, including every changed byte. Record SHA-256 and byte count for both source and candidate. Obtain approval bound to those bytes, hashes, byte counts, named files, operation, and scope. Approval for one pair or target does not cover another.
+6. Before any write, create a run-specific durable backup of the approved source with exclusive creation, flush it, re-read it, and verify its source hash and byte count. If a backup cannot be created and verified, stop. Retain it through verification and any rollback decision.
+7. Inspect the target leaf and full parent chain without following links. Do the same for the exact backup and staging leaves and their parent chains before creating or replacing them. Reject symlinks, junctions, mount points, name-surrogate reparse points, unknown reparse points, or path drift.
+8. Create the candidate with exclusive creation at a unique same-directory staging path. Flush, re-read, and validate it. Immediately before atomic replacement, repeat the no-follow checks and byte-compare the live source and staged candidate with the approved pair. Any drift requires a new diff and approval. If same-directory atomic replacement is unavailable, stop.
+9. Re-read every target and classify the verified outcome as `installed`, `updated`, `removed`, `unchanged`, or `failed`. Report mixed state explicitly. For inaccessible surfaces, provide the exact block, placement instructions, and this check: ask the target agent what it loads before any governed Markdown organization operation; its answer must name `map-rules` and `map-this`.
+
+## Remove or undo
+
+- Show the exact removal diff and obtain file-specific approval.
+- Require exactly one managed block, then remove it. Duplicates stop. A legacy `[myk.routing]` clause requires its own shown removal diff. Never remove an untagged equivalent.
+- Apply and verify with the install write discipline.
+- After a partial failure, offer rollback from the verified backup. Roll back only when the live target still matches the exact failed-run result and the backup still matches the approved source; otherwise stop on drift. Never roll back a successful target silently.
+
+## Guards
+
+- An exact block makes the operation idempotent.
+- Never touch an unselected directive or vault file.
+- Existing directives remain authoritative house style outside the block.
 
 > **Human output.** This skill's handler-facing output obeys the human-output
 > contract (`human-output/SKILL.md`).
+
+> **Next skills.** On completion, run the Next Skills protocol (`next-skills/SKILL.md`): surface the `next-skills` recommendations from front-matter for the caller to pick. Offer only — never auto-invoke.
 
 > **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.

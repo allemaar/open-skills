@@ -9,7 +9,7 @@
 <p align="center">
   <strong>open-skills</strong><br />
   A personal, field-used pack of reusable skills for AI coding agents.<br />
-  Every skill is readable Markdown; 40 of 68 also carry a declarative <strong>YON (YounndAI Object Notation™)</strong> protocol you can validate.<br />
+  Every skill is readable Markdown; 40 of 70 also carry a declarative <strong>YON (YounndAI Object Notation™)</strong> protocol you can validate.<br />
   <em>Read before you trust.</em>
 </p>
 
@@ -41,6 +41,8 @@ These skills came from repeated work with Claude Code, Codex, and other runtimes
 | establish facts before deciding | [`investigate`](skills/investigate/) | read-only evidence gathering with provenance and gaps |
 | challenge work with fresh eyes | [`cold-review`](skills/cold-review/) | bounded outside review against actual artifacts |
 | make any agent output scannable and decision-ready | [`synthesize`](skills/synthesize/) | an output compiler: bottom line first, protected facts preserved, one visual grammar |
+| audit or housekeep an Agent Skill | [`skills-audit`](skills/skills-audit/) | instruction-quality findings first; edits only when explicitly requested |
+| audit or housekeep agent directives | [`directives-audit`](skills/directives-audit/) | a lean-core, routed-detail audit with the same explicit edit gate |
 | make a report easier to decide from | [`human-output`](skills/human-output/) | a writing contract built around verdict, consequence, evidence, and omissions |
 | coordinate agents through a shared folder | [`agent-mailbox`](skills/agent-mailbox/) | traceable, append-only agent communication with Handler-readable state |
 
@@ -49,7 +51,7 @@ Throughout these docs, a skill's written command is its **folder name**
 phrases declared in frontmatter `triggers:` (/explore, /phase-plan) are
 recognition aliases that some runtimes also honor.
 
-The generated [`SKILLS.md`](SKILLS.md) catalog groups all 68 skills into twelve families. It is built from live `SKILL.md` metadata plus the pack's [`taxonomy.yon`](skills/skills-help/taxonomy.yon), so the human catalog and machine catalogs share one source rather than parallel hand-maintained menus.
+The generated [`SKILLS.md`](SKILLS.md) catalog groups all 70 skills into twelve families. It is built from live `SKILL.md` metadata plus the pack's [`taxonomy.yon`](skills/skills-help/taxonomy.yon), so the human catalog and machine catalogs share one source rather than parallel hand-maintained menus.
 
 Inside an agent, `/skills-help` reads that same bundled taxonomy and the skills actually installed beside it. Unknown third-party skills remain visible under `Unclassified`; they are not guessed into one of this pack's families.
 
@@ -57,7 +59,7 @@ Inside an agent, `/skills-help` reads that same bundled taxonomy and the skills 
 
 Four output skills now form a coherent path from diagnosis to delivery: [`agent-output`](skills/agent-output/) keeps worker reports dense and operational; [`prose-audit`](skills/prose-audit/) finds semantic repetition and stock AI filler without rewriting; [`synthesize`](skills/synthesize/) turns source material into a faithful, purpose-matched decision surface; and [`synthesize-init`](skills/synthesize-init/) can opt a directive file into that report layer through an explicit, reversible install. Two supporting skills strengthen the evidence path: [`freshness-contract`](skills/freshness-contract/) decides when cached evidence must be refreshed, while [`route-task`](skills/route-task/) records an experimental capability-based routing decision before delegation.
 
-**Why output drifts.** Style contagion is ambient formatting pulling an agent away from its declared grammar. Context or content contagion is nearby exemplars, values, names, and wrong premises leaking into later output. `/synthesize` counters both by reading its grammar fresh, inventorying protected facts atomically, rederiving values from source, preserving the source's confidence, and stopping when another sentence would change neither understanding nor action.
+**Why output drifts.** Style contagion is ambient formatting pulling an agent away from its declared grammar. Context or content contagion is nearby exemplars, values, names, and wrong premises leaking into later output. `/synthesize` keeps its core small, then loads the grammar and one need-specific reference only for substantive output. It inventories protected facts, preserves source confidence, and stops when another sentence changes neither understanding nor action.
 
 ## What is inspectable, and what is not enforced
 
@@ -177,9 +179,9 @@ The complete operating and security contract remains in the skill. Start with [`
 
 The `map-` family is a system: **[Map Your Knowledge (MYK)](MapYourKnowledge.md)** — a protocol that makes any folder of markdown navigable cold, for people and agents alike. Every file declares its home map, every map lists its members, and new data is born mapped. Its first law is elasticity: existing conventions outrank MYK's defaults, verdicts are always human-confirmed, and a "no" is remembered forever.
 
-- [`map-rules`](skills/map-rules/) — the shared rulebook every agent loads before touching organized markdown
+- [`map-rules`](skills/map-rules/) — a small router that loads the scope contract plus only the rules matching the organization task
 - [`map-this`](skills/map-this/) — "map this project": zero-write assessment → proposal table → you pick → careful apply
-- [`map-init`](skills/map-init/) — consent-first onboarding of the routing rules into your agents' directives, every platform
+- [`map-init`](skills/map-init/) — installs one minimal route on selected, supported directive surfaces after exact-diff approval
 - [`map-check`](skills/map-check/) — the honest inspector: read-only health checks via a bundled deterministic script, never an unqualified "all clear"
 - [`map-maintain`](skills/map-maintain/) — the gardener: one bounded check → you pick the repairs → it mends and rechecks
 
@@ -207,8 +209,8 @@ The `human-` family treats presentation as part of correctness:
 
 Adjacent to the family, self-sufficient on its own:
 
-- [`synthesize`](skills/synthesize/) — the output compiler: route by what the reader will do, bottom line first with its confidence, protected facts and reversing caveats preserved, rendered in one tested visual grammar. Works alone; with the family installed it acts as the front door. Field-tested against human scoring and adversarial fixture matrices; one logged limit — dense many-option comparisons can still drop facts (a redesign cycle exists for it).
-- [`synthesize-init`](skills/synthesize-init/) — opt-in installer that wires `/synthesize` into your standing directives (CLAUDE.md, AGENTS.md, or equivalent): shows the exact block first, backs your file up, writes between managed markers, tells you how to undo. Approval binds to the shown current file hash and exact bytes; the source is rechecked before replacement, and the final bytes are verified.
+- [`synthesize`](skills/synthesize/) — a small output router: simple answers stay plain; substantive output loads the shared grammar plus one need-specific reference, preserving protected facts and reversing caveats without unrelated examples.
+- [`synthesize-init`](skills/synthesize-init/) — installs one minimal standing route in selected existing directive files. It verifies runtime resolution, shows exact diffs, binds approval to current bytes, backs up, replaces atomically, verifies, and supports removal.
 
 The full breadth remains in [`SKILLS.md`](SKILLS.md).
 

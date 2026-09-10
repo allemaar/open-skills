@@ -11,6 +11,9 @@ companions:
   - path: references/tools/human-output-check.mjs
     optional: false
     why: "The required mechanical output checker; bundled inside this skill."
+  - path: ../synthesize
+    optional: true
+    why: "Optional sibling that selects a direct reader-need recipe before this skill applies the prose contract."
 triggers:
   - "/human-output"
   - "remember I am a person not a machine"
@@ -193,11 +196,11 @@ use a figure only when the figure lowers reading load. Never give a short answer
 the ceremony of a report.
 
 This contained rule is complete on its own — a standalone install needs nothing
-else. When the `synthesize` skill is installed, route the output through its
-FULL procedure: the reader's need selects the recipe and minimum spine from its
-output map, and its grammar renders the result — grammar alone is the render
-layer, never the route. When it is not installed, this paragraph is the whole
-contract.
+else. When the `synthesize` skill is installed, use its direct route table, load
+the selected need file, and apply its grammar. Hybrid follows its own
+conditional represented-need loading. Grammar renders the selected shape; it
+never replaces routing. When synthesize is not installed, this paragraph is the
+whole contract.
 
 **Conditionals.** When the honest answer depends, say so: *"Ship it if the
 migration window holds; hold otherwise — and right now it holds."* Inventing

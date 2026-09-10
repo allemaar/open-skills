@@ -3,6 +3,8 @@ name: map-this
 description: Plan and organize a bounded folder, project, or vault using map-rules; audit first, show simple proposals, and apply only selected changes. Trigger when the Handler says "organize this scope", "map this project", or "housekeep this vault".
 visibility: public
 self-improvable: true
+requires-skills:
+  - map-rules
 triggers:
   - "/map-this"
   - "organize this scope"
@@ -19,11 +21,13 @@ next-skills:
 
 # /map-this
 
-Plan, audit, and organize one bounded folder, project, or vault into a navigable map graph — including structuring UNSTRUCTURED data: a pile of files with no organization is the native case (the SETTLE verdict), and ingestion flows end with data arriving mapped, never loose. Fires on the Handler's organize/housekeep phrases or explicit `/map-this` (Handler decision 2026-07-30: model invocation enabled — the safety boundary is inside the workflow, not at the door). The audit is read-only; no mutation occurs before a displayed plan and Handler selection. **The first value is always a ZERO-WRITE assessment** — the pre-flight verdict (ADOPT/OFFER/SETTLE/ASK per the map-rules elasticity section, Handler-confirmed) plus the findings and proposal table; changes happen only as selected rows.
+Plan, audit, and organize one bounded folder, project, or vault into a navigable map graph, including unstructured data. A pile of files with no organization is the native `SETTLE` case, and ingestion ends with data mapped rather than loose. The audit is read-only; no mutation occurs before a displayed plan and Handler selection. **The first value is always a zero-write assessment**: the verdict from [`scope.md` — Elasticity pre-flight](../map-rules/references/scope.md#elasticity-pre-flight), findings, and proposal table. Changes happen only as selected rows.
 
 Additional proposal classes this workflow owns: **README care** (OWNERSHIP FIRST: a generated, legal, templated, or M3-managed README is not casually editable — check before proposing anything; then assess the README; propose ADDITIVE improvements only — links-to-maps, hot points — preserving the author's prose, ordering, and voice; existing house convention statements are pre-flight evidence, and once Handler-confirmed they persist as rulings that suppress re-litigation permanently); **House Rules authoring** (create or revise the root map's House rules section; graduate it to `<scope>-rules.md` when earned); **shortcuts, asked once** (nominate hot-point candidates by labeled judgment, ask the Handler ONCE which nodes need fast access, persist selected answers in the scope contract); **born-mapped creation** (any new-file or ingestion flow proposes file + owning map + member section as ONE approved set).
 
 **Base kernel:** load and obey [`map-rules`](../map-rules/SKILL.md) — every rule there governs every phase here. This file adds the workflow, environment branches, authority matrix, and pilot rubric.
+
+**Optional companion:** use [`map-check`](../map-check/SKILL.md) when its bundled checker is available. Its absence does not weaken the required `map-rules` dependency and never turns manual review into a deterministic verdict.
 
 ## Environment branches
 
@@ -58,7 +62,7 @@ Accept the Handler's scope, detail, exclusions, priorities, exact root or owner 
 
 **Run the bundled scanner FIRST — the moment the path is known:** `node references/tools/map-scan.mjs <path> [--json]` (read-only, deterministic, bounded; PARTIAL is labeled, never silent). Its inventory fingerprint and totals are the run's denominators: every later verdict, proposal page, and completion report carries them, and judgment is spent on what things MEAN, never on discovering what is there. The scan emits observations and CANDIDATES only (heavy nodes, machine trees, inbox/thread runs, filename families, orphan case files, upward-chain defects) — each with its deterministic rule; no scan signal classifies, excludes, or authorizes anything by itself. A scope whose scan is PARTIAL caps every downstream claim to the scanned subset by name.
 
-**Link resolution rides the scan (the v2.4 link-resolution rider):** every observed link occurrence lands in exactly ONE of eleven terminal classes (`resolved-file/-heading/-block/-nonmarkdown`, `missing-file/-heading/-block`, `ambiguous`, `accepted-external`, `accepted-unresolved`, `residual-at-cap`) whose sum equals the observed occurrences, plus two separate LEDGERS — `creation_queue` (missing names ranked by inbound count) and `inventory_boundaries` (excluded/unreadable/boundary paths). Resolution obeys the scope contract's declared link dialects (grammar-strict, fail-closed — any contract error voids all declarations and caps the scan status) and is pinned to the inventory, contract, and governed-boundary-target fingerprints. `map-check` recomputes the same contract with independent code; the two tools' normalized records disagreeing is evidence to surface, never to suppress. **The completion bar is record-level convergence:** the two tools agree only when their normalized occurrence records converge under identical inventory/contract/governed-target fingerprints — paired exit 0, equal record counts, or matching class tallies are explicitly insufficient evidence of agreement. **Detect the contract entrypoint:** when `.myk/README.md` exists at the scope root, read its `m1` (scope identity, the declared root map — the scope's navigation entrypoint) and `m3` (exclusions and managed artifacts) as the governing declarations; when absent, discovery is DEGRADED (kernel markers 1–3 plus audit-scoped Handler-established exclusions) and the plan states so. Ask only questions that change placement, naming, lifecycle, authority, or audit completeness. **Establishing a new organized scope = the declared root map + its initial curated membership + any selected M3 entries as ONE approved set.**
+**Link resolution rides the scan:** load and apply [`link-resolution.md`](../map-rules/references/link-resolution.md). `map-scan` emits its closed occurrence records and comparison fingerprints; the optional `map-check` companion recomputes them independently. Accept convergence only at the record level under identical resolution-inventory, contract, and governed-boundary-target fingerprints. Surface disagreement. **Detect the contract entrypoint** through [`scope.md` — Organized-scope evidence](../map-rules/references/scope.md#organized-scope-evidence): when `.myk/README.md` exists, its `m1` and `m3` declarations govern; otherwise discovery is `DEGRADED` and the plan names its exact evidence. Ask only questions that change placement, naming, lifecycle, authority, or audit completeness. Establish a scope as one selected set: declared root map, initial curated membership, and selected `m3` entries.
 
 ### Phase 2 — preflight plan
 
@@ -68,7 +72,7 @@ Before mutation, show:
 - organized-scope marker;
 - discovery source: documented Lyt inventory (verify `lyt vault backfill --dry-run --json` enumerates ALL scanned paths — aggregate counts are insufficient; if it lists only deficient files, the run is SAMPLED), exact Handler manifest, or sampled search — sampled runs label every metric sampled and claim no denominators (note: `vault info` fileCount includes non-figments and is NOT the denominator);
 - the scanner inventory fingerprint, canonical leaf-path total, and the four terminal coverage buckets the completion report will carry: ASSESSED, EXCLUDED, RESIDUAL, and UNREADABLE;
-- a warning when the scope contains `SKILL.md` or other managed artifacts (backfill hazard, kernel rule 2b);
+- a warning when the scope contains `SKILL.md` or another artifact governed by [`ownership.md` — Managed artifacts](../map-rules/references/ownership.md#managed-artifacts);
 - read-only audit operations;
 - proposed mutation classes;
 - file cap, finding cap, semantic-proposal cap, output cap, elapsed-time cap, and stop condition (defaults unless the Handler sets otherwise: 50 files, 30 findings, 10 semantic proposals per page, 30 minutes);
@@ -78,9 +82,9 @@ If the source is search-derived, label the audit sampled and prohibit exhaustive
 
 ### Phase 3 — read-only audit
 
-**Single-engine boundary:** when the `map-check` validator exists, Phase-3 conformance auditing DELEGATES to it and this workflow consumes its qualified findings. Until then, the interim audit below aligns to the accepted map-check catalog (C1–C10 semantics) and its report states BOTH the checks actually run AND the not-checked list — never an implied full sweep.
+**Single-engine boundary:** when the `map-check` checker companion exists and Node can run it, Phase-3 conformance auditing delegates to it and this workflow consumes its qualified findings. Otherwise perform a separate manual review, label it `MANUAL REVIEW — not a map-check verdict`, and report both the checks actually reviewed and the not-reviewed list. Never imply deterministic or full coverage.
 
-Audit only the inventory actually established: frontmatter, filename class, title independence, map ownership, reciprocal membership, placement ambiguity, map usefulness, tag drift, shortcuts, rollup need/staleness, archive signal/leakage, and broken or ambiguous links. Also: managed-artifact detection (backfill dry-run nominates; Handler confirms — kernel rule 2b); exclusion coverage (declared vs undeclared machine-owned subtrees, rule 2c); `meta`-writer collision risk (rule on shared `meta`); successor-side `meta.supersedes`/`meta.merges` scan (findings only, rule 11); snapshot-pair candidates (rule 11b); case-fold sibling-folder collisions (Windows-invisible, breaks case-sensitive peers over lyt-git — blocks related rename/move proposals pending Handler resolution, never authorizes repair); root-map-missing-frontmatter ↔ downstream-forced-pipes as one paired finding.
+Audit only the inventory actually established: frontmatter, filename class, title independence, map ownership, reciprocal membership, placement ambiguity, map usefulness, tag drift, shortcuts, rollup need/staleness, archive signal/leakage, and broken or ambiguous links. Also review [`ownership.md` — Managed artifacts](../map-rules/references/ownership.md#managed-artifacts), [`ownership.md` — Excluded subtrees](../map-rules/references/ownership.md#excluded-subtrees), [`ownership.md` — Shared meta](../map-rules/references/ownership.md#shared-meta), successor and snapshot evidence under [`lifecycle.md` — Currentness and archive evidence](../map-rules/references/lifecycle.md#currentness-and-archive-evidence), and [`naming.md` — Sibling case-fold collisions](../map-rules/references/naming.md#sibling-case-fold-collisions). Case-fold collisions block the related rename or move proposal and authorize no repair. Treat a root map missing useful title frontmatter plus forced downstream pipes as one coupled finding.
 
 For exhaustive metrics, require a documented Lyt inventory or an exact Handler-supplied manifest. Filesystem enumeration is not a fallback inside a registered Lyt vault.
 
@@ -131,7 +135,7 @@ HIGH — Archive the superseded launch plan
   Impact: exact files, maps, declarations, and links
 ```
 
-A dedicated proposal class — **declare exclusion** (usually LOW): one `.myk/README.md` M3 entry covering N machine-owned files is the anti-churn move; the honest answer for an append-only comms/queue tree is one declaration, never N archive writes. Where the scope has no `.myk/` yet, the contract entrypoint is created as PART of the one approved establishment set (contract + declared root map + initial curated membership + selected M3 entries — never piecemeal), or the exclusion is recorded audit-scoped per kernel rule 2c.
+A dedicated proposal class — **declare exclusion** (usually LOW): one `.myk/README.md` `m3` entry may cover an exact machine-owned subtree under [`ownership.md` — Excluded subtrees](../map-rules/references/ownership.md#excluded-subtrees). For an append-only communications or queue tree, propose one declaration rather than per-file archive writes. Where no scope contract exists, create it only within the approved establishment set, or keep the exclusion audit-scoped.
 
 #### Link healing and enrichment proposals
 
@@ -191,5 +195,7 @@ Pilot one exact project or folder manifest. Select the five orientation sample f
 
 > **Human output.** This skill's handler-facing output obeys the human-output
 > contract (`human-output/SKILL.md`).
+
+> **Next skills.** On completion, run the Next Skills protocol (`next-skills/SKILL.md`): surface the `next-skills` recommendations from front-matter for the caller to pick. Offer only — never auto-invoke.
 
 > **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.

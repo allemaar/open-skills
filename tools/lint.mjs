@@ -38,6 +38,7 @@
 //  10. next-phrase-drift  [ERROR] a next-skills phrase is not /<target-folder>
 //  11. command-orphan     [ERROR] a backticked /command in public Markdown names no shipped skill folder
 //  12. companion-integrity[ERROR] companion metadata is shaped, resolves in-tree, and keeps required assets inside the skill
+//  13. requires-integrity [ERROR] required skills are shaped, shipped, unique, non-self, and acyclic
 //
 // The front-matter contract (check 7) is the auditable root node every generated
 // discovery surface (catalog.yon/json, llms.txt, skills.graph.yon) derives from.
@@ -82,6 +83,7 @@ function resolveRef(tok, dir) {
 }
 
 const findings = []; // { sev, file, line, msg }
+const requiresBySkill = new Map();
 function err(file, line, msg) { findings.push({ sev: 'ERROR', file, line, msg }); }
 function warn(file, line, msg) { findings.push({ sev: 'WARN', file, line, msg }); }
 
@@ -164,6 +166,43 @@ function hasKey(fm, key) {
   return new RegExp(`^${key.replace(/[-]/g, '\\$&')}:`, 'm').test(fm);
 }
 
+// Parse the canonical block-list form used by requires-skills. Dependencies are
+// portable skill-folder names, so fail closed on inline, empty, or nested shapes.
+function requiresSkills(fm, file, name) {
+  const lines = fm.split(/\r?\n/);
+  const i = lines.findIndex((line) => /^requires-skills:/.test(line));
+  if (i < 0) return [];
+  if (lines[i].slice(lines[i].indexOf(':') + 1).trim()) {
+    err(file, 0, `requires-skills must use a block list`);
+    return [];
+  }
+
+  const items = [];
+  let sawBody = false;
+  for (let j = i + 1; j < lines.length; j++) {
+    const line = lines[j];
+    if (/^\S/.test(line)) break;
+    if (!line.trim()) continue;
+    sawBody = true;
+    const m = line.match(/^\s*-\s+(["']?)([a-z0-9][a-z0-9-]*)\1\s*$/);
+    if (!m) {
+      err(file, 0, `requires-skills entry must be one skill folder name`);
+      continue;
+    }
+    items.push(m[2]);
+  }
+  if (!sawBody || items.length === 0) err(file, 0, `requires-skills must not be empty`);
+
+  const seen = new Set();
+  for (const target of items) {
+    if (seen.has(target)) err(file, 0, `requires-skills duplicate → ${target}`);
+    seen.add(target);
+    if (target === name) err(file, 0, `requires-skills self-dependency → ${target}`);
+    if (!nameSet.has(target)) err(file, 0, `requires-skills orphan → ${target}`);
+  }
+  return items;
+}
+
 // The front-matter contract — the root node of the discovery DAG.
 const CONTRACT_REQUIRED = ['name', 'description', 'visibility', 'triggers', 'next-skills']; // fail-closed (present; list fields may be empty)
 const CONTRACT_REQUIRED_SCALARS = ['name', 'description', 'visibility'];
@@ -197,6 +236,9 @@ function lintSkill(name) {
   for (const k of CONTRACT_EXPECTED) {
     if (!hasKey(fm, k)) warn(skillMd, 0, `front-matter contract: '${k}' absent (present-or-empty expected)`);
   }
+
+  // Check 13: dependencies are a first-class, dependency-first install graph.
+  requiresBySkill.set(name, requiresSkills(fm, skillMd, name));
 
   // Check 3: next-skills skill: targets resolve
   const nsBlock = fm.match(/next-skills:\s*\n([\s\S]*?)(?:\n\w|$)/);
@@ -253,6 +295,32 @@ function lintSkill(name) {
 
   // Check 1+2 on the SKILL.md body
   lintMarkdown(skillMd);
+}
+
+function lintRequiresCycles() {
+  const active = new Set();
+  const done = new Set();
+  const stack = [];
+
+  function visit(name) {
+    if (done.has(name)) return;
+    if (active.has(name)) {
+      const start = stack.indexOf(name);
+      const cycle = [...stack.slice(start), name];
+      err(join(SKILLS, name, 'SKILL.md'), 0, `requires-skills cycle → ${cycle.join(' -> ')}`);
+      return;
+    }
+    active.add(name);
+    stack.push(name);
+    for (const target of requiresBySkill.get(name) || []) {
+      if (nameSet.has(target)) visit(target);
+    }
+    stack.pop();
+    active.delete(name);
+    done.add(name);
+  }
+
+  for (const name of names) visit(name);
 }
 
 // --- driver -----------------------------------------------------------------
@@ -315,6 +383,7 @@ function lintTaxonomy() {
 
 lintTaxonomy();
 for (const n of names) lintSkill(n);
+lintRequiresCycles();
 
 // Also lint the root public docs for broken links/refs.
 for (const doc of ['README.md', 'SKILLS.md', 'THREAT-MODEL.md', 'SECURITY.md', 'CONTRIBUTING.md', 'CONFORMANCE.md', 'TRADEMARK.md']) {

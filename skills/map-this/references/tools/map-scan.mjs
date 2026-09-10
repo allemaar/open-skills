@@ -2,7 +2,7 @@
 // map-scan.mjs — the Map Your Knowledge (MYK) deterministic pre-assessment scanner.
 // Read-only forever. Observations and CANDIDATES only — no signal here classifies,
 // excludes, or mutates anything; every candidate carries its deterministic rule.
-// kernel-version pin: MYK v2.3 f2f96f2de49b4863bca55ee8f6004d24e00574a7db5e7e5ef0e3cb28c42510cf
+// Protocol source: MYK v2.4, skills/map-rules/SKILL.md and routed references.
 // Usage: map-scan.mjs <target-path> [--json] [--max-files N] [--max-ms N]
 // Scan status drives everything: COMPLETE (exit 0) | PARTIAL caps hit | BOUNDED
 // (boundaries/unreadables present) — PARTIAL/BOUNDED exit 1, never claim complete.
@@ -10,7 +10,8 @@ import { readFileSync, readdirSync, lstatSync, existsSync, realpathSync } from "
 import { join, relative, basename, resolve, sep } from "node:path";
 import { createHash } from "node:crypto";
 
-const KV = "MYK v2.3 f2f96f2de49b4863bca55ee8f6004d24e00574a7db5e7e5ef0e3cb28c42510cf";
+const KV = "MYK v2.4";
+const KERNEL_SOURCE = "skills/map-rules/SKILL.md and routed references";
 const wantJson = process.argv.includes("--json");
 // Exclusions are CALLER POLICY, never scanner policy: repeatable --exclude <name>
 // overrides the caller-default set. Every excluded tree is exactly enumerated below —
@@ -26,8 +27,27 @@ const MAX_MS = argN("--max-ms", 60000);
 const T0 = Date.now();
 const overTime = () => Date.now() - T0 > MAX_MS;
 
+function caseFoldCollisions(names) {
+  const seen = new Map(), collisions = [];
+  for (const displayName of names) {
+    const key = displayName.replace(/\/$/, "").toLowerCase();
+    const prior = seen.get(key);
+    if (prior !== undefined && prior !== displayName) collisions.push({ a: prior, b: displayName });
+    seen.set(key, displayName);
+  }
+  return collisions;
+}
+
+if (process.env.MYK_CASE_FOLD_REGRESSION === "1") {
+  const collisions = caseFoldCollisions(["Notes", "notes/"]);
+  const duplicates = caseFoldCollisions(["Notes", "Notes"]);
+  if (collisions.length !== 1 || collisions[0].a !== "Notes" || collisions[0].b !== "notes/" || duplicates.length !== 0) process.exit(1);
+  console.log("MYK_CASE_FOLD_COLLISION_OK");
+  process.exit(0);
+}
+
 function fail(msg) {
-  const env = { schema_version: 1, kernel_version: KV, error: { code: "scan-error", message: msg } };
+  const env = { schema_version: 1, kernel_version: KV, kernel_source: KERNEL_SOURCE, error: { code: "scan-error", message: msg } };
   console.log(wantJson ? JSON.stringify(env, null, 2) : `map-scan ERROR ${msg}`);
   process.exit(2);
 }
@@ -38,7 +58,7 @@ try {
   const root = resolve(argv[0]);
   if (!existsSync(root)) fail(`target does not exist: ${root}`);
   const norm = p => p.split(sep).join("/");
-  // native-realpath identity (final repair 4): root divergence = reparse in the chain
+  // Path safety source: map-rules/references/link-resolution.md — Failure behavior.
   const pathEq = (a, b) => a.split(sep).join("/").toLowerCase() === b.split(sep).join("/").toLowerCase();
   let rootReal; try { rootReal = realpathSync.native(root); } catch { rootReal = null; }
   if (rootReal === null || !pathEq(rootReal, root)) fail("check-incomplete: scan root diverges from its native realpath — reparse point in the chain; safety cannot be established");
@@ -103,7 +123,7 @@ try {
     if (f.ext === ".md") s.md++; else s.nonmd++; s.bytes += f.size; subtree.set(key, s); };
   for (const f of files) bump(f.rel.includes("/") ? f.rel.split("/")[0] + "/" : "(root)", f);
 
-  // ---------- 2b. scope contract (GRAMMAR-STRICT per the v2.4 link-resolution rider §A) ----------
+  // ---------- 2b. scope contract (link-resolution.md — Scope-contract grammar) ----------
   // Machine declarations live ONLY in frontmatter under myk.m1.link-dialects /
   // myk.m1.accepted-links at EXACT indentation, double-quoted JSON strings, spaces only.
   // Everything else fails closed into dialect_errors — never a permissive guess.
@@ -190,8 +210,7 @@ try {
                 if (!/^[a-z][a-z0-9-]{0,63}$/.test(d.id) || dialectRules.some(r => r.id === d.id)) { dialectErrors.push({ rule: d.id, error: "invalid or duplicate id" }); continue; }
                 if (d.kind !== "corpus-root-relative") { dialectErrors.push({ rule: d.id, error: `unknown dialect kind: ${d.kind}` }); continue; }
                 if (!validLocator(d.subtree) || !validLocator(d.base)) { dialectErrors.push({ rule: d.id, error: "subtree/base violates the locator grammar (containment, segments, no schemes/backslashes)" }); continue; }
-                // Handler-authorized alignment (2026-08-02): identical fail-closed
-                // identity checks to map-check — locators must exist, be reparse-free,
+                // link-resolution.md — Scope-contract grammar: locators must exist, be reparse-free,
                 // and match their native realpaths.
                 let locBad = false;
                 for (const loc of [norm(d.subtree).replace(/\/$/, ""), norm(d.base).replace(/\/$/, "")]) {
@@ -219,7 +238,7 @@ try {
             }
           }
           // M3 exclusions + managed artifacts (existing contract style under meta.m1 — read for the
-          // canonical resolution inventory per rider §B; declaration shape conformance stays map-check's)
+          // link-resolution.md — Resolution inventory and fingerprints; declaration shape conformance stays map-check's)
           let inSec = null, cur = null;
           for (const ln of lines) {
             const sec = ln.match(/^\s{4}(exclusions|managed-artifacts):\s*$/);
@@ -238,7 +257,8 @@ try {
       break;
     }
   }
-  // M3 fields that DETERMINE canonical inventory fail closed (final repair 3):
+  // M3 fields that determine canonical inventory fail closed under
+  // link-resolution.md — Failure behavior:
   // an invalid exclusion path or a broken single-entrypoint declaration is a
   // contract error, never a silent drop.
   for (const e of m3Exclusions) {
@@ -252,7 +272,7 @@ try {
   // managed entries whose owned surfaces include body or whole-file: their OUTBOUND links are not parsed
   const managedBodyOwned = new Set(m3ManagedBodyOwned.filter(e => /body|whole-file/.test(e.surfaces)).map(e => e.path));
   const isManagedBodyOwned = rel => [...managedBodyOwned].some(p => rel === p || rel.startsWith(p.replace(/\/$/, "") + "/"));
-  // GOVERNED BOUNDARY TARGETS (checker repair 1 + rider amendment 1): an M3
+  // GOVERNED BOUNDARY TARGETS (link-resolution.md — Resolution inventory and fingerprints): an M3
   // single-entrypoint exclusion's declared entrypoint stays a RESOLVABLE target while
   // its subtree stays governed non-assessment. Reparse entrypoints are refused.
   const governedBoundaryTargets = [];
@@ -267,12 +287,12 @@ try {
       if (gReal === null || !pathEq(gReal, fullE)) { dialectErrors.push({ rule: "m3-exclusion " + e.path, error: "malformed-contract: entrypoint diverges from its native realpath — reparse refused" }); continue; } }
     governedBoundaryTargets.push(e.entrypoint);
   }
-  // FAIL-CLOSED (checker repair 2): any contract error voids ALL parsed declarations —
+  // FAIL-CLOSED (link-resolution.md — Failure behavior): any contract error voids ALL parsed declarations —
   // no partial-rule resolution, and the scan can never claim COMPLETE.
   const contractInvalid = dialectErrors.length > 0;
   if (contractInvalid) { dialectRules.length = 0; acceptedLinks.length = 0; governedBoundaryTargets.length = 0; }
 
-  // ---------- 2c. CANONICAL RESOLUTION INVENTORY (rider §B) ----------
+  // ---------- 2c. CANONICAL RESOLUTION INVENTORY (link-resolution.md — Resolution inventory and fingerprints) ----------
   // M3 exclusions are governed non-assessment: OUT of the resolution inventory, IN the
   // inventory_boundaries ledger. The resolution fingerprint covers assessed leaves only.
   const isM3Excluded = rel => m3ExclPaths.some(e => rel === e || rel.startsWith(e.replace(/\/$/, "") + "/"));
@@ -286,8 +306,8 @@ try {
   const NSEP = String.fromCharCode(0);
   const resolutionInventoryFingerprint = createHash("sha256")
     .update(invFiles.slice().sort((a, b) => a.rel < b.rel ? -1 : a.rel > b.rel ? 1 : 0)
-      .map(f => f.rel + NSEP + f.size + NSEP + Math.round(f.mtime)).map(l => l + "\n").join("")).digest("hex"); // ordinal path sort per rider §B
-  // governed targets shape resolution — they get their own comparison fingerprint (final repair 1)
+      .map(f => f.rel + NSEP + f.size + NSEP + Math.round(f.mtime)).map(l => l + "\n").join("")).digest("hex"); // ordinal path sort from the named fingerprint contract
+  // Governed targets shape resolution and therefore get their own comparison fingerprint.
   const governedBoundaryTargetFingerprint = createHash("sha256")
     .update(gbFiles.slice().sort((a, b) => a.rel < b.rel ? -1 : 1).map(f => f.rel + NSEP + f.size + NSEP + Math.round(f.mtime)).map(l => l + "\n").join("")).digest("hex");
 
@@ -332,7 +352,7 @@ try {
       const j = joinRel(relDir(f.rel), decodeURIComponent(t2));
       out.push({ form: "mdrel", target: j === null ? "__ESCAPES__/" + t2 : j, fragment: m[2] ? decodeURIComponent(m[2].slice(1)).trim() : null, raw: m[0].slice(0, 120) }); }
     // managed artifacts with body/whole-file owned surfaces: outbound links are NOT
-    // parsed (rider §B) — the artifact remains a resolution TARGET via map-side coverage
+    // parsed (link-resolution.md — Resolution inventory and fingerprints); the artifact remains a resolution TARGET via map-side coverage
     rawLinks.set(f.rel, isManagedBodyOwned(f.rel) ? [] : out);
   }
   // governed boundary targets: read ONLY for fragment indexes (resolution needs their
@@ -348,7 +368,7 @@ try {
 
   // ---------- 4. link resolution + DEDUPLICATED graph ----------
   const stem = p => basename(p).replace(/\.md$/, "");
-  // resolution TARGETS = canonical inventory + governed boundary targets (rider amend. 1)
+  // Resolution targets = canonical inventory + governed boundary targets.
   const byStem = new Map(); for (const f of mdTargets) { const s = stem(f.rel); if (!byStem.has(s)) byStem.set(s, []); byStem.get(s).push(f.rel); }
   const mdSet = new Set(mdTargets.map(f => f.rel));
   const resolveTarget = t => {
@@ -378,17 +398,19 @@ try {
   // the rule's subtree; resolution succeeds only when all applicable interpretations
   // CONVERGE on one canonical target.
   const SEP = String.fromCharCode(0);
-  // ELEVEN terminal occurrence classes (rider §C). creation_queue and
+  // Eleven terminal occurrence classes (link-resolution.md — Terminal classes and closure). creation_queue and
   // inventory_boundaries are separate LEDGERS, never occurrence classes.
   const OCC = { "resolved-file": 0, "resolved-heading": 0, "resolved-block": 0, "resolved-nonmarkdown": 0,
     "missing-file": 0, "missing-heading": 0, "missing-block": 0, "ambiguous": 0,
     "accepted-external": 0, "accepted-unresolved": 0, "residual-at-cap": 0 };
-  const caseFiles = []; // UNCAPPED (checker repair 4): one case record per non-resolved occurrence, always
-  const records = []; // normalized per-occurrence records (rider §D) — comparison surface for the independent checker
+  const caseFiles = []; // one uncapped case record per non-resolved occurrence
+  const records = []; // normalized records from link-resolution.md — Normalized records and convergence
   const missingNameCount = new Map(); // raw missing target -> inbound count (red-link/creation-queue ranking)
   const edgeSet = new Set();
   let linkOccurrences = 0, escaping = 0, occResidual = false;
-  const acceptMatch = (src, target) => acceptedLinks.find(a => a.target === target && (!a.source || a.source === src));
+  const acceptMatch = (src, target) =>
+    acceptedLinks.find(a => a.target === target && a.source === src)
+    || acceptedLinks.find(a => a.target === target && !a.source);
   const classify = (src, cls, o, extra) => {
     OCC[cls]++;
     records.push({ source: src, raw_target: o.target.startsWith("__ESCAPES__/") ? "(escapes scope root)" : o.target, fragment: o.fragment || null, form: o.form, class: cls,
@@ -406,7 +428,7 @@ try {
       if (t.startsWith("__ESCAPES__/")) { escaping++; classify(src, "missing-file", o, { note: "relative link escapes the scope root" }); continue; }
       const acc = acceptMatch(src, t);
       if (acc) { classify(src, acc.class, o, { reason: acc.reason }); continue; }
-      if (/^[a-z][a-z0-9+.-]*:/i.test(t)) { classify(src, "missing-file", o, { note: "scheme-bearing wikilink (cross-vault form — kernel 12b); declare accepted-external to suppress" }); continue; }
+      if (/^[a-z][a-z0-9+.-]*:/i.test(t)) { classify(src, "missing-file", o, { note: "scheme-bearing wikilink; lyt.md — Cross-vault references requires prose, or declare accepted-external" }); continue; }
       // interpretations: plain + every dialect rule whose subtree contains the source
       const interpretations = [{ rule: "plain", candidate: null }];
       const hasNonMdExt = /\.[A-Za-z0-9]+$/.test(t) && !t.endsWith(".md");
@@ -569,7 +591,7 @@ try {
   { const byDir = new Map();
     const add = (rel, d) => { const k = rel.includes("/") ? rel.slice(0, rel.lastIndexOf("/")) : "."; if (!byDir.has(k)) byDir.set(k, []); byDir.get(k).push(basename(rel) + (d ? "/" : "")); };
     files.forEach(f => add(f.rel, false)); dirs.forEach(d => add(d, true));
-    for (const [d, names] of byDir) { const seen = new Map(); for (const n of names) { const k = n.toLowerCase(); if (seen.has(k) && seen.get(k) !== n) caseFold.push({ dir: d, a: seen.get(k), b: n }); seen.set(k, n); } } }
+    for (const [d, names] of byDir) for (const { a, b } of caseFoldCollisions(names)) caseFold.push({ dir: d, a, b }); }
   const dupBase = [...byStem.entries()].filter(([, v]) => v.length > 1).map(([s, v]) => ({ stem: s, paths: v }));
   const longPaths = files.filter(f => (root + "/" + f.rel).length > 240).map(f => f.rel);
   const orphans = md.map(f => f.rel).filter(r => !(meta.get(r)?.map) && !(inDeg.get(r) || 0) && !(outDeg.get(r) || 0) && !entryPoints.includes(r));
@@ -584,7 +606,7 @@ try {
   const scanStatus = partial ? "PARTIAL" : ((skipped.length || exclusionTrouble || contractInvalid) ? "BOUNDED" : "COMPLETE");
   const exitCode = scanStatus === "COMPLETE" ? 0 : 1;
   const env = {
-    schema_version: 2, kernel_version: KV, tool: "map-scan v1", target: root,
+    schema_version: 2, kernel_version: KV, kernel_source: KERNEL_SOURCE, tool: "map-scan", target: root,
     scan_status: scanStatus,
     inventory: { membership_fingerprint: membershipFingerprint, md_content_fingerprint: mdContentFingerprint,
       fingerprint_note: "membership = paths+sizes+mtimes (NOT byte proof; preimage hashes govern apply-time drift); md_content = sha256 over ordered markdown bytes",
@@ -600,7 +622,7 @@ try {
       contract_fingerprint: contractFingerprint,
       link_dialects: dialectRules, dialect_errors: dialectErrors, accepted_links_declared: acceptedLinks.length },
     resolution: {
-      note: "ELEVEN terminal occurrence classes (rider §C); every observed occurrence lands in exactly ONE; creation_queue and inventory_boundaries are separate LEDGERS; graph edges derive only after occurrence closure; dialect rules are contract-declared scope data (grammar-strict, rider §A)",
+      note: "Eleven terminal occurrence classes from link-resolution.md — Terminal classes and closure; every observed occurrence lands in exactly one; creation_queue and inventory_boundaries are separate ledgers; graph edges derive only after occurrence closure; dialect rules follow link-resolution.md — Scope-contract grammar",
       pinned_to: { resolution_inventory_fingerprint: resolutionInventoryFingerprint, contract_fingerprint: contractFingerprint,
         governed_boundary_target_fingerprint: governedBoundaryTargetFingerprint, membership_fingerprint: membershipFingerprint },
       reparse_proof: "root, contract path, and governed targets verified by native-realpath identity + lstat; inventory entries by per-entry lstat symlink refusal (junctions surface as symlinks under Node on Windows); reparse forms invisible to both are a NAMED runtime-observation limit, not proven absent",

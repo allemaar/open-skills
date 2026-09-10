@@ -14,3 +14,7 @@ skills/*/.agents/
 /.claude/
 /.codex/
 /.agents/
+
+# Local execution ledgers from bounded repair runs (plans, gates, recovery records).
+# Machine-local coordination state with absolute paths; never staged or shipped.
+/.unlazy/

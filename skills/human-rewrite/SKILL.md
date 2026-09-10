@@ -14,6 +14,9 @@ companions:
   - path: ../human-output
     optional: true
     why: "Optional sibling with the full prose layer; the bundled style floor is the fallback."
+  - path: ../synthesize
+    optional: true
+    why: "Optional sibling whose selected direct need file is preserved during repair."
 triggers:
   - "/human-rewrite"
   - "translate that into human"
@@ -179,10 +182,9 @@ material-shape-to-face routing is the family table at
 
 When this skill is invoked through `/synthesize`, preserve the recipe and
 minimum spine synthesize already selected — do not re-route. When repairing
-independently and `synthesize` is installed, extract ONE anchored recipe through
-the synthesize procedure (fixed-string search for its `[need:…]` token; never
-load the whole output map). Without synthesize, the table above is the whole
-rule.
+independently and `synthesize` is installed, use its route table to read ONE
+direct need file from `../synthesize/references/needs/`; never load unrelated
+recipes. Without synthesize, the table above is the whole rule.
 
 **6. Reconcile against the inventory, and emit the trace.** Walk the step-1
 list item by item against your output. Each is present unchanged, present at

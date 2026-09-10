@@ -2,7 +2,7 @@
 // The Spine Manifest generator — one deterministic join, human + machine surfaces.
 //
 // Reads every skill's SKILL.md front-matter contract (name, description,
-// visibility, triggers, next-skills, companions), joins the pack-level YON family taxonomy,
+// visibility, triggers, requires-skills, next-skills, companions), joins the pack-level YON family taxonomy,
 // extracts gate/rule facts LIVE from each protocol.yon, and emits in one pass:
 //
 //   catalog.yon   YON-primary machine catalog (one @META record per skill).
@@ -90,6 +90,24 @@ function simpleList(fm, key) {
     .map((l) => l.match(/^\s*-\s+(.*)$/))
     .filter(Boolean)
     .map((m) => unquote(m[1]));
+}
+
+// Required skills are a dependency graph, not routing hints. Accept only the
+// canonical block-list shape so a malformed declaration cannot disappear from
+// generated install guidance.
+function requiresSkills(fm, name) {
+  const b = blockAfter(fm, 'requires-skills');
+  if (!b) return [];
+  if (b.headRest) throw new Error(`skill ${name} requires-skills must use a block list`);
+  const lines = b.body.filter((line) => line.trim());
+  if (lines.length === 0) throw new Error(`skill ${name} requires-skills must not be empty`);
+  const items = lines.map((line) => {
+    const m = line.match(/^\s*-\s+(["']?)([a-z0-9][a-z0-9-]*)\1\s*$/);
+    if (!m) throw new Error(`skill ${name} has invalid requires-skills entry: ${line.trim()}`);
+    return m[2];
+  });
+  if (new Set(items).size !== items.length) throw new Error(`skill ${name} has duplicate requires-skills entries`);
+  return items;
 }
 // next-skills: list of { skill, phrase, why } objects.
 function nextSkills(fm) {
@@ -227,6 +245,7 @@ function collect() {
       description,
       visibility,
       triggers: simpleList(fm, 'triggers'),
+      requiresSkills: requiresSkills(fm, name),
       nextSkills: nextSkills(fm),
       companions: companions(fm),
       hasProtocol: !!proto,
@@ -244,6 +263,30 @@ function collect() {
       attribution: ATTRIBUTION,
     };
   });
+  const byName = new Map(skills.map((skill) => [skill.name, skill]));
+  for (const skill of skills) {
+    for (const target of skill.requiresSkills) {
+      if (target === skill.name) throw new Error(`skill ${skill.name} requires itself`);
+      if (!byName.has(target)) throw new Error(`skill ${skill.name} requires unshipped skill ${target}`);
+    }
+  }
+  const active = new Set();
+  const done = new Set();
+  const stack = [];
+  function visit(name) {
+    if (done.has(name)) return;
+    if (active.has(name)) {
+      const start = stack.indexOf(name);
+      throw new Error(`requires-skills cycle: ${[...stack.slice(start), name].join(' -> ')}`);
+    }
+    active.add(name);
+    stack.push(name);
+    for (const target of byName.get(name).requiresSkills) visit(target);
+    stack.pop();
+    active.delete(name);
+    done.add(name);
+  }
+  for (const name of names) visit(name);
   return { skills, families: taxonomy.families };
 }
 
@@ -281,6 +324,7 @@ function emitYon(skills, families, stampDay) {
       `triggers="${yq(s.triggers.join('; '))}"`,
       `gates="${yq(s.gates.join('; '))}"`,
       `rules="${yq(s.rules.join('; '))}"`,
+      `requires="${yq(s.requiresSkills.join('; '))}"`,
       `next="${yq(s.nextSkills.map((n) => n.skill).join('; '))}"`,
       `companions="${yq(s.companions.map((c) => `${c.optional ? 'optional' : 'required'}:${c.path}`).join('; '))}"`,
       `install="${yq(s.install.copy)}"`,
@@ -311,7 +355,7 @@ function emitJson(skills, families, stampDay) {
         count: skills.length,
         dualDoc: skills.filter((s) => s.hasProtocol).length,
         install:
-          'Copy a skill folder into your runtime skills dir (copy-default, not symlink), then validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.',
+          'Resolve requiresSkills recursively and install dependencies first. Then copy the requested skill folder into your runtime skills dir (copy-default, not symlink) and validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.',
         skills,
       },
       null,
@@ -339,19 +383,20 @@ function emitLlms(skills, families) {
   );
   L.push('');
   L.push('## For agents — how to install');
-  L.push('No build step, no opaque installer. Follow these in order; the checks in step 3 are the ones that matter, because every failure mode here is SILENT.');
+  L.push('No build step, no opaque installer. Follow these in order; the checks in step 4 are the ones that matter, because every failure mode here is SILENT.');
   L.push('0. Clone this repo and work from its root: `git clone https://github.com/allemaar/open-skills && cd open-skills`. Every relative path below is from that root.');
-  L.push('1. Enumerate skills from catalog.json (repo root) — each record carries name, description, triggers, gates, companion classification, and install commands.');
+  L.push('1. Enumerate skills from catalog.json (repo root) — each record carries name, description, triggers, gates, requiresSkills, companion classification, and install commands.');
   L.push("2. Choose SKILLS_DIR — the ONE directory the user's runtime actually reads. These are not interchangeable, and choosing wrong fails silently: no error, the skill simply never appears.");
   for (const d of RUNTIME_DIRS) L.push(`   - ${d} — ${RUNTIME_READS[d]}`);
   L.push('   Other tools use a dir of their own (Cursor ~/.cursor/skills, Copilot ~/.copilot/skills). If you cannot establish which runtime you are running in, ASK the user — do not guess. NOTE: SKILLS_DIR already ends in `/skills`. Every step below uses `$SKILLS_DIR/<name>` and never appends `/skills` a second time.');
-  L.push('3. CHECK before you write. Both of these, in order — neither condition raises an error on its own, so if you skip the check you will not find out:');
+  L.push('3. Resolve `requiresSkills` recursively for the requested skill. Install that dependency graph dependency-first before the requested skill. A missing dependency or cycle means STOP; report the invalid catalog instead of guessing an order.');
+  L.push('4. CHECK every skill in that order before you write. Both of these, in order — neither condition raises an error on its own, so if you skip the check you will not find out:');
   L.push('   a. `test -e "$SKILLS_DIR/<name>"` — if it exists, the user already has this skill. ASK before replacing it. Do NOT just copy: `cp -r` onto an existing directory does not fail, it nests a second copy INSIDE it and leaves the old SKILL.md exactly where the runtime will keep reading it.');
   L.push('   b. `test -L "$SKILLS_DIR/<name>"` (PowerShell: `(Get-Item -Force "$SKILLS_DIR/<name>").LinkType`) — if it is a symlink or junction, STOP and ask. Copying through it writes into whatever it points at, outside the skills dir, and exits 0 while doing so. Remove the link itself (`rmdir` on Windows, `unlink` on POSIX) — never delete or copy through it.');
-  L.push('4. COPY the folder (copy-default, never symlink): `cp -r skills/<name> "$SKILLS_DIR/<name>"` (Windows PowerShell: `Copy-Item -Recurse skills/<name> "$SKILLS_DIR/<name>"`). Required companions are contained in that folder and travel with it; optional companions in catalog.json are repository or sibling enhancements and do not block the core skill when absent. If the copy fails because SKILLS_DIR itself does not exist, create exactly that directory and retry — do not invent a different path to make the command succeed.');
-  L.push('5. If it ships a protocol.yon, validate it: `npx @younndai/yon-parser validate "$SKILLS_DIR/<name>/protocol.yon" --profile <profile>` (profile is in catalog.json).');
+  L.push('5. COPY each folder in dependency-first order (copy-default, never symlink): `cp -r skills/<name> "$SKILLS_DIR/<name>"` (Windows PowerShell: `Copy-Item -Recurse skills/<name> "$SKILLS_DIR/<name>"`). Required companions are contained in that folder and travel with it; optional companions in catalog.json are repository or sibling enhancements and do not block the core skill when absent. If the copy fails because SKILLS_DIR itself does not exist, create exactly that directory and retry — do not invent a different path to make the command succeed.');
+  L.push('6. If it ships a protocol.yon, validate it: `npx @younndai/yon-parser validate "$SKILLS_DIR/<name>/protocol.yon" --profile <profile>` (profile is in catalog.json).');
   L.push('   EXPECT exit 0 and `✓ <the path you passed>: Valid` — the parser echoes the full path, so match on `: Valid` and the exit code, not on a fixed string. Anything else — a parse error, a non-zero exit — means STOP: report the output to the user and do not claim the skill installed cleanly.');
-  L.push('6. VERIFY, then report the path: `$SKILLS_DIR/<name>/SKILL.md` exists and its first line is `---`. Tell the user the exact directory you installed into — that is what decides which runtime can see it. (This confirms the copy landed; it cannot tell you SKILLS_DIR was the right dir. Step 2 is what gets that right.)');
+  L.push('7. VERIFY, then report the path: `$SKILLS_DIR/<name>/SKILL.md` exists and its first line is `---`. Tell the user the exact directory you installed into — that is what decides which runtime can see it. (This confirms the copy landed; it cannot tell you SKILLS_DIR was the right dir. Step 2 is what gets that right.)');
   L.push('That is the basic install: copy a readable folder, then optionally validate its declarative protocol. The npx validation command may download and execute the separately published parser package; inspect that boundary before using it.');
   L.push('Updating later: these are frozen copies — they do not change until you re-copy. `git pull` in the clone, then diff before you accept: `git diff --no-index "$SKILLS_DIR/<name>" skills/<name>` — silence means identical; read anything it prints before re-copying. Do NOT filter that diff. A `cp -r` install carries no `metadata:` provenance block, so filtering those lines buys nothing and would hide one APPEARING — which is a change you want to see, since that block is an unsigned claim other tooling will act on.');
   L.push('');
@@ -362,7 +407,8 @@ function emitLlms(skills, families) {
     for (const s of skills.filter((item) => item.family === family.id)) {
       const trg = s.triggers.length ? ` — triggers: ${s.triggers.slice(0, 4).join(', ')}` : '';
       const tag = s.hasProtocol ? ' [protocol.yon]' : ' [md-only]';
-      L.push(`- ${s.name}${tag} — ${firstSentence(s.description)}${trg}`);
+      const req = s.requiresSkills.length ? ` — requires: ${s.requiresSkills.join(', ')}` : '';
+      L.push(`- ${s.name}${tag} — ${firstSentence(s.description)}${trg}${req}`);
     }
   }
   L.push('');
@@ -385,16 +431,17 @@ function emitSkillsMd(skills, families) {
     '',
     `This pack contains **${skills.length} skills**. Install only what earns its place; every skill is readable Markdown, and ${skills.filter((s) => s.hasProtocol).length} also carry a declarative YON (YounndAI Object Notation™) protocol you can inspect and validate.`,
     '',
-    'Required companions are bundled inside their skill folder. Optional companions are repository checks or sibling enhancements and are declared separately in the machine catalog.',
+    'Required companions are bundled inside their skill folder. Optional companions are repository checks or sibling enhancements and are declared separately in the machine catalog. Install entries in the Requires column first.',
     '',
     'A skill folder name is its portable written command. The trigger column shows recognition aliases in plain text, not additional canonical commands.',
   ];
   for (const family of families) {
-    L.push('', `## ${family.label}`, '', '| Skill | Use when | Example triggers | Format |', '|---|---|---|---|');
+    L.push('', `## ${family.label}`, '', '| Skill | Use when | Example triggers | Requires | Format |', '|---|---|---|---|---|');
     for (const s of skills.filter((item) => item.family === family.id)) {
       const triggers = s.triggers.slice(0, 3).map((t) => mdCell(t)).join(', ') || '—';
+      const requires = s.requiresSkills.map((name) => `\`${name}\``).join(', ') || '—';
       const format = s.hasProtocol ? 'Markdown + YON' : 'Markdown';
-      L.push(`| [\`${s.name}\`](skills/${s.name}/) | ${mdCell(firstSentence(s.description))} | ${triggers} | ${format} |`);
+      L.push(`| [\`${s.name}\`](skills/${s.name}/) | ${mdCell(firstSentence(s.description))} | ${triggers} | ${requires} | ${format} |`);
     }
   }
   L.push('', '---', '', ATTRIBUTION, '');
@@ -408,11 +455,12 @@ function emitSkillsMd(skills, families) {
 function emitGraph(skills, stampDay) {
   const L = [];
   let edges = 0;
+  let dependencyEdges = 0;
   L.push(
-    `@DOC ver=2.0 | id=open-skills-graph | title="open-skills — next-skills recommendation graph" | kind=graph | profile=full | fmt=min | license="${LICENSE}" | guide="https://yon.younndai.com/yon-guide.txt"`
+    `@DOC ver=2.0 | id=open-skills-graph | title="open-skills — skill relationship graph" | kind=graph | profile=full | fmt=min | license="${LICENSE}" | guide="https://yon.younndai.com/yon-guide.txt"`
   );
   L.push(
-    `@INTENT goal="Directed recommendation graph — each edge is skill -> a successor a caller would naturally run next; the in-agent recommender that compounds installs. Generated by tools/spine.mjs from each SKILL.md next-skills field."`
+    `@INTENT goal="Directed skill graph — out records recommendations and requires records dependency-first install edges. Generated by tools/spine.mjs from each SKILL.md next-skills and requires-skills fields."`
   );
   L.push(`@STAMP ts:ts=${stampDay} | src=tool | method=generated | scope="tools/spine.mjs"`);
   L.push(`@NOTE text="${yq(ATTRIBUTION)} Generated — do not edit by hand; run tools/spine.mjs."`);
@@ -420,11 +468,12 @@ function emitGraph(skills, stampDay) {
   for (const s of skills) {
     const outs = s.nextSkills.map((n) => n.skill);
     edges += outs.length;
-    L.push(`@META id=${s.name} | out="${yq(outs.join('; '))}" | degree=${outs.length} | license="${LICENSE}" | src="${SRC}"`);
+    dependencyEdges += s.requiresSkills.length;
+    L.push(`@META id=${s.name} | out="${yq(outs.join('; '))}" | degree=${outs.length} | requires="${yq(s.requiresSkills.join('; '))}" | license="${LICENSE}" | src="${SRC}"`);
   }
   const terminal = skills.filter((s) => s.nextSkills.length === 0).length;
   L.push(`@SEC name="stats"`);
-  L.push(`@NOTE text="nodes=${skills.length} edges=${edges} coverage=${skills.length - terminal}/${skills.length} terminal=${terminal}"`);
+  L.push(`@NOTE text="nodes=${skills.length} edges=${edges} dependency_edges=${dependencyEdges} coverage=${skills.length - terminal}/${skills.length} terminal=${terminal}"`);
   return L.join('\n') + '\n';
 }
 
