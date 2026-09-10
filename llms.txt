@@ -1,6 +1,6 @@
 # open-skills
 
-Version: 1.7.0
+Version: 1.8.0
 
 > Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; 40 of 70 also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.
 

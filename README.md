@@ -55,6 +55,10 @@ The generated [`SKILLS.md`](SKILLS.md) catalog groups all 70 skills into twelve 
 
 Inside an agent, `/skills-help` reads that same bundled taxonomy and the skills actually installed beside it. Unknown third-party skills remain visible under `Unclassified`; they are not guessed into one of this pack's families.
 
+## New in 1.8.0
+
+Instruction quality control is now public and portable. [`skills-audit`](skills/skills-audit/) moved from the maintainer-only library into this pack, and [`directives-audit`](skills/directives-audit/) applies the same model to agent directives: audit first, read-only by default, housekeeping only behind an explicit gate. `skills-audit`, `map-rules`, and `synthesize` now route from a small core into task-selected references, so an agent loads the rules a task needs rather than the whole family. [`plan-phases`](skills/plan-phases/) gates safety prerequisites before the action they protect instead of only verifying outcomes afterwards, and the MYK kernel moves to v2.4 with `map-check` and `map-scan` reading `map-rules` as their protocol source.
+
 ## New in 1.7.0
 
 Four output skills now form a coherent path from diagnosis to delivery: [`agent-output`](skills/agent-output/) keeps worker reports dense and operational; [`prose-audit`](skills/prose-audit/) finds semantic repetition and stock AI filler without rewriting; [`synthesize`](skills/synthesize/) turns source material into a faithful, purpose-matched decision surface; and [`synthesize-init`](skills/synthesize-init/) can opt a directive file into that report layer through an explicit, reversible install. Two supporting skills strengthen the evidence path: [`freshness-contract`](skills/freshness-contract/) decides when cached evidence must be refreshed, while [`route-task`](skills/route-task/) records an experimental capability-based routing decision before delegation.

@@ -36,4 +36,4 @@
 @STEP rid=step:nsp | n:int=10 | op=offer-next-skills | args=[source=frontmatter,mode=offer-only] | in=[ref:handler-report] | out=[ref:next-skill-options]
 @STEP rid=step:sip | n:int=11 | op=run-self-improvement-protocol | args=[threshold=concrete-blocking-or-recurring,apply=never] | in=[ref:handler-report] | out=[ref:fix-proposal-or-silence]
 
-@STAMP ts:ts=2026-08-28T00:00:00Z | src="skills/map-maintain/SKILL.md" | method=manual
+@STAMP ts:ts=2026-09-10T00:00:00Z | src="skills/map-maintain/SKILL.md" | method=manual

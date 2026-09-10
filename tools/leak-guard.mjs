@@ -12,10 +12,12 @@
 // text, not a path — it never matches.
 //
 // Usage:  node tools/leak-guard.mjs
+// Scope:  tracked + untracked-not-ignored files (git ls-files); full walk without git.
 // Exit:   non-zero on any hit. Zero npm deps.
 
 import { readdirSync, statSync, readFileSync } from 'node:fs';
-import { join, extname } from 'node:path';
+import { execFileSync } from 'node:child_process';
+import { join, extname, sep } from 'node:path';
 
 const ROOT = process.cwd();
 const TEXT_EXT = new Set(['.md', '.yon', '.json', '.mjs', '.js', '.txt', '.yml', '.yaml', '.ps1', '.sh']);
@@ -70,7 +72,31 @@ function scan(path) {
   });
 }
 
-walk(ROOT);
+// Scan exactly what could be committed: tracked files plus untracked files that
+// are not ignored. A gitignored local ledger (.unlazy/, scratch dirs) can never
+// ship, so it is not a leak; an untracked-but-unignored file can, so it is scanned.
+// Falls back to a full walk when git is unavailable (e.g. an exported tree).
+function candidateFiles() {
+  try {
+    const out = execFileSync('git', ['ls-files', '-z', '--cached', '--others', '--exclude-standard'], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    return out.split('\0').filter(Boolean).map((rel) => join(ROOT, rel));
+  } catch {
+    return null;
+  }
+}
+
+const files = candidateFiles();
+if (files) {
+  for (const path of files) {
+    const rel = path.slice(ROOT.length + 1).split(sep).join('/');
+    if (rel.split('/').some((seg) => SKIP_DIR.has(seg))) continue;
+    if (!TEXT_EXT.has(extname(path))) continue;
+    try { statSync(path); } catch { continue; } // deleted-but-tracked
+    scan(path);
+  }
+} else {
+  walk(ROOT);
+}
 
 if (hits.length) {
   console.error(`leak-guard: ${hits.length} machine-specific path(s) — these must not ship public:`);

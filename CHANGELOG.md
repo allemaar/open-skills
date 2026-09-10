@@ -11,7 +11,7 @@ or guard changes that neither add nor remove a skill.
 
 ---
 
-## [Unreleased]
+## [1.8.0] — 2026-09-10
 
 ### Added
 
@@ -20,8 +20,14 @@ or guard changes that neither add nor remove a skill.
 ### Changed
 
 - **`plan-phases` now gates safety prerequisites before the action.** Authorization, no-follow target proof, backup or readback readiness, live-data scope, and destructive-target confirmation get a blocking pre-action `/verify` gate; outcome gates stay after the step.
+
 - **The MYK kernel moves to v2.4 and its tools stop trusting prose.** `map-check` and `map-scan` now name `map-rules` and its routed references as their protocol source instead of a hashed kernel string, detect file-versus-directory case-fold collisions without requiring those leaves on disk, and keep unqualified `CLEAN` banned. Lint and the spine generator gain first-class `requires-skills` support so a skill's declared dependencies are validated and projected onto every generated surface.
 - **MYK and synthesis now load only the rules needed for the task.** `map-rules` routes from a small core into operation-specific references; `synthesize` loads one need-specific shape plus its grammar for substantive output. Their opt-in installers now add minimal routes only to selected, supported directive surfaces.
+
+### Fixed
+
+- **`leak-guard` now scans exactly what could ship.** It enumerates tracked plus untracked-but-unignored files through `git ls-files` instead of walking the whole checkout, so a gitignored local ledger no longer fails the guard while an untracked file that could be committed still does. Without git it falls back to the full walk.
+- **Six protocol stamps caught up with their last edits.** `agent-mailbox`, `domain-check`, `extract-signal`, `map-maintain`, `new-skill-creator`, and `plan-phases` carried a trailing `@STAMP` older than their last modifying commit; `yon-dag` now reports 0 stamp-drift warnings.
 
 ## [1.7.0] — 2026-08-17
 
@@ -296,6 +302,7 @@ Initial public release of the **open-skills** pack — reusable skills for AI co
 - CI conformance — YON validation, a cross-reference/structural lint, a YON-DAG semantic check, spine-manifest sync, and a `gate-fires` proof that the guards actually reject broken input;
 - Apache-2.0 license, NOTICE, THREAT-MODEL, CONTRIBUTING (DCO), and SECURITY policy.
 
+[1.8.0]: https://github.com/allemaar/open-skills/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/allemaar/open-skills/compare/v1.6.8...v1.7.0
 [1.6.8]: https://github.com/allemaar/open-skills/releases/tag/v1.6.8
 [1.6.7]: https://github.com/allemaar/open-skills/releases/tag/v1.6.7
