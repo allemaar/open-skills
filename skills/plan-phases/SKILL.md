@@ -1,7 +1,7 @@
 ---
 name: plan-phases
 description: >
-  Restructure an existing plan into phases with /verify gates after each phase and critical steps. Trigger when the user runs /phase-plan or asks to "add phases to this plan", "gate this plan", "restructure the plan", or "add checkpoints". Use plan-create for new plans and plan-deep-dive for inspection without restructuring.
+  Restructure an existing plan into phases with /verify gates after each phase and critical outcomes, plus blocking pre-action gates for safety prerequisites. Trigger when the user runs /phase-plan or asks to "add phases to this plan", "gate this plan", "restructure the plan", or "add checkpoints". Use plan-create for new plans and plan-deep-dive for inspection without restructuring.
 visibility: public
 self-improvable: true
 next-skills:
@@ -21,7 +21,7 @@ triggers:
 
 # /phase-plan
 
-Take an existing flat or unstructured plan and restructure it into phased execution with `/verify` gates after each phase and critical steps.
+Take an existing flat or unstructured plan and restructure it into phased execution. Add `/verify` gates after each phase and critical outcome. Add blocking gates before actions whose safety prerequisites must already be true.
 
 > **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date.
 
@@ -36,6 +36,8 @@ Take an existing flat or unstructured plan and restructure it into phased execut
 3. Only continue to the next phase/step once the gate passes
 
 If `/verify` is not a recognized command in your session, replace it with an explicit user confirmation prompt: pause, state what you're verifying, and wait for the user to confirm before continuing.
+
+A `/verify` gate may sit before or after an action. It must block **before** mutation when it proves a prerequisite whose absence would make the action unsafe. Examples include authorization, no-follow target resolution, backup or readback readiness, live-data scope, and destructive-target confirmation. Retain a separate gate **after** the action to verify the intended outcome.
 
 ## Phase 1 — Locate & Load Existing Plan
 
@@ -65,7 +67,7 @@ Ensure phases flow logically — dependencies before dependents.
    - Cross-package impacts
    - Security-sensitive changes
 
-   Insert inline `/verify` gates immediately after those steps.
+   For each critical step, place any safety-prerequisite `/verify` gate before the step, then place an outcome `/verify` gate immediately after it.
 
 ### Gate Quality Reference
 
@@ -81,7 +83,9 @@ The bad gate has no observable condition. The good gate has three specific pass/
 ### Gate Placement Rules
 
 - MUST insert a `/verify` gate after completing any phase
-- MUST insert an inline `/verify` gate after any schema migration, breaking change, or security-sensitive step
+- MUST insert a blocking pre-action `/verify` gate when authorization, no-follow target proof, backup or readback readiness, live-data scope, destructive-target confirmation, or another safety prerequisite must be established before mutation
+- MUST retain a separate post-action `/verify` gate for the operation's outcome; a safety prerequisite cannot be validated only after the action
+- MUST insert an inline post-action `/verify` gate after any schema migration, breaking change, or security-sensitive step
 - MUST insert an inline `/verify` gate after any step with cross-package impact
 - SHOULD split phases with >5 steps into sub-phases with intermediate `/verify` gates
 

@@ -3228,7 +3228,7 @@
       "name": "plan-phases",
       "family": "planning",
       "familyLabel": "Planning & execution",
-      "description": "Restructure an existing plan into phases with /verify gates after each phase and critical steps. Trigger when the user runs /phase-plan or asks to \"add phases to this plan\", \"gate this plan\", \"restructure the plan\", or \"add checkpoints\". Use plan-create for new plans and plan-deep-dive for inspection without restructuring.",
+      "description": "Restructure an existing plan into phases with /verify gates after each phase and critical outcomes, plus blocking pre-action gates for safety prerequisites. Trigger when the user runs /phase-plan or asks to \"add phases to this plan\", \"gate this plan\", \"restructure the plan\", or \"add checkpoints\". Use plan-create for new plans and plan-deep-dive for inspection without restructuring.",
       "visibility": "public",
       "triggers": [
         "/phase-plan",
@@ -3268,6 +3268,8 @@
         "gate-after-phase=MUST",
         "gate-after-risky=MUST",
         "gate-cross-package=MUST",
+        "gate-before-precondition=MUST",
+        "precondition-not-postcondition=MUST_NOT",
         "split-large-phases=SHOULD"
       ],
       "steps": 10,

@@ -36,7 +36,7 @@ Updating later: these are frozen copies — they do not change until you re-copy
 - plan-deep-dive [protocol.yon] — Phase-by-phase deep inspection of any multi-phase plan — stop at each phase and assess completeness, quality, and future-readiness before advancing. — triggers: /deep-dive, do a deep dive, inspect each phase, look at this more carefully
 - plan-evolve [md-only] — Evolve a target to its next version — treat what shipped as v1, plan the next iteration. — triggers: what would v2 look like, evolve this, what's next for this, next iteration of this
 - plan-execute [protocol.yon] — Apply the last approved plan exactly. — triggers: /execute, execute the plan, implement this, do it
-- plan-phases [protocol.yon] — Restructure an existing plan into phases with /verify gates after each phase and critical steps. — triggers: /phase-plan, add phases to this plan, gate this plan, restructure the plan
+- plan-phases [protocol.yon] — Restructure an existing plan into phases with /verify gates after each phase and critical outcomes, plus blocking pre-action gates for safety prerequisites. — triggers: /phase-plan, add phases to this plan, gate this plan, restructure the plan
 - reflect [md-only] — Lightweight cognitive pause — surface assumptions, uncertainty, and what you'd do differently. — triggers: /reflect, step back and think before continuing
 - verify [protocol.yon] — Formal phase gate — checks intent, plan, and execution artifacts for drift, then actively re-checks each load-bearing claim against its source (an agent's self-report of having checked is not evidence). — triggers: /verify
 

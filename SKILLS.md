@@ -18,7 +18,7 @@ A skill folder name is its portable written command. The trigger column shows re
 | [`plan-deep-dive`](skills/plan-deep-dive/) | Phase-by-phase deep inspection of any multi-phase plan — stop at each phase and assess completeness, quality, and future-readiness before advancing. | /deep-dive, do a deep dive, inspect each phase | — | Markdown + YON |
 | [`plan-evolve`](skills/plan-evolve/) | Evolve a target to its next version — treat what shipped as v1, plan the next iteration. | what would v2 look like, evolve this, what's next for this | — | Markdown |
 | [`plan-execute`](skills/plan-execute/) | Apply the last approved plan exactly. | /execute, execute the plan, implement this | — | Markdown + YON |
-| [`plan-phases`](skills/plan-phases/) | Restructure an existing plan into phases with /verify gates after each phase and critical steps. | /phase-plan, add phases to this plan, gate this plan | — | Markdown + YON |
+| [`plan-phases`](skills/plan-phases/) | Restructure an existing plan into phases with /verify gates after each phase and critical outcomes, plus blocking pre-action gates for safety prerequisites. | /phase-plan, add phases to this plan, gate this plan | — | Markdown + YON |
 | [`reflect`](skills/reflect/) | Lightweight cognitive pause — surface assumptions, uncertainty, and what you'd do differently. | /reflect, step back and think before continuing | — | Markdown |
 | [`verify`](skills/verify/) | Formal phase gate — checks intent, plan, and execution artifacts for drift, then actively re-checks each load-bearing claim against its source (an agent's self-report of having checked is not evidence). | /verify | — | Markdown + YON |
 

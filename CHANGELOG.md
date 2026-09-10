@@ -19,6 +19,7 @@ or guard changes that neither add nor remove a skill.
 
 ### Changed
 
+- **`plan-phases` now gates safety prerequisites before the action.** Authorization, no-follow target proof, backup or readback readiness, live-data scope, and destructive-target confirmation get a blocking pre-action `/verify` gate; outcome gates stay after the step.
 - **The MYK kernel moves to v2.4 and its tools stop trusting prose.** `map-check` and `map-scan` now name `map-rules` and its routed references as their protocol source instead of a hashed kernel string, detect file-versus-directory case-fold collisions without requiring those leaves on disk, and keep unqualified `CLEAN` banned. Lint and the spine generator gain first-class `requires-skills` support so a skill's declared dependencies are validated and projected onto every generated surface.
 - **MYK and synthesis now load only the rules needed for the task.** `map-rules` routes from a small core into operation-specific references; `synthesize` loads one need-specific shape plus its grammar for substantive output. Their opt-in installers now add minimal routes only to selected, supported directive surfaces.
 

@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=plan-phases | title="Plan Restructuring — Phases + /verify Gates" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
-@INTENT goal="Restructure an existing flat or unstructured plan into phased execution with /verify gates after each phase and critical steps. Restructure, never delete." | trigger="user runs /phase-plan, asks to add phases, gate this plan, restructure the plan, or add checkpoints"
-@STAMP ts:ts=2026-05-09T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@INTENT goal="Restructure an existing flat or unstructured plan into phased execution with /verify gates after each phase and critical outcomes, plus blocking pre-action gates for safety prerequisites. Restructure, never delete." | trigger="user runs /phase-plan, asks to add phases, gate this plan, restructure the plan, or add checkpoints"
+@STAMP ts:ts=2026-09-03T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Governance ---
 
@@ -13,12 +13,14 @@
 @RULE rid=rule:gate-after-phase | lvl=MUST | when="completing any phase" | then="insert a /verify gate validating the phase deliverable"
 @RULE rid=rule:gate-after-risky | lvl=MUST | when="phase contains schema migration, breaking change, or security-sensitive step" | then="insert an inline /verify gate after that step"
 @RULE rid=rule:gate-cross-package | lvl=MUST | when="step has cross-package impact" | then="insert an inline /verify gate verifying no downstream breakage"
+@RULE rid=rule:gate-before-precondition | lvl=MUST | when="authorization, no-follow target proof, backup or readback readiness, live-data scope, destructive-target confirmation, or another safety prerequisite must be established before mutation" | then="insert a blocking /verify gate before the action and retain a separate post-action /verify gate for the outcome"
+@RULE rid=rule:precondition-not-postcondition | lvl=MUST_NOT | when="a /verify gate validates a prerequisite required for safe execution" | then="place that gate only after the action"
 @RULE rid=rule:split-large-phases | lvl=SHOULD | when="phase has more than 5 steps" | then="split into sub-phases with intermediate /verify gates"
 
 # --- Verify Gate Concept ---
 
 @SEC name="/verify Concept"
-@NOTE text="A /verify gate is a verification point where execution stops, current state is validated, and only continues to the next phase/step once the gate passes. If /verify is not a recognized command in the runtime, replace with explicit user confirmation prompt."
+@NOTE text="A /verify gate is a verification point where execution stops, current state is validated, and only continues once the gate passes. Safety prerequisites gate before the action; outcomes gate after it. If /verify is not a recognized command in the runtime, replace with an explicit user confirmation prompt."
 
 @MAP name=GateQuality | pairs=["good-gate"->"observable conditions a different person could verify independently (e.g. migration applied: users.email column non-null, existing rows have values, no FK errors in test suite)","bad-gate"->"vague focus with no observable condition (e.g. make sure the migration looks right) — REJECT"]
 
@@ -40,8 +42,8 @@
 
 @SEC name="Phase 3 — Insert Check Gates"
 @STEP rid=step:phase-gates | n:int=5 | op=std:ai.prompt@v1 | args=[task="Insert a /verify gate after every phase. Gate focus must be specific to what that phase accomplished and what the next phase depends on."] | in=[ref:phases] | out=[ref:phase-gated] | rules=[rid:rule:gate-after-phase,rid:rule:no-ceremonial-gates] | use=[cfg:GateQuality]
-@STEP rid=step:critical-gates | n:int=6 | op=std:ai.prompt@v1 | args=[task="Identify steps within phases that warrant individual /verify gates: risky operations, breaking changes, schema migrations, cross-package impacts, security-sensitive changes. Insert inline /verify gates immediately after."] | in=[ref:phase-gated] | out=[ref:fully-gated] | rules=[rid:rule:gate-after-risky,rid:rule:gate-cross-package,rid:rule:split-large-phases]
-@CHECK rid=check:gate-coverage | assert="every phase has trailing /verify; critical intra-phase steps gated; gate focus descriptions are specific and actionable" | fail=ABORT | msg="Gate coverage check failed. Address missing or ceremonial gates."
+@STEP rid=step:critical-gates | n:int=6 | op=std:ai.prompt@v1 | args=[task="Identify steps within phases that warrant individual /verify gates: risky operations, breaking changes, schema migrations, cross-package impacts, security-sensitive changes. Route authorization, no-follow target proof, backup/readback readiness, live-data scope, destructive-target confirmation, and other safety prerequisites to blocking pre-action gates. Retain separate post-action gates for observable outcomes."] | in=[ref:phase-gated] | out=[ref:fully-gated] | rules=[rid:rule:gate-after-risky,rid:rule:gate-cross-package,rid:rule:gate-before-precondition,rid:rule:precondition-not-postcondition,rid:rule:split-large-phases]
+@CHECK rid=check:gate-coverage | assert="every phase has trailing /verify; each required safety prerequisite is covered by a blocking pre-action /verify; each critical operation has a separate post-action outcome /verify; gate focus descriptions are specific and actionable" | fail=ABORT | msg="Gate coverage check failed. Address missing, misplaced, or ceremonial gates."
 
 # --- Phase 4: Rewrite & Output ---
 
@@ -67,4 +69,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon): if this run surfaced a concrete, blocking-or-recurring weakness in THIS skill (ambiguity, uncovered edge case, forced deviation, misfired gate, stale cross-reference, user correction), draft a specific diff and surface it via /ask-gate for handler approval. Conservative — silent otherwise; dedup against already-proposed; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-07-23T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-09-03T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
