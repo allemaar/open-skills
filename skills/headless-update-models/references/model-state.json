@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "policy": {
+    "reminderDays": 30,
+    "basis": "User-approved reminder preference; not an evidence validity guarantee"
+  },
+  "sources": [
+    {
+      "id": "deepswe-v1.1",
+      "source": "https://deepswe.datacurve.ai/artifacts/v1.1/leaderboard-live.json",
+      "sourcePublishedAt": "2026-09-03T22:24:37.984Z",
+      "coverage": "70 configurations, 28 models, 113 coding tasks; mini-swe-agent",
+      "gaps": "Not noncoding quality or native CLI performance",
+      "lastVerifiedAt": "2026-09-16T14:00:53.940Z",
+      "lastAttemptedAt": "2026-09-16T14:00:53.940Z",
+      "lastAttemptOutcome": "success",
+      "invalidated": false,
+      "timestampPrecision": "instant"
+    },
+    {
+      "id": "deepswe-displayed-prices",
+      "source": "https://deepswe.datacurve.ai/",
+      "sourcePublishedAt": null,
+      "coverage": "Displayed costs in matrix; raw JSON price conflicts retained",
+      "gaps": "Some model prices unverified; no task/API price estimate",
+      "lastVerifiedAt": "2026-09-16T14:00:53.940Z",
+      "lastAttemptedAt": "2026-09-16T14:00:53.940Z",
+      "lastAttemptOutcome": "success",
+      "invalidated": false,
+      "timestampPrecision": "instant"
+    },
+    {
+      "id": "codex-local-catalog",
+      "source": "codex --version; codex debug models, visibility=list",
+      "sourcePublishedAt": null,
+      "coverage": "CLI 0.144.4 visibility=list slugs and supported effort ladders",
+      "gaps": "Catalog visibility does not prove account entitlement or successful inference",
+      "lastVerifiedAt": "2026-09-16T14:00:53.940Z",
+      "lastAttemptedAt": "2026-09-16T14:00:53.940Z",
+      "lastAttemptOutcome": "success",
+      "invalidated": false,
+      "timestampPrecision": "instant"
+    },
+    {
+      "id": "agy-local-catalog",
+      "source": "agy --version; agy models",
+      "sourcePublishedAt": null,
+      "coverage": "CLI 1.2.4 catalog rechecked; model slugs unchanged from the prior catalog; earlier Gemini low prompt/read and scoped file/command evidence retained",
+      "gaps": "Other models untested; write artifact had extra newline; nested and standalone parent inference hit provider capacity 503",
+      "lastVerifiedAt": "2026-09-16T14:00:53.940Z",
+      "lastAttemptedAt": "2026-09-16T14:00:53.940Z",
+      "lastAttemptOutcome": "success",
+      "invalidated": false,
+      "timestampPrecision": "instant"
+    },
+    {
+      "id": "claude-model-docs",
+      "source": "https://code.claude.com/docs/en/model-config",
+      "sourcePublishedAt": null,
+      "coverage": "Provider-aware aliases, Fable version gap; official model documentation and CLI 2.1.272 help",
+      "gaps": "No paid model availability probe; exact task cost unknown",
+      "lastVerifiedAt": "2026-09-16T14:00:53.940Z",
+      "lastAttemptedAt": "2026-09-16T14:00:53.940Z",
+      "lastAttemptOutcome": "success",
+      "invalidated": false,
+      "timestampPrecision": "instant"
+    },
+    {
+      "id": "family-runtime-smoke",
+      "source": "Local retained Codex, Claude and agy fixture runs plus native lifecycle fixtures",
+      "sourcePublishedAt": null,
+      "lastVerifiedAt": "2026-09-14T11:58:38.029Z",
+      "lastAttemptedAt": "2026-09-14T11:58:38.029Z",
+      "lastAttemptOutcome": "success",
+      "invalidated": false,
+      "coverage": "Codex Luna low prompt/read/write; Claude Haiku exact read/write; agy Gemini low prompt after lifecycle fix; native root-exit-held-pipe and timeout fixtures; Claude parent launched all three CLIs for exact prompt markers; Codex ignore-user-config prompt passed",
+      "gaps": "Full family baseline September 14; September 15 agy scoped read/write authorization and command launch confirmed, exact write bytes failed and parent/child inference hit provider capacity 503; cross-parent write workflows unverified; cleanup-unverified remains failure"
+    }
+  ],
+  "managedBy": "headless-family:projection"
+}

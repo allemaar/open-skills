@@ -1,0 +1,18 @@
+<!-- headless-family:projection -->
+# File-backed Windows process supervision
+
+`scripts/run-process.mjs` exports `runProcess(spec, { onStart?, onStdoutChunk?, onStderrChunk? })` and has a guarded CLI entrypoint accepting one absolute JSON spec path. The spec has only `executable`, `args`, `cwd`, `outputDirectory`, `timeoutMs`, `shutdownGraceMs`, and optional `stdinFile`. `timeoutMs` is a finite integer at most Node's timer limit and grace is 100 ms through 30 seconds. `onStart` receives the retained PID plus a scoped `stop` callback. Output callbacks receive live 100 ms positional reads from the file-backed logs; they do not turn child stdio into pipes. Callback or status-persistence failure is a capture error and starts scoped cancellation. Unknown keys, relative paths, non-string arguments, non-native executables, invalid timeouts, redirected paths, and pre-existing output directories are rejected.
+
+The executable, current directory, optional stdin file, output directory, and every existing parent are checked for redirects before launch. A missing executable returns structured `missing-cli` before the output directory is created. The runner uses `shell: false`, passes arguments as immutable strings, and never interpolates a prompt or command through a shell.
+
+The output directory is created once and contains `stdout.log`, `stderr.log`, and `status.json`. The child receives file descriptors for stdout and stderr, and optional stdin is a file descriptor. It never creates stdout or stderr pipes. Status records the retained PID at start and refreshes every 30 seconds while the process remains active.
+
+After timeout or the supplied stop callback, the runner arms finite grace before awaiting Windows `taskkill /PID <pid> /T /F` for only the PID it launched. The taskkill helper has its own three-second bound and no inherited stdio handles. A grace expiry returns `cleanup: "unverified"`; it is never success. Every result sets `cleanupCheckRequired: true`: root exit is not proof that descendants are gone. The guarded CLI exits zero only for actual exit code zero, no runner errors, no timeout, and `close-observed` cleanup. `status: "exited"`, captured stdout, and root exit code describe process supervision only. The caller must still validate the provider's terminal event, required artifact, scope, external-signal stop handling, and descendant cleanup before accepting task completion.
+
+This initial implementation intentionally returns `unavailable` outside native Windows. It makes no POSIX process-group claim. It does not discover providers, inspect credentials, alter configuration, retry, infer models, or fall back to an API.
+
+Nested provider launches on Windows can fail even when a parent helper starts. In a current restricted-token probe, Node child spawning with pipe stdio returned `EPERM`, while file-backed inherited stdio allowed native `--version` checks. Use this runner's file descriptors for reusable launchers and preserve any remaining `EPERM` evidence rather than weakening sandbox or permission policy.
+
+During executable discovery, a version-manager path may be a junction. Resolve and review the actual native executable before constructing the spec; do not assume process.execPath is already canonical. Keep output, request and status paths free of redirects rather than resolving redirects to make a write pass.
+
+The CLI forwards handled SIGINT/SIGTERM events to its stop callback. Forced Windows termination may bypass JavaScript handlers, so the outer host must retain the runner PID and terminate its owned tree when needed; do not rely on killing only the supervisor root.

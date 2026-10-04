@@ -2,7 +2,7 @@
 
 Version: 1.8.0
 
-> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; 40 of 70 also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.
+> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; 48 of 79 also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.
 
 ## About YON (YounndAI Object Notation™)
 The protocol.yon files are written in YON (https://github.com/YounndAI/yon), a stream-first data format for AI-agent workflows with a public spec (https://github.com/YounndAI/yon-spec) and an Apache-2.0 reference parser (@younndai/yon-parser). YON makes a skill's declared rules (MUST / MUST_NOT) and gates (ABORT / WARN) inspectable as named, typed objects; it does not enforce runtime obedience.
@@ -74,6 +74,13 @@ Updating later: these are frozen copies — they do not change until you re-copy
 - caller-options [protocol.yon] — The Caller Options protocol (COP). — triggers: /caller-options
 - handoff [protocol.yon] — Generate a structured cold-agent handoff brief (YAML frontmatter + Obsidian markdown + YON blocks) that any fresh LLM session can pick up and execute. — triggers: /handoff, create a handoff, dispatch to a fresh agent, hand this to a cold session
 - handoff-execute [protocol.yon] — Execute a handoff brief with enforced source-read discipline — load the brief's @SOURCES.required tier fully before planning, cite sources per plan step, run @OUTCOME.verify after, emit the retro per @GROUND_TRUTH_REQUIRED. — triggers: /handoff-execute, /handoff-execute <brief-path>
+- headless-claude [protocol.yon] — Run a bounded, observable Claude Code headless task with explicit model, least-privilege tools, and preserved authorization. — triggers: /headless-claude, run Claude headlessly, use Claude -p, supervise a Claude harness
+- headless-codex [protocol.yon] — Run Codex CLI safely in bounded non-interactive workflows, including /headless-codex, "run Codex headlessly", and "automate Codex CLI". — triggers: /headless-codex, run Codex headlessly, automate Codex CLI
+- headless-gemini [protocol.yon] — Run bounded Gemini tasks through Antigravity CLI (agy). — triggers: /headless-gemini, run Gemini headlessly, supervise agy
+- headless-grok [protocol.yon] — Run bounded Grok Build coding-agent tasks through the official grok CLI. — triggers: /headless-grok, run Grok headlessly, supervise grok -p
+- headless-models [protocol.yon] — Compare providers, models and effort against task quality, cost, latency and local availability. — triggers: /headless-models, which model should I use, compare models and effort
+- headless-update-models [protocol.yon] — Refresh provider models, effort, cost and benchmark evidence across all supported headless skills. — triggers: /headless-update-models, update headless models, refresh all headless model guidance
+- headless-usage [protocol.yon] — Read current quota, usage and reset times across Codex, Claude Code, Antigravity and Grok Build. — triggers: /headless-usage, show my quotas, how much usage is left
 - multi-agent-mode [md-only] — Activate multi-agent mode: the lead agent still works directly but delegates independent helper slices when useful. — triggers: /multi-agent-mode, multi-agent mode, use helper agents, work with subagents
 - orchestrate-mode [md-only] — Activate orchestrator mode in the current session: the lead agent dispatches governed worker subagents and does not execute concrete work directly. — triggers: /orchestrate-mode, become an orchestrator, orchestrator mode, delegate everything
 - route-task [md-only] — EXPERIMENTAL capability-routing rubric — score a task on five task-readable axes (Risk, Uncertainty, Scope, Coupling, Verification) to derive WHO should execute (capability band 0–3) and HOW HARD they should try (volume 0–24), plus an evidence-derived plan gate. — triggers: /route-task, which model should handle this, how should I route this task, score this task
@@ -122,6 +129,10 @@ Updating later: these are frozen copies — they do not change until you re-copy
 ### Git & sync
 - diff-recap [protocol.yon] — Turn a git diff into a PR-pasteable recap — one row per changed file whose path, status, and line counts are transcribed verbatim from `git diff --numstat` (true by construction; the model writes only the labels), emitted as an inline annotated widget plus a mandatory ASCII twin and a `diff-recap/1` record whose totals equal the sum of the rows. — triggers: /diff-recap, recap this diff, summarize these changes for a PR, what changed in this branch
 - github-sync [protocol.yon] — Review the session's git changes, summarize them for approval, then commit and push to GitHub. — triggers: /github-sync, sync to github, commit and push, push this session
+
+### Write copy
+- write-copy [md-only] — Route promotional copy to a topic specialization. — triggers: /write-copy, write campaign copy, write event copy — requires: write-copy-event-video
+- write-copy-event-video [protocol.yon] — Create three independent event-video copy variants, cross-examine them, and write a fourth synthesis with voiceover handoff. — triggers: /write-copy-event-video, write an event promo script, write course event video copy — requires: insight-cross-examine, insight-angles, insight-critique, insight-assess, insight-explore, human-output
 
 ---
 open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL.

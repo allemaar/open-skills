@@ -1,0 +1,26 @@
+<!-- headless-family:projection -->
+# Shared headless execution contract
+
+This contract is projected from headless-models into each provider skill. Provider-specific syntax, permissions and parsers remain in that skill. Do not equate different runtimes' controls.
+
+Before launch record provider, exact executable/version, model/effort, authentication route without secrets, working directory, permitted reads/writes/tools, input, expected result, retained output paths, external deadline, shutdown grace, retry limit and budget. Inspect the parent runtime's process capabilities and outer restrictions. A child cannot widen its parent's sandbox or authorization. CLI-owned authentication/log writes may differ from model tool restrictions.
+
+Apply the bundled freshness policy on every run. The outer parent owns the once-per-session offer and passes its resolved decision to children. Do not ask from unattended workers or launch the updater recursively.
+
+Default to one outer supervisor launching independent sibling workers. Each needs disjoint writable scope or serialized writes and its own logs/status. Native subagent IDs and CLI session IDs are different identities. Context, credentials, tools, budgets and mailboxes do not transfer automatically. Further delegation is forbidden unless separately bounded and authorized; running a CLI through a shell requires that shell authority even if the task text says read-only.
+
+Use a runner with retained process ownership, concurrent stdout/stderr capture, live status, scoped cancellation and a deadline covering startup, inference and cleanup. Resolve native executables on Windows: PowerShell .ps1 and npm .cmd shims are not directly executable with Node shell:false. Do not interpolate prompts into shell syntax. Inspect inherited configuration, skills, hooks, plugins and MCP that could affect the task. For literal prompts, disable optional skill expansion with the provider's verified controls; for selected skills, inspect and enable only the required route.
+
+Record the budget basis: subscription quota, API dollars, and benchmark dollars are different. Use verified native turn/spend caps when applicable plus an external deadline. No supported spend cap means an explicit limitation, never a guaranteed monetary ceiling. Unknown task cost does not satisfy a hard budget. Count all sibling allocations and retries under the parent's total budget. Do not enable paid fallback or substitute provider/model silently.
+
+Normalize result reporting to: provider/version/model/effort; run/session ID; start/end; process exit; terminal status; answer/artifact paths; denied/error actions; observed scope; usage/cost basis; cancellation and cleanup state; independent checks; remaining gaps. Keep full raw provider events beside this summary. A valid JSON shape or process exit zero alone does not establish task success.
+
+Require complete terminal success, expected nonempty output, no blocking errors/denials/timeouts, permitted observed actions, independently correct artifact, and verified stopped state. Root exit is not descendant cleanup. Preserve executable/creation identity with PIDs; never kill by process name or a stale PID. If cleanup cannot be proved, return incomplete with cleanup-unverified and investigate through the outer host. Do not wait forever for inherited pipes or a failed termination helper.
+
+Inspect retained partial output before recovery. No automatic retry of authentication, billing, model-access or permission failures. Default retries zero; at most one requires new evidence, authorization and remaining aggregate budget. Resume only exact sessions when supported and boundaries can be re-established. Ephemeral/no-persistence modes cannot be resumed and do not prove zero other runtime writes.
+
+Read the bundled access.md before first use or a host/account change. Record transport=cli for these adapters, with authentication and model availability independently established; missing CLI or supervisor stops only dependent work. Direct API transport requires a separate verified adapter and authorization/budget basis. Never silently fall back from CLI to API or transfer subscription quota.
+
+Before a parent invokes a fixed helper, inspect its actual child commands and bounded supervision, not only its description. Verify the version of the exact executable path that will run; a PATH shim can select a different installation. Reject rule-skipping or permission-bypass flags in nested helpers just as in direct launches. A helper that violates this contract cannot produce passing evidence, even if the answer is correct.
+
+Windows pipe capture can fail inside a restricted token even when native version commands work with file descriptors. Provider skills bundle a file-backed runner and fixed-dispatch reference. When native nested processes cannot access required runtime state or network, an independently authorized outer supervisor can accept one fixed task ID. Load and review its immutable command and scope before the restricted parent starts. That parent supplies no executable, arguments, credentials or new authority. Without a capable authorized outer host, report a setup blocker; do not silently run outside a boundary.

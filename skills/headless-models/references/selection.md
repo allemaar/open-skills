@@ -1,0 +1,134 @@
+<!-- headless-models:projection -->
+# Model and effort selection
+
+Reviewed 2026-09-17. This dated matrix is maintained by the `headless-models` skill and bundled identically in the four provider headless skills. Refresh current availability and price before a consequential choice. Edit the canonical reference in `headless-models`, not a bundled projection.
+
+## Select for the requested output
+
+| Output | Required evidence | Cost-aware starting policy |
+| --- | --- | --- |
+| Extraction, classification, short summary | Exact output/schema checks on representative input | Try a locally available small model and low effort; verify the output. This is a heuristic, not a DeepSWE result. |
+| Small isolated code change | Task tests, tool availability, context fit | Prefer a bounded setup that can satisfy the tests. Do not assume long-horizon benchmark rankings predict every small edit. |
+| Long multi-file implementation | Comparable coding benchmark plus repository tests and supervision | Consult the measured effort ladder below; low/medium settings on some small models perform poorly on these tasks. |
+| Research or factual synthesis | Retrieval coverage, primary sources, citation accuracy and suitable tools | Choose retrieval capability and verification first. Coding scores do not establish research accuracy. |
+| Writing, translation, style matching | Representative rubric/sample and language-specific evidence | Use a task-relevant comparison. No measured winner is established by this map yet. |
+| Images, audio, video or mixed modalities | Required modality, output format, rights and current tool support | Exclude unsupported text-only routes. No multimodal quality ranking is established here. |
+| High-consequence analysis | Domain evidence, independent review and acceptance checks | Higher effort can be proposed; it is not a substitute for verification or domain expertise. |
+
+Filter hard constraints before ranking: usable provider/harness, actual model access, required tools, data destination, context/output limits, budget and deadline. A benchmark-only provider remains comparison-only until a supported, authorized execution route exists.
+
+Give one recommendation and, when useful, a lower and higher setup. State the saved or additional cost/quota, quality evidence, latency and reversal condition. Preserve an explicit model/effort until the caller accepts a change. Never silently switch provider, credits, subscription/API route or the parent session's model.
+
+## Current coding recommendations are provisional
+
+These are inferences for long-horizon coding, conditioned on usable tools and account access:
+
+- **Economy candidate:** GPT-5.6 Luna at max. Its measured score is much stronger than its low/medium settings. The displayed benchmark cost is low, but native Codex results and subscription quota consumption need separate evidence.
+- **Balanced Codex candidate:** GPT-5.6 Sol at high. It reached 69.4% in 9.9 mean minutes, versus 72.7% in 18.8 minutes at max. Use xhigh/max when the task justifies the extra work, not automatically. Cost at high is currently unverified in this map.
+- **Strong Gemini candidate:** Gemini 3.8 Flash at high. It is competitive near the top of this coding board. September 15 scoped allow rules demonstrated reads, file creation and fixed command launch at low; the written artifact had an extra newline and nested inference hit provider capacity errors. Full autonomous implementation is not yet proved. Low remains suitable for the tested trivial smoke only, with no DeepSWE low score.
+- **Quality-first comparison:** Astra medium/high/xhigh and Opus 5 high/xhigh/max are close enough that uncertainty, tools and latency matter. Astra medium scored 72.8% in 14.7 minutes; xhigh 74.1% in 18.9 minutes. Opus 5 high scored 72.8% in 19.4 minutes; max 73.6% in 31.9 minutes. This does not establish that max is worth its extra cost on a given task.
+
+API benchmark dollars below are not subscription charges or a request estimate. For actual estimated cost use applicable input, cache, output/reasoning, tool and long-context prices against expected workload quantities. For Grok 4.6, xAI's current API rates reviewed 2026-09-17 are, below 200k prompt tokens, $2/M input, $0.50/M cached input, and $6/M output; at or above 200k prompt tokens, $4/M input, $1/M cached input, and $12/M output. These API rates do not describe the consumer shared weekly Chat/Imagine/Voice/Build pool. Unknown cost cannot satisfy a hard spending ceiling. Included subscription access still consumes quota and time.
+
+## Evidence boundary
+
+[DeepSWE v1.1](https://deepswe.datacurve.ai/) reports 113 tasks and a September 3, 2026 update. The [structured evidence](https://deepswe.datacurve.ai/artifacts/v1.1/leaderboard-live.json) has 70 configurations across 28 models; all use `mini-swe-agent`. Results are pass@1 over scored attempts with four whole-benchmark runs per configuration. Timeouts count as failures; some infrastructure/provider errors are excluded. The intervals reflect run-to-run uncertainty, not a guarantee about a user's task.
+
+Model/harness results do not transfer unchanged to Codex, Claude Code, Antigravity, or Grok Build. A newer version or preview alias is not the same measured model. A blank effort entry means no measurement, not zero capability. The [changelog](https://deepswe.datacurve.ai/changelog) records pricing changes; several raw JSON costs differ from the current rendered board. Only costs independently visible on the reviewed board are shown as displayed costs below; other costs are unverified. They still require refresh before use.
+
+## Provider-wide coding comparison
+
+Each row below is the highest point estimate among that model's measured efforts, not a default effort recommendation. The full effort ladder follows. Costs are mean dollars per scored benchmark attempt, not per successful task or per million tokens. Durations are benchmark means, not a prediction for the current request.
+
+| Provider family | Exact benchmark model | Best measured effort | Score +/- interval | Mean minutes | Displayed USD |
+| --- | --- | --- | --- | --- | --- |
+| Anthropic | claude-fable-5 | xhigh | 69.9% +/- 3.2 | 23.5 | 13.41 |
+| Anthropic | claude-opus-4-8 | max | 59.0% +/- 1.8 | 58.2 | 13.22 |
+| Anthropic | claude-opus-5 | max | 73.6% +/- 3.9 | 31.9 | 11.84 |
+| Anthropic | claude-sonnet-4-6 | high | 29.9% +/- 4.1 | 46.9 | unverified |
+| Anthropic | claude-sonnet-5 | max | 53.8% +/- 4.2 | 80.1 | 26.40 |
+| DeepSeek | deepseek-v4-flash | max | 53.3% +/- 3.6 | 24.0 | 0.46 |
+| DeepSeek | deepseek-v4-pro | max | 62.8% +/- 6.3 | 36.9 | 1.67 |
+| Google | gemini-3-1-pro-preview | high | 11.7% +/- 1.5 | 14.5 | unverified |
+| Google | gemini-3-5-flash | high | 36.1% +/- 4.0 | 18.8 | 3.45 |
+| Google | gemini-3-6-flash | high | 46.7% +/- 3.7 | 24.6 | 2.21 |
+| Google | gemini-3-7-flash | medium | 65.5% +/- 3.1 | 20.7 | 2.03 |
+| Google | gemini-3-8-flash | high | 73.8% +/- 1.4 | 11.4 | 2.36 |
+| Z.ai | glm-5-2 | max | 43.8% +/- 1.7 | 43.8 | 3.92 |
+| Z.ai | glm-5-3 | max | 69.0% +/- 3.0 | 35.3 | 3.99 |
+| Z.ai | glm-5-3-flash | max | 63.4% +/- 4.4 | 25.6 | 0.24 |
+| OpenAI | gpt-5-4 | xhigh | 51.8% +/- 1.5 | 22.8 | unverified |
+| OpenAI | gpt-5-5 | xhigh | 67.0% +/- 6.5 | 30.1 | 7.23 |
+| OpenAI | gpt-5-6-luna | max | 67.2% +/- 4.0 | 18.7 | 0.61 |
+| OpenAI | gpt-5-6-sol | max | 72.7% +/- 2.8 | 18.8 | 6.46 |
+| OpenAI | gpt-5-6-terra | max | 69.6% +/- 2.6 | 16.9 | unverified |
+| OpenAI | gpt-6-astra | xhigh | 74.1% +/- 2.9 | 18.9 | 6.52 |
+| xAI | grok-4-5 | high | 53.8% +/- 2.3 | 8.1 | unverified |
+| xAI | grok-4-6 | medium | 67.5% +/- 2.3 | 14.9 | 3.45 |
+| Moonshot | kimi-k2-7-code | unspecified | 30.5% +/- 0.5 | 36.1 | unverified |
+| Moonshot | kimi-k3 | max | 68.5% +/- 4.5 | 75.7 | 4.65 |
+| Meta | muse-spark-1-1 | xhigh | 53.3% +/- 3.0 | 15.0 | unverified |
+| Meta | muse-spark-1-2 | xhigh | 54.9% +/- 2.1 | 15.5 | 3.70 |
+| Alibaba | qwen3-8-max | xhigh | 57.5% +/- 2.7 | 42.8 | 3.73 |
+
+## Measured effort ladder
+
+Values are pass@1 percentages. The column names are source labels, not universal cross-provider compute budgets. Ultra and other unmeasured settings are not inferred from max.
+
+| Exact benchmark model | low | medium | high | xhigh | max |
+| --- | --- | --- | --- | --- | --- |
+| claude-fable-5 | 59.6 | 65.4 | 68.6 | 69.9 | 69.7 |
+| claude-opus-4-8 | 40.8 | 48.7 | 51.8 | 54.4 | 59.0 |
+| claude-opus-5 | 58.1 | 68.9 | 72.8 | 73.2 | 73.6 |
+| claude-sonnet-4-6 | — | — | 29.9 | — | — |
+| claude-sonnet-5 | 30.5 | 39.8 | 48.2 | 49.7 | 53.8 |
+| deepseek-v4-flash | — | — | — | — | 53.3 |
+| deepseek-v4-pro | — | — | — | — | 62.8 |
+| gemini-3-1-pro-preview | — | — | 11.7 | — | — |
+| gemini-3-5-flash | — | — | 36.1 | — | — |
+| gemini-3-6-flash | — | — | 46.7 | — | — |
+| gemini-3-7-flash | 53.8 | 65.5 | 65.3 | — | — |
+| gemini-3-8-flash | — | 71.0 | 73.8 | — | — |
+| glm-5-2 | — | — | 36.3 | — | 43.8 |
+| glm-5-3 | — | — | — | — | 69.0 |
+| glm-5-3-flash | — | — | — | — | 63.4 |
+| gpt-5-4 | — | — | — | 51.8 | — |
+| gpt-5-5 | 27.0 | 54.0 | 64.4 | 67.0 | — |
+| gpt-5-6-luna | 1.5 | 11.3 | 44.2 | 56.9 | 67.2 |
+| gpt-5-6-sol | 45.4 | 61.1 | 69.4 | 70.7 | 72.7 |
+| gpt-5-6-terra | 24.1 | 35.1 | 53.8 | 60.2 | 69.6 |
+| gpt-6-astra | 67.0 | 72.8 | 73.2 | 74.1 | 73.2 |
+| grok-4-5 | — | — | 53.8 | — | — |
+| grok-4-6 | 41.6 | 67.5 | 65.2 | 66.7 | — |
+| kimi-k2-7-code | — | — | — | — | — |
+| kimi-k3 | — | — | — | — | 68.5 |
+| muse-spark-1-1 | — | — | — | 53.3 | — |
+| muse-spark-1-2 | — | — | — | 54.9 | — |
+| qwen3-8-max | — | — | — | 57.5 | — |
+
+## Locally observed availability, separate from benchmark scores
+
+Observed 2026-09-16; re-discover after runtime, account, host or workspace changes. Listed means catalog-visible, not inference-tested or entitlement-guaranteed.
+
+| Runtime | Visible model selection | Supported effort observed | Execution evidence |
+| --- | --- | --- | --- |
+| Codex CLI 0.144.4 | `gpt-5.6-sol`, `gpt-5.6-terra` | low, medium, high, xhigh, max, ultra | Catalog check only in this refresh |
+| Codex CLI 0.144.4 | `gpt-5.6-luna` | low, medium, high, xhigh, max | Luna low passed prompt/read/write fixtures; other efforts catalog-only |
+| Codex CLI 0.144.4 | `gpt-5.5` | low, medium, high, xhigh | Catalog check only |
+| Codex desktop | `gpt-6-astra` | Host catalog must be checked | Not listed by this CLI; desktop and CLI are separate availability surfaces |
+| agy 1.2.4 | `gemini-3.8-flash-low`, `gemini-3.8-flash-medium`, `gemini-3.8-flash-high` | Encoded in slug; separate effort combinations not tested | Catalog unchanged; earlier low prompt/read, scoped file creation and command launch evidence retained; exact write bytes and nested inference did not pass; medium/high listed only |
+| agy 1.2.4 | `gemini-3.7-flash-low`, `gemini-3.7-flash-medium`, `gemini-3.7-flash-high` | Encoded in slug | Listed only |
+| agy 1.2.4 | `gemini-3.6-flash-low`, `gemini-3.6-flash-medium`, `gemini-3.6-flash-high` | Encoded in slug | Listed only |
+| agy 1.2.4 | `gemini-3.1-pro-low`, `gemini-3.1-pro-high` | Encoded in slug | Listed only; do not attach the Pro Preview score without proving identity |
+| Claude Code 2.1.272 | `sonnet`, `opus`, `haiku`, `fable`, `best`, long-context variants | Verify both flag and exact selected model's support | Help/catalog syntax checked; earlier Haiku exact read/write evidence retained; other aliases untested |
+| Other providers in the table | No local adapter verified in this refresh | Unknown locally | Comparison-only; no installation or account access implied |
+
+The agy catalog also exposed Claude Sonnet 4.6, Claude Opus 4.6 Thinking and GPT-OSS 120B Medium. The Gemini skill intentionally selects Gemini models; cross-provider agy use requires separately scoped guidance. Do not confuse those older Claude models with the Claude Code aliases or the benchmark's Opus 5.
+
+[Claude's current model documentation](https://code.claude.com/docs/en/model-config) distinguishes aliases by provider. It documents Fable 5.1 as the newer version while some gateway sessions resolve `fable` to Fable 5. This board measures Fable 5, not 5.1. Fable headless usage can consume usage credits without an interactive prompt; never recommend or launch that billing path silently.
+
+## Refresh and update contract
+
+Use `headless-models` for selection and `headless-update-models` for an authorized family refresh. On a standalone headless install without it, recheck the linked primary sources and local catalog, label stale or missing fields, and do not pretend the bundled snapshot is live. Updating the matrix never changes executable permissions, authentication, budget authorization or an explicit model selection.
+
+Recheck the source date/version, full effort set, exact IDs, methodology, displayed costs and provider pricing; then update one canonical reference and project it to all supported consumers. Keep the older snapshot's date when a source is unreachable and label it stale. Apply the reminder interval from bundled model-state.json and freshness.md; a reminder is not a guarantee of correctness. Never recompute recommendations from unverified prices.

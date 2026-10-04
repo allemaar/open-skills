@@ -1,6 +1,6 @@
 # YON Conformance
 
-**40 / 40** skills that ship a `protocol.yon` pass YON conformance validation, checked with the public [`@younndai/yon-parser`](https://www.npmjs.com/package/@younndai/yon-parser) using the `exec` profile. 30 skills are Markdown-only.
+**48 / 48** skills that ship a `protocol.yon` pass YON conformance validation, checked with the public [`@younndai/yon-parser`](https://www.npmjs.com/package/@younndai/yon-parser) using the `exec` profile. 31 skills are Markdown-only.
 
 > Run it yourself: `npx @younndai/yon-parser validate skills/<skill>/protocol.yon --profile exec`.
 > Regenerate this table: `node tools/conformance.mjs`. Enforced in CI on every push.
@@ -25,6 +25,13 @@
 | `github-sync` | exec | ✅ valid |
 | `handoff` | exec | ✅ valid |
 | `handoff-execute` | exec | ✅ valid |
+| `headless-claude` | exec | ✅ valid |
+| `headless-codex` | exec | ✅ valid |
+| `headless-gemini` | exec | ✅ valid |
+| `headless-grok` | exec | ✅ valid |
+| `headless-models` | exec | ✅ valid |
+| `headless-update-models` | exec | ✅ valid |
+| `headless-usage` | exec | ✅ valid |
 | `human-draw` | — | — (md-only) |
 | `human-merge` | — | — (md-only) |
 | `human-output` | — | — (md-only) |
@@ -75,5 +82,7 @@
 | `synthesize` | — | — (md-only) |
 | `synthesize-init` | — | — (md-only) |
 | `verify` | exec | ✅ valid |
+| `write-copy` | — | — (md-only) |
+| `write-copy-event-video` | exec | ✅ valid |
 | `yon-read` | — | — (md-only) |
 | `yon-write` | — | — (md-only) |

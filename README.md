@@ -51,7 +51,9 @@ Throughout these docs, a skill's written command is its **folder name**
 phrases declared in frontmatter `triggers:` (/explore, /phase-plan) are
 recognition aliases that some runtimes also honor.
 
-The generated [`SKILLS.md`](SKILLS.md) catalog groups all 70 skills into twelve families. It is built from live `SKILL.md` metadata plus the pack's [`taxonomy.yon`](skills/skills-help/taxonomy.yon), so the human catalog and machine catalogs share one source rather than parallel hand-maintained menus.
+The generated [`SKILLS.md`](SKILLS.md) catalog groups the current skills into families. It is built from live `SKILL.md` metadata plus the pack's [`taxonomy.yon`](skills/skills-help/taxonomy.yon), so the human catalog and machine catalogs share one source rather than parallel hand-maintained menus.
+
+The [`write-copy`](skills/write-copy/) family starts with [`write-copy-event-video`](skills/write-copy-event-video/): event campaign copy, a separate voiceover handoff, and reusable occurrence details. It drafts text without generating media or publishing.
 
 Inside an agent, `/skills-help` reads that same bundled taxonomy and the skills actually installed beside it. Unknown third-party skills remain visible under `Unclassified`; they are not guessed into one of this pack's families.
 

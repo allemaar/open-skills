@@ -3,7 +3,7 @@
   "version": "1.8.0",
   "homepage": "https://allemaar.com",
   "repository": "https://github.com/allemaar/open-skills",
-  "generated": "2026-09-10",
+  "generated": "2026-09-29",
   "generator": "tools/spine.mjs",
   "license": "Apache-2.0",
   "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL.",
@@ -140,10 +140,20 @@
         "sync",
         "diff"
       ]
+    },
+    {
+      "id": "write-copy",
+      "label": "Write copy",
+      "order": 13,
+      "aliases": [
+        "copy",
+        "copywriting",
+        "campaign"
+      ]
     }
   ],
-  "count": 70,
-  "dualDoc": 40,
+  "count": 79,
+  "dualDoc": 48,
   "install": "Resolve requiresSkills recursively and install dependencies first. Then copy the requested skill folder into your runtime skills dir (copy-default, not symlink) and validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.",
   "skills": [
     {
@@ -1240,6 +1250,332 @@
       "install": {
         "copy": "cp -r skills/handoff-execute <skills-dir>/handoff-execute",
         "validate": "npx @younndai/yon-parser validate <skills-dir>/handoff-execute/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "headless-claude",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
+      "description": "Run a bounded, observable Claude Code headless task with explicit model, least-privilege tools, and preserved authorization. Trigger on /headless-claude, \"run Claude headlessly\", \"use Claude -p\", or \"supervise a Claude harness\". Not for changing Claude authentication or installing Claude Code.",
+      "visibility": "public",
+      "triggers": [
+        "/headless-claude",
+        "run Claude headlessly",
+        "use Claude -p",
+        "supervise a Claude harness"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [
+        {
+          "skill": "verify",
+          "phrase": "/verify",
+          "why": "Verify the target artifact independently after a successful harness run."
+        }
+      ],
+      "companions": [],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "launch-plan=ABORT",
+        "readonly=ABORT",
+        "web-run=ABORT",
+        "completion=WARN"
+      ],
+      "rules": [
+        "no-direct-api=MUST_NOT",
+        "explicit-scope=MUST",
+        "parent-contract=MUST",
+        "no-recursive-dispatch=MUST_NOT",
+        "freshness=MUST",
+        "no-bypass=MUST_NOT",
+        "scoped-file-write=MUST",
+        "untrusted-input=MUST",
+        "mcp=MUST",
+        "foreground=MUST",
+        "usage-bounds=MUST",
+        "capture-runspace=MUST",
+        "capture-incomplete=MUST",
+        "result-artifact=MUST",
+        "result-observability=MUST",
+        "result-verify=MUST",
+        "result-recovery=MUST",
+        "model-respect=MUST",
+        "model-map=MUST",
+        "availability=MUST",
+        "bare=MUST_NOT",
+        "auth-secret=MUST_NOT",
+        "effort=MUST",
+        "web-exposure=MUST",
+        "web-authorization=MUST",
+        "incomplete=MUST",
+        "access-contract=MUST",
+        "portable-dispatch=MUST"
+      ],
+      "steps": 7,
+      "install": {
+        "copy": "cp -r skills/headless-claude <skills-dir>/headless-claude",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/headless-claude/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "headless-codex",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
+      "description": "Run Codex CLI safely in bounded non-interactive workflows, including /headless-codex, \"run Codex headlessly\", and \"automate Codex CLI\". Not for creating skills or changing Codex configuration.",
+      "visibility": "public",
+      "triggers": [
+        "/headless-codex",
+        "run Codex headlessly",
+        "automate Codex CLI"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "runtime=ABORT",
+        "boundary=ABORT",
+        "result=ABORT"
+      ],
+      "rules": [
+        "auth=MUST_NOT",
+        "advisory=MUST",
+        "scope=MUST",
+        "parent-contract=MUST",
+        "no-recursive-dispatch=MUST_NOT",
+        "freshness=MUST",
+        "catalog=MUST",
+        "effort-config=MUST",
+        "scoped-prerequisite-observation=MUST",
+        "no-catalog-injection=MUST_NOT",
+        "foreground=MUST",
+        "explicit-choice=MUST",
+        "model-map=MUST",
+        "bounds=MUST",
+        "result-artifact=MUST",
+        "result-observability=MUST",
+        "result-verify=MUST",
+        "result-recovery=MUST",
+        "resume=MUST",
+        "cancel=MUST",
+        "background=MUST_NOT",
+        "workspace-trust=MUST",
+        "literal-config=MUST",
+        "nested-spawn=MUST",
+        "access-contract=MUST",
+        "portable-dispatch=MUST"
+      ],
+      "steps": 6,
+      "install": {
+        "copy": "cp -r skills/headless-codex <skills-dir>/headless-codex",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/headless-codex/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "headless-gemini",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
+      "description": "Run bounded Gemini tasks through Antigravity CLI (agy). Trigger on /headless-gemini, \"run Gemini headlessly\", or \"supervise agy\". Not for the separate gemini CLI, installation, authentication changes, or API-key setup.",
+      "visibility": "public",
+      "triggers": [
+        "/headless-gemini",
+        "run Gemini headlessly",
+        "supervise agy"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "preflight=ABORT",
+        "complete=ABORT"
+      ],
+      "rules": [
+        "identity=MUST",
+        "authority=MUST_NOT",
+        "scope=MUST",
+        "auth=MUST",
+        "model=MUST",
+        "model-map=MUST",
+        "isolation=MUST",
+        "trusted-context=MUST",
+        "file-paths=MUST",
+        "permission-recovery=MUST",
+        "arguments=MUST",
+        "cost=MUST",
+        "observability=MUST",
+        "stop=MUST",
+        "private-evidence=MUST",
+        "resume=MUST",
+        "family=MUST",
+        "cleanup-bound=MUST",
+        "access-contract=MUST",
+        "adapter-preflight=MUST",
+        "command-compatibility=MUST",
+        "portable-dispatch=MUST"
+      ],
+      "steps": 7,
+      "install": {
+        "copy": "cp -r skills/headless-gemini <skills-dir>/headless-gemini",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/headless-gemini/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "headless-grok",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
+      "description": "Run bounded Grok Build coding-agent tasks through the official grok CLI. Trigger on /headless-grok, \"run Grok headlessly\", or \"supervise grok -p\". Not for installation, authentication changes, API-key setup, or consumer chat automation.",
+      "visibility": "public",
+      "triggers": [
+        "/headless-grok",
+        "run Grok headlessly",
+        "supervise grok -p"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "complete=ABORT"
+      ],
+      "rules": [
+        "no-setup=MUST_NOT",
+        "preflight=MUST",
+        "auth=MUST",
+        "baseline=MUST",
+        "isolation=MUST_NOT",
+        "supervision=MUST",
+        "acceptance=MUST",
+        "cost=MUST",
+        "access-contract=MUST"
+      ],
+      "steps": 6,
+      "install": {
+        "copy": "cp -r skills/headless-grok <skills-dir>/headless-grok",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/headless-grok/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "headless-models",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
+      "description": "Compare providers, models and effort against task quality, cost, latency and local availability. Trigger on /headless-models, \"which model should I use\", or \"update all model maps\". Read-only selection. Use headless-update-models to refresh the family.",
+      "visibility": "public",
+      "triggers": [
+        "/headless-models",
+        "which model should I use",
+        "compare models and effort"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [],
+      "rules": [
+        "no-runtime-mutation=MUST_NOT",
+        "output-contract=MUST",
+        "providers=MUST",
+        "evidence-layers=MUST",
+        "discovery=MUST",
+        "identity=MUST_NOT",
+        "task-fit=MUST",
+        "cost=MUST",
+        "choice=MUST",
+        "explicit-selection=MUST",
+        "freshness=MUST",
+        "read-only=MUST_NOT",
+        "access-contract=MUST"
+      ],
+      "steps": 7,
+      "install": {
+        "copy": "cp -r skills/headless-models <skills-dir>/headless-models",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/headless-models/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "headless-update-models",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
+      "description": "Refresh provider models, effort, cost and benchmark evidence across all supported headless skills. Use /headless-update-models or \"update headless models\". For read-only selection use headless-models.",
+      "visibility": "public",
+      "triggers": [
+        "/headless-update-models",
+        "update headless models",
+        "refresh all headless model guidance"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [],
+      "rules": [
+        "scope=MUST",
+        "authority=MUST_NOT",
+        "evidence=MUST",
+        "timestamps=MUST",
+        "choice=MUST",
+        "cohort=MUST",
+        "usage-maintenance=MUST",
+        "access-contract=MUST",
+        "source-unavailable=MUST",
+        "process-assets=MUST"
+      ],
+      "steps": 6,
+      "install": {
+        "copy": "cp -r skills/headless-update-models <skills-dir>/headless-update-models",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/headless-update-models/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "headless-usage",
+      "family": "orchestration",
+      "familyLabel": "Orchestration & dispatch",
+      "description": "Read current quota, usage and reset times across Codex, Claude Code, Antigravity and Grok Build. Use /headless-usage, \"show my quotas\", or \"how much usage is left\". Returns a dated result for every requested harness, including unavailable data.",
+      "visibility": "public",
+      "triggers": [
+        "/headless-usage",
+        "show my quotas",
+        "how much usage is left"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [],
+      "rules": [
+        "read-only=MUST_NOT",
+        "freshness=MUST",
+        "bounded=MUST",
+        "claude=MUST",
+        "grok=MUST",
+        "semantics=MUST",
+        "privacy=MUST",
+        "access-contract=MUST"
+      ],
+      "steps": 6,
+      "install": {
+        "copy": "cp -r skills/headless-usage <skills-dir>/headless-usage",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/headless-usage/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3853,6 +4189,97 @@
       "install": {
         "copy": "cp -r skills/verify <skills-dir>/verify",
         "validate": "npx @younndai/yon-parser validate <skills-dir>/verify/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "write-copy",
+      "family": "write-copy",
+      "familyLabel": "Write copy",
+      "description": "Route promotional copy to a topic specialization. Use /write-copy, \"write campaign copy\", or \"write event copy\". For a known event video use write-copy-event-video directly; for faithful prose repair use human-rewrite.",
+      "visibility": "public",
+      "triggers": [
+        "/write-copy",
+        "write campaign copy",
+        "write event copy"
+      ],
+      "requiresSkills": [
+        "write-copy-event-video"
+      ],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/write-copy <skills-dir>/write-copy",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "write-copy-event-video",
+      "family": "write-copy",
+      "familyLabel": "Write copy",
+      "description": "Create three independent event-video copy variants, cross-examine them, and write a fourth synthesis with voiceover handoff. Use /write-copy-event-video or \"write an event promo script\". Drafting only; no media generation or publishing.",
+      "visibility": "public",
+      "triggers": [
+        "/write-copy-event-video",
+        "write an event promo script",
+        "write course event video copy"
+      ],
+      "requiresSkills": [
+        "insight-cross-examine",
+        "insight-angles",
+        "insight-critique",
+        "insight-assess",
+        "insight-explore",
+        "human-output"
+      ],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "honesty=ABORT"
+      ],
+      "rules": [
+        "draft=MUST_NOT",
+        "sources=MUST",
+        "untrusted=MUST_NOT",
+        "unknown=MUST",
+        "claims=MUST_NOT",
+        "techniques=SHOULD",
+        "master=MUST",
+        "independent=MUST",
+        "leaf=MUST",
+        "bounded=MUST",
+        "fallback=MUST",
+        "engine=MUST",
+        "synthesis=MUST",
+        "attribution=MUST",
+        "clarity=MUST",
+        "preferences=MUST",
+        "invitation=SHOULD",
+        "production-handoff=MUST",
+        "duration=MUST",
+        "cta=MUST",
+        "layers=MUST",
+        "voice=MUST",
+        "voice-facts=MUST_NOT",
+        "language=MUST",
+        "reuse=MUST",
+        "review=MUST",
+        "test=MUST"
+      ],
+      "steps": 9,
+      "install": {
+        "copy": "cp -r skills/write-copy-event-video <skills-dir>/write-copy-event-video",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/write-copy-event-video/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
