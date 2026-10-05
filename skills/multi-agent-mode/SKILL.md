@@ -2,7 +2,6 @@
 name: multi-agent-mode
 description: >
   Activate multi-agent mode: the lead agent still works directly but delegates independent helper slices when useful. Trigger on /multi-agent-mode, "multi-agent mode", "use helper agents", "work with subagents", or "parallelize if useful". Use orchestrate-mode instead when the lead agent must dispatch only and not execute.
-disable-model-invocation: true
 visibility: public
 triggers:
   - "/multi-agent-mode"

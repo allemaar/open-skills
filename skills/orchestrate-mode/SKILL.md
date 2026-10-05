@@ -2,7 +2,6 @@
 name: orchestrate-mode
 description: >
   Activate orchestrator mode in the current session: the lead agent dispatches governed worker subagents and does not execute concrete work directly. Trigger on /orchestrate-mode, "become an orchestrator", "orchestrator mode", "delegate everything", or "do not execute". Use multi-agent-mode instead when the lead agent should still work directly while delegating helper slices.
-disable-model-invocation: true
 visibility: public
 triggers:
   - "/orchestrate-mode"
