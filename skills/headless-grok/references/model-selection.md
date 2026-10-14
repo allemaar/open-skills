@@ -1,7 +1,7 @@
 <!-- headless-models:projection -->
 # Model and effort selection
 
-Reviewed 2026-09-17. This dated matrix is maintained by the `headless-models` skill and bundled identically in the four provider headless skills. Refresh current availability and price before a consequential choice. Edit the canonical reference in `headless-models`, not a bundled projection.
+Reviewed 2026-10-15. This dated matrix is maintained by the `headless-models` skill and bundled identically in the four provider headless skills. Refresh current availability and price before a consequential choice. Edit the canonical reference in `headless-models`, not a bundled projection.
 
 ## Select for the requested output
 
@@ -19,20 +19,51 @@ Filter hard constraints before ranking: usable provider/harness, actual model ac
 
 Give one recommendation and, when useful, a lower and higher setup. State the saved or additional cost/quota, quality evidence, latency and reversal condition. Preserve an explicit model/effort until the caller accepts a change. Never silently switch provider, credits, subscription/API route or the parent session's model.
 
+## Role roster
+
+Dated candidates for worker, smart-worker, reviewer and special roles. Use each family's newest catalog-visible model and verify it against the target runtime before use.
+
+| Role | Claude Code alias | Codex catalog 2026-10-15 | Gemini (agy) / Grok |
+| --- | --- | --- | --- |
+| worker | `haiku` (Haiku 5.5) | `gpt-6-luna` | latest model, low effort |
+| smart-worker | `sonnet` (Sonnet 5.5) | `gpt-5.6-terra` (no GPT-6 Terra exists) | latest model, high effort |
+| reviewer | `opus` (Opus 5.5) | `gpt-6.1-sol` | latest model, high effort |
+| special | `fable` (Fable 5.1) | `gpt-6-astra` | none |
+
+- Newest-generation models are unmeasured on DeepSWE: Haiku/Sonnet/Opus 5.5, Fable 5.1, `gpt-6-luna`, `gpt-6-sol`, `gpt-6.1-sol`, Grok 4.7, Gemini 4 Argon. The measured ladder below covers their predecessors only.
+- Codex `ultra` splits a divisible task across subagents; it is not deeper single-run reasoning. Offered on Sol, Terra and Astra, not Luna. Never use it for a leaf worker.
+- Native subagent model choices come from the live worker tool contract, not the CLI catalog. Check them per session.
+
 ## Current coding recommendations are provisional
 
-These are inferences for long-horizon coding, conditioned on usable tools and account access:
+These are inferences for long-horizon coding from measured models, conditioned on usable tools and account access. Newer unmeasured successors may perform differently:
 
 - **Economy candidate:** GPT-5.6 Luna at max. Its measured score is much stronger than its low/medium settings. The displayed benchmark cost is low, but native Codex results and subscription quota consumption need separate evidence.
 - **Balanced Codex candidate:** GPT-5.6 Sol at high. It reached 69.4% in 9.9 mean minutes, versus 72.7% in 18.8 minutes at max. Use xhigh/max when the task justifies the extra work, not automatically. Cost at high is currently unverified in this map.
 - **Strong Gemini candidate:** Gemini 3.8 Flash at high. It is competitive near the top of this coding board. September 15 scoped allow rules demonstrated reads, file creation and fixed command launch at low; the written artifact had an extra newline and nested inference hit provider capacity errors. Full autonomous implementation is not yet proved. Low remains suitable for the tested trivial smoke only, with no DeepSWE low score.
 - **Quality-first comparison:** Astra medium/high/xhigh and Opus 5 high/xhigh/max are close enough that uncertainty, tools and latency matter. Astra medium scored 72.8% in 14.7 minutes; xhigh 74.1% in 18.9 minutes. Opus 5 high scored 72.8% in 19.4 minutes; max 73.6% in 31.9 minutes. This does not establish that max is worth its extra cost on a given task.
 
-API benchmark dollars below are not subscription charges or a request estimate. For actual estimated cost use applicable input, cache, output/reasoning, tool and long-context prices against expected workload quantities. For Grok 4.6, xAI's current API rates reviewed 2026-09-17 are, below 200k prompt tokens, $2/M input, $0.50/M cached input, and $6/M output; at or above 200k prompt tokens, $4/M input, $1/M cached input, and $12/M output. These API rates do not describe the consumer shared weekly Chat/Imagine/Voice/Build pool. Unknown cost cannot satisfy a hard spending ceiling. Included subscription access still consumes quota and time.
+API benchmark dollars below are not subscription charges or a request estimate. For actual estimated cost use applicable input, cache, output/reasoning, tool and long-context prices against expected workload quantities. API standard rates reviewed 2026-10-15, USD per million tokens (input / cached input / output); long-context, batch and fast tiers differ:
+
+| Model | Rate | Source |
+| --- | --- | --- |
+| Haiku 5.5 (prompts ≤100k) | 0.10 / 0.01 / 0.50 | [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing) |
+| Sonnet 5.5 | 2 / 0.10 / 10 | same |
+| Opus 5.5 | 4 / 0.20 / 20 | same |
+| Fable 5.1 | 10 / 0.25 / 50 | same |
+| gpt-6-luna | 0.10 / 0.01 / 0.50 | [OpenAI pricing](https://developers.openai.com/api/docs/pricing) |
+| gpt-6-sol | 2 / 0.20 / 10 | same |
+| gpt-6.1-sol | 2 / 0.10 / 10 | same |
+| gpt-5.6-terra | 2 / 0.20 / 12 | same |
+| gpt-6-astra | 10 / 1 / 50 | same |
+| Gemini 3.8 Flash | 0.75 / — / 3.75, rising to 1.50 / 7.50 on 2027-01-01 | [Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing) |
+| Grok 4.7 and 4.6 (<200k prompt) | 2 / 0.50 / 6 | [xAI models](https://docs.x.ai/docs/models) |
+
+These API rates do not describe subscription quota, including the consumer shared weekly Chat/Imagine/Voice/Build pool. Unknown cost cannot satisfy a hard spending ceiling. Included subscription access still consumes quota and time.
 
 ## Evidence boundary
 
-[DeepSWE v1.1](https://deepswe.datacurve.ai/) reports 113 tasks and a September 3, 2026 update. The [structured evidence](https://deepswe.datacurve.ai/artifacts/v1.1/leaderboard-live.json) has 70 configurations across 28 models; all use `mini-swe-agent`. Results are pass@1 over scored attempts with four whole-benchmark runs per configuration. Timeouts count as failures; some infrastructure/provider errors are excluded. The intervals reflect run-to-run uncertainty, not a guarantee about a user's task.
+[DeepSWE v1.1](https://deepswe.datacurve.ai/) reports 113 tasks and a September 22, 2026 update (changelog last entry September 3). Re-fetched 2026-10-15: every score in this map matches the live data; no newer benchmark version or new model was found. The [structured evidence](https://deepswe.datacurve.ai/artifacts/v1.1/leaderboard-live.json) has 70 configurations across 28 models; all use `mini-swe-agent`. Results are pass@1 over scored attempts with four whole-benchmark runs per configuration. Timeouts count as failures; some infrastructure/provider errors are excluded. The intervals reflect run-to-run uncertainty, not a guarantee about a user's task.
 
 Model/harness results do not transfer unchanged to Codex, Claude Code, Antigravity, or Grok Build. A newer version or preview alias is not the same measured model. A blank effort entry means no measurement, not zero capability. The [changelog](https://deepswe.datacurve.ai/changelog) records pricing changes; several raw JSON costs differ from the current rendered board. Only costs independently visible on the reviewed board are shown as displayed costs below; other costs are unverified. They still require refresh before use.
 
@@ -108,24 +139,21 @@ Values are pass@1 percentages. The column names are source labels, not universal
 
 ## Locally observed availability, separate from benchmark scores
 
-Observed 2026-09-16; re-discover after runtime, account, host or workspace changes. Listed means catalog-visible, not inference-tested or entitlement-guaranteed.
+Observed 2026-10-15; re-discover after runtime, account, host or workspace changes. Listed means catalog-visible, not inference-tested or entitlement-guaranteed.
 
 | Runtime | Visible model selection | Supported effort observed | Execution evidence |
 | --- | --- | --- | --- |
-| Codex CLI 0.144.4 | `gpt-5.6-sol`, `gpt-5.6-terra` | low, medium, high, xhigh, max, ultra | Catalog check only in this refresh |
-| Codex CLI 0.144.4 | `gpt-5.6-luna` | low, medium, high, xhigh, max | Luna low passed prompt/read/write fixtures; other efforts catalog-only |
-| Codex CLI 0.144.4 | `gpt-5.5` | low, medium, high, xhigh | Catalog check only |
-| Codex desktop | `gpt-6-astra` | Host catalog must be checked | Not listed by this CLI; desktop and CLI are separate availability surfaces |
-| agy 1.2.4 | `gemini-3.8-flash-low`, `gemini-3.8-flash-medium`, `gemini-3.8-flash-high` | Encoded in slug; separate effort combinations not tested | Catalog unchanged; earlier low prompt/read, scoped file creation and command launch evidence retained; exact write bytes and nested inference did not pass; medium/high listed only |
-| agy 1.2.4 | `gemini-3.7-flash-low`, `gemini-3.7-flash-medium`, `gemini-3.7-flash-high` | Encoded in slug | Listed only |
-| agy 1.2.4 | `gemini-3.6-flash-low`, `gemini-3.6-flash-medium`, `gemini-3.6-flash-high` | Encoded in slug | Listed only |
-| agy 1.2.4 | `gemini-3.1-pro-low`, `gemini-3.1-pro-high` | Encoded in slug | Listed only; do not attach the Pro Preview score without proving identity |
-| Claude Code 2.1.272 | `sonnet`, `opus`, `haiku`, `fable`, `best`, long-context variants | Verify both flag and exact selected model's support | Help/catalog syntax checked; earlier Haiku exact read/write evidence retained; other aliases untested |
+| Codex CLI 0.160.0 | `gpt-6.1-sol`, `gpt-6-sol`, `gpt-6-astra`, `gpt-5.6-sol`, `gpt-5.6-terra` | low, medium, high, xhigh, max, ultra | `gpt-6.1-sol` and `gpt-6-astra` high completed read-only review runs 2026-10-14; others catalog-only |
+| Codex CLI 0.160.0 | `gpt-6-luna`, `gpt-5.6-luna` | low, medium, high, xhigh, max | `gpt-5.6-luna` low passed earlier prompt/read/write fixtures; others catalog-only |
+| Codex CLI 0.160.0 | Hidden: `gpt-reserve`, `codex-auto-review`. Absent: `gpt-5.5` (retired from ChatGPT-login Codex 2026-10-14; API-key sessions unaffected) | — | Not selectable |
+| agy 1.2.11 | `gemini-3.8-flash-low`, `gemini-3.8-flash-medium`, `gemini-3.8-flash-high` | Encoded in slug | Earlier low prompt/read, scoped file creation and command launch evidence retained; exact write bytes and nested inference did not pass; medium/high listed only. Gemini 3.7, 3.6 and 3.1 Pro are no longer listed |
+| Claude Code 2.1.289 | `haiku`, `sonnet`, `opus`, `fable`, `best` | `--effort` low, medium, high, xhigh, max | Help checked. Haiku 5.5 needs Claude Code 2.1.293 or later; this host is older, so `haiku` may not resolve to 5.5 here |
+| Grok Build | Not found on this host's PATH | Unknown | Comparison-only until an installation is present |
 | Other providers in the table | No local adapter verified in this refresh | Unknown locally | Comparison-only; no installation or account access implied |
 
-The agy catalog also exposed Claude Sonnet 4.6, Claude Opus 4.6 Thinking and GPT-OSS 120B Medium. The Gemini skill intentionally selects Gemini models; cross-provider agy use requires separately scoped guidance. Do not confuse those older Claude models with the Claude Code aliases or the benchmark's Opus 5.
+The agy catalog also exposes Claude Opus 5.5 and Sonnet 5.5 (low/medium/high) and GPT-OSS 120B Medium. The Gemini skill intentionally selects Gemini models; cross-provider agy use requires separately scoped guidance. Gemini 4 Argon is published in the Gemini API but not listed by agy 1.2.11.
 
-[Claude's current model documentation](https://code.claude.com/docs/en/model-config) distinguishes aliases by provider. It documents Fable 5.1 as the newer version while some gateway sessions resolve `fable` to Fable 5. This board measures Fable 5, not 5.1. Fable headless usage can consume usage credits without an interactive prompt; never recommend or launch that billing path silently.
+[Claude's model documentation](https://code.claude.com/docs/en/model-config): on the Anthropic API, `haiku`, `sonnet` and `opus` resolve to the 5.5 models and `fable` to Fable 5.1 (Fable 5 in some gateway sessions); other cloud providers map aliases to older models. Haiku, Sonnet and Opus 5.5 and Fable 5/5.1 support effort low to max; the 5.5 models default to medium. This board measures Fable 5 and Opus 5, not their successors. Fable can bill usage credits; `-p` and SDK sessions bill it without asking, so never recommend or launch that billing path silently.
 
 ## Refresh and update contract
 

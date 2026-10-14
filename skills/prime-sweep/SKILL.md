@@ -176,4 +176,4 @@ Two protocol elements have no deterministic runtime primitive — flagged for ho
 
 > **Next skills.** On completion, run the Next Skills protocol (`next-skills/SKILL.md`).
 
-> **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.
+> **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): apply its signal taxonomy and threshold to this run; surface any surviving proposal for handler approval. Conservative — silent otherwise. Never auto-apply.

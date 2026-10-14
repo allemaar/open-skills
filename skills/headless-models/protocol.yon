@@ -1,6 +1,6 @@
 @DOC ver=2.0 | kind=skill | id=headless-models | title="Provider-wide model selection and maintenance" | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Select models and efforts against requested output, quality, cost, latency and local availability; read synchronized evidence maps across headless skills" | trigger="user runs /headless-models, asks which model to use, compares models and effort, or compares provider setups"
-@STAMP ts:ts=2026-09-17T09:18:37.950Z | src=human | method=manual
+@STAMP ts:ts=2026-10-14T11:00:00Z | src=human | method=manual
 @RULE rid=rule:no-runtime-mutation | lvl=MUST_NOT | when="selecting or maintaining the map" | then="change runtime defaults, credentials, provider billing, subscription, credits, installation, scheduling or publication; launch comparison inference without bounded authorization"
 @RULE rid=rule:output-contract | lvl=MUST | when="selecting" | then="establish artifact, task family, acceptance checks, failure consequence, modalities and input size, tools, privacy, availability, budget and latency; label reasonable inferences and ask only for a decision-changing missing constraint"
 @RULE rid=rule:providers | lvl=MUST | when="defining coverage" | then="discover providers from relevant sources, keep unavailable providers comparison-only, and report the covered set without claiming universal completeness"
@@ -18,7 +18,7 @@
 @STEP rid=step:select | n:int=4 | op=std:ai.prompt@v1 | in=[ref:evidence] | args=[task="Filter hard constraints, construct task-fit quality/cost/latency/availability matrix and make labeled recommendations. Preserve explicit choices; propose justified upgrade/downgrade with trade-off and reversal condition."] | out=[ref:matrix]
 @STEP rid=step:verify | n:int=6 | op=std:cmd.run@v1 | in=[ref:matrix] | args=[task="Verify recommendation facts against retrieved primary evidence and actual runtime availability; report missing coverage."] | out=[ref:verified]
 @STEP rid=step:report | n:int=7 | op=std:io.emit@v1 | in=[ref:verified] | args=[task="Return selection/update result, useful up/down alternative, evidence dates, cost basis, provider/runtime coverage, installed state and material gaps; no giant catalog by default."] | out=[ref:report]
-@STEP rid=step:sip | n:int=99 | op=std:ai.prompt@v1 | args=[task="Propose a concrete repair only for recurring or blocking weakness; otherwise remain silent and never auto-apply."] | out=[ref:sip]
+@STEP rid=step:sip | n:int=99 | op=std:ai.prompt@v1 | args=[task="Propose a concrete repair only for a material or recurring weakness, missing good practice, or unrecorded fixed pitfall; otherwise remain silent and never auto-apply."] | out=[ref:sip]
 
 @RULE rid=rule:freshness | lvl=MUST | when="every invocation, even with an explicit model" | then="read model-state.json and freshness.md; run bundled local checker or apply identical timestamp logic; interval comes from policy.reminderDays; parent offers update-all or continue-dated once per session snapshot/reasons; children return status, never ask or update recursively; no reply is no update approval"
 @RULE rid=rule:read-only | lvl=MUST_NOT | when="using this selector" | then="edit projections, launch inference or change settings; route explicit update requests to headless-update-models"

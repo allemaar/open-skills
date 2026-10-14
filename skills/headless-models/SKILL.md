@@ -67,6 +67,6 @@ Read [family validation](references/validation.md) for the tested routes and rem
 
 Return the selected setup, one useful up/down alternative when justified, cost/quality trade-off, evidence dates, checked providers and runtimes, unresolved gaps and local availability. Name unsupported task families or missing cost data that could change the decision. Avoid presenting the whole catalog unless requested.
 
-**Self-improvement.** Propose a repair only when a concrete recurring or blocking weakness appears. Otherwise remain silent. Never auto-apply. No sibling skill is required.
+**Self-improvement.** Propose a repair only when a concrete material or recurring weakness, missing good practice, or unrecorded fixed pitfall appears. Otherwise remain silent. Never auto-apply. No sibling skill is required.
 
 For current account quota and reset times, use headless-usage. It attempts live reads independently of model-map freshness and labels unavailable or cached provider data explicitly.

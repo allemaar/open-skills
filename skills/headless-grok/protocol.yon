@@ -1,6 +1,6 @@
 @DOC ver=2.0 | kind=skill | id=headless-grok | title="Bounded Grok Build headless execution" | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Run one supervised Grok Build CLI task while preserving model, authentication, permissions, cost route, scope and stop condition" | trigger="user runs /headless-grok, asks to run Grok headlessly, or asks to supervise grok -p"
-@STAMP ts:ts=2026-09-17T09:18:37.950Z | src=human | method=manual
+@STAMP ts:ts=2026-10-14T11:00:00Z | src=human | method=manual
 @RULE rid=rule:no-setup | lvl=MUST_NOT | when="using this execution skill" | then="install or update the CLI, authenticate, inspect credentials, change persistent settings, enable billing or credits, or infer API entitlement from X Premium or Grok subscription"
 @RULE rid=rule:preflight | lvl=MUST | when="before launch" | then="read access, run contract, freshness and model state; verify local version/help/models; record exact task, paths, tools, model/reasoning, auth route, deadline, output, cancellation and retry limit"
 @RULE rid=rule:auth | lvl=MUST | when="selecting identity and billing" | then="preserve explicit consumer OIDC or API-key route; prefer existing consumer login only when selected; require separate authorization and budget for API key; never print keys or silently fall back"
@@ -17,4 +17,4 @@
 @STEP rid=step:verify | n:int=4 | op=std:ai.prompt@v1 | in=[ref:run] | args=[task="Validate terminal structure, expected identity, scope and actions; independently verify answer or artifact and stopped state."] | out=[ref:verified]
 @CHECK rid=check:complete | assert="run is complete, bounded, scope-conformant and independently verified" | fail=ABORT | msg="Return incomplete with exact blocker and retained evidence; do not substitute model, auth or billing route."
 @STEP rid=step:report | n:int=5 | op=std:io.emit@v1 | in=[ref:verified] | args=[task="Report runtime, auth evidence without secrets, model/reasoning, permissions, deadline, result, verification and material gaps."] | out=[ref:report]
-@STEP rid=step:sip | n:int=99 | op=std:ai.prompt@v1 | args=[task="Propose a concrete repair only for recurring or blocking weakness; otherwise remain silent and never auto-apply."] | out=[ref:sip]
+@STEP rid=step:sip | n:int=99 | op=std:ai.prompt@v1 | args=[task="Propose a concrete repair only for a material or recurring weakness, missing good practice, or unrecorded fixed pitfall; otherwise remain silent and never auto-apply."] | out=[ref:sip]

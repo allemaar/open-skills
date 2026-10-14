@@ -107,7 +107,7 @@ If the skill is a capable procedural skill (phases, gates, judgment — i.e. som
 
 1. **Front-matter** — `self-improvable: true`.
 2. **SKILL.md prose pointer** — paste as the **last** section of the body (SIP runs on completion, after NSP where present):
-   > **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.
+   > **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): apply its signal taxonomy and threshold to this run; surface any surviving proposal for handler approval. Conservative — silent otherwise. Never auto-apply.
 3. **protocol.yon** (dual-doc only) — a closing `@STEP rid=step:sip` as the last step, after `step:nsp`. See [`self-improve/SKILL.md`](../self-improve/SKILL.md) for the exact form.
 
 Content: write clear step-by-step instructions based on what the user described.
@@ -293,4 +293,4 @@ Before relying on the procedure for a real rename, exercise it on a throwaway br
 
 > **Next skills.** On completion, run the Next Skills protocol (`next-skills/SKILL.md`): surface the `next-skills` recommendations from front-matter for the caller to pick. Offer only — never auto-invoke.
 
-> **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.
+> **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): apply its signal taxonomy and threshold to this run; surface any surviving proposal for handler approval. Conservative — silent otherwise. Never auto-apply.

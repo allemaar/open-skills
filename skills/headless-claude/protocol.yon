@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=headless-claude | title="Headless Claude Code Harness" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Run a bounded, observable Claude Code headless task with explicit model selection, least privilege, and preserved Handler authorization" | trigger="user runs /headless-claude or asks to run Claude headlessly, use Claude -p, or supervise a Claude harness"
-@STAMP ts:ts=2026-09-17T09:18:37.950Z | src=human | method=manual
+@STAMP ts:ts=2026-10-14T21:20:00Z | src=human | method=manual
 
 @SEC name="Scope and authority"
 @RULE rid=rule:no-direct-api | lvl=MUST_NOT | when="running this skill" | then="call an Anthropic API directly, install Claude Code, alter persistent credentials, or expose a credential value"
@@ -28,7 +28,7 @@
 @RULE rid=rule:availability | lvl=MUST | when="describing a documented model" | then="label it account, provider, plan, and policy dependent; confirm only the effective model emitted by the run"
 @RULE rid=rule:bare | lvl=MUST_NOT | when="the Handler chooses existing subscription login" | then="pass --bare because it does not read subscription OAuth or keychain credentials"
 @RULE rid=rule:auth-secret | lvl=MUST_NOT | when="diagnosing auth precedence" | then="print or persist an environment-variable value"
-@RULE rid=rule:effort | lvl=MUST | when="selecting effort" | then="verify both local flag support and model-specific support in current model documentation; omit --effort for Haiku; stop on an unsupported explicit model or effort"
+@RULE rid=rule:effort | lvl=MUST | when="selecting effort" | then="verify both local flag support and model-specific support in current model documentation; omit --effort only when the exact selected model lacks effort support; stop on an unsupported explicit model or effort"
 
 @SEC name="Prepare"
 @STEP rid=step:help | n:int=1 | op=std:cmd.run@v1 | args=[task="Check model-state freshness, then run claude --help and --version from the chosen environment; use only flags actually supported there."] | out=[ref:capabilities]
@@ -57,8 +57,8 @@
 @STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Offer the next-skills frontmatter recommendation only if installed; never auto-invoke it. No sibling protocol is required."] | out=[ref:nsp-offer]
 
 @SEC name="Self-improvement"
-@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="If a concrete blocking or recurring weakness in this skill appeared, propose a specific repair for Handler approval; otherwise remain silent. Never auto-apply. No sibling skill is required."] | out=[ref:sip-offer]
-@STAMP ts:ts=2026-09-17T09:18:37.950Z | src=human | method=manual
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="If a concrete material or recurring weakness, missing good practice, or unrecorded fixed pitfall in this skill appeared, propose a specific repair for Handler approval; otherwise remain silent. Never auto-apply. No sibling skill is required."] | out=[ref:sip-offer]
+@STAMP ts:ts=2026-10-14T21:20:00Z | src=human | method=manual
 
 @RULE rid=rule:access-contract | lvl=MUST | when="every run" | then="read bundled access.md; census current OS, executable path, version/help, supported nonsecret auth state, model/quota surfaces, relevant configuration/customizations and parent supervision/cancellation; use only existing state; missing or unobservable capabilities stop only dependent routes; dated validation is historical, never a default or entitlement; never auto-install, log in, add API fallback or change configuration"
 

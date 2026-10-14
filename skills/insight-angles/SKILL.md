@@ -136,4 +136,4 @@ This skill's SIP is specialized: **usage grows the roster.** When a *dynamic* le
 
 > **Next skills.** On completion, run the Next Skills protocol (`next-skills/SKILL.md`): surface the `next-skills` recommendations from front-matter for the caller to pick. Offer only — never auto-invoke.
 
-> **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill — *including a dynamic lens worth promoting into the roster* — propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.
+> **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): apply its signal taxonomy and threshold to this run, *including a dynamic lens worth promoting into the roster*; surface any surviving proposal for handler approval. Conservative — silent otherwise. Never auto-apply.

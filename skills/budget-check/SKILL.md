@@ -66,4 +66,4 @@ This is a **runtime** tool — it reads *your* local usage logs, so it has nothi
 
 > **Next skills.** On completion, run the Next Skills protocol: surface the front-matter recommendations for the caller to pick. Offer only — never auto-invoke.
 
-> **Self-improvement.** On completion, run the Self-Improvement Protocol: if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.
+> **Self-improvement.** On completion, run the Self-Improvement Protocol: apply its signal taxonomy and threshold to this run; surface any surviving proposal for handler approval. Conservative — silent otherwise. Never auto-apply.

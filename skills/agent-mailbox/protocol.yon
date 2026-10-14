@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=agent-mailbox | title="/agent-mailbox" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Coordinate two or more agents through a supplied shared-folder Markdown mailbox over local, Git, free registered Lyt, or sync-share transport with explicit handshake, causal delivery, durable CTA disposition, bounded listening, lazy operating packages, idempotent recovery, durable resumption, and audible closure" | trigger="Handler invokes /agent-mailbox or explicitly asks agents to handshake, collaborate, listen, schedule checks, recover a missed message, or resume through a supplied inbox"
-@STAMP ts:ts=2026-07-29T22:31:23Z | src="Alexandru Mares | allemaar.com" | method=merged
+@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=merged
 @REF name=collab-window | target="protocols/collab-window.yon"
 @REF name=scheduled-collab | target="protocols/scheduled-collab.yon"
 @REF name=missed-message-recovery | target="protocols/missed-message-recovery.yon"
@@ -217,6 +217,6 @@
 @STEP rid=step:nsp | n:int=99 | op=std:ai.prompt@v1 | args=[task="Run the Next Skills protocol: offer cold-review for independent review or handoff for a one-shot transfer. Offer only; never auto-invoke."] | in=[] | out=[ref:nsp-offer]
 
 @SEC name="Self-improvement"
-@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol: only if this run exposed a concrete material or recurring weakness in agent-mailbox, draft a specific diff and surface it for Handler approval. Never auto-apply."] | in=[] | out=[ref:sip-offer]
+@STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol: only if this run exposed a concrete material or recurring weakness, missing good practice, or unrecorded fixed pitfall in agent-mailbox, draft a specific diff and surface it for Handler approval. Never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-09-10T00:00:00Z | src="Alexandru Mares | allemaar.com" | method=merged
+@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=merged

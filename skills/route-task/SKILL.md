@@ -92,4 +92,4 @@ From `richkuo/rk-skills` `validate-issue`, whose CI test parses and recomputes t
 
 1/3 anchors undefined; Coupling's dual role (floor + volume) unvalidated — a single point (2→3) jumps the display score 4→56; `max(R,U)` cannot distinguish R4+U4 from R4 alone (plan_gate absorbs part); verification-heavy-but-tiny work may under-route. These are live evaluation questions the report-card stream exists to answer — surface surprises in the card's feedback field.
 
-> **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.
+> **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): apply its signal taxonomy and threshold to this run; surface any surviving proposal for handler approval. Conservative — silent otherwise. Never auto-apply.

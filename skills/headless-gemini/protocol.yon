@@ -1,6 +1,6 @@
 @DOC ver=2.0 | kind=skill | id=headless-gemini | title="Headless Gemini through Antigravity CLI" | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Run one bounded Gemini task through installed agy with existing login, explicit scope, observable supervision, and independent result verification" | trigger="user runs /headless-gemini, says run Gemini headlessly, or supervise agy"
-@STAMP ts:ts=2026-09-17T09:18:37.950Z | src=human | method=manual
+@STAMP ts:ts=2026-10-14T11:00:00Z | src=human | method=manual
 
 @SEC name="Boundary"
 @RULE rid=rule:identity | lvl=MUST | when="selecting the runtime" | then="resolve installed agy, verify version and help and agy models; do not confuse it with the separate gemini CLI or reinstall to repair inherited PATH"
@@ -31,7 +31,7 @@
 @CHECK rid=check:complete | assert="exit zero, exactly one complete SUCCESS envelope, nonempty expected response, no denied_actions, error, tool failure, timeout diagnostic, cancellation or truncation, and expected cwd/model/observed scope" | fail=ABORT | msg="SUCCESS and exit zero can still mean denial or timeout; report incomplete or blocked."
 @STEP rid=step:verify | n:int=5 | op=std:ai.prompt@v1 | in=[ref:result] | args=[task="Independently verify answer or artifact and current target state. Distinguish CLI configuration evidence from model attestation, account tier and enforced isolation."] | out=[ref:verified]
 @STEP rid=step:report | n:int=6 | op=std:io.emit@v1 | in=[ref:verified] | args=[task="Return outcome, version, selected model/effort, auth evidence and limits, observed permissions, checked paths, exit/status, result location and material gaps. Never claim writes or installation from prompt success."] | out=[ref:report]
-@STEP rid=step:sip | n:int=99 | op=std:ai.prompt@v1 | args=[task="Propose a specific repair only for a concrete blocking or recurring weakness; otherwise stay silent. Never auto-apply. No sibling skill is required."] | out=[ref:sip]
+@STEP rid=step:sip | n:int=99 | op=std:ai.prompt@v1 | args=[task="Propose a specific repair only for a concrete material or recurring weakness, missing good practice, or unrecorded fixed pitfall; otherwise stay silent. Never auto-apply. No sibling skill is required."] | out=[ref:sip]
 
 @RULE rid=rule:family | lvl=MUST | when="every run including explicit selections and resume" | then="read bundled run-contract.md, freshness.md and model-state.json; run local checker or same timestamp rules; policy.reminderDays triggers parent-owned once/session snapshot offer update-all or continue-dated; unattended children return status without prompting or recursive updates; parent permissions compose and further delegation needs separately bounded authorization"
 @RULE rid=rule:cleanup-bound | lvl=MUST | when="root exits or cancellation begins" | then="enforce finite shutdown grace independent of stdio closure and kill-helper completion; report incomplete cleanup-unverified if stopped state cannot be established and investigate through outer host"

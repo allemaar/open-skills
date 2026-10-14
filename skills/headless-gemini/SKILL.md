@@ -93,7 +93,7 @@ Resume only when requested, using the exact retained `conversation_id` with `--c
 
 Read [validation and source boundaries](references/validation.md) before changing command, output, authentication, or permission policy. It separates historical runtime observations from current catalog evidence and lists untested capabilities.
 
-**Self-improvement.** If a concrete blocking or recurring skill weakness appears, propose a specific repair for approval; otherwise remain silent. Never auto-apply. No sibling skill is required.
+**Self-improvement.** If a concrete material or recurring skill weakness, missing good practice, or unrecorded fixed pitfall appears, propose a specific repair for approval; otherwise remain silent. Never auto-apply. No sibling skill is required.
 
 For current account quota and reset times, use headless-usage. It attempts live reads independently of model-map freshness and labels unavailable or cached provider data explicitly.
 

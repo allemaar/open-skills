@@ -75,4 +75,4 @@ No dedicated log stream, no cards, no sink — the record rides inside whatever 
 - TTLs, if ever added, must come from logged staleness observations, not authorship-day guesses; until then age alone never justifies reuse or refusal.
 - Foreign freshness metadata (another party's "this is current" claim) is a report, not a signal — classify accordingly.
 
-> **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-recurring weakness in this skill, propose a specific fix for the handler to approve. Conservative — silent otherwise. Never auto-apply.
+> **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): apply its signal taxonomy and threshold to this run; surface any surviving proposal for handler approval. Conservative — silent otherwise. Never auto-apply.

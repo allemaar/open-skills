@@ -596,6 +596,6 @@ member handles which material — is `references/human-contract.md` section 1.
 > front-matter for the caller to pick. Offer only — never auto-invoke.
 
 > **Self-improvement.** On completion, run the Self-Improvement Protocol
-> (`self-improve/SKILL.md`): if this run surfaced a concrete, blocking-or-
-> recurring weakness in this skill, propose a specific fix for the handler to
-> approve. Conservative — silent otherwise. Never auto-apply.
+> (`self-improve/SKILL.md`): apply its signal taxonomy and threshold to this
+> run; surface any surviving proposal for handler approval. Conservative —
+> silent otherwise. Never auto-apply.

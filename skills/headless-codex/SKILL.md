@@ -101,7 +101,7 @@ Report the CLI version, authentication state without secrets, selected model and
 
 The command behavior in this skill is based on the installed CLI help and a read-only smoke run, not a promise that every account has the same models or permissions. Consult [model availability](references/models.md) and current official Codex documentation before changing model policy or relying on a new flag.
 
-**Self-improvement.** If the run surfaced a concrete blocking or recurring weakness in this skill, propose a specific fix for the Handler to approve; otherwise remain silent. Never auto-apply. This completion step is self-contained and requires no sibling skill.
+**Self-improvement.** If the run surfaced a concrete material or recurring weakness, missing good practice, or unrecorded fixed pitfall in this skill, propose a specific fix for the Handler to approve; otherwise remain silent. Never auto-apply. This completion step is self-contained and requires no sibling skill.
 
 For current account quota and reset times, use headless-usage. It attempts live reads independently of model-map freshness and labels unavailable or cached provider data explicitly.
 

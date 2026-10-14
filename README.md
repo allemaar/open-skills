@@ -9,7 +9,7 @@
 <p align="center">
   <strong>open-skills</strong><br />
   A personal, field-used pack of reusable skills for AI coding agents.<br />
-  Every skill is readable Markdown; 40 of 70 also carry a declarative <strong>YON (YounndAI Object Notation™)</strong> protocol you can validate.<br />
+  Every skill is readable Markdown; 48 of 79 also carry a declarative <strong>YON (YounndAI Object Notation™)</strong> protocol you can validate.<br />
   <em>Read before you trust.</em>
 </p>
 

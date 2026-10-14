@@ -77,7 +77,7 @@ Report CLI version, auth evidence without secrets, selected model/reasoning, per
 
 Read [validation boundaries](references/validation.md) before changing command, parser, permission, authentication, or billing guidance.
 
-**Self-improvement.** If a run exposes a concrete recurring or blocking weakness, propose a specific repair for approval. Otherwise remain silent. Never auto-apply.
+**Self-improvement.** If a run exposes a concrete material or recurring weakness, missing good practice, or unrecorded fixed pitfall, propose a specific repair for approval. Otherwise remain silent. Never auto-apply.
 
 For current account quota and reset times, use headless-usage. It reports Grok consumer usage only when a verified native or dated authenticated surface is available; otherwise it returns manual/cached/unavailable with Settings -> Usage guidance.
 

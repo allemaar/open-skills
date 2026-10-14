@@ -1,6 +1,6 @@
 @DOC ver=2.0 | kind=skill | id=headless-codex | title="Headless Codex CLI" | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Run one bounded Codex CLI task non-interactively from any shell-capable supervising harness with explicit target-runtime discovery, permissions, model and effort selection, evidence, and stop handling" | trigger="user runs /headless-codex, says run Codex headlessly, or automate Codex CLI"
-@STAMP ts:ts=2026-09-17T09:18:37.950Z | src=human | method=manual
+@STAMP ts:ts=2026-10-14T11:00:00Z | src=human | method=manual
 
 @SEC name="Boundary"
 @RULE rid=rule:auth | lvl=MUST_NOT | when="checking authentication" | then="inspect, print, copy, or expose credentials"
@@ -44,7 +44,7 @@
 @RULE rid=rule:background | lvl=MUST_NOT | when="no monitored runner and cancellation path exist" | then="launch a background headless run"
 
 @SEC name="Self-improvement"
-@STEP rid=step:sip | n:int=99 | op=std:ai.prompt@v1 | args=[task="If a concrete blocking or recurring skill weakness surfaced, propose a specific repair for Handler approval; otherwise remain silent. Never auto-apply. No sibling skill is required."] | out=[ref:sip]
+@STEP rid=step:sip | n:int=99 | op=std:ai.prompt@v1 | args=[task="If a concrete material or recurring skill weakness, missing good practice, or unrecorded fixed pitfall surfaced, propose a specific repair for Handler approval; otherwise remain silent. Never auto-apply. No sibling skill is required."] | out=[ref:sip]
 
 @RULE rid=rule:workspace-trust | lvl=MUST | when="before inference" | then="check Git workspace/trust prerequisite; non-Git tasks require reviewed supported skip-git-repo-check route or authorized private Git fixture; do not repeat an unchanged trust failure"
 

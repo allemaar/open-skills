@@ -39,7 +39,7 @@ Then continue with the user's work item if provided.
 
 - This is a persistent session mode until the user exits it, restarts the session, or explicitly switches to another mode.
 - If the user invokes `orchestrate-mode`, announce the switch: the lead agent is now dispatch-only and must not execute concrete work directly.
-- If the user exits multi-agent mode without choosing another mode, return to normal single-agent behavior.
+- If the user exits multi-agent mode without choosing another mode, return to the session's default delegation behavior.
 - Latest explicit mode wins. Do not maintain a hidden mode stack.
 
 ## Core behavior

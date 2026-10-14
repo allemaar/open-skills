@@ -32,4 +32,4 @@ Get a fresh, bounded account-usage report whenever requested. Default to Codex, 
 
 Every invocation attempts current reads. There is no daemon, scheduled job or promise that every provider exposes data at every moment. On schema changes, retain private diagnostics and report an error rather than guess. Explicit maintenance can update these provider adapters through headless-update-models; quota values themselves never become model-map evidence.
 
-**Self-improvement.** Propose a concrete repair only for a recurring or blocking weakness. Otherwise remain silent; never auto-apply.
+**Self-improvement.** Propose a concrete repair only for a material or recurring weakness, missing good practice, or unrecorded fixed pitfall. Otherwise remain silent; never auto-apply.

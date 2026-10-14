@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=write-copy-event-video | title="Event campaign video copy" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Create three independent event copy variants, cross-examine them through the actual insight engine, then author a fourth coherent recommendation with separated voice and screen copy" | audience="writers preparing event invitations"
-@STAMP ts:ts=2026-09-29T12:00:00Z | src=human | method=manual
+@STAMP ts:ts=2026-10-14T11:00:00Z | src=human | method=manual
 
 @SEC name="Inputs and outputs"
 @INPUT rid=input:brief | name="Existing user brief and authoritative offering and occurrence sources" | required:bool=true
@@ -49,6 +49,6 @@
 @STEP rid=step:review | n:int=7 | op=std:ai.prompt@v1 | in=[ref:fourth,ref:ledger,ref:brief,ref:decision] | args=[task="Recheck V4 with same criteria, facts, simple native short wording and one idea per sentence/beat. Check offering/benefit/action on skim, repetition, timing estimate, complete delivery-table coverage, selective emphasis and payload separation. Preserve nuanced facts without patronizing or age-grade guarantees. Record publication gaps and next single-variable test."] | out=[ref:reviewed]
 @CHECK rid=check:honesty | assert="No unsupported claims or invented facts remain; unresolved facts and unmeasured duration are labelled; provider input excludes unsupported syntax and freeform directions" | fail=ABORT | msg="Repair unsupported statements or label unresolved draft fields before delivery. Do not claim production readiness."
 @STEP rid=step:deliver | n:int=8 | op=std:io.emit@v1 | in=[ref:reviewed,ref:originals,ref:dispatch-record] | args=[task="Present V4 usable copy first, compact rationale/trace and weakness/reversal condition, then accessible unchanged V1-V3. Include workflow provenance and concise open decisions. Disclose missing writers, sequential fallback or unperformed review; distinguish text review from audio/design/publishing."] | out=[rid:output:pack]
-@STEP rid=step:sip | n:int=9 | op=std:ai.prompt@v1 | in=[rid:output:pack] | args=[task="If installed, use optional self-improve for a concrete material or recurring weakness exposed by this run; otherwise propose the specific improvement in the handoff under the same threshold. Stay silent otherwise; never auto-apply. Leaf workers skip this hook."] | out=[ref:improvement-check]
+@STEP rid=step:sip | n:int=9 | op=std:ai.prompt@v1 | in=[rid:output:pack] | args=[task="If installed, use optional self-improve for a concrete material or recurring weakness, missing good practice, or unrecorded fixed pitfall exposed by this run; otherwise propose the specific improvement in the handoff under the same threshold. Stay silent otherwise; never auto-apply. Leaf workers skip this hook."] | out=[ref:improvement-check]
 
-@STAMP ts:ts=2026-09-29T12:00:00Z | src=human | method=manual
+@STAMP ts:ts=2026-10-14T11:00:00Z | src=human | method=manual

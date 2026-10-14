@@ -33,6 +33,6 @@ Refresh one canonical provider-wide dataset, update affected guidance, and verif
 
 The outer parent may invoke this skill after a freshness offer is accepted. An explicit update request already grants this scoped update, so do not ask again. Noninteractive children report freshness to their parent and do not recursively refresh. Selection lives in headless-models.
 
-**Self-improvement.** Propose a concrete repair only for a recurring or blocking weakness. Otherwise remain silent; never auto-apply.
+**Self-improvement.** Propose a concrete repair only for a material or recurring weakness, missing good practice, or unrecorded fixed pitfall. Otherwise remain silent; never auto-apply.
 
 The maintained installation family also includes headless-usage. Refresh its provider capability references when affected, preserving actual research dates and testing changed readers without inference. Live quota values are never catalog evidence; headless-usage does not consume the model-map projections or inherit their reminder gate.

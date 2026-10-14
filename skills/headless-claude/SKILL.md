@@ -43,7 +43,7 @@ Respect an explicit Handler model. Otherwise these are recommendations, not capa
 
 Consult the bundled [model-selection map](references/model-selection.md) for task, cost, and long-horizon coding-quality evidence. It is a dated comparison, not a live account catalog or universal task ranking: do not transfer coding benchmarks to research, writing, or other work. Preserve an explicit model and effort; when useful, propose a cheaper or stronger available setup with its cost/quota, quality evidence, latency, and reversal condition. The benchmark's Fable 5 result does not establish performance for the current Fable 5.1 alias.
 
-Check both the flag in `claude --help` and effort support for the selected model in current model documentation. CLI-wide accepted levels do not prove model support. Haiku does not support effort selection; omit `--effort` for it. If an explicit model or effort is unsupported, report the blocker and stop. Do not use model fallback, `best`, Fable, or any usage-credit path silently when it would change the Handler’s cost or model choice.
+Check both the flag in `claude --help` and effort support for the selected model in current model documentation. CLI-wide accepted levels do not prove model support. Omit `--effort` only when the exact selected model lacks effort support. If an explicit model or effort is unsupported, report the blocker and stop. Do not use model fallback, `best`, Fable, or any usage-credit path silently when it would change the Handler’s cost or model choice.
 
 ## Minimize authority
 
@@ -97,7 +97,7 @@ If output is empty, malformed, truncated, or lacks a final result, preserve the 
 
 **Next skills.** On completion, offer the frontmatter verification recommendation if that skill is installed. This offer needs no sibling protocol and never auto-invokes another skill.
 
-**Self-improvement.** If the run surfaced a concrete blocking or recurring weakness in this skill, propose a specific fix for the Handler to approve; otherwise remain silent. Never auto-apply. This completion step is self-contained and requires no sibling skill.
+**Self-improvement.** If the run surfaced a concrete material or recurring weakness, missing good practice, or unrecorded fixed pitfall in this skill, propose a specific fix for the Handler to approve; otherwise remain silent. Never auto-apply. This completion step is self-contained and requires no sibling skill.
 
 For current account quota and reset times, use headless-usage. It attempts live reads independently of model-map freshness and labels unavailable or cached provider data explicitly.
 

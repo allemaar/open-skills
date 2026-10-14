@@ -48,7 +48,7 @@ Then ask for the work item if none was provided.
 
 - This is a persistent session mode until the user exits it, restarts the session, or explicitly switches to another mode.
 - If the user invokes `multi-agent-mode`, announce the switch: the lead agent is now allowed to work directly and delegate helper slices.
-- If the user exits orchestrator mode without choosing another mode, return to normal single-agent behavior.
+- If the user exits orchestrator mode without choosing another mode, return to the session's default delegation behavior.
 - Latest explicit mode wins. Do not maintain a hidden mode stack.
 
 ## Rules
