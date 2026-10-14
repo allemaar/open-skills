@@ -147,7 +147,7 @@ Observed 2026-10-15; re-discover after runtime, account, host or workspace chang
 | Codex CLI 0.160.0 | `gpt-6-luna`, `gpt-5.6-luna` | low, medium, high, xhigh, max | `gpt-5.6-luna` low passed earlier prompt/read/write fixtures; others catalog-only |
 | Codex CLI 0.160.0 | Hidden: `gpt-reserve`, `codex-auto-review`. Absent: `gpt-5.5` (retired from ChatGPT-login Codex 2026-10-14; API-key sessions unaffected) | — | Not selectable |
 | agy 1.2.11 | `gemini-3.8-flash-low`, `gemini-3.8-flash-medium`, `gemini-3.8-flash-high` | Encoded in slug | Earlier low prompt/read, scoped file creation and command launch evidence retained; exact write bytes and nested inference did not pass; medium/high listed only. Gemini 3.7, 3.6 and 3.1 Pro are no longer listed |
-| Claude Code 2.1.289 | `haiku`, `sonnet`, `opus`, `fable`, `best` | `--effort` low, medium, high, xhigh, max | Help checked. Haiku 5.5 needs Claude Code 2.1.293 or later; this host is older, so `haiku` may not resolve to 5.5 here |
+| Claude Code 2.1.300 | `haiku`, `sonnet`, `opus`, `fable`, `best` | `--effort` low, medium, high, xhigh, max | Help checked at 2.1.289; updated to 2.1.300 on 2026-10-15, meeting the Haiku 5.5 minimum (2.1.293) |
 | Grok Build | Not found on this host's PATH | Unknown | Comparison-only until an installation is present |
 | Other providers in the table | No local adapter verified in this refresh | Unknown locally | Comparison-only; no installation or account access implied |
 
