@@ -14,5 +14,6 @@ Consumer paid plans use a shared weekly Chat/Imagine/Voice/Build pool visible in
 - Windows sandbox containment, exact read-only enforcement, tool isolation and process-tree cancellation.
 - Stable machine-readable output and quota schemas, hard native timeout, exact public subscription quota matrix.
 - Resume behavior, write correctness, nested agents, web access and API-key billing on this host.
+- On 2026-10-26, grok 1.0.70 rejected `--add-dir` with "additionalDirectories is not supported: a session works only in its cwd". Multi-root reviews need a single bundled cwd. The same run, with Grok 4.7 in plan mode, `--tools read_file,search_tool` and `--prompt-file`, succeeded by absolute executable path while the parent PATH was stale.
 
 Recheck [headless scripting](https://docs.x.ai/build/cli/headless-scripting), [CLI reference](https://docs.x.ai/build/cli/reference), [permissions](https://docs.x.ai/build/features/permissions), [sandbox](https://docs.x.ai/build/features/sandbox), [sessions](https://docs.x.ai/build/features/sessions), [models](https://docs.x.ai/developers/models), [Grok 4.6](https://docs.x.ai/developers/grok-4-6), [API pricing](https://x.ai/api), [rate limits](https://docs.x.ai/developers/rate-limits), and [FAQ](https://docs.x.ai/grok/faq) before a material release or first live run.
