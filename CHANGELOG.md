@@ -37,6 +37,8 @@ or guard changes that neither add nor remove a skill.
 
 ### Fixed
 
+- **Published DCO baseline recovery:** advance the enforcement baseline to `d2a6d03` after the already-published commits `b8ec680` and `d2a6d03` landed without sign-offs. Their missing certifications remain recorded; history is not rewritten or retroactively certified. Every later non-merge commit still requires a DCO sign-off.
+
 - **Planning, cleanup and Git scope:** named-plan selection, safety prerequisites, physical cleanup targets, authorization boundaries and exact outgoing commit scope are explicit. Plan examples now provide the concrete actions their consumer requires.
 - **Handoff and orientation:** confirmed-empty changes are distinguished from absent or unconfirmed evidence; output forms, manifests, freshness and validation agree more closely. These changes preserve recovery and verification requirements.
 - **Mapping and evidence:** bounded discovery reports missing or failed evidence honestly; checker descriptions and arithmetic examples match what their checks establish. Priming separates excerpt matching from independent source verification and retains unresolved contradictions.
