@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=prime-fetch | title="Prime Fetch — Sub-Agent-Proxied Noisy Tool Call with Proof-of-Work" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Run a noisy read-only data-fetching tool call (Grep/Glob/Read/WebFetch/MCP search) in a delegated sub-agent's context, so the raw dump never enters the caller's window. The sub-agent filters against an objective and returns proof-of-work-verified findings; the lead verifies every quote via tool call before relaying. Family invariant: caller context stays clean." | trigger="user runs /prime-fetch, or the caller realizes a planned tool call will return mostly noise"
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-10-30T15:49:33Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Boundary ---
 
@@ -43,10 +43,10 @@
 # --- Step 5: Lead Verifies Proof-of-Work ---
 
 @SEC name="Step 5 — Lead Verifies Proof-of-Work"
-@MAP name=VerificationMechanism | pairs=["files-on-disk"->"Grep the quoted excerpt against the cited file, ±3 lines","ephemeral-sources"->"all non-file sources (in-context dumps, out-of-context dumps, MCP results, search results, conversation excerpts) get materialized to a temp path via Write then Grepped — the in-context substring check is removed because it has no real tool primitive","discrete-id-source"->"materialize the cited unit (conversation-msg-N, search-result-#N, url-anchor#section) to a temp file before verification; quote must appear within that file","large-dump-handling"->"if the dump is too large to materialize whole, the sub-agent provides a narrow excerpt (cited unit ± 50 lines) and the lead writes that excerpt to a temp file"]
+@MAP name=VerificationMechanism | pairs=["files-on-disk"->"Grep the quoted excerpt against the cited file, ±3 lines","ephemeral-sources"->"materialize non-file sources from an independently retained capture or a re-readable source to a temp path via Write then Grep; worker-authored dumps or excerpts are not independent captures regardless of size, so without independent provenance use only the attributed provenance-unverified gap branch","discrete-id-source"->"materialize the cited unit (conversation-msg-N, search-result-#N, url-anchor#section) from that independent capture or re-readable source to a temp file before verification; quote must appear within that file","large-dump-handling"->"a worker-supplied narrow excerpt (cited unit ± 50 lines) can establish only an excerpt match; verify provenance against the re-readable source or an independently retained capture of the cited unit; otherwise report only as attributed provenance-unverified material in gaps"]
 @RULE rid=rule:tool-issued-verify | lvl=MUST | when="verifying any quote" | then="issue a deterministic tool call per VerificationMechanism — never pattern-match from memory"
 @RULE rid=rule:drop-unverifiable | lvl=MUST | when="a finding or pointer's quote is not findable" | then="drop the finding or pointer — never relay an unverifiable claim"
-@STEP rid=step:verify | n:int=5 | op=std:ai.prompt@v1 | args=[task="For each finding AND each unfollowed pointer in the digest, the lead issues the appropriate verification tool call per VerificationMechanism. Drop any item whose quote is not findable. The verified subset proceeds to emit."] | in=[ref:digest] | use=[cfg:VerificationMechanism] | out=[ref:verified-digest] | rules=[rid:rule:tool-issued-verify,rid:rule:drop-unverifiable]
+@STEP rid=step:verify | n:int=5 | op=std:ai.prompt@v1 | args=[task="For each finding AND each unfollowed pointer in the digest, the lead issues the appropriate verification tool call per VerificationMechanism. Drop any item whose quote is not findable. A worker-excerpt match alone is not source verification; report it only as attributed provenance-unverified material in gaps. The source-verified subset proceeds to emit."] | in=[ref:digest] | use=[cfg:VerificationMechanism] | out=[ref:verified-digest] | rules=[rid:rule:tool-issued-verify,rid:rule:drop-unverifiable]
 
 # --- Step 6: Emit to Caller ---
 
@@ -60,7 +60,7 @@
 @RULE rid=rule:delegate-always | lvl=MUST | when="invoked" | then="delegate the tool call to one sub-agent — lead never runs the noisy call itself"
 @RULE rid=rule:proof-of-work-required | lvl=MUST | when="any item proceeds toward emit" | then="require source:line + verbatim quote (≥8 words OR verbatim-token) on every finding and every unfollowed pointer"
 @RULE rid=rule:single-wave | lvl=MUST | when="invoked" | then="run exactly one wave — if signal was missed, recommend /prime-sweep or a refined re-invocation, do not iterate"
-@RULE rid=rule:family-invariant | lvl=MUST | when="any /prime-* skill runs" | then="keep the caller's context clean — sub-agent absorbs the raw dump, lead emits only verified findings"
+@RULE rid=rule:family-invariant | lvl=MUST | when="any /prime-* skill runs" | then="keep the caller's context clean — sub-agent absorbs the raw dump, lead emits verified findings and may report attributed provenance-unverified material only in gaps"
 
 # --- Next Skills ---
 
@@ -73,4 +73,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-10-30T15:49:33Z | src="Alexandru Mares | allemaar.com" | method=generated

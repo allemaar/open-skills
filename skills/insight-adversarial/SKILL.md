@@ -54,7 +54,7 @@ Structured adversarial review that assembles a panel of distinct critic personas
 | **Pass 2** | Check against Pass 1 findings → add 2–4 *new* personas not used before → re-run → delta verdict |
 | **Pass 3** | Final wrap-up. If all critical issues resolved or within params, declare done. Otherwise escalate. |
 
-**State tracking:** at the top of each pass, list which personas were used in prior passes. New passes must not reuse them.
+**State tracking:** at the top of each pass, list which personas were used in prior passes. New passes must not reuse substantive critic personas; Claude's Own POV recurs in every pass.
 
 ## Step 1 — Target Classification
 
@@ -78,7 +78,7 @@ Load `personas/roster.md` to see all available personas and their best-used-for 
 1. Pick the **primary persona** — whose domain most directly overlaps the target's failure mode
 2. Pick 2–3 **supporting personas** — different angles that complement, not duplicate, primary
 3. Always include **Claude's Own POV** as the final persona in every pass
-4. **Never reuse** a persona across passes — track used personas explicitly
+4. **Never reuse** a substantive critic persona across passes; Claude's Own POV is exempt — track used personas explicitly
 
 ## Step 3 — Run Each Persona Pass
 
@@ -116,7 +116,7 @@ Claude's Own POV always goes last. First person, clear position, no hedging.
 - MUST classify target type before selecting personas
 - MUST select minimum 4 personas per pass (including Claude's Own POV)
 - MUST include Claude's Own POV in every pass, always last
-- MUST NOT reuse a persona across passes
+- MUST NOT reuse a substantive critic persona across passes; Claude's Own POV is exempt
 - MUST NOT offer solutions inside a persona pass — remediation belongs in Step 4 only
 - MUST NOT soften findings to be diplomatic
 - SHOULD add 2–4 genuinely new personas on Pass 2

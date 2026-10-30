@@ -403,7 +403,7 @@ try {
     'ls-files', '--cached', '--others', '--exclude-standard', '--', ':(glob)skills/**/*.md',
   ], { cwd: ROOT, encoding: 'utf8' })
     .split(/\r?\n/)
-    .filter((f) => f && !f.endsWith('/SKILL.md')))];
+    .filter((f) => f && existsSync(f) && !f.endsWith('/SKILL.md')))];
 } catch {
   warn('tools/lint.mjs', 0, 'could not enumerate companion files via git ls-files — companion coverage skipped');
 }

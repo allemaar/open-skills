@@ -19,6 +19,23 @@ This file is the single source of truth for the block's shape; `handoff/profiles
   ]
 ```
 
+Only after the Handler explicitly confirms no required sources may the producer emit:
+
+```
+@SOURCES
+  required=[]
+  confirmed_empty:bool=true
+  optional=[]
+```
+
+`confirmed_empty` is optional and never defaults to true. Empty or missing
+`required` in a present block without that confirmation is an unresolved source
+declaration: halt with a blocked retro unless explicitly forced; a forced run
+records the failure and degraded state, not a confirmation. A marker beside
+nonempty `required` cannot bypass those reads. Confirmed-empty selects advisory
+source ingestion with a prominent warning, preserving the premise gate and
+optional-read rules. An absent block uses the legacy fallback below.
+
 ## Two tiers
 
 | Tier | Action by `/handoff-execute` | Gate |
@@ -51,7 +68,7 @@ What belongs in `optional`:
 
 What does NOT belong in either:
 
-- Files the agent will need to discover by grep — those are emergent during Phase 4 and don't need pre-declaration.
+- Only the existing narrow discovery exceptions: a target already cited as file:line in the brief, or the minimal read needed to resolve a fact/decision named there without a location. Record these reads in `@DELTA_FROM_BRIEF`. A newly needed source not named anywhere in the brief requires halting for amendment; grep is not a general scope exception.
 - The brief itself — that's already loaded.
 
 ## Legacy fallback
@@ -59,13 +76,13 @@ What does NOT belong in either:
 If a brief lacks `@SOURCES` entirely:
 
 - **Legacy `agent` / `orchestrator` profile briefs** that have `@SCOPE.must_read=[...]` — the receiving skill treats `must_read` as `@SOURCES.required` and gates accordingly.
-- **Legacy `new-session` profile briefs** (which never had `@SCOPE`) — fall through to advisory mode: scan the brief body for explicit references (wikilinks, absolute paths, lines under `## Read these first`), read best-effort, emit the advisory-mode warning.
+- Otherwise, for any profile, inspect real markdown required-read headings (`Read-first`, `Read first`, `Read these first`, `locked inputs`). Numbered/bulleted paths or wikilinks form a gated required tier; entries tagged optional stay optional. Ignore headings inside fenced/quoted examples. A prose-only section or no enumerable required entries uses best-effort advisory reads and a prominent warning.
 
-Going forward, `/handoff` prompts at brief-write time for `@SOURCES.required` and writes the block into every new brief. Advisory mode persists as a backward-compatibility path, not a target state.
+Going forward, `/handoff` prompts at brief-write time for `@SOURCES.required` and writes the block into every new brief. Advisory source ingestion is limited to the legacy fallback or the explicitly confirmed-empty branch; neither invents source confirmation.
 
 ## Anti-patterns
 
-- **Empty `required` because "the brief is small"** — if the work is worth a handoff, it has critical context. Make the gate work for you.
+- **Empty `required` without explicit confirmation** — re-prompt; only confirmed no-required-sources permits `confirmed_empty:bool=true`.
 - **Over-listing `required`** — forces the cold agent to read 50 files before planning. Move ambient context to `optional`.
 - **Listing the brief in `@SOURCES`** — the brief is always loaded in Phase 1; listing it is redundant.
 - **Using `@SOURCES` to enumerate test files the work will produce** — `@SOURCES` is *input*, not *output*.

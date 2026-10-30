@@ -1,7 +1,7 @@
 ---
 name: insight-critique
 description: >
-  Advisory review workflow. Reviews the last plan, code, architecture, or UI output and returns a structured report: Summary, Strengths, Risks, Fixes. Use when the user runs /critique, asks to "review this", "critique this", or "what's wrong with this", or wants focused feedback on a specific output. Also trigger as a quality gate before /execute. Advisory only — never blocks unless a kernel-prime violation is present. For multi-POV adversarial stress-testing with personas, use /insight-adversarial instead.
+  Advisory review workflow. Reviews the last plan, code, architecture, or UI output and returns a structured report: Summary, Strengths, Risks, Fixes. Use when the user runs /critique, asks to "review this", "critique this", or "what's wrong with this", or wants focused feedback on a specific output. Also trigger as a quality gate before /execute. Advisory only; applicable controlling authority and safety rules still govern. For multi-POV adversarial stress-testing with personas, use /insight-adversarial instead.
 caller-options:
   venue: [inline, delegated]
   default-policy: ask
@@ -26,7 +26,7 @@ triggers:
 
 # /critique
 
-Advisory review of the last plan, code, architecture, or UI output. Runs four analysis passes and emits a structured report. Never blocks — advisory only.
+Advisory review of the last plan, code, architecture, or UI output. Runs four analysis passes and emits a structured report. Advisory only; applicable controlling authority and safety rules still govern.
 
 > **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date.
 
@@ -55,7 +55,7 @@ Output a structured report with four labeled sections: Summary, Strengths, Risks
 
 ## Constraints
 
-- Advisory only. Never block or halt the user's work unless a kernel-prime violation is detected.
+- Advisory only. Critique does not override applicable controlling authority or safety rules.
 - Never mark Approved when any risk is rated Medium or above.
 - Do not pad Strengths to soften the critique. If there are few strengths, say so.
 

@@ -51,7 +51,7 @@ release evidence; its absence from an installed copy does not block execution.
 
 ## How it works (self-sufficient — works without `protocol.yon`)
 
-`orient-gaps` **delegates the gathering to a bounded, read-only subagent** so the calling session (a human's, or an agent orienting itself) never sees the search/inference noise — only the result bundle comes back. Nothing is stored; every call recomputes from current reality. The stall surface and the silent gaps are **two tiers of one sweep**; `--audit` raises a third.
+`orient-gaps` **delegates the gathering to a bounded, read-only subagent** so the calling session (a human's, or an agent orienting itself) never sees the search/inference noise — only the result bundle comes back. Nothing is stored; every call recomputes from current reality. If its worker is unavailable, refuses or times out, report unavailable/partial evidence; do not infer NO SUBSTRATE, gather inline, retry or extend the bound. Limit unchanged/clean claims to checked inputs and disclose unexamined tiers. The stall surface and the silent gaps are **two tiers of one sweep**; `--audit` raises a third.
 
 1. **Take intent as input, never prompt for it.** Intent (the goal / what "done" means) is what makes a gap *legible* — a loose end is only loose against a goal. Accept an `intent` argument if given. If intent can't be grounded, **gate the goal-relative gaps** (render `— (needs goal)`, cap to `guessed`) and surface only the evidence-attested stalls (uncommitted files, unmerged branches). **Never fabricate a goal** and hang invented gaps off it.
 
@@ -71,9 +71,18 @@ release evidence; its absence from an installed copy does not block execution.
 
 5. **Tag every field with a provenance tier** — `◆ git-attested` · `◐ inferred` · `◌ guessed` — and **fail closed**: set **`gate_status`** (enum: `ready | blocked | stalled | degraded | indeterminate`) to `degraded`/`indeterminate` with a **sentinel** — never a plausible `ready` — on barren evidence. **An empty stall surface is a success state** (collapse to one line: *"nothing stuck — clean"*), NOT a failure.
 
-6. **Emit the bundle to the consumer that asked — one record, three faces, never all three at one reader.** The **YON record is the AGENT face and goes to an agent consumer only**; a **human gets the plain-language read plus the visual (widget when available, ASCII twin otherwise) and never sees the record, a raw record field, a node-id, or a gate enum**. See *Record emission* below for the YON face (agent-only); the markdown read follows the worked examples; the **visual face is rendered per the [render-face contract](references/orient-spec/family-behaviors.md) §6 (Claude Code only)**: for a human on Claude Code with the visualize tool present on an explicit invocation, build the **gaps widget** from the kit — call `mcp__visualize__read_me` once, then emit via `mcp__visualize__show_widget` an **HTML stall board** (per [`orient-contract.md`](references/orient-spec/orient-contract.md) §2 "gaps = a stall board / sieve — the hole is the deliverable"): a **4-lane grid** (blocked · open-forks · loose-ends · silent-gaps), each item carrying a muted **effort `S`/`M`/`L`** tag, **empty lanes shown as `— clear`** (the honest-negative, never omitted), the **"you are here" breadcrumb on top** (`↳ in: {parent_subject}`, omitted when absent), `◆◐◌` tier glyphs as redundant **non-color** encoding, and the legend `◆ attested · ◐ inferred · ◌ guessed · effort S·M·L · — honest-negative`. HTML chrome: colors only via CSS vars (no hardcoded hex), no `position:fixed`, and a visually-hidden `<h2 class="sr-only">` one-sentence summary for a11y. An **agent** consumer gets the YON record only; any **other runtime / no tool / indeterminate `handler_type`** gets the ASCII twin (fail-closed). The **information-complete ASCII stall-board twin is always emitted** — it is the only render in a no-SVG channel and carries every lane item the widget does. Token discipline: a clean result collapses to one line. The footer is one evidence-derived line — and **only ever suggests a skill that is actually installed** (a `blockers_present` reason_code routes to `/plan-create`; an `unwritten_decision` routes OUT to an installed durable-capture skill per the family handoff-feeder).
+6. **Emit the bundle to the consumer that asked — one record, three faces, never all three at one reader.** The **YON record is the AGENT face and goes to an agent consumer only**; a **human gets the plain-language read plus the visual (widget when available, ASCII twin otherwise) and never sees the record, a raw record field, a node-id, or a gate enum**. See *Record emission* below for the YON face (agent-only); the markdown read follows the worked examples; the **visual face is rendered per the [render-face contract](references/orient-spec/family-behaviors.md) §6 (Claude Code only)**: for a human on Claude Code with the visualize tool present on an explicit invocation, build the **gaps widget** from the kit — call `mcp__visualize__read_me` once, then emit via `mcp__visualize__show_widget` an **HTML stall board** (per [`orient-contract.md`](references/orient-spec/orient-contract.md) §2 "gaps = a stall board / sieve — the hole is the deliverable"): a **4-lane grid** (blocked · open-forks · loose-ends · silent-gaps), each item carrying a muted **effort `S`/`M`/`L`** tag, **empty lanes shown as `— clear`** (the honest-negative, never omitted), the **"you are here" breadcrumb on top** (`↳ in: {parent_subject}`, omitted when absent), `◆◐◌` tier glyphs as redundant **non-color** encoding, and the legend `◆ attested · ◐ inferred · ◌ guessed · effort S·M·L · — honest-negative`. HTML chrome: colors only via CSS vars (no hardcoded hex), no `position:fixed`, and a visually-hidden `<h2 class="sr-only">` one-sentence summary for a11y. An **agent** consumer gets the YON record only; any **other runtime / no tool / indeterminate `handler_type`** gets the ASCII twin (fail-closed). The **information-complete ASCII stall-board twin is emitted when the selected face includes a visual** — it is the only render in a no-SVG channel and carries every lane item the widget does. Token discipline: a clean result collapses to one line. The footer is one evidence-derived line — and **only ever suggests a skill that is actually installed** (a `blockers_present` reason_code routes to `/plan-create`; an `unwritten_decision` routes OUT to an installed durable-capture skill per the family handoff-feeder).
 
 ## Record emission (the YON face — AGENT consumers only; never printed to a human)
+
+Before emission, pipe the actual current record in memory to
+`node <skill-dir>/references/tools/orient-validate.mjs -`. Do not save a derived
+record or substitute an example/self-test pass. The helper covers mapped enums,
+core/schema-version fields, parsing/duplicates, provenance syntax and barren
+status, with an ETA point warning; all other emitter obligations still apply.
+Select the consumer face before applying visual/trailer requirements: agent
+record-only, automator no visual, nominal human auto-loop one line, explicit
+human full face, unknown consumer ASCII fallback; preserve the widget escape.
 
 The structured face is the `gaps` slice of [`references/orient-spec/orient-record.yon`](references/orient-spec/orient-record.yon) (`schema_version = orient-record/1`). **Reserved tags only** — custom tags are parser-rejected. **List fields (`blocked_on_me`, `blocked_on_other`, `open_forks`, `loose_ends`, `silent_gaps`, `audit_mismatches`, `gamed_signals`) go in a sidecar `@MAP`, never an in-set bracket-list** (an in-set bracket-list corrupts the record *silently and still validates*). **Never run `yon format` on an emitted instance** — `CANON` mode is destructive on set-internal lists. Validate with `--profile exec`. Minimal skeleton:
 
@@ -113,7 +122,7 @@ legend: ◆ attested · ◐ inferred · ◌ guessed · effort S·M·L · — cle
 🧭 some-cli — a git repo on `main`, clean tree.           [identity: ◆ git]
 **Nothing stuck — clean.** blocked: — clear · open-forks: — clear · loose-ends: — clear   ◆ git
 **Silent gaps:** none surfaced (coarse — git + plan only).  ◐ honest negative
-Trust: ◆ · [gate: ready]
+Trust: ◆ · [no observed blocker in checked inputs]
 ```
 
 **`--audit` tier (don't trust the orientation):**
@@ -124,10 +133,10 @@ Trust: ◆ · [gate: ready]
 | claim vs evidence | "tests pass" — no test files   | ◌ no evidence |
 | gamed signal    | 9 commits, 7 whitespace-only    | ◌ hollow ◌    |
 **→ Next:** back the test claim or drop it.
-Trust: ◌ · ⚠️ lean here: the "tests pass" claim has zero corroborating evidence.  [gate: degraded]
+Trust: ◌ · ⚠️ lean here: the "tests pass" claim has zero corroborating evidence.  [limited evidence]
 ```
 
-The ASCII stall board + the trust trailer with the `⚠️ lean your scrutiny here` line (naming the load-bearing guess) is **mandatory**; the silent-gaps honest-negative is never silently dropped.
+The ASCII stall board + the trust trailer with the `⚠️ lean your scrutiny here` line (naming the load-bearing guess) is **mandatory** on the selected full human face; the silent-gaps honest-negative is never silently dropped.
 
 ## Boundaries
 
@@ -145,8 +154,8 @@ The ASCII stall board + the trust trailer with the `⚠️ lean your scrutiny he
 - MUST take `intent` as input and gate goal-relative gaps when it's absent — never fabricate a goal or invent gaps off it.
 - MUST tag every field with a provenance tier and **fail closed** — `gate_status` = `degraded`/`indeterminate` with a sentinel — on zero evidence.
 - `--audit` MUST tier-tag a gamed signal `◌` so a hollow metric reads as hollow (the anti-Goodhart disclosure).
-- MUST, **when the consumer is an agent (`handler_type = agent`)**, emit a record conformant to `references/orient-spec/orient-record.yon` (reserved tags; list fields as sidecar `@MAP`; never `yon format` an instance). **A human consumer gets the plain-language read plus the visual instead — never the record, a raw record field, a node-id, or a gate enum.**
-- MUST emit the ASCII stall board + the trust trailer with the `⚠️ lean here` load-bearing-guess line; the visual's ASCII twin is mandatory.
+- MUST, **when the consumer is an agent (`handler_type = agent`)**, emit a record conformant to `references/orient-spec/orient-record.yon` (reserved tags; list fields as sidecar `@MAP`; never `yon format` an instance). **A human consumer gets its selected plain-language face (one line when nominal, otherwise the read plus visual) — never the record, a raw record field, a node-id, or a gate enum.**
+- MUST, when the selected face includes a visual, emit the ASCII stall board + the trust trailer with the `⚠️ lean here` load-bearing-guess line; the visual's ASCII twin is mandatory.
 - MUST carry the **"you are here" breadcrumb** (`↳ in: {parent_subject}`) on the identity banner in both faces when `subject.parent_subject` is present — and **omit it entirely when absent** (never fabricate a parent); per `orient-contract.md` §1 and `family-behaviors.md` §8.
 - MUST NOT print the YON record — or any raw record field, node-id, gate enum, `@CFG` line, or `@MAP` line — into a human-facing reply. The record is the **agent** face (`handler_type = agent`); the human face is the plain-language read plus the visual (widget when available, ASCII twin otherwise). Per `references/orient-spec/orient-contract.md` §1 (token discipline) and `family-behaviors.md` §6.
 - MUST render the visual face per the render-face contract (Claude Code only, via `mcp__visualize__show_widget`): **agent → YON record only**; **human + Claude + tool + explicit invocation → stall-board widget + ASCII twin**; **other runtime / no tool / indeterminate `handler_type` → ASCII twin (fail-closed)**. The gaps widget is an **HTML stall board** — a 4-lane grid (blocked · open-forks · loose-ends · silent-gaps), each item a muted **effort `S`/`M`/`L`** tag, **empty lanes `— clear`** (honest-negative, never omitted), the breadcrumb on top.

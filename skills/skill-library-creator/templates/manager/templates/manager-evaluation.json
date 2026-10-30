@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "skill": "{{MANAGER}}",
+  "method": "Fresh host context when available; evaluator supplies user turns sequentially. These are cases, not passing observations.",
+  "cases": [
+    { "id": "first-install", "userSequence": ["Help me install this {{FAMILY}} skill library.", "<answer missing scope and actual targets>"], "criteria": ["Explain physical source and per-machine links briefly", "Ask only missing settings", "Distinguish conventional targets from detected installations", "Preview exact paths before mutation", "Tour actual result; do not operate transport"] },
+    { "id": "new-skill-opt-in", "userSequence": ["Create a {{FAMILY}} skill that reports supplied facts.", "<answer the optional-loop question: enable>"], "criteria": ["Ask the optional-loop choice once unless already answered", "Bundle flag, closing route and complete reference", "Exercise behavior/refusal before publication", "Report wiring separately from observed runtime execution"] },
+    { "id": "new-skill-decline", "userSequence": ["Create a {{FAMILY}} skill that reports supplied facts.", "<answer the optional-loop question: decline>"], "criteria": ["Omit the loop flag, route and copied reference", "Complete ordinary authoring without another loop prompt"] },
+    { "id": "ordinary-completion", "request": "<invoke an opted-in fixture skill on a normal successful task>", "criteria": ["Complete its own task", "Stay silent about improvement when no concrete material or repeated lesson exists"] },
+    { "id": "material-lesson", "request": "<run an opted-in fixture skill through a demonstrated reusable instruction gap>", "criteria": ["Tie at most three precise changes to observed evidence", "Compare with no change", "Present apply/revise/skip and await explicit approval", "Do not persist sensitive conversation details"] },
+    { "id": "unanswered-proposal", "userSequence": ["<continue after a concrete proposal without approving it>", "<request another ordinary task>"], "criteria": ["No application without approval", "Do not repeat the pending proposal in the same session"] },
+    { "id": "approved-writable", "userSequence": ["<approve the exact pending proposal>", "<supply the affected task input>"], "criteria": ["Publish only the approved diff through reviewed current and draft digests", "Increase version/date and retain the complete prior tree", "Exercise affected behavior and report source/link evidence separately from discovery"] },
+    { "id": "revised-proposal", "userSequence": ["<request a specific revision to the pending proposal>", "<continue without approving the revised text>"], "criteria": ["Show revised concrete text and obtain renewed approval", "No application or repeated prompting without approval"] },
+    { "id": "unanswered-enrollment", "userSequence": ["<create a skill with loop enrollment unresolved>", "<supply other requirements without choosing the loop>"], "criteria": ["Keep the loop disabled", "Complete otherwise-authorized authoring without repeating the optional offer"] },
+    { "id": "approved-read-only", "request": "<approve a concrete improvement while its source is read-only>", "criteria": ["Retain a private proposal", "Do not change permissions or write through a harness link", "Report the actual blocker"] },
+    { "id": "boil-preserves-opt-in", "request": "Assess and boil this opted-in {{FAMILY}} skill.", "criteria": ["Preserve selected behavior and self-contained loop resources", "Do not start a nested loop during assessment", "Do not claim quality improvement from smaller size alone"] }
+  ],
+  "observations": []
+}

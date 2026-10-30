@@ -611,7 +611,7 @@ try {
     inventory: { membership_fingerprint: membershipFingerprint, md_content_fingerprint: mdContentFingerprint,
       fingerprint_note: "membership = paths+sizes+mtimes (NOT byte proof; preimage hashes govern apply-time drift); md_content = sha256 over ordered markdown bytes",
       complete: scanStatus === "COMPLETE", scan_status: scanStatus, omitted_lower_bound: omittedLowerBound,
-      files: files.length, markdown: md.length, non_markdown: files.length - md.length,
+      files: files.length, leaf_paths: files.map(f => f.rel), markdown: md.length, non_markdown: files.length - md.length,
       bytes: files.reduce((a, f) => a + f.size, 0), dirs: dirs.length,
       skipped_boundaries: skipped, system_excluded: systemExcluded,
       caps: { max_files: MAX_FILES, max_ms: MAX_MS } },
@@ -633,7 +633,7 @@ try {
       contract_invalid_fail_closed: contractInvalid,
       ledgers: {
         creation_queue: creationQueue,
-        inventory_boundaries: { m3_excluded: m3ExcludedLedger.slice(0, 200), m3_excluded_count: m3ExcludedLedger.length,
+        inventory_boundaries: { m3_excluded: m3ExcludedLedger, m3_excluded_count: m3ExcludedLedger.length,
           governed_boundary_targets: governedBoundaryTargets,
           skipped_boundaries: skipped, system_excluded_trees: systemExcluded.length, cap_residual_lower_bound: omittedLowerBound } },
       not_checked: ["Unicode/Obsidian heading slug normalization (exact heading text only in this version)",

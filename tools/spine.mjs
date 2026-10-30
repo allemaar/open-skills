@@ -26,12 +26,14 @@
 // Zero npm deps — a hand-written front-matter + YON-record reader, matching the
 // zero-dep approach of tools/conformance.mjs and tools/yon-dag.mjs.
 
-import { readdirSync, existsSync, readFileSync, writeFileSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { readdirSync, existsSync, readFileSync, writeFileSync, statSync, mkdirSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { emitSkillDocs } from './skill-docs.mjs';
 
 const SKILLS = 'skills';
 const TAXONOMY = join(SKILLS, 'skills-help', 'taxonomy.yon');
-const PACK_VERSION = '1.8.0';
+// Keep in sync with .claude-plugin/plugin.json and the newest CHANGELOG release.
+const PACK_VERSION = '2.0.0';
 const LICENSE = 'Apache-2.0';
 const SRC = 'github.com/allemaar/open-skills';
 const ATTRIBUTION =
@@ -434,6 +436,8 @@ function emitSkillsMd(skills, families) {
     'Required companions are bundled inside their skill folder. Optional companions are repository checks or sibling enhancements and are declared separately in the machine catalog. Install entries in the Requires column first.',
     '',
     'A skill folder name is its portable written command. The trigger column shows recognition aliases in plain text, not additional canonical commands.',
+    '',
+    'Each skill has a [usage guide](docs/README.md) covering purpose, examples, flow and subagent use. Its source folder remains the authoritative instruction set.',
   ];
   for (const family of families) {
     L.push('', `## ${family.label}`, '', '| Skill | Use when | Example triggers | Requires | Format |', '|---|---|---|---|---|');
@@ -501,6 +505,7 @@ function main() {
     'llms.txt': emitLlms(skills, families),
     'skills.graph.yon': emitGraph(skills, stampDay),
     'SKILLS.md': emitSkillsMd(skills, families),
+    ...emitSkillDocs(skills, families),
   };
 
   if (check) {
@@ -519,9 +524,12 @@ function main() {
     process.exit(drift === 0 ? 0 : 1);
   }
 
-  for (const [file, content] of Object.entries(outputs)) writeFileSync(file, content);
+  for (const [file, content] of Object.entries(outputs)) {
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, content);
+  }
   console.log(
-    `spine: wrote catalog.yon + catalog.json + llms.txt + skills.graph.yon + SKILLS.md — ${skills.length} skills in ${families.length} families, ${skills.filter((s) => s.hasProtocol).length} with protocol.yon`
+    `spine: wrote catalogs, graph, SKILLS.md and skill guides — ${skills.length} skills in ${families.length} families, ${skills.filter((s) => s.hasProtocol).length} with protocol.yon`
   );
 }
 

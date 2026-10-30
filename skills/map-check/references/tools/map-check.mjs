@@ -8,7 +8,7 @@
 //   (--root-map) from map-rules/references/scope.md — Organized-scope evidence. No declaration at all = outside
 //   jurisdiction (resolution error, never a finding).
 // Exit: 0 clean-for-checks · 1 findings · 2 operational error · 3 resolution error
-import { readFileSync, readdirSync, lstatSync, existsSync, realpathSync } from "node:fs";
+import { readFileSync, readdirSync, lstatSync, realpathSync } from "node:fs";
 import { join, relative, basename, resolve, sep, isAbsolute } from "node:path";
 import { createHash } from "node:crypto";
 
@@ -78,19 +78,61 @@ function main() {
   const T0 = Date.now();
   if (!argv[0]) return opError(3, "no-target", "usage: map-check.mjs <target-path> [--root-map <scope-relative>] [--json] [--max-files N] [--max-ms N]");
   let target; try { target = resolve(argv[0]); } catch { return opError(3, "bad-target", "target path did not resolve"); }
-  if (!existsSync(target)) return opError(3, "no-target", `target does not exist: ${target}`);
 
   const norm = p => p.split(sep).join("/");
   const safeLstat = p => { try { return lstatSync(p); } catch { return null; } };
   const safeRead = p => { try { return readFileSync(p, "utf8"); } catch { return null; } };
   const containedRel = rel => rel && !isAbsolute(rel) && !rel.split(/[\\/]/).some(s => s === "..") && rel.trim() !== "";
+  const idEq = (a, b) => norm(a).toLowerCase() === norm(b).toLowerCase();
+  // Check each observable leaf and ancestor before using a path. Native realpath
+  // and lstat do not expose every reparse form and do not eliminate races.
+  function proveIdentity(p) {
+    let cur = resolve(p);
+    while (true) {
+      const st = safeLstat(cur);
+      if (!st || st.isSymbolicLink()) return false;
+      let actual = null; try { actual = realpathSync.native(cur); } catch { }
+      if (actual === null || !idEq(actual, cur)) return false;
+      const parent = resolve(cur, ".."); if (parent === cur) return true; cur = parent;
+    }
+  }
+  // A missing suffix is ordinary absence only after its nearest existing
+  // ancestor and entire chain have been checked for observable redirects.
+  function checkedStat(p, label) {
+    let cur = resolve(p), missing = false;
+    while (true) {
+      let st;
+      try { st = lstatSync(cur); } catch (e) {
+        if (e.code !== "ENOENT" && e.code !== "ENOTDIR") return opError(2, "check-incomplete", `${label} metadata unavailable: ${cur}`);
+        missing = true;
+        const parent = resolve(cur, "..");
+        if (parent === cur) return opError(2, "check-incomplete", `${label} ancestor unavailable: ${cur}`);
+        cur = parent; continue;
+      }
+      if (!proveIdentity(cur)) return opError(2, "check-incomplete", `${label} identity cannot be established: ${cur}`);
+      return missing ? null : st;
+    }
+  }
+  function requiredRead(p, label) {
+    if (!proveIdentity(p)) return opError(2, "check-incomplete", `${label} identity cannot be established: ${p}`);
+    const text = safeRead(p);
+    if (text === null) return opError(2, "check-incomplete", `${label} cannot be read: ${p}`);
+    return text;
+  }
+  const targetSt = checkedStat(target, "target");
+  if (!targetSt) return opError(3, "no-target", `target does not exist: ${target}`);
 
   // ---------- scope resolution ----------
   function findScopeRoot(p) {
-    const st = safeLstat(p); if (!st) return null;
+    const st = targetSt;
     let dir = st.isDirectory() ? p : resolve(p, "..");
     while (true) {
-      const a = existsSync(join(dir, ".myk", "README.md")), b = existsSync(join(dir, ".myk", "scope.md"));
+      if (!proveIdentity(dir)) return opError(2, "check-incomplete", `scope search identity cannot be established: ${dir}`);
+      const myk = join(dir, ".myk");
+      let mykSt = null; try { mykSt = lstatSync(myk); } catch (e) { if (e.code !== "ENOENT") return opError(2, "check-incomplete", `scope declaration directory unavailable: ${myk}`); }
+      if (mykSt && !proveIdentity(myk)) return opError(2, "check-incomplete", `scope declaration directory identity cannot be established: ${myk}`);
+      const present = p => { try { lstatSync(p); return true; } catch (e) { if (e.code === "ENOENT" || e.code === "ENOTDIR") return false; return opError(2, "check-incomplete", `scope declaration metadata unavailable: ${p}`); } };
+      const a = present(join(myk, "README.md")), b = present(join(myk, "scope.md"));
       if (a && b) return { conflict: dir };
       if (a || b) return { root: dir, contract: join(dir, ".myk", a ? "README.md" : "scope.md"), legacy: !a };
       const parent = resolve(dir, "..");
@@ -101,16 +143,19 @@ function main() {
   const found = findScopeRoot(target);
   if (found?.conflict) return opError(3, "scope-conflict", `both .myk/README.md and .myk/scope.md exist at ${found.conflict} — competing same-precedence declarations; fail closed`);
 
-  let mode, discovery, scopeRoot, rootMapRel, exclusions = [], managedEntries = [], contractFindingsSeed = [], exclusionEntriesFull = [];
+  let mode, discovery, scopeRoot, rootMapRel, contractBytes, exclusions = [], managedEntries = [], contractFindingsSeed = [], exclusionEntriesFull = [];
   if (found) {
     mode = "FULL"; discovery = "contract"; scopeRoot = found.root;
-    const fmBlock = (() => { const t = safeRead(found.contract); if (!t || !t.startsWith("---")) return null; const e = t.indexOf("\n---", 3); return e < 0 ? null : t.slice(3, e); })();
+    if (!proveIdentity(scopeRoot) || !proveIdentity(found.contract)) return opError(2, "check-incomplete", "scope root or contract identity cannot be established");
+    try { contractBytes = readFileSync(found.contract); } catch { return opError(2, "check-incomplete", `contract cannot be read: ${found.contract}`); }
+    const contractText = contractBytes.toString("utf8");
+    const fmBlock = (() => { const t = contractText; if (!t.startsWith("---")) return null; const e = t.indexOf("\n---", 3); return e < 0 ? null : t.slice(3, e); })();
     if (!fmBlock) return opError(2, "unreadable-contract", `contract has no parseable frontmatter: ${found.contract}`);
     const rm = fmBlock.match(/root-map:\s*"?([^"\n]+?)"?\s*$/m);
     if (!rm) return opError(2, "malformed-contract", "m1.root-map missing from the scope contract");
     rootMapRel = norm(rm[1].trim());
     if (!containedRel(rootMapRel)) return opError(2, "malformed-contract", `root-map locator violates the containment grammar: ${rootMapRel}`);
-    if (!existsSync(join(scopeRoot, rootMapRel))) return opError(2, "malformed-contract", `declared root map does not exist: ${rootMapRel}`);
+    if (!checkedStat(join(scopeRoot, rootMapRel), "root map")) return opError(2, "malformed-contract", `declared root map does not exist: ${rootMapRel}`);
     if (found.legacy) contractFindingsSeed.push({ check: "exclusion-integrity", class: "legacy-contract-name", path: ".myk/scope.md", evidence: "legacy entrypoint filename — scope.md — Scope contract names .myk/README.md", rule: RULES["exclusion-integrity"] });
     // per-entry M3 parse (path + fields), indentation-scoped
     function entries(section) {
@@ -147,7 +192,7 @@ function main() {
         if (bad.length) contractFindingsSeed.push({ check: "exclusion-integrity", class: "malformed-exclusion", path: e.path, evidence: `owned-surfaces outside the closed vocabulary: ${bad.join(", ")}`, rule: RULES["exclusion-integrity"] }); }
       // exact-file vs subtree is the RESOLVED TARGET TYPE, never the filename
       // extension; a nonexistent target gets its own finding below, not a guess here.
-      const entrySt = containedRel(e.path) ? safeLstat(join(scopeRoot, e.path)) : null;
+      const entrySt = containedRel(e.path) ? checkedStat(join(scopeRoot, e.path), "managed path") : null;
       const isSubtree = !!entrySt && entrySt.isDirectory();
       if (isSubtree && !e.entrypoint) missing.push("entrypoint (required for subtree entries)");
       if (!containedRel(e.path)) contractFindingsSeed.push({ check: "exclusion-integrity", class: "malformed-exclusion", path: e.path, evidence: "managed path violates containment grammar", rule: RULES["exclusion-integrity"] });
@@ -157,14 +202,18 @@ function main() {
     exclusionEntriesFull = excl;
   } else if (declaredRootArg) {
     mode = "DEGRADED"; discovery = "declared argument from scope.md — Organized-scope evidence; exclusions audit-scoped only";
-    scopeRoot = safeLstat(target).isDirectory() ? target : resolve(target, "..");
+    scopeRoot = targetSt.isDirectory() ? target : resolve(target, "..");
+    if (!proveIdentity(scopeRoot)) return opError(2, "check-incomplete", `scope root identity cannot be established: ${scopeRoot}`);
     rootMapRel = norm(declaredRootArg);
-    if (!containedRel(rootMapRel) || !existsSync(join(scopeRoot, rootMapRel)))
-      return opError(3, "bad-declared-root", `--root-map must be a contained scope-relative path to an existing file: ${declaredRootArg}`);
+    if (!containedRel(rootMapRel)) return opError(3, "bad-declared-root", `--root-map must be a contained scope-relative path to an existing file: ${declaredRootArg}`);
+    if (!checkedStat(join(scopeRoot, rootMapRel), "root map"))
+      return opError(3, "bad-declared-root", `declared root map does not exist: ${declaredRootArg}`);
   } else {
     return opError(3, "no-declared-scope", "no .myk/ contract found by walk-up and no --root-map supplied — undeclared trees are outside map-check's jurisdiction",
       "establish the scope with map-this (Handler-gated), or pass --root-map <declared-root> from scope.md — Organized-scope evidence");
   }
+
+  requiredRead(join(scopeRoot, rootMapRel), "root map");
 
   const isUnder = (rel, entry) => rel === entry || rel.startsWith(entry.replace(/\/$/, "") + "/");
   const isExcluded = rel => exclusions.some(e => isUnder(rel, e));
@@ -176,6 +225,7 @@ function main() {
   let capHit = false;
   (function walk(dir) {
     if (capHit) return;
+    if (!proveIdentity(dir)) return opError(2, "check-incomplete", `inventory directory identity cannot be established: ${dir}`);
     let names; try { names = readdirSync(dir); } catch { skipped.push(norm(relative(scopeRoot, dir)) + "/ (unreadable)"); return; }
     for (const name of names) {
       if (files.length >= MAXF || Date.now() - T0 > MAXMS) { capHit = true; return; }
@@ -200,8 +250,7 @@ function main() {
   const stem = p => basename(p).replace(/\.md$/, "");
   const fmOf = new Map(), bodyOf = new Map();
   for (const rel of mdFiles) {
-    const t = safeRead(join(scopeRoot, rel));
-    if (t === null) { skipped.push(rel + " (unreadable)"); continue; }
+    const t = requiredRead(join(scopeRoot, rel), "Markdown member");
     if (t.startsWith("---")) { const e = t.indexOf("\n---", 3); if (e > 0) { fmOf.set(rel, t.slice(3, e)); bodyOf.set(rel, t.slice(e + 4)); continue; } }
     fmOf.set(rel, null); bodyOf.set(rel, t);
   }
@@ -315,10 +364,10 @@ function main() {
 
   // exclusion-integrity — managed coverage at each entry's declared map/section
   for (const e of managedEntries) {
-    if (!containedRel(e.path) || !existsSync(join(scopeRoot, e.path))) { if (containedRel(e.path)) F("exclusion-integrity", "malformed-exclusion", e.path, "declared managed path does not exist"); continue; }
+    if (!containedRel(e.path) || !checkedStat(join(scopeRoot, e.path), "managed path")) { if (containedRel(e.path)) F("exclusion-integrity", "malformed-exclusion", e.path, "declared managed path does not exist"); continue; }
     const covMapRel = e.map ? norm(e.map) : rootRel;
-    const covBody = safeRead(join(scopeRoot, covMapRel));
-    if (covBody === null) { F("exclusion-integrity", "mapside-coverage-missing", e.path, `declared covering map unreadable: ${covMapRel}`); continue; }
+    if (!containedRel(covMapRel)) return opError(2, "check-incomplete", `covering map locator is not contained: ${covMapRel}`);
+    const covBody = requiredRead(join(scopeRoot, covMapRel), "covering map");
     let region = covBody;
     if (e.section) {
       const idx = covBody.indexOf(e.section);
@@ -329,7 +378,7 @@ function main() {
     const targetForLink = e.entrypoint && containedRel(norm(e.entrypoint)) ? norm(e.entrypoint) : e.path;
     if (!linksTo(region, targetForLink) && !region.includes(targetForLink)) F("exclusion-integrity", "mapside-coverage-missing", e.path, `no link to ${targetForLink} in ${covMapRel}${e.section ? ` heading "${e.section}"` : ""}`);
   }
-  for (const e of exclusions) if (!existsSync(join(scopeRoot, e))) F("exclusion-integrity", "malformed-exclusion", e, "declared excluded path does not exist");
+  for (const e of exclusions) if (!checkedStat(join(scopeRoot, e), "excluded path")) F("exclusion-integrity", "malformed-exclusion", e, "declared excluded path does not exist");
 
   // ---------- link resolution conformance (independent implementation) ----------
   // Grammar, inventory, and resolution re-implemented from link-resolution.md — no scanner
@@ -343,15 +392,9 @@ function main() {
   if (mode === "FULL") {
     let grammarErrors = 0;
     const gerr = m => { F("link-contract-grammar", "malformed-contract", ".myk contract", m); grammarErrors++; };
-    const idEq = (a, b) => a.split(sep).join("/").toLowerCase() === b.split(sep).join("/").toLowerCase();
-    { const str = safeLstat(scopeRoot); if (!str || str.isSymbolicLink()) return opError(2, "check-incomplete", "scope root is a reparse point or unreadable — safety cannot be established");
-      let rr = null; try { rr = realpathSync.native(scopeRoot); } catch { }
-      if (rr === null || !idEq(rr, scopeRoot)) return opError(2, "check-incomplete", "scope root diverges from its native realpath — reparse point in the chain; safety cannot be established"); }
-    let cbuf = null; try { cbuf = readFileSync(found.contract); } catch { }
-    if (cbuf) {
+    {
+      const cbuf = contractBytes;
       contractFingerprint = createHash("sha256").update(cbuf).digest("hex");
-      let rp = null; try { rp = realpathSync.native(found.contract); } catch { }
-      if (rp === null || !idEq(rp, found.contract)) return opError(2, "check-incomplete", "contract path diverges from its native realpath — reparse point; safety cannot be established");
       let text = cbuf.toString("utf8");
       if (!Buffer.from(text, "utf8").equals(cbuf)) gerr("invalid UTF-8");
       if (text.charCodeAt(0) === 0xFEFF) { gerr("BOM present"); text = text.slice(1); }
@@ -413,11 +456,8 @@ function main() {
         if (d.kind !== "corpus-root-relative") { gerr(`unknown dialect kind ${d.kind}`); return false; }
         if (!okLoc(d.subtree) || !okLoc(d.base)) { gerr(`locator grammar violation in ${d.id}`); return false; }
         for (const loc of [d.subtree.replace(/\/$/, ""), d.base.replace(/\/$/, "")]) {
-          const fp2 = join(scopeRoot, loc); const st2 = safeLstat(fp2);
-          if (!st2) { gerr(`dialect ${d.id}: declared locator ${loc} does not exist or is unreadable — fail-closed`); return false; }
-          if (st2.isSymbolicLink()) { gerr(`dialect ${d.id}: ${loc} is a reparse point — refused`); return false; }
-          let r2 = null; try { r2 = realpathSync.native(fp2); } catch { }
-          if (r2 === null || !idEq(r2, fp2)) { gerr(`dialect ${d.id}: ${loc} diverges from its native realpath — refused`); return false; }
+          const fp2 = join(scopeRoot, loc);
+          if (!checkedStat(fp2, `dialect ${d.id} locator`)) return opError(2, "check-incomplete", `dialect ${d.id}: declared locator does not exist: ${loc}`);
         }
         const key = d.subtree.replace(/\/$/, "").toLowerCase();
         if (seenSub.has(key)) { gerr(`duplicate/case-fold-colliding subtree ${d.subtree}`); return false; }
@@ -437,11 +477,7 @@ function main() {
         if (!e.entrypoint) { gerr(`single-entrypoint exclusion ${e.path} lacks an entrypoint`); continue; }
         const ep = norm(e.entrypoint);
         if (!okLoc(ep)) { gerr(`entrypoint locator violation ${ep}`); continue; }
-        const stE = safeLstat(join(scopeRoot, ep));
-        if (!stE) { gerr(`declared entrypoint does not exist: ${ep}`); continue; }
-        if (stE.isSymbolicLink()) { gerr(`entrypoint is a reparse point: ${ep}`); continue; }
-        let epR = null; try { epR = realpathSync.native(join(scopeRoot, ep)); } catch { }
-        if (epR === null || !idEq(epR, join(scopeRoot, ep))) { gerr(`entrypoint diverges from native realpath: ${ep}`); continue; }
+        if (!checkedStat(join(scopeRoot, ep), "governed entrypoint")) return opError(2, "check-incomplete", `declared entrypoint does not exist: ${ep}`);
         gbt.push(ep);
       }
       if (grammarErrors) { dialectDecl = []; accepts = []; gbt = []; }
@@ -449,7 +485,11 @@ function main() {
     gbt = [...new Set(gbt)].sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
     // Canonical inventory and fingerprints from link-resolution.md — Resolution inventory and fingerprints.
     const invSorted = files.filter(f => !isExcluded(f)).slice().sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
-    const metaOf = r => fileMeta.get(r) || (() => { const s = safeLstat(join(scopeRoot, r)); return s ? { size: s.size, mtime: Math.round(s.mtimeMs) } : { size: 0, mtime: 0 }; })();
+    const metaOf = r => fileMeta.get(r) || (() => {
+      const st = checkedStat(join(scopeRoot, r), "fingerprint target");
+      if (!st) return opError(2, "check-incomplete", `fingerprint target no longer exists: ${r}`);
+      return { size: st.size, mtime: Math.round(st.mtimeMs) };
+    })();
     const fpOf = arr => createHash("sha256").update(arr.map(r => { const m2 = metaOf(r); return r + NB + m2.size + NB + m2.mtime; }).map(l => l + "\n").join("")).digest("hex");
     resInvFp = fpOf(invSorted);
     gbtFp = fpOf(gbt.slice().sort());
@@ -469,7 +509,7 @@ function main() {
     };
     const headOf = new Map(), blockOf = new Map();
     const fragIdx = p => {
-      if (!headOf.has(p)) { const b = (bodyOf.get(p) !== undefined ? bodyOf.get(p) : (() => { const t2 = safeRead(join(scopeRoot, p)); if (t2 === null) return ""; const e = t2.startsWith("---") ? t2.indexOf("\n---", 3) : -1; return e > 0 ? t2.slice(e + 4) : t2; })()) || "";
+      if (!headOf.has(p)) { const b = (bodyOf.get(p) !== undefined ? bodyOf.get(p) : (() => { const t2 = requiredRead(join(scopeRoot, p), "fragment target"); const e = t2.startsWith("---") ? t2.indexOf("\n---", 3) : -1; return e > 0 ? t2.slice(e + 4) : t2; })()) || "";
         const hs = new Set(); for (const hm of b.matchAll(/^#{1,6}\s+(.+?)\s*$/gm)) hs.add(hm[1].trim());
         const bs = new Set(); for (const bm of b.matchAll(/\^([A-Za-z0-9-]+)\s*$/gm)) bs.add(bm[1]);
         headOf.set(p, hs); blockOf.set(p, bs); }
@@ -531,7 +571,7 @@ function main() {
     resolution: mode === "FULL" ? { pinned_to: { resolution_inventory_fingerprint: resInvFp, contract_fingerprint: contractFingerprint, governed_boundary_target_fingerprint: gbtFp },
       occurrence_classes: occ, observed_occurrences: occTotal, records: resolutionRecords,
       dialect_rules: dialectDecl, governed_boundary_targets: gbt,
-      reparse_proof: "scope root, contract path, governed targets, and dialect subtree/base roots verified by native-realpath identity + lstat; inventory entries by per-entry lstat symlink refusal (any skipped boundary is typed check-incomplete, never clean); reparse forms invisible to both are a NAMED runtime-observation limit, not proven absent" } : null,
+      reparse_proof: "target, scope root and required reads checked with native-realpath identity and lstat; inventory boundaries refuse visible links; reparse forms invisible to these mechanisms and races remain runtime-observation limits" } : null,
     findings, verdict };
   if (wantJson) emit(env, findings.length ? 1 : 0);
   const lines = [`map-check — ${verdict}`, `scope: ${env.scope}  root-map: ${rootMapRel}  discovery: ${discovery}`];

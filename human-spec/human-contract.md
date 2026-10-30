@@ -79,11 +79,15 @@ Cite it; do not copy it.
 
 ## 3. The checker contract
 
-`tools/human-output-check.mjs` grades the **mechanical half** of the contract.
-It checks: acronyms expanded at first use, one marked recommendation, sentence
-length, printable ASCII inside fences, fence width, whether a drawn figure's
-bars are proportional to the labels printed beside them, and whether stated
-percentages sum to 100.
+`tools/human-output-check.mjs` detects selected mechanical patterns.
+It detects selected acronym, recommendation, sentence-length, fence-character,
+width, bar-proportion and percentage-sum patterns. These are heuristic checks,
+not complete enforcement of the contract. The percentage check considers only
+fences with at least three percentages, a total strictly between 90 and 110,
+and a deviation from 100 greater than 0.5. Other invalid totals can pass.
+Manually verify each actual composition; do not sum unrelated percentages.
+Warnings do not fail the command. Exit 0 means no detected errors, exit 1 means
+detected errors, and exit 2 means the checker could not complete.
 
 Run it on drafted text before sending. A rule with no gate drifts silently
 while everything else stays green.
@@ -107,9 +111,9 @@ self-report of having verified is not evidence of verification** — a writer wh
 was warned about fabrication, told to verify, and who says they verified can
 still have invented a load-bearing figure, and nothing in the output
 distinguishes the two cases. Treat every number as unverified until a second
-reader with the source in hand confirms it. A green run
-from the checker means the countable rules hold; it says nothing about whether
-you made a number up.
+reader with the source in hand confirms it. A green run means no errors were
+detected by the implemented checks; it proves neither complete mechanical
+compliance nor source fidelity. Manual arithmetic and source checks still apply.
 
 ## 4. The shared footer
 
@@ -137,7 +141,7 @@ the blockquote exactly. A citation without the footer fails; a paraphrased
 footer fails. If you ever change the footer's wording, change the literal in the
 guard in the same edit.
 
-**Coverage is machine-checked too: 43 of the pack's 79 skills carry it.** That
+**Coverage is machine-checked too: 42 of the pack's 84 skills carry it.** That
 sentence is a gate, not a note — the guard recomputes both numbers and fails on
 a mismatch. It exists because the citation rule alone cannot catch a *deleted*
 footer: for most carriers the footer is the only place the contract is named, so

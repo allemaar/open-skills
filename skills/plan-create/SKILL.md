@@ -103,7 +103,7 @@ When in doubt, use Full mode. If the task touches auth, data, external services,
 
 ## PLAN.md Template
 
-Use this exact structure. Do not invent new sections or drop existing ones.
+Use this exact structure. Do not invent new sections or drop existing ones. Number each discrete action across the phases, naming the target and specific change; a label such as "Modify" is not an executable step.
 
 ```markdown
 # Plan: [Task Title]
@@ -135,14 +135,15 @@ Use this exact structure. Do not invent new sections or drop existing ones.
 
 ### Phase A — [Name]
 *Estimate: [hours or days]*
-| Unit | Action | Reason |
-|------|--------|--------|
-| path/to/file | Modify | ... |
+| Step | Unit | Concrete action | Reason |
+|------|------|-----------------|--------|
+| 1 | path/to/file | [Update named symbol/section to required behavior] | ... |
 
 ### Phase B — [Name]
 *Estimate: [hours or days]*
-| Unit | Action | Reason |
-|------|--------|--------|
+| Step | Unit | Concrete action | Reason |
+|------|------|-----------------|--------|
+| 2 | path/to/file | [Update named symbol/section to required behavior] | ... |
 
 ---
 

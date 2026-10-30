@@ -61,6 +61,10 @@ After the universal frontmatter (with `profile: orchestrator`), the body looks l
 
 ## Sources
 
+For an explicitly confirmed no-required-sources brief only, replace the required
+list with `required=[]` and add `confirmed_empty:bool=true` to `@SOURCES`.
+Never infer confirmation from an empty list; nonempty required sources stay gated.
+
 @SOURCES
   required=[
     /c/Projects/younndai/apps/x/y.ts          # parent-level must-understand context — gated
@@ -110,7 +114,7 @@ After the universal frontmatter (with `profile: orchestrator`), the body looks l
 >
 > ALSO emit the aggregated retro as a chat block so the user can paste back for second-assessment.
 >
-> Your retro MUST include `@GROUND_TRUTH` with the union of all workers' artifacts_modified + git_diff_summary. Narrative-only retros are rejected.
+> Your retro MUST include `@GROUND_TRUTH` with the union of all workers' artifacts_modified + git_diff_summary. The canonical Retro schema's "none" branch requires evidenced zero changes from every worker; unknown worker state remains unknown/blocked. Narrative-only retros are rejected.
 ````
 
 ## Field defaults specific to this profile

@@ -1,0 +1,2347 @@
+{
+  "version": 1,
+  "guides": {
+    "agent-mailbox": {
+      "summary": "Coordinates agents through append-only messages in a shared folder.",
+      "when": [
+        "Agents need an auditable exchange across runtimes.",
+        "An existing room needs reconciliation."
+      ],
+      "avoid": [
+        "A one-shot handoff suffices; this is not a transport or authentication service."
+      ],
+      "example": "/agent-mailbox Coordinate with the other agent in our shared room.",
+      "steps": [
+        "Identify room, participants, objective, transport and ownership.",
+        "Use the canonical handshake for a new room or genuinely new participant; returning participants resume and reconcile without repeating it.",
+        "Reconcile addressed messages and record durable dispositions.",
+        "Use bounded listening only when proven, and report parked or degraded continuity."
+      ],
+      "delegation": {
+        "mode": "required",
+        "detail": "Two or more agents exchange messages. Bounded listening is optional, participant-local and requires proven support; ordinary Standard Exchange works without it."
+      },
+      "outputs": "Messages, dispositions, primer and continuity status.",
+      "sources": [
+        "skills/agent-mailbox/SKILL.md",
+        "skills/agent-mailbox/references/QUICKSTART.md",
+        "skills/agent-mailbox/protocol.yon"
+      ]
+    },
+    "agent-output": {
+      "summary": "Compresses agent-to-agent reports while preserving decision-critical evidence and caveats.",
+      "when": [
+        "A worker must report an outcome or blocker.",
+        "A reviewer must communicate actionable findings."
+      ],
+      "avoid": [
+        "You need human-facing prose or message transport."
+      ],
+      "example": "/agent-output Compress this worker report.",
+      "steps": [
+        "Lead with state and result.",
+        "Include exact evidence, changes and material gaps.",
+        "Give the next action while retaining scope, uncertainty and gates."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The contract does not dispatch agents."
+      },
+      "outputs": "A compact operational report.",
+      "sources": [
+        "skills/agent-output/SKILL.md"
+      ]
+    },
+    "ask-gate": {
+      "summary": "Triages a pending question and prepares it according to stakes.",
+      "when": [
+        "You are about to ask the Handler.",
+        "A consequential decision needs sound framing."
+      ],
+      "avoid": [
+        "The answer can be resolved from the request or available context."
+      ],
+      "example": "/ask-gate Check whether I should ask about this choice.",
+      "steps": [
+        "Resolve answerable questions without asking.",
+        "Classify necessary questions as routine or high stakes.",
+        "Use the checklist for routine questions, or critique and assess high-stakes options.",
+        "Ask a clear, appropriately framed question."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "Deliberation does not require a subagent."
+      },
+      "outputs": "A resolved choice or quality-checked question.",
+      "sources": [
+        "skills/ask-gate/SKILL.md",
+        "skills/ask-gate/protocol.yon"
+      ]
+    },
+    "audit-coupled-constant": {
+      "summary": "Audit duplicated constants for drift.",
+      "when": [
+        "A timeout or threshold changes",
+        "Comments require values to stay synchronized"
+      ],
+      "avoid": [
+        "A single imported constant is compiler-enforced"
+      ],
+      "example": "/audit-coupled-constant check the retry timeout across this repository",
+      "steps": [
+        "List all representations and units",
+        "Search each representation across the relevant scope",
+        "Classify hits and repair missed sites and bidirectional references",
+        "Report evidence and intentional differences"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "A classified audit report and any authorized repairs.",
+      "sources": [
+        "skills/audit-coupled-constant/SKILL.md"
+      ]
+    },
+    "budget-check": {
+      "summary": "Checks usage before an expensive agent wave, returning go, no-go or unknown.",
+      "when": [
+        "A large fan-out is planned.",
+        "You have a token ceiling to test."
+      ],
+      "avoid": [
+        "You need an authoritative billing or plan-quota reading."
+      ],
+      "example": "/budget-check Check whether this agent wave can start.",
+      "steps": [
+        "Run the bundled usage wrapper with a threshold and actual token limit when known.",
+        "Read the active block, ceiling and verdict.",
+        "Reduce or defer a no-go wave; never treat unknown as go."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The check does not dispatch agents."
+      },
+      "outputs": "A verdict with usage context.",
+      "sources": [
+        "skills/budget-check/SKILL.md",
+        "skills/budget-check/protocol.yon"
+      ]
+    },
+    "caller-options": {
+      "summary": "Routes one skill invocation among viable modes and execution venues.",
+      "when": [
+        "A skill declares meaningful venue choices.",
+        "A skill has multiple viable execution paths."
+      ],
+      "avoid": [
+        "You are selecting a persistent session mode."
+      ],
+      "example": "/caller-options Route this investigation between inline and delegated execution.",
+      "steps": [
+        "Triage choices and proceed directly if one dominates.",
+        "Eliminate unavailable or unsafe combinations and compare survivors.",
+        "Surface material choices and execute the selected path.",
+        "For delegation, use the resolved marker and inspect the result."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Delegated or fan-out venues may be selected; self-orchestrators are not wrapped."
+      },
+      "outputs": "A chosen mode and venue.",
+      "sources": [
+        "skills/caller-options/SKILL.md",
+        "skills/caller-options/protocol.yon"
+      ]
+    },
+    "cold-review": {
+      "summary": "Reviews actual work against objectives using fresh independent perspectives.",
+      "when": [
+        "Completed work needs outside review.",
+        "You need evidence-backed findings before acceptance."
+      ],
+      "avoid": [
+        "You need a quick check of one claim."
+      ],
+      "example": "/cold-review Review this implementation against its objective.",
+      "steps": [
+        "Classify the work and choose review breadth.",
+        "Brief fresh reviewers on objectives and artifacts when available; otherwise label the same-session review degraded.",
+        "Reopen evidence when synthesizing and verify findings.",
+        "Report coverage, findings, score and threshold verdict."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Use fresh reviewers when supported and appropriate; if unavailable, perform and label a degraded same-session review. More than three reviewers requires confirmation."
+      },
+      "outputs": "An independent evidence-backed review.",
+      "sources": [
+        "skills/cold-review/SKILL.md",
+        "skills/cold-review/protocol.yon"
+      ]
+    },
+    "defuddle": {
+      "summary": "Extract readable Markdown from a web page.",
+      "when": [
+        "Read an article or blog post",
+        "Extract a documentation page"
+      ],
+      "avoid": [
+        "API responses or raw downloads"
+      ],
+      "example": "/defuddle read https://example.com/article",
+      "steps": [
+        "Supply the URL",
+        "Run the Markdown extraction and inspect the result",
+        "Use an available alternative or report a gap if the CLI is missing"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "Clean page content or requested metadata.",
+      "sources": [
+        "skills/defuddle/SKILL.md"
+      ]
+    },
+    "design-an-interface": {
+      "summary": "Compare concrete module interfaces and synthesize a recommendation.",
+      "when": [
+        "Design a nontrivial API",
+        "Compare module boundaries"
+      ],
+      "avoid": [
+        "Implementing the chosen internals"
+      ],
+      "example": "/design-an-interface compare interfaces for a file upload module",
+      "steps": [
+        "Establish callers, cases, failures and constraints",
+        "Produce three different designs with signatures and examples",
+        "Compare tradeoffs and synthesize a concrete recommendation",
+        "Ask whether the result fits the primary use case"
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Use independent subagents when available; otherwise develop each design sequentially without cross-contamination."
+      },
+      "outputs": "Designs, comparison and recommended interface.",
+      "sources": [
+        "skills/design-an-interface/SKILL.md"
+      ]
+    },
+    "diff-recap": {
+      "summary": "Summarize an actual Git diff as a reconciled, pasteable recap.",
+      "when": [
+        "Prepare a pull request summary",
+        "Explain file-level changes"
+      ],
+      "avoid": [
+        "A substitute for reviewing correctness"
+      ],
+      "example": "/diff-recap summarize the changes on this branch",
+      "steps": [
+        "Capture file status and counts directly from Git for the selected diff",
+        "Group and label rows without inventing intent",
+        "Validate rows and totals with the bundled value gate; fail closed if the diff is empty or unavailable",
+        "Render the appropriate human or agent output"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "An evidence-backed recap with file rows and totals.",
+      "sources": [
+        "skills/diff-recap/SKILL.md",
+        "skills/diff-recap/protocol.yon"
+      ]
+    },
+    "directives-audit": {
+      "summary": "Audits directive systems for authority, scope, safety, routing and drift.",
+      "when": [
+        "You need a read-only directive assessment.",
+        "You explicitly request housekeeping of selected findings."
+      ],
+      "avoid": [
+        "The concern is skill behavior or prose alone."
+      ],
+      "example": "/directives-audit Audit these project directives.",
+      "steps": [
+        "Inventory sources, routes, owners and consumed forms.",
+        "Traverse each in-scope edge and name gaps.",
+        "Report findings with evidence and ownership.",
+        "Housekeep only on explicit request and follow its mutation gate."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "Delegation is not a condition of the audit."
+      },
+      "outputs": "An audit and, if explicitly requested, approved housekeeping.",
+      "sources": [
+        "skills/directives-audit/SKILL.md"
+      ]
+    },
+    "domain-check": {
+      "summary": "Reconcile domain availability signals using registration and DNS evidence.",
+      "when": [
+        "Check a candidate domain",
+        "Investigate disagreement between lookup providers"
+      ],
+      "avoid": [
+        "Treating DNS silence as proof of availability"
+      ],
+      "example": "/domain-check check example.org",
+      "steps": [
+        "Query registration data and relevant DNS resolvers",
+        "Apply the documented evidence precedence and fallbacks",
+        "Report uncertainty, coverage gaps and conflicting signals"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "A qualified availability assessment with sources.",
+      "sources": [
+        "skills/domain-check/SKILL.md",
+        "skills/domain-check/protocol.yon"
+      ]
+    },
+    "double-check": {
+      "summary": "Re-examines a claim, output or decision against fresh evidence.",
+      "when": [
+        "A claim needs a targeted re-check.",
+        "You want assumptions challenged before relying on an output."
+      ],
+      "avoid": [
+        "You need a formal phase gate."
+      ],
+      "example": "/double-check Double-check the migration preserves records.",
+      "steps": [
+        "Identify a clear target and reread it.",
+        "Challenge assumptions and cross-check sources.",
+        "Iterate on issues and report a verdict with evidence and uncertainty."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Caller Options can select inline or delegated checking."
+      },
+      "outputs": "A targeted verdict and corrections.",
+      "sources": [
+        "skills/double-check/SKILL.md",
+        "skills/double-check/protocol.yon"
+      ]
+    },
+    "extract-signal": {
+      "summary": "Turns noisy sources into vetted signal in the requested form.",
+      "when": [
+        "You need evidence gathered for a decision.",
+        "Audience, stakes and destination can be identified."
+      ],
+      "avoid": [
+        "You need only a raw fetch."
+      ],
+      "example": "/extract-signal Extract the signal from these complaints as a decision brief.",
+      "steps": [
+        "Infer the signal, audience, stakes and destination.",
+        "Compose appropriate gathering and vetting methods.",
+        "Report provenance, confidence and gaps, matching sensitivity to destination."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Normal calls default to a fresh subagent; when the skill is the active agent it works inline."
+      },
+      "outputs": "A vetted signal in the requested form.",
+      "sources": [
+        "skills/extract-signal/SKILL.md",
+        "skills/extract-signal/protocol.yon"
+      ]
+    },
+    "freshness-contract": {
+      "summary": "Determines whether old evidence remains usable for a current decision.",
+      "when": [
+        "You are about to reuse a prior test or report.",
+        "Intervening changes may invalidate evidence."
+      ],
+      "avoid": [
+        "You need to establish a new claim from scratch."
+      ],
+      "example": "/freshness-contract Check whether yesterday's test still supports release.",
+      "steps": [
+        "Classify the artifact and decision.",
+        "Identify age anchors, intervening changes and invalidators.",
+        "Apply the restrictive table: reuse, spot-check or re-verify; accept labeled risk only in the no-cheap-discriminator case."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "This lookup does not prescribe delegation."
+      },
+      "outputs": "A freshness decision and required follow-up.",
+      "sources": [
+        "skills/freshness-contract/SKILL.md"
+      ]
+    },
+    "github-sync": {
+      "summary": "Reviews session changes, obtains approval for commits, then commits and pushes.",
+      "when": [
+        "You want selected changes committed and pushed.",
+        "The destination and outgoing commits need review."
+      ],
+      "avoid": [
+        "You want commit-only work or partial staging."
+      ],
+      "example": "/github-sync Commit and push this session's approved changes.",
+      "steps": [
+        "Inspect changes, destination and all outgoing commits.",
+        "Group intended changes and exclude unrelated or unsafe files.",
+        "Present the destination, complete outgoing set and exact full ordered commit messages; obtain explicit approval for that plan.",
+        "Stage approved paths, check messages and attribution, push and report."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The workflow does not require subagents."
+      },
+      "outputs": "Approved commits pushed or a reported stop.",
+      "sources": [
+        "skills/github-sync/SKILL.md",
+        "skills/github-sync/protocol.yon"
+      ]
+    },
+    "handoff": {
+      "summary": "Creates a structured brief for a fresh agent or session.",
+      "when": [
+        "An autonomous task needs transferring.",
+        "You are switching sessions or packaging parallel work."
+      ],
+      "avoid": [
+        "The current session should simply become coordinator."
+      ],
+      "example": "/handoff Create a handoff for the remaining import flow.",
+      "steps": [
+        "Identify objective, profile, scope and constraints.",
+        "Gather required sources and acceptance checks; an empty required-source list needs explicit confirmation and yields advisory mode.",
+        "Write and verify the structured brief.",
+        "Provide the artifact and activation phrase."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "An orchestrator profile can describe parallel tasks; writing a brief does not dispatch them."
+      },
+      "outputs": "A handoff file and chat surface.",
+      "sources": [
+        "skills/handoff/SKILL.md",
+        "skills/handoff/protocol.yon"
+      ]
+    },
+    "handoff-execute": {
+      "summary": "Executes a structured handoff with source ingestion and acceptance verification.",
+      "when": [
+        "A fresh session receives a handoff.",
+        "The brief specifies required sources and an outcome."
+      ],
+      "avoid": [
+        "The input is a normal plan or an independent review request."
+      ],
+      "example": "/handoff-execute Execute the handoff at the supplied path.",
+      "steps": [
+        "Read the brief and required sources before planning; unresolved or unreadable required sources block by default, while explicit force permits labeled degraded execution.",
+        "Cite sources in the execution plan.",
+        "Execute within bounds and run outcome verification.",
+        "Report the ground-truth retrospective and gaps."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Follow the handoff profile; delegation is not universal."
+      },
+      "outputs": "Completed work, outcome verification and a ground-truth retro; a failed retro write falls back to chat with a write-failure record.",
+      "sources": [
+        "skills/handoff-execute/SKILL.md",
+        "skills/handoff-execute/protocol.yon"
+      ]
+    },
+    "headless-claude": {
+      "summary": "Run a bounded Claude Code CLI task under a supervisor.",
+      "when": [
+        "Delegate a scoped inspection",
+        "Run an authorized file task"
+      ],
+      "avoid": [
+        "Unsupervised processes or silent billing changes"
+      ],
+      "example": "/headless-claude inspect the parser for edge cases",
+      "steps": [
+        "Check CLI access, help, model and required permissions",
+        "Define exact scope, deadline, tools and cancellation",
+        "Launch under a retained supervisor and monitor output",
+        "Validate the result and report limitations"
+      ],
+      "delegation": {
+        "mode": "required",
+        "detail": "The delegated worker is a supervised provider CLI process, not a native subagent. Nested delegation requires separate authorization and bounds."
+      },
+      "outputs": "Captured process evidence and the requested verified result.",
+      "sources": [
+        "skills/headless-claude/SKILL.md",
+        "skills/headless-claude/protocol.yon"
+      ]
+    },
+    "headless-codex": {
+      "summary": "Run a bounded Codex CLI task with scoped authority.",
+      "when": [
+        "Delegate a focused code task",
+        "Run a bounded analysis"
+      ],
+      "avoid": [
+        "Assuming process success proves artifact correctness"
+      ],
+      "example": "/headless-codex review the test failures in this package",
+      "steps": [
+        "Inspect CLI access, configuration, model and permissions",
+        "Set explicit scope, deadline and supervision",
+        "Capture events and monitor the child through completion",
+        "Verify the requested result independently"
+      ],
+      "delegation": {
+        "mode": "required",
+        "detail": "The delegated worker is a supervised provider CLI process, not a native subagent. Nested delegation requires separate authorization and bounds."
+      },
+      "outputs": "Run evidence, result and access or execution gaps.",
+      "sources": [
+        "skills/headless-codex/SKILL.md",
+        "skills/headless-codex/protocol.yon"
+      ]
+    },
+    "headless-gemini": {
+      "summary": "Run a bounded Gemini or Claude task through Antigravity CLI (agy), using a locally available model and a capable supervisor.",
+      "when": [
+        "Delegate a scoped analysis",
+        "Run an authorized workspace task"
+      ],
+      "avoid": [
+        "You need the separate gemini CLI rather than Antigravity CLI (agy).",
+        "You require enforced read-only or exact tool isolation without an independently verified boundary.",
+        "Treating an added directory as an access allowlist."
+      ],
+      "example": "/headless-gemini summarize the architecture of this project",
+      "steps": [
+        "Check the installed Antigravity CLI, authentication, model access and effective configuration.",
+        "Set exact authorized tools and paths; stop when required isolation cannot be independently established.",
+        "Otherwise disclose that monitoring detects actions after dispatch, then launch a bounded supervised task.",
+        "Validate the output and report limitations and gaps."
+      ],
+      "delegation": {
+        "mode": "required",
+        "detail": "The delegated worker is a supervised provider CLI process, not a native subagent. Nested delegation requires separate authorization and bounds; disclose when native usage ceilings are unavailable."
+      },
+      "outputs": "A bounded child result with supervision and permission evidence.",
+      "sources": [
+        "skills/headless-gemini/SKILL.md",
+        "skills/headless-gemini/protocol.yon"
+      ]
+    },
+    "headless-grok": {
+      "summary": "Run a bounded Grok Build CLI task using selected permissions.",
+      "when": [
+        "Delegate a focused CLI task",
+        "Run a restricted analysis"
+      ],
+      "avoid": [
+        "Assuming subscription access grants API entitlement"
+      ],
+      "example": "/headless-grok inspect this module for error handling",
+      "steps": [
+        "Check installed CLI, authentication and model access.",
+        "Choose a minimal approved tool and path scope; Windows containment is unestablished, so stop if enforced read-only or exact isolation is required without independent proof.",
+        "Otherwise disclose that monitoring detects actions after dispatch, then launch and supervise the retained process.",
+        "Inspect tool use and validate the result."
+      ],
+      "delegation": {
+        "mode": "required",
+        "detail": "The delegated worker is a supervised provider CLI process, not a native subagent. Nested delegation requires separate authorization and bounds."
+      },
+      "outputs": "Captured output and a report of identity, limits and gaps.",
+      "sources": [
+        "skills/headless-grok/SKILL.md",
+        "skills/headless-grok/protocol.yon"
+      ]
+    },
+    "headless-models": {
+      "summary": "Select a headless model using capability, cost and availability evidence.",
+      "when": [
+        "Compare providers for a task",
+        "Choose a model and effort"
+      ],
+      "avoid": [
+        "Refreshing the catalog itself"
+      ],
+      "example": "/headless-models recommend a model for a bounded code review",
+      "steps": [
+        "Define output needs and constraints",
+        "Check current provider evidence and local availability separately",
+        "Compare suitable choices and disclose cost uncertainty",
+        "Recommend a supported route without changing the caller's selection"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "A sourced model and effort recommendation.",
+      "sources": [
+        "skills/headless-models/SKILL.md",
+        "skills/headless-models/protocol.yon"
+      ]
+    },
+    "headless-update-models": {
+      "summary": "Refresh canonical headless model evidence and consumer projections.",
+      "when": [
+        "Update family model guidance",
+        "Refresh stale provider evidence"
+      ],
+      "avoid": [
+        "Live quota checks or benchmark inference"
+      ],
+      "example": "/headless-update-models refresh the provider model guidance",
+      "steps": [
+        "Identify the canonical source and exact write cohort, including established copied or plugin installations.",
+        "Gather current primary model, pricing and benchmark evidence without benchmark inference.",
+        "Update dated records, project them to registered headless consumers, and refresh the selected established installations through verified installers while retaining preimages.",
+        "The explicit update request authorizes that scope; new installations require a separate request.",
+        "Verify source and installed parity and report gaps."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "Updated guidance and a dated coverage and parity report.",
+      "sources": [
+        "skills/headless-update-models/SKILL.md",
+        "skills/headless-update-models/protocol.yon"
+      ]
+    },
+    "headless-usage": {
+      "summary": "Read available account usage and reset information across supported harnesses.",
+      "when": [
+        "Check remaining quotas",
+        "Compare returned usage windows"
+      ],
+      "avoid": [
+        "Estimating request counts or enabling paid overage"
+      ],
+      "example": "/headless-usage show my current quotas",
+      "steps": [
+        "Discover available authenticated usage surfaces without inference or credential-store access.",
+        "Prefer the Codex desktop usage tool when available; otherwise use the Windows direct reader for Codex. Use that reader for Antigravity on Windows, or verified native surfaces on other platforms; report unavailable routes.",
+        "For Claude or Grok, inspect an existing usage surface or use a bounded supervised terminal session; Grok startup hooks and MCP integrations may run.",
+        "Distinguish live, cached, unverified and unavailable readings; report timestamps, reset windows and gaps."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "A dated quota table with source and freshness labels.",
+      "sources": [
+        "skills/headless-usage/SKILL.md",
+        "skills/headless-usage/protocol.yon"
+      ]
+    },
+    "human-draw": {
+      "summary": "Turns relational, positional, or proportional information into a text figure that carries meaning alongside concise prose.",
+      "when": [
+        "Relationships, sequence, branching, or proportion are central.",
+        "You need a compact figure legible in a monospace transcript."
+      ],
+      "avoid": [
+        "The material is records with shared attributes; use a table.",
+        "You need a rendered chart for a graphical surface."
+      ],
+      "example": "/human-draw Show the three rollout stages and rollback branches as a diagram.",
+      "steps": [
+        "Choose the shape matching the information.",
+        "Read the selected shape guidance and encode it in printable ASCII.",
+        "Keep labels and values informative if the figure wraps.",
+        "Check width, glyphs, alignment, arithmetic, node limits, and honesty.",
+        "Return the figure with its check receipt and surrounding explanation."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "Defines a figure-design workflow and no subagent step."
+      },
+      "outputs": "A checked ASCII figure with explanation; it supplements prose and adds no unsupported facts.",
+      "sources": [
+        "skills/human-draw/SKILL.md",
+        "skills/human-draw/references/human-contract.md",
+        "skills/human-draw/references/tools/human-output-check.mjs"
+      ]
+    },
+    "human-merge": {
+      "summary": "Combines reports into one decision-ready account while accounting for shared sources, superseded claims, conflicts, and pooled gaps.",
+      "when": [
+        "You have multiple reports, research summaries, or agent results on one subject.",
+        "You need to know which findings are independent, contradicted, outdated, or collectively missing."
+      ],
+      "avoid": [
+        "You have one text to simplify without changing claims; use human-rewrite.",
+        "You need only the writing contract for a new report; use human-output."
+      ],
+      "example": "/human-merge Combine these three review reports and show which evidence is independent.",
+      "steps": [
+        "Inventory each input, its basis, author/date, and known shared sources.",
+        "Reconcile definitions and distinguish repeated claims from independent evidence.",
+        "Classify conflicts and order superseded findings without averaging disagreement away.",
+        "Pool coverage to reveal gaps absent from individual reports.",
+        "Present combined findings and limits in decision-relevant order."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "Merges reports that may come from agents but does not prescribe spawning or delegating work."
+      },
+      "outputs": "A consolidated report with source dependence, supersessions, conflict types, pooled coverage, and uncertainty.",
+      "sources": [
+        "skills/human-merge/SKILL.md",
+        "skills/human-merge/references/human-contract.md"
+      ]
+    },
+    "human-output": {
+      "summary": "Guides writing as it happens so a reader can understand the decision, consequence, evidence, and unchecked scope.",
+      "when": [
+        "You are preparing an answer, report, finding, or decision request.",
+        "You want the verdict and decision-changing caveat visible immediately."
+      ],
+      "avoid": [
+        "You need to repair existing text while preserving claims; use human-rewrite.",
+        "You need to combine reports or draw relationships; use human-merge or human-draw."
+      ],
+      "example": "/human-output Write a concise decision memo on whether to accept this vendor proposal.",
+      "steps": [
+        "Lead with the verdict and any caveat that could reverse it.",
+        "State the ask or next action, then explain what it means.",
+        "Order details by decision relevance and put claims before supporting evidence.",
+        "Label confirmed claims, judgments, and estimates; state what was not checked.",
+        "Keep reference detail below the decision and mechanically check figures when present."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "Defines reader-facing writing practices and no subagent workflow."
+      },
+      "outputs": "A reader-oriented response with decision, action, consequences, evidence, and unchecked scope.",
+      "sources": [
+        "skills/human-output/SKILL.md",
+        "skills/human-output/references/human-contract.md",
+        "skills/human-output/references/tools/human-output-check.mjs"
+      ]
+    },
+    "human-rewrite": {
+      "summary": "Repairs existing text so a person can read and act on it while preserving its claims and degree of certainty.",
+      "when": [
+        "An existing report or answer is too dense, confusing, or hard to act on.",
+        "You need a clearer version that preserves numbers, scope, attribution, and caveats."
+      ],
+      "avoid": [
+        "You need to merge reports and reconcile claims; use human-merge.",
+        "You want fresh writing rather than a meaning-preserving repair; use human-output."
+      ],
+      "example": "/human-rewrite Rewrite this update so a client can see the decision and what remains uncertain.",
+      "steps": [
+        "Identify the reader, decision need, and what makes the text hard to use.",
+        "Preserve claim strength, attribution, scope, numbers, units, uncertainty, and caveats.",
+        "Resolve shorthand and reorder by decision relevance without changing claims.",
+        "Restack for the destination while retaining necessary supporting detail.",
+        "Check fidelity and name unresolved ambiguity or missing source context."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "Transforms supplied or existing text and defines no subagent step."
+      },
+      "outputs": "A clearer meaning-preserving rewrite with caveats and evidence limits intact.",
+      "sources": [
+        "skills/human-rewrite/SKILL.md",
+        "skills/human-rewrite/references/human-contract.md"
+      ]
+    },
+    "improve-codebase-architecture": {
+      "summary": "Find opportunities to deepen modules and reduce coupling.",
+      "when": [
+        "Investigate brittle tests",
+        "Explore a targeted architectural refactor"
+      ],
+      "avoid": [
+        "Implementing a candidate before selection"
+      ],
+      "example": "/improve-codebase-architecture find coupling in the upload module",
+      "steps": [
+        "Explore the code and identify candidates",
+        "Present candidates and let the user select one",
+        "Frame dependencies and design alternative interfaces",
+        "Compare designs and develop the selected direction",
+        "Draft the RFC; create a GitHub issue only after explicit confirmation, or provide the draft for manual use."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Use independent subagents when available; otherwise develop each design sequentially without cross-contamination."
+      },
+      "outputs": "Evidence-backed candidates, a selected design and an RFC draft; a GitHub issue only when explicitly approved.",
+      "sources": [
+        "skills/improve-codebase-architecture/SKILL.md",
+        "skills/improve-codebase-architecture/protocol.yon"
+      ]
+    },
+    "insight-adversarial": {
+      "summary": "Stress-tests a plan, design, document, workflow, or system through distinct critic personas and synthesizes findings into a verdict.",
+      "when": [
+        "You want a red-team or multi-angle challenge.",
+        "You want rigorous scrutiny of assumptions, failure points, or objections."
+      ],
+      "avoid": [
+        "You want a focused review of one output; use insight-critique.",
+        "You want unseen frames rather than attacks; use insight-angles."
+      ],
+      "example": "/insight-adversarial Stress-test this rollout plan for the strongest objections.",
+      "steps": [
+        "Classify the target and choose distinct relevant personas.",
+        "Run focused critiques with specific findings.",
+        "Synthesize non-duplicate risks while retaining disagreements.",
+        "Apply the pass rules and return the verdict and next step."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Caller Options resolves inline or delegated venue for the invocation; the skill specifies no automatic fan-out."
+      },
+      "outputs": "A multi-persona critique with findings, synthesis, verdict, and next step.",
+      "sources": [
+        "skills/insight-adversarial/SKILL.md",
+        "skills/insight-adversarial/protocol.yon"
+      ]
+    },
+    "insight-angles": {
+      "summary": "Finds less-visible frames, connections, assumptions, candidate expansions, and second-order effects around a subject.",
+      "when": [
+        "You want to widen or reframe a subject.",
+        "You want connections surfaced before choosing an option."
+      ],
+      "avoid": [
+        "You want implementation alternatives; use insight-explore.",
+        "You want flaw-focused review or a decision over options; use insight-adversarial or insight-cross-examine."
+      ],
+      "example": "/insight-angles Find missing perspectives and connections in this proposal.",
+      "steps": [
+        "Frame the subject and current view.",
+        "Classify domain, type, maturity, and current trends.",
+        "Choose roster and subject-specific lenses; note skips.",
+        "Run context-appropriate passes and connect and score findings.",
+        "Return an angle map and synthesis."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Selects inline or cold isolated-worker passes by subject; asks when uncertain. Quick/resolved runs are inline. Deep passes and fan-out above about six workers require Handler consent. Cold workers each handle one lens and do not delegate."
+      },
+      "outputs": "An angle map of frames, typed connections, assumptions, expansions, and second-order effects with a synthesis.",
+      "sources": [
+        "skills/insight-angles/SKILL.md",
+        "skills/insight-angles/protocol.yon"
+      ]
+    },
+    "insight-assess": {
+      "summary": "Evaluates an approach, decision, implementation, or options against relevant criteria and recommends a course.",
+      "when": [
+        "You already have an option or decision to evaluate.",
+        "You need a comparison, impact analysis, or supported recommendation."
+      ],
+      "avoid": [
+        "You need to generate alternatives first; use insight-explore.",
+        "You want focused review of one output; use insight-critique."
+      ],
+      "example": "/insight-assess Compare these two storage approaches for our service.",
+      "steps": [
+        "Frame the decision, objectives, constraints, and evidence.",
+        "Compare options across consistent relevant dimensions.",
+        "Use optional methods only when requested or useful.",
+        "Check alignment and identify assumptions or gaps.",
+        "Give a supported verdict, rationale, and conditions or alternatives."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "Defines an evidence-based assessment flow and no subagent step."
+      },
+      "outputs": "A verdict, rationale, conditions or alternatives, and material evidence and uncertainty.",
+      "sources": [
+        "skills/insight-assess/SKILL.md",
+        "skills/insight-assess/protocol.yon"
+      ]
+    },
+    "insight-critique": {
+      "summary": "Reviews one existing plan, code change, architecture, or UI output and reports strengths, risks, and fixes.",
+      "when": [
+        "You want focused feedback on a specific output.",
+        "You want a quality review before proceeding."
+      ],
+      "avoid": [
+        "You want multi-persona stress testing; use insight-adversarial.",
+        "You need to generate or compare options; use insight-explore or insight-assess."
+      ],
+      "example": "/insight-critique Review this API migration plan for gaps.",
+      "steps": [
+        "Classify the subject as code, plan, architecture, or UI.",
+        "Summarize purpose, scope, and approach.",
+        "Identify specific strengths and rank risks.",
+        "Pair risks with concrete must-fix or optional fixes.",
+        "Return the report and verdict."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Caller Options resolves inline or delegated venue for the invocation."
+      },
+      "outputs": "A Summary, Strengths, Risks, and Fixes report with Approved, Conditional, or Not Approved verdict.",
+      "sources": [
+        "skills/insight-critique/SKILL.md",
+        "skills/insight-critique/protocol.yon"
+      ]
+    },
+    "insight-cross-examine": {
+      "summary": "Routes a subject or option set through depth-scaled deliberation, discovers angles, critiques and assesses choices, then recommends.",
+      "when": [
+        "You want a recommendation across candidates or a complex decision.",
+        "You want discovery and critique combined without running every method by default."
+      ],
+      "avoid": [
+        "You want only one critique, assessment, or brainstorm; use that focused skill.",
+        "You want phase-by-phase inspection of an existing plan; use plan-deep-dive."
+      ],
+      "example": "/insight-cross-examine Weigh these vendor options and recommend one.",
+      "steps": [
+        "Classify the question and evidence context; select depth.",
+        "Discover angles inline at the selected depth.",
+        "Run only selected critique, assessment, or one relevant specialist method.",
+        "For sets, compare consistently and consider justified hybrids.",
+        "Report recommendation, alternatives, uncertainty, and coverage."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Normal sub-skills run inline. Large-set fan-out, L5 depth, and extra reassessment are offered for explicit consent and never automatic."
+      },
+      "outputs": "A decision surface with recommendation, alternatives, decisive assumptions, coverage, and analysis trail.",
+      "sources": [
+        "skills/insight-cross-examine/SKILL.md",
+        "skills/insight-cross-examine/protocol.yon"
+      ]
+    },
+    "insight-explore": {
+      "summary": "Generates distinct approaches to a problem and compares them before a plan is chosen.",
+      "when": [
+        "You want a brainstorm of ways to solve a problem.",
+        "You need plausible alternatives before committing."
+      ],
+      "avoid": [
+        "You have fixed options to evaluate; use insight-assess.",
+        "You need a detailed implementation plan; use plan-create."
+      ],
+      "example": "/insight-explore Explore three ways to add offline support to this app.",
+      "steps": [
+        "Clarify constraints, requirements, and preferences.",
+        "Generate distinct approaches, including standard, performance-oriented, and minimal options where useful.",
+        "Compare on developer experience, robustness, timeline, and alignment.",
+        "Recommend a winner and suggest the next step."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "Specifies ideation and comparison, with no subagent step."
+      },
+      "outputs": "Distinct options, comparison, recommendation, and proposed next step; no code or implementation plan.",
+      "sources": [
+        "skills/insight-explore/SKILL.md",
+        "skills/insight-explore/protocol.yon"
+      ]
+    },
+    "insight-premortem": {
+      "summary": "Imagines a plan has failed and identifies plausible causes, evidence gaps, and ways to prevent or detect them.",
+      "when": [
+        "You want to identify future failure paths before committing.",
+        "You need warning signs and response triggers for a proposed plan."
+      ],
+      "avoid": [
+        "The failure has happened and needs causal investigation; use insight-root-cause.",
+        "You want broad post-implementation learning; use insight-retro."
+      ],
+      "example": "/insight-premortem Assume this migration failed six months from now. What likely happened?",
+      "steps": [
+        "Name the plan, constraints, intended result, and observable failure.",
+        "Generate plausible causes before mitigations.",
+        "Check causes against assumptions, evidence, counterevidence, and missing perspectives.",
+        "Prioritize and propose prevention, warnings, responses, and residual risks."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Inline by default. Workers only when requested or host-permitted and a specific evidence gap justifies them; tasks are bounded, read-only, non-overlapping, and have no nested delegation."
+      },
+      "outputs": "Failure paths, evidence status, proposed mitigations and warning signs, residual risks, and gaps; no plan edits.",
+      "sources": [
+        "skills/insight-premortem/SKILL.md",
+        "skills/insight-premortem/protocol.yon"
+      ]
+    },
+    "insight-reference-class": {
+      "summary": "Forecasts an outcome from comparable completed cases and explains differences from the current plan's estimate.",
+      "when": [
+        "You want an outside-view forecast based on past cases.",
+        "You want to check whether a schedule, cost, or outcome estimate is optimistic."
+      ],
+      "avoid": [
+        "You want to assess whether more research is worth its cost; use insight-value-of-information.",
+        "You lack a defensible comparison set and need a numeric forecast."
+      ],
+      "example": "/insight-reference-class Estimate likely delivery range from comparable completed migrations.",
+      "steps": [
+        "Define outcome, units, horizon, decision, and comparability criteria.",
+        "Build a traceable set of comparable completed cases, noting failures and exclusions.",
+        "Show the supported observed range or distribution.",
+        "Compare with the inside view and explain adjustments, limits, and what could change the estimate."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Inline by default. Workers only when requested or host-permitted and a specific evidence gap justifies them; useful slices include case retrieval, selection challenge, and calculation checks."
+      },
+      "outputs": "An outside-view estimate or evidence-insufficient conclusion with sources, limits, adjustments, and sensitivity.",
+      "sources": [
+        "skills/insight-reference-class/SKILL.md",
+        "skills/insight-reference-class/protocol.yon"
+      ]
+    },
+    "insight-retro": {
+      "summary": "Reviews significant completed implementation work to map impact, capture patterns, check documentation, and list follow-up work.",
+      "when": [
+        "A substantial implementation has finished and its effects should be recorded.",
+        "You need to check documentation, reusable knowledge, difficulty, and technical debt."
+      ],
+      "avoid": [
+        "You only want candidate skill gaps; use insight-skill-gap.",
+        "There is no reliable inventory of completed changes yet."
+      ],
+      "example": "/insight-retro Review the completed authentication rollout and identify follow-up work.",
+      "steps": [
+        "Map changed packages, files, interfaces, and effects.",
+        "Extract reusable patterns and recommend skill, documentation, or no action.",
+        "Audit documentation and knowledge items against the change map.",
+        "Assess execution difficulty and technical debt.",
+        "Return findings with gate status and unverified criteria."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "Specifies a retrospective workflow and no subagent step."
+      },
+      "outputs": "Blast-radius summary, pattern and documentation findings, knowledge updates, difficulty notes, technical debt, and gate status.",
+      "sources": [
+        "skills/insight-retro/SKILL.md",
+        "skills/insight-retro/protocol.yon"
+      ]
+    },
+    "insight-root-cause": {
+      "summary": "Investigates an observed or recurring problem by tracing evidence-linked causes and competing explanations.",
+      "when": [
+        "You want to explain why an observed problem occurred.",
+        "You need supported causes separated from contributors and open hypotheses."
+      ],
+      "avoid": [
+        "The event is hypothetical; use insight-premortem.",
+        "You want broad lessons after an implementation; use insight-retro."
+      ],
+      "example": "/insight-root-cause Find why the scheduled import keeps stopping early.",
+      "steps": [
+        "Describe the event, expected behavior, timeframe, scope, and impact.",
+        "Build causal hypotheses with evidence and a disconfirming check for each link.",
+        "Challenge timing, mechanism, and competing explanations.",
+        "Report supported causes separately and propose a test or countermeasure without running it."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Inline by default. Workers only when requested or host-permitted and a specific evidence gap justifies them; possible slices include timeline, alternative causes, and disconfirmation."
+      },
+      "outputs": "Evidence-linked causal account, unresolved hypotheses, and proposed checks or countermeasures.",
+      "sources": [
+        "skills/insight-root-cause/SKILL.md",
+        "skills/insight-root-cause/protocol.yon"
+      ]
+    },
+    "insight-skill-gap": {
+      "summary": "Compares recent work with the existing skill index to find reusable patterns that are missing or under-covered.",
+      "when": [
+        "You want to know whether recent work exposed a skill gap.",
+        "A retrospective identified patterns worth comparing with existing skills."
+      ],
+      "avoid": [
+        "You want to create or edit a skill now; use skill-smith after choosing a proposal.",
+        "You need a full retrospective of changes and technical debt; use insight-retro."
+      ],
+      "example": "/insight-skill-gap Check whether the caching work exposed a skill worth adding.",
+      "steps": [
+        "Gather recent work and summarize patterns and technologies.",
+        "Read the current skill index.",
+        "Classify patterns as covered, incomplete, or absent and apply reuse criteria.",
+        "Present a targeted update or new-skill proposal for approval.",
+        "Only after approval, use skill-smith to create the chosen skills or apply targeted updates."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "Specifies a scan and proposal flow and no subagent step."
+      },
+      "outputs": "Coverage findings and justified proposals, followed by skill creation or targeted updates only when approved.",
+      "sources": [
+        "skills/insight-skill-gap/SKILL.md",
+        "skills/insight-skill-gap/protocol.yon"
+      ]
+    },
+    "insight-test-assumption": {
+      "summary": "Designs a bounded test that could support or disprove a decision-critical assumption; it does not run the test.",
+      "when": [
+        "A decision depends on an uncertain assumption.",
+        "You need a test with observable outcomes and a decision rule."
+      ],
+      "avoid": [
+        "You want to decide whether information is worth its cost; use insight-value-of-information.",
+        "You want the test executed, participants recruited, or spending/deployment performed."
+      ],
+      "example": "/insight-test-assumption Design a test for whether customers can complete onboarding without help.",
+      "steps": [
+        "Name the decision, assumption, current evidence, and consequence if false.",
+        "Use existing evidence or design the smallest credible bounded test.",
+        "Set support, disconfirmation, and inconclusive criteria before results.",
+        "Return the test card, bounds, costs, risks, and interpretation limits."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Inline by default. Workers only when requested or host-permitted and a specific evidence gap justifies them; possible slices include evidence retrieval, test design, and challenging the measurement or rule."
+      },
+      "outputs": "A proposed test card and decision rule; no experiment execution, recruitment, spending, or deployment.",
+      "sources": [
+        "skills/insight-test-assumption/SKILL.md",
+        "skills/insight-test-assumption/protocol.yon"
+      ]
+    },
+    "insight-value-of-information": {
+      "summary": "Assesses whether information could improve a pending choice enough to justify research, testing, and delay costs.",
+      "when": [
+        "You are unsure whether to research or test before deciding.",
+        "You need to compare a decision-changing signal's value with its acquisition cost."
+      ],
+      "avoid": [
+        "You need a test designed; use insight-test-assumption.",
+        "You want information purchased or research performed; this skill evaluates but does not acquire it."
+      ],
+      "example": "/insight-value-of-information Is a customer pilot worth running before we choose a launch date?",
+      "steps": [
+        "Frame feasible actions, current best choice, horizon, and uncertain inputs.",
+        "Describe information, signals, reliability, action changes, and costs.",
+        "Calculate EVSI/EVPI only when probabilities, payoffs, and signal accuracy are supported.",
+        "Recommend gathering information, deciding now, or remaining unresolved, with a stopping rule."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Inline by default. Workers only when requested or host-permitted and a specific evidence gap justifies them; useful slices include decision model, source reliability, and arithmetic checks."
+      },
+      "outputs": "A supported information-value estimate or qualitative switching conditions with cost, gaps, and stopping rule.",
+      "sources": [
+        "skills/insight-value-of-information/SKILL.md",
+        "skills/insight-value-of-information/protocol.yon"
+      ]
+    },
+    "investigate": {
+      "summary": "Gathers facts without changing the target.",
+      "when": [
+        "You need to understand dependencies or behavior.",
+        "You want an evidence-backed code map."
+      ],
+      "avoid": [
+        "You are asking for implementation or a plan."
+      ],
+      "example": "/investigate Investigate how authentication reaches the API.",
+      "steps": [
+        "Identify target and read entry points.",
+        "Trace relevant usages, imports and patterns.",
+        "Report findings, source anchors and gaps without making changes."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Caller Options can select inline or delegated investigation."
+      },
+      "outputs": "A source-backed fact report.",
+      "sources": [
+        "skills/investigate/SKILL.md",
+        "skills/investigate/protocol.yon"
+      ]
+    },
+    "json-canvas": {
+      "summary": "Create or edit JSON Canvas diagrams with nodes and edges.",
+      "when": [
+        "Build a mind map",
+        "Connect notes in a canvas"
+      ],
+      "avoid": [
+        "Editing Markdown notes or Bases"
+      ],
+      "example": "/json-canvas make a mind map of this project",
+      "steps": [
+        "Identify the diagram's content and relationships",
+        "Create valid nodes and edges with suitable positions",
+        "Check IDs, references and JSON structure",
+        "Open the canvas when available to inspect the layout"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "A valid .canvas diagram.",
+      "sources": [
+        "skills/json-canvas/SKILL.md"
+      ]
+    },
+    "map-check": {
+      "summary": "Run a read-only conformance check on a bounded knowledge map.",
+      "when": [
+        "Check a map's health",
+        "Inspect graph conformance"
+      ],
+      "avoid": [
+        "Applying repairs or claiming an unqualified all-clear"
+      ],
+      "example": "/map-check check this project map",
+      "steps": [
+        "Identify the scope and load the governing rules",
+        "Run the bundled checker with the appropriate inventory",
+        "Inspect findings and operational errors separately",
+        "Report exactly what was and was not checked"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "A scoped conformance report.",
+      "sources": [
+        "skills/map-check/SKILL.md"
+      ]
+    },
+    "map-init": {
+      "summary": "Install or remove the mapping route on selected agent directive surfaces.",
+      "when": [
+        "Set up the mapping directive",
+        "Remove a previously installed route"
+      ],
+      "avoid": [
+        "Editing vault content or silently changing global directives"
+      ],
+      "example": "/map-init install the mapping route on my selected directive file",
+      "steps": [
+        "Detect selected surfaces and existing managed markers",
+        "Prepare exact proposed diffs and obtain scoped approval",
+        "Apply approved changes atomically",
+        "Report results and any malformed markers"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "Approved directive changes and a per-surface report.",
+      "sources": [
+        "skills/map-init/SKILL.md"
+      ]
+    },
+    "map-maintain": {
+      "summary": "Perform one bounded check, selected repair and recheck cycle.",
+      "when": [
+        "Tend an existing map",
+        "Repair selected confirmed findings"
+      ],
+      "avoid": [
+        "Autonomous monitoring or future repairs"
+      ],
+      "example": "/map-maintain tend this project map",
+      "steps": [
+        "Load the mapping rules and check the selected scope",
+        "Present findings for the user's selection",
+        "Apply selected repairs using map-this semantics",
+        "Recheck affected areas and report remaining gaps"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "A maintenance report with checked repairs.",
+      "sources": [
+        "skills/map-maintain/SKILL.md",
+        "skills/map-maintain/protocol.yon"
+      ]
+    },
+    "map-rules": {
+      "summary": "Route Markdown organization work to applicable Map Your Knowledge rules.",
+      "when": [
+        "Assess a candidate Markdown scope",
+        "Create, move or link governed notes"
+      ],
+      "avoid": [
+        "Sync or topology operations"
+      ],
+      "example": "/map-rules identify the rules for organizing these notes",
+      "steps": [
+        "Read the scope reference before assessing the work.",
+        "Select and read every applicable routed reference and confirm required load markers; stop if required content is missing.",
+        "Propose existing-file changes for explicit user selection; a new file and its reciprocal owner-map join are one approval set.",
+        "Apply the loaded rules only within that selected scope."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "The applicable governing rules and any missing-route gap.",
+      "sources": [
+        "skills/map-rules/SKILL.md"
+      ]
+    },
+    "map-this": {
+      "summary": "Assess and organize one bounded folder, project or vault.",
+      "when": [
+        "Map a project",
+        "Organize an unstructured folder"
+      ],
+      "avoid": [
+        "Mutating before displaying proposals and receiving selection"
+      ],
+      "example": "/map-this organize this project folder",
+      "steps": [
+        "Resolve the scope and environment branch",
+        "Perform a zero-write assessment and present proposals",
+        "Apply only selected changes under the appropriate rules",
+        "Verify the affected map and report limitations"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "An assessment and, when selected, mapped changes.",
+      "sources": [
+        "skills/map-this/SKILL.md"
+      ]
+    },
+    "monorepo-deps": {
+      "summary": "Coordinate dependency checks, repairs, updates and lockfile maintenance for npm workspaces.",
+      "when": [
+        "Check version mismatches",
+        "Update a monorepo within agreed major-version caps"
+      ],
+      "avoid": [
+        "A narrow question about one tool's API"
+      ],
+      "example": "/monorepo-deps check and update this npm workspace",
+      "steps": [
+        "Inspect prerequisites and select check, fix, update, or configuration maintenance",
+        "Establish permitted changes and update bounds for the chosen operation",
+        "Run that operation, including lockfile resynchronization when applicable",
+        "Run the required checks and report results"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "Dependency changes and verification results.",
+      "sources": [
+        "skills/monorepo-deps/SKILL.md",
+        "skills/monorepo-deps/protocol.yon"
+      ]
+    },
+    "multi-agent-mode": {
+      "summary": "Activates assisted mode: the lead works directly and delegates useful independent slices.",
+      "when": [
+        "Independent slices can run alongside lead work.",
+        "You want explicit helper ownership."
+      ],
+      "avoid": [
+        "You want the lead to dispatch only."
+      ],
+      "example": "/multi-agent-mode Activate multi-agent mode for this implementation.",
+      "steps": [
+        "Announce the mode and limits.",
+        "Decompose into lead work and independent slices.",
+        "Delegate useful bounded slices and inspect results.",
+        "Integrate and verify as lead."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Activation does not require immediate spawning; maximum three helpers without confirmation, no recursive subagents."
+      },
+      "outputs": "A persistent assisted mode and integrated results.",
+      "sources": [
+        "skills/multi-agent-mode/SKILL.md"
+      ]
+    },
+    "next-skills": {
+      "summary": "Offers declared successor skills without running them automatically.",
+      "when": [
+        "A participating skill completes.",
+        "You want to preview recommended successors."
+      ],
+      "avoid": [
+        "You need a full installed-skills inventory."
+      ],
+      "example": "/next-skills Show the next skills for verify.",
+      "steps": [
+        "Read the declared successor list.",
+        "Stop silently if it is empty.",
+        "Offer phrases and reasons, and activate only on selection."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The recommendation protocol does not spawn agents."
+      },
+      "outputs": "An optional list of successor choices.",
+      "sources": [
+        "skills/next-skills/SKILL.md",
+        "skills/next-skills/protocol.yon"
+      ]
+    },
+    "obsidian-bases": {
+      "summary": "Create or edit Obsidian Bases views over note properties.",
+      "when": [
+        "Build a notes table",
+        "Add a formula or filter to a base"
+      ],
+      "avoid": [
+        "Editing a Markdown note or Canvas"
+      ],
+      "example": "/obsidian-bases build a table of project notes",
+      "steps": [
+        "Choose the notes and properties to include",
+        "Define filters, optional formulas and views in YAML",
+        "Validate syntax and property references",
+        "Open the base in Obsidian when available"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "A .base file with configured views.",
+      "sources": [
+        "skills/obsidian-bases/SKILL.md"
+      ]
+    },
+    "obsidian-cli": {
+      "summary": "Operate a running Obsidian instance through its CLI.",
+      "when": [
+        "Search or open a note",
+        "Run a live vault operation"
+      ],
+      "avoid": [
+        "Raw Markdown editing that needs no running application"
+      ],
+      "example": "/obsidian-cli open my project note",
+      "steps": [
+        "Confirm Obsidian is running and inspect current CLI help",
+        "Select the vault and requested operation",
+        "Run the appropriate command with exact arguments",
+        "Inspect the result or report the unavailable capability"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "The requested live Obsidian action or search result.",
+      "sources": [
+        "skills/obsidian-cli/SKILL.md"
+      ]
+    },
+    "obsidian-markdown": {
+      "summary": "Write Obsidian-flavored Markdown with links, embeds, properties and callouts.",
+      "when": [
+        "Create a vault note",
+        "Add wikilinks or a callout"
+      ],
+      "avoid": [
+        "Live application operations or .base editing"
+      ],
+      "example": "/obsidian-markdown create a project note with links and a callout",
+      "steps": [
+        "Establish note content and properties",
+        "Write Markdown with appropriate vault links and embeds",
+        "Check syntax and referenced content",
+        "Inspect rendering in Obsidian when available"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "An Obsidian Markdown note.",
+      "sources": [
+        "skills/obsidian-markdown/SKILL.md"
+      ]
+    },
+    "orchestrate-mode": {
+      "summary": "Activates dispatch-only coordination of governed worker tasks.",
+      "when": [
+        "The lead should coordinate instead of doing concrete work.",
+        "The task can be safely partitioned."
+      ],
+      "avoid": [
+        "You want the lead to continue direct implementation."
+      ],
+      "example": "/orchestrate-mode Activate orchestrator mode for these tasks.",
+      "steps": [
+        "Announce the mode and limits.",
+        "Determine whether worker workspaces are isolated or shared.",
+        "Assign bounded scopes and coordinate mutations safely.",
+        "Inspect and integrate results or stop if safe dispatch is unavailable."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Concrete work is dispatched; activation alone need not spawn immediately."
+      },
+      "outputs": "A persistent orchestration mode and inspected deliverables.",
+      "sources": [
+        "skills/orchestrate-mode/SKILL.md"
+      ]
+    },
+    "orient-gaps": {
+      "summary": "Identify blockers, open choices, loose ends and inferred gaps.",
+      "when": [
+        "Ask what is stuck",
+        "Check claims against evidence with --audit"
+      ],
+      "avoid": [
+        "A full progress estimate or roadmap"
+      ],
+      "example": "/orient-gaps what is blocking this project?",
+      "steps": [
+        "Name the subject and optional audit mode",
+        "Gather evidence through the required bounded read-only worker",
+        "Separate confirmed blockers from inferred gaps",
+        "Return the consumer-appropriate result and evidence limits"
+      ],
+      "delegation": {
+        "mode": "required",
+        "detail": "Use one bounded read-only subagent. If unavailable, refusing or timed out, report partial or unavailable evidence without gathering inline or extending the bound."
+      },
+      "outputs": "A fresh gap and blocker orientation.",
+      "sources": [
+        "skills/orient-gaps/SKILL.md",
+        "skills/orient-gaps/protocol.yon"
+      ]
+    },
+    "orient-map": {
+      "summary": "Show change since a last look and the shape of the work.",
+      "when": [
+        "Ask what changed",
+        "See the current branch trajectory"
+      ],
+      "avoid": [
+        "A detailed roadmap or progress estimate"
+      ],
+      "example": "/orient-map what changed in this project since my last look?",
+      "steps": [
+        "Name the subject and last-look anchor if available",
+        "Gather bounded read-only evidence",
+        "Determine the delta and done-to-next trajectory",
+        "Return the appropriate visual or agent record with evidence limits"
+      ],
+      "delegation": {
+        "mode": "required",
+        "detail": "Use one bounded read-only subagent. If unavailable, refusing or timed out, report partial or unavailable evidence without gathering inline or extending the bound."
+      },
+      "outputs": "A fresh map and delta.",
+      "sources": [
+        "skills/orient-map/SKILL.md",
+        "skills/orient-map/protocol.yon"
+      ]
+    },
+    "orient-roadmap": {
+      "summary": "Show upcoming increments, gates and deferred work.",
+      "when": [
+        "Ask what comes next",
+        "Inspect the forward runway"
+      ],
+      "avoid": [
+        "A retrospective change summary"
+      ],
+      "example": "/orient-roadmap what comes next for this project?",
+      "steps": [
+        "Name the subject and desired horizon",
+        "Gather bounded read-only evidence",
+        "Identify increments, gates and deferred lanes",
+        "Render the appropriate result with uncertainty and source limits"
+      ],
+      "delegation": {
+        "mode": "required",
+        "detail": "Use one bounded read-only subagent. If unavailable, refusing or timed out, report partial or unavailable evidence without gathering inline or extending the bound."
+      },
+      "outputs": "A fresh forward-looking roadmap.",
+      "sources": [
+        "skills/orient-roadmap/SKILL.md",
+        "skills/orient-roadmap/protocol.yon"
+      ]
+    },
+    "orient-status": {
+      "summary": "Show current position, remaining work and an estimated completion band.",
+      "when": [
+        "Ask how far along a task is",
+        "Rebuild context with --resume"
+      ],
+      "avoid": [
+        "A detailed blocker audit or forward roadmap"
+      ],
+      "example": "/orient-status where are we on this project?",
+      "steps": [
+        "Name the subject and any resume context",
+        "Gather bounded read-only evidence",
+        "Assess position, remaining work and ETA uncertainty",
+        "Return the appropriate result with source limits"
+      ],
+      "delegation": {
+        "mode": "required",
+        "detail": "Use one bounded read-only subagent. If unavailable, refusing or timed out, report partial or unavailable evidence without gathering inline or extending the bound."
+      },
+      "outputs": "A fresh status and banded ETA when evidence supports one.",
+      "sources": [
+        "skills/orient-status/SKILL.md",
+        "skills/orient-status/protocol.yon"
+      ]
+    },
+    "plan-cleanup": {
+      "summary": "Removes confirmed disposable planning leftovers after execution.",
+      "when": [
+        "A completed plan left scaffolding.",
+        "You want verified artifact cleanup."
+      ],
+      "avoid": [
+        "You want new work or removal of needed project files."
+      ],
+      "example": "/plan-cleanup Clean up the completed plan's temporary artifacts.",
+      "steps": [
+        "Identify candidates and determine whether they remain needed.",
+        "Resolve exact physical targets and prove containment, including recursive links.",
+        "Present irreversible effects and obtain confirmation.",
+        "Remove only confirmed artifacts; for tracked removals, commit only when the exact contents are authorized and unrelated index and worktree state is preserved.",
+        "Verify and report removals and skipped Git work; push only with separate authorization."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "Cleanup does not prescribe delegation."
+      },
+      "outputs": "Removed or retained artifacts, any authorized cleanup commit, and unresolved gaps.",
+      "sources": [
+        "skills/plan-cleanup/SKILL.md",
+        "skills/plan-cleanup/protocol.yon"
+      ]
+    },
+    "plan-create": {
+      "summary": "Designs a phased implementation plan before building.",
+      "when": [
+        "A complex change needs decisions and verification criteria.",
+        "You want a reviewable plan before implementation."
+      ],
+      "avoid": [
+        "You need to execute an approved plan."
+      ],
+      "example": "/plan-create Create a plan for account export.",
+      "steps": [
+        "Choose full mode by default, or justify the narrow fast mode.",
+        "Investigate and define testable success criteria and scope.",
+        "Obtain the mandatory alignment confirmation before designing, then draft phases, risks and executable verification.",
+        "Evaluate the gates and present the plan without implementing it."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "A subagent is not universally required."
+      },
+      "outputs": "A structured PLAN.md, or an inline plan when there is no project, for review.",
+      "sources": [
+        "skills/plan-create/SKILL.md",
+        "skills/plan-create/protocol.yon"
+      ]
+    },
+    "plan-deep-dive": {
+      "summary": "Inspects a multi-phase plan one phase at a time.",
+      "when": [
+        "A plan needs readiness review.",
+        "You want gaps exposed before execution."
+      ],
+      "avoid": [
+        "You need a new plan or implementation."
+      ],
+      "example": "/plan-deep-dive Inspect each phase of the migration plan.",
+      "steps": [
+        "Load the plan, enumerate phases, and confirm that it is the correct and current plan.",
+        "Inspect each phase in order without skipping.",
+        "Present each verdict and obtain acknowledgement of a specific finding, or confirmation of no findings, before advancing.",
+        "Apply amendments only after approval; recommend redesign for fundamental issues."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Caller Options selects inline or delegated inspection, asking when both are viable unless one clearly dominates or the choice is already supplied. Delegation preserves the per-phase user gates."
+      },
+      "outputs": "A phase-by-phase verdict log.",
+      "sources": [
+        "skills/plan-deep-dive/SKILL.md",
+        "skills/plan-deep-dive/protocol.yon"
+      ]
+    },
+    "plan-evolve": {
+      "summary": "Plans a next iteration from a shipped baseline.",
+      "when": [
+        "You want the next version of a target.",
+        "An existing implementation or plan is the baseline."
+      ],
+      "avoid": [
+        "You only want cleanup."
+      ],
+      "example": "/plan-evolve Plan the next version of the dashboard.",
+      "steps": [
+        "Identify the baseline, using current state if no plan exists.",
+        "Examine compromises, gaps and new possibilities.",
+        "Draft a phased plan marking new, changed and retained elements."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill does not require subagents."
+      },
+      "outputs": "A next-version plan.",
+      "sources": [
+        "skills/plan-evolve/SKILL.md"
+      ]
+    },
+    "plan-execute": {
+      "summary": "Executes an approved concrete plan without silent drift.",
+      "when": [
+        "A plan has numbered concrete steps and observable outcomes.",
+        "Execution judgment calls must be surfaced."
+      ],
+      "avoid": [
+        "No approved executable plan exists."
+      ],
+      "example": "/plan-execute Execute the approved migration plan.",
+      "steps": [
+        "Load and validate the approved plan.",
+        "Execute steps in order without silent additions.",
+        "Surface unspecified judgment calls.",
+        "Verify outcomes and declare completion or a blocker; name unverified steps and skipped gates."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "Follow the approved plan; delegation is not unconditional."
+      },
+      "outputs": "Completed actions and verification, or a blocker.",
+      "sources": [
+        "skills/plan-execute/SKILL.md",
+        "skills/plan-execute/protocol.yon"
+      ]
+    },
+    "plan-phases": {
+      "summary": "Restructures an existing plan into phases with verification and safety gates.",
+      "when": [
+        "A flat plan needs checkpoints.",
+        "Original content must be preserved while sequencing it."
+      ],
+      "avoid": [
+        "You need a plan created from scratch."
+      ],
+      "example": "/plan-phases Add phases and verification gates to this plan.",
+      "steps": [
+        "Locate the intended plan and preserve its content.",
+        "Group actions into ordered phases.",
+        "Add post-phase verification and pre-action safety gates; if verify is unavailable, require explicit user confirmation at the gate.",
+        "Rewrite a sourced plan in its original format within the authorized scope, or return a conversation-only plan as a fenced block; report the restructuring."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The restructuring does not prescribe subagents."
+      },
+      "outputs": "A restructured source plan or conversation block with explicit gates and a change summary.",
+      "sources": [
+        "skills/plan-phases/SKILL.md",
+        "skills/plan-phases/protocol.yon"
+      ]
+    },
+    "prime-expand": {
+      "summary": "Turns a vague gap into questions and candidate sources via a bounded subagent.",
+      "when": [
+        "A research target needs sharpening.",
+        "A thin handoff needs a clear priming target."
+      ],
+      "avoid": [
+        "You want the investigation itself performed now."
+      ],
+      "example": "/prime-expand Expand this gap about onboarding failures.",
+      "steps": [
+        "Provide the seed gap and context.",
+        "A subagent proposes questions and named sources with limited spot checks.",
+        "Confirm, edit or refuse the pair.",
+        "Use an accepted target for downstream priming."
+      ],
+      "delegation": {
+        "mode": "required",
+        "detail": "One subagent performs one turn with at most three source spot checks."
+      },
+      "outputs": "A proposed question and source pair.",
+      "sources": [
+        "skills/prime-expand/SKILL.md",
+        "skills/prime-expand/protocol.yon"
+      ]
+    },
+    "prime-fetch": {
+      "summary": "Delegates one read-only fetch and returns a filtered digest.",
+      "when": [
+        "One search would flood the caller's context.",
+        "You need anchored findings from one tool call."
+      ],
+      "avoid": [
+        "You need writes or multi-source investigation."
+      ],
+      "example": "/prime-fetch Fetch relevant matches for this function.",
+      "steps": [
+        "Specify one read-only call and objective.",
+        "A subagent returns a filtered digest with proof of work.",
+        "Verify each finding against its source and quoted evidence or exact token; report missing proof."
+      ],
+      "delegation": {
+        "mode": "required",
+        "detail": "One delegated subagent executes the fetch in a single wave."
+      },
+      "outputs": "A proof-of-work-verified digest.",
+      "sources": [
+        "skills/prime-fetch/SKILL.md",
+        "skills/prime-fetch/protocol.yon"
+      ]
+    },
+    "prime-sweep": {
+      "summary": "Primes the caller from a large source surface using delegated workers.",
+      "when": [
+        "The surface spans at least three sources or roughly ten thousand tokens.",
+        "You need source-backed context without raw noise."
+      ],
+      "avoid": [
+        "You need one fetch, vague-gap expansion or execution."
+      ],
+      "example": "/prime-sweep Sweep these packages for the configuration flow.",
+      "steps": [
+        "Choose source mode and objective.",
+        "Dispatch bounded source slices, using one or more subagents as the source mode requires.",
+        "Verify each finding against its cited source.",
+        "Iterate within wave limits and report gaps."
+      ],
+      "delegation": {
+        "mode": "required",
+        "detail": "Subagents read sources; a single large source can use one agent, while multi-source work can run in parallel. The caller verifies evidence."
+      },
+      "outputs": "A source-anchored digest and gaps.",
+      "sources": [
+        "skills/prime-sweep/SKILL.md",
+        "skills/prime-sweep/protocol.yon"
+      ]
+    },
+    "prose-audit": {
+      "summary": "Diagnoses repetition, filler and avoidable reading load in existing prose.",
+      "when": [
+        "You want duplicated meaning identified.",
+        "A document needs prose diagnosis."
+      ],
+      "avoid": [
+        "You want a rewrite or proof of AI authorship."
+      ],
+      "example": "/prose-audit Audit this report for repetition.",
+      "steps": [
+        "Read the pattern catalog and complete index.",
+        "Assess each element by the job it performs.",
+        "Report observed patterns with evidence and severity.",
+        "Preserve meaningful tone and uncertainty; rewrite only if asked."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "Diagnosis does not require a subagent."
+      },
+      "outputs": "A verdict and prioritized findings.",
+      "sources": [
+        "skills/prose-audit/SKILL.md"
+      ]
+    },
+    "reflect": {
+      "summary": "Pauses to expose assumptions and uncertainty without a gate.",
+      "when": [
+        "You want to step back.",
+        "You want to reconsider the current approach."
+      ],
+      "avoid": [
+        "You need a formal verification verdict."
+      ],
+      "example": "/reflect Reflect on our current approach.",
+      "steps": [
+        "Name unstated assumptions.",
+        "Explain where confidence is lowest and why.",
+        "State what you would do differently starting fresh."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "This is an inline pause with no prescribed delegation."
+      },
+      "outputs": "A candid reflection, not a formal verdict.",
+      "sources": [
+        "skills/reflect/SKILL.md"
+      ]
+    },
+    "route-task": {
+      "summary": "Recommends task capability and effort routing using an experimental rubric.",
+      "when": [
+        "You are sizing a task for dispatch.",
+        "You need to decide whether design remains open."
+      ],
+      "avoid": [
+        "You need a budget gate or worker-isolation decision."
+      ],
+      "example": "/route-task Route this database migration.",
+      "steps": [
+        "Score five task properties using evidence.",
+        "Explain drivers and derive capability and volume.",
+        "Report the plan gate and resolve against the live runtime roster.",
+        "Treat the recommendation as advisory."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The rubric recommends but does not dispatch."
+      },
+      "outputs": "An advisory routing record and plan-gate result.",
+      "sources": [
+        "skills/route-task/SKILL.md"
+      ]
+    },
+    "self-improve": {
+      "summary": "Detects concrete improvement signals and proposes specific skill changes for approval.",
+      "when": [
+        "A participating skill has completed.",
+        "Material or recurring friction has a ready fix."
+      ],
+      "avoid": [
+        "You have a vague impression or want automatic changes."
+      ],
+      "example": "/self-improve Review the last verify run for improvement.",
+      "steps": [
+        "Identify a concrete run-specific signal.",
+        "Check materiality or recurrence and readiness of a fix.",
+        "Draft a precise proposal for approval.",
+        "Stay silent below threshold and never auto-apply."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The detector does not prescribe subagents."
+      },
+      "outputs": "An approval-ready proposal or no output.",
+      "sources": [
+        "skills/self-improve/SKILL.md",
+        "skills/self-improve/protocol.yon"
+      ]
+    },
+    "skill-library-creator": {
+      "summary": "Creates a portable skill library with its own family manager, guidance, authoring resources, and optional local links into selected harness locations.",
+      "when": [
+        "You want a shared skills pool under a chosen folder.",
+        "You want teammates to use the library through independently selected local installations."
+      ],
+      "avoid": [
+        "You want to author one skill; use skill-smith.",
+        "You want external publication, provider sync, permission administration, or global directive changes."
+      ],
+      "example": "/skill-library-creator Create a shared research-skills library under the project folder.",
+      "steps": [
+        "Set parent folder and family prefix; identify installation scope and actual targets.",
+        "Inspect paths and preview the proposed tree and local targets.",
+        "Create manager, README, resources, and selected links.",
+        "Verify source files and linked content separately from runtime discovery.",
+        "Report manager location, installation results, blockers, and starter requests."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The creation and upgrade guides specify no subagent step."
+      },
+      "outputs": "A portable library and standalone family manager with selected installation links and a creation summary.",
+      "sources": [
+        "skills/skill-library-creator/SKILL.md",
+        "skills/skill-library-creator/references/create-library.md",
+        "skills/skill-library-creator/references/upgrades.md",
+        "skills/skill-library-creator/protocol.yon"
+      ]
+    },
+    "skill-smith": {
+      "summary": "Creates, assesses, diagnoses, updates, or reorganizes skills through a route-specific procedure and selected references.",
+      "when": [
+        "You want a skill drafted, assessed, diagnosed, updated, simplified, or consolidated.",
+        "You need to trace skill behavior, dependencies, invocation, or portability."
+      ],
+      "avoid": [
+        "You need a portable skill library and family manager; use skill-library-creator.",
+        "You are changing standing directives or reader-facing prose rather than skill behavior."
+      ],
+      "example": "/skill-smith Diagnose why this skill's setup instructions point to a missing reference.",
+      "steps": [
+        "Identify the intended result, exact targets, constraints, and canonical sources.",
+        "Choose create, assess/boil, diagnose, update, or consolidate.",
+        "Read only the selected procedure and required supporting references.",
+        "Follow its read-only or explicitly authorized write flow, then report evidence and gaps."
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Small or tightly coupled work stays inline. Delegate only when requested or independent verification justifies coordination cost and rules permit; keep work bounded, monitored, cancellable, and isolated. Reviewers stay read-only."
+      },
+      "outputs": "An authorized skill draft or revision, or an evidence-backed assessment, diagnosis, update plan, or consolidation proposal.",
+      "sources": [
+        "skills/skill-smith/SKILL.md",
+        "skills/skill-smith/references/create.md",
+        "skills/skill-smith/references/assess.md",
+        "skills/skill-smith/references/doctor.md",
+        "skills/skill-smith/references/update.md",
+        "skills/skill-smith/references/consolidate.md"
+      ]
+    },
+    "skills-help": {
+      "summary": "Shows a live installed-skills menu using the bundled taxonomy.",
+      "when": [
+        "You want to browse skills.",
+        "You want family details or a route for a need."
+      ],
+      "avoid": [
+        "You want to install, edit or execute a skill."
+      ],
+      "example": "/skills-help Show skills for reviewing work.",
+      "steps": [
+        "Read installed siblings, taxonomy and metadata.",
+        "Intersect assignments with installed skills and identify unclassified entries.",
+        "Render the requested menu and report failures or no matches honestly."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The menu does not dispatch agents."
+      },
+      "outputs": "A live menu or source-based route suggestions.",
+      "sources": [
+        "skills/skills-help/SKILL.md"
+      ]
+    },
+    "synthesize": {
+      "summary": "Shapes reader-facing output around its purpose while preserving meaning and caveats.",
+      "when": [
+        "A substantive report is hard to scan.",
+        "Claims and caveats need a clear decision surface."
+      ],
+      "avoid": [
+        "A simple answer is already clear or independent verification is needed."
+      ],
+      "example": "/synthesize Synthesize this evidence into a decision brief.",
+      "steps": [
+        "Inventory protected claims, evidence, uncertainty and gates.",
+        "Load the matching grammar and reader-need recipe.",
+        "Compose and reconcile every protected unit.",
+        "Name gaps and require separate confirmation before consequential action."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The compiler defines no subagent step. Several supplied reports route to human-merge when available."
+      },
+      "outputs": "A faithful scannable response or no-op.",
+      "sources": [
+        "skills/synthesize/SKILL.md"
+      ]
+    },
+    "synthesize-init": {
+      "summary": "Installs, updates or removes a managed synthesize route in existing directives.",
+      "when": [
+        "You explicitly want a standing route changed.",
+        "You want to remove a managed route."
+      ],
+      "avoid": [
+        "You only want to use synthesize or create a directive file."
+      ],
+      "example": "/synthesize-init Install the route in my selected directive file.",
+      "steps": [
+        "Resolve eligible runtimes and classify existing targets.",
+        "Show exact operations, diffs and preimage and replacement hashes.",
+        "Obtain approval bound to exact targets and bytes.",
+        "Back up, stage, atomically replace and verify eligible targets."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The installer does not prescribe subagents."
+      },
+      "outputs": "Verified changes and backup details, or a stop.",
+      "sources": [
+        "skills/synthesize-init/SKILL.md"
+      ]
+    },
+    "verify": {
+      "summary": "Formally gates work against intent, plan and execution using fresh source checks.",
+      "when": [
+        "You need a phase verdict.",
+        "Intent and execution artifacts are available."
+      ],
+      "avoid": [
+        "You only need a quick claim check or informal reflection."
+      ],
+      "example": "/verify Verify this implementation against its approved plan.",
+      "steps": [
+        "Require intent and execution; if the plan is absent skip plan and execution alignment checks, still recheck claims, and report plan-not-found.",
+        "Check alignment among intent, plan and execution.",
+        "Reopen sources for load-bearing claims, using the consumed artifact where applicable.",
+        "Report the structured verdict and mark unchecked claims unverified."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "This self-gate does not require outside reviewers."
+      },
+      "outputs": "A structured evidence-backed verdict.",
+      "sources": [
+        "skills/verify/SKILL.md",
+        "skills/verify/protocol.yon"
+      ]
+    },
+    "write-copy": {
+      "summary": "Route promotional copy requests to the appropriate specialization.",
+      "when": [
+        "Request campaign copy",
+        "Find the right event-copy workflow"
+      ],
+      "avoid": [
+        "Faithful repair of existing prose"
+      ],
+      "example": "/write-copy draft campaign copy for this event",
+      "steps": [
+        "Identify the subject and intended audience",
+        "Select an available specialization matching the request",
+        "Pass the brief and preserve its constraints",
+        "Report a routing gap when no suitable specialization exists"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "A routed copy request or a stated capability gap.",
+      "sources": [
+        "skills/write-copy/SKILL.md"
+      ]
+    },
+    "write-copy-event-video": {
+      "summary": "Develop event-video copy variants, cross-examine them and synthesize a fourth version.",
+      "when": [
+        "Draft a promotional event video",
+        "Develop a voiceover handoff"
+      ],
+      "avoid": [
+        "Generating media or publishing"
+      ],
+      "example": "/write-copy-event-video draft a promo script for this event",
+      "steps": [
+        "Establish the brief and verify event facts",
+        "Commission three independent perspectives when available",
+        "Check facts and cross-examine the variants",
+        "Synthesize the fourth version and prepare the voice handoff"
+      ],
+      "delegation": {
+        "mode": "conditional",
+        "detail": "Use three isolated writer subagents when available; label a sequential fallback and its reduced independence. If a required review dependency is missing, report the incomplete review rather than imitate it."
+      },
+      "outputs": "A draft copy pack with variants, synthesis and open decisions.",
+      "sources": [
+        "skills/write-copy-event-video/SKILL.md",
+        "skills/write-copy-event-video/protocol.yon"
+      ]
+    },
+    "yon-read": {
+      "summary": "Interpret existing YON records in plain language.",
+      "when": [
+        "Explain a .yon document",
+        "Understand rules or workflow records"
+      ],
+      "avoid": [
+        "Creating new YON or a generic format question without content"
+      ],
+      "example": "/yon-read explain this YON workflow",
+      "steps": [
+        "Read the document identity and intent",
+        "Walk sections, records and references in order",
+        "Explain rule severity and workflow dependencies",
+        "Flag runtime-dependent agent execution"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "A faithful interpretation of the supplied records.",
+      "sources": [
+        "skills/yon-read/SKILL.md"
+      ]
+    },
+    "yon-write": {
+      "summary": "Encode source content as YON while preserving meaning and uncertainty.",
+      "when": [
+        "Convert a workflow to YON",
+        "Create an agent instruction record"
+      ],
+      "avoid": [
+        "Simple configuration, API data or short messages better served by other formats"
+      ],
+      "example": "/yon-write encode this workflow as YON",
+      "steps": [
+        "Choose profile, format and document kind",
+        "Encode the source without resolving its uncertainty",
+        "Validate required fields, references, blocks and separators",
+        "Present pure records in a file or explain choices in conversation"
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The skill defines no subagent step; host rules still apply."
+      },
+      "outputs": "Validated YON records.",
+      "sources": [
+        "skills/yon-write/SKILL.md"
+      ]
+    }
+  },
+  "sourceHashes": {
+    "skills/agent-mailbox/SKILL.md": "16c215c71c29538f92dcbe7a0e9db2806d0e693da32a51ec7c2950e8b365b3f9",
+    "skills/agent-output/SKILL.md": "df8fcb2ccbe25ad60de75a1933c611fef2af10c9867ebe732a9d836e7af4b341",
+    "skills/ask-gate/SKILL.md": "877c7866f7fbdb6375cd4af37eb1ba4d6e7cb01cb639729b0e3c9a24c5fdefb4",
+    "skills/audit-coupled-constant/SKILL.md": "0c250567bd049d83fb51cb1dbc09b2e7c76b3c140a9f258fd7dd0a35e4c93f6e",
+    "skills/budget-check/SKILL.md": "422eea6064f315464d820305979b921614aa46112517e29f128c7a31f1a95552",
+    "skills/caller-options/SKILL.md": "18fde66d891be2851771b18f477b3e1903000b58584d784a33debbfb5c1bdea7",
+    "skills/cold-review/SKILL.md": "6d1c48701a72bc4928586b03cf54e77e02117b61c2091dbc92ca74324649eac6",
+    "skills/cold-review/protocol.yon": "badef11e517e8595c3c715885de8de3db753c7fcd1e0bd27c736ef9f35b5141e",
+    "skills/defuddle/SKILL.md": "3b1eb97e3c37b6d0b2c1a2b147e56fcdcf36109077785a78e2987e88f1e624ca",
+    "skills/design-an-interface/SKILL.md": "10c7d6d60e82e7be219cda63d970761c133b1622cca29b44ec852bb65b426478",
+    "skills/diff-recap/SKILL.md": "987a3eb1c9ad94a48fc0ce4fa83a4e2027cd5942a866fbc4ec10312a35f607ed",
+    "skills/directives-audit/SKILL.md": "cdc1ccb57804ed30e9fdc56dc816a078b1fbd1554acccd4ab0bf37dbf217101f",
+    "skills/domain-check/SKILL.md": "d26bd1a58839207b43de5a1dcb11d68b692aaf42bc563923233337d900c4a811",
+    "skills/double-check/SKILL.md": "425275ed6d2c44f6489ba105911dbc3924828d50a04202b63055839a889381e2",
+    "skills/extract-signal/SKILL.md": "992c81b2e10d11f9236b72a6162a5c34c618098be87d62882d90b64dc42ac228",
+    "skills/freshness-contract/SKILL.md": "246fca4590545d854b7e11aa50e5350122838a015317eeb10cc3c49df7e2e844",
+    "skills/github-sync/SKILL.md": "7728b8e5e0f85b8ffad0f33278ac471b1e7ef462abe145e2663c766b74072e33",
+    "skills/github-sync/protocol.yon": "66246cd1f0ecc20bc293ff79c8f0bc01541f088db748e171597d8ac69b9e48b8",
+    "skills/handoff/SKILL.md": "390c287b71747cbff5d72ee871a9cdcef87bd4bdda8a246439d090fc6084bee3",
+    "skills/handoff-execute/SKILL.md": "4f0c8e7a626569f78454d378fa8e149b32ecb752859ababae9142f01e4aa6793",
+    "skills/headless-claude/SKILL.md": "4bef6c084e51e1be3f288013101303d8fcff94975d893a28b5b7afb464ab0dcd",
+    "skills/headless-codex/SKILL.md": "40ccc7d2eec7f0140ba81eecc8acc7a06d94597200e408338695fcfbe19e956a",
+    "skills/headless-gemini/SKILL.md": "8418deb7ccc6a732b03317bae0aa6ab928691f4f79665c79fede83b8bdd45d58",
+    "skills/headless-grok/SKILL.md": "35a35a96fa9dcfdc639f98658ef096d5ef2cbd5bc9d38de7ac218e4077b02b23",
+    "skills/headless-models/SKILL.md": "646d2d8c262af9b240289866c76efb8ffe7824b3a799afdbf1c965c15aac5f54",
+    "skills/headless-update-models/SKILL.md": "d05eda99cfe42f246abefb81f85073a079297208d51231ed0aba68482fd82440",
+    "skills/headless-usage/SKILL.md": "f97ee844e580e6f154060f2f9671dcceb4e73193462f49e0444c0428578b3c8a",
+    "skills/human-draw/SKILL.md": "51299bd1073f96625b1f5e3dfbc5608576c21e31db192faf8261ff54937ede1b",
+    "skills/human-draw/references/human-contract.md": "9ddab70d3af3c638e43cc49fef32185071776b7b831d3246183f61897cab89fc",
+    "skills/human-draw/references/tools/human-output-check.mjs": "949815efcca2d148357ce8d3f31f4039788346a9af17d93586146881a4d53fd1",
+    "skills/human-merge/SKILL.md": "ba07c771f962d680cc09a15f6284c94548e71eaed2eee5a68a49ec557d6aa28b",
+    "skills/human-merge/references/human-contract.md": "9ddab70d3af3c638e43cc49fef32185071776b7b831d3246183f61897cab89fc",
+    "skills/human-output/SKILL.md": "75422769fd5943bb3302dde490f26af1653ef1745c35e31e8c1319f129e88eeb",
+    "skills/human-output/references/human-contract.md": "9ddab70d3af3c638e43cc49fef32185071776b7b831d3246183f61897cab89fc",
+    "skills/human-output/references/tools/human-output-check.mjs": "949815efcca2d148357ce8d3f31f4039788346a9af17d93586146881a4d53fd1",
+    "skills/human-rewrite/SKILL.md": "990865088aaadb68adf1626ecd985a365a6cdd0fa7464fd8aa7c8bedfaf74bd4",
+    "skills/human-rewrite/references/human-contract.md": "9ddab70d3af3c638e43cc49fef32185071776b7b831d3246183f61897cab89fc",
+    "skills/improve-codebase-architecture/SKILL.md": "d3884886bac5b8ce6ceb64c6f8a133a2dc3d88916ab276e9ea4fe54c4ed6020d",
+    "skills/insight-adversarial/SKILL.md": "76018d2755af5dc17eecf6563daf40f4851e80dee2d1f2eee68953360609a2be",
+    "skills/insight-adversarial/protocol.yon": "58c3161284cd372aa78282743856df348a9b0b1e723a6cfc0f0bb0733f36c5f6",
+    "skills/insight-angles/SKILL.md": "0e5dc7ccb8dc2e7bbdc098756ca3230c967dabc241531dcf0db7f6bb4754114c",
+    "skills/insight-angles/protocol.yon": "cc752b37a247452e0935ccfa7e09f612926851bbe2653aa7efc54fc28877cfef",
+    "skills/insight-assess/SKILL.md": "546411f90a2eba0427bf1ee11d23b83e1c52a9de1d17d93275664fc2c00bfb43",
+    "skills/insight-assess/protocol.yon": "de7c39bf0172d2a3959e2ad7927e08d2002c4fa214b62e16ed9639fca7aef364",
+    "skills/insight-critique/SKILL.md": "6f4a27158f361bd7f48aa7cd72cf5a2adf5560bf85ef9267ac4cf21eccda30cf",
+    "skills/insight-critique/protocol.yon": "ce8addda0d40e92329ebc8a905e1c98056a05890e555a0ed46544cf546ccd2bd",
+    "skills/insight-cross-examine/SKILL.md": "3e602cd8fb9e53c46632a5b56e59d3c92eb448378f9da04d3d15483773db72a4",
+    "skills/insight-cross-examine/protocol.yon": "6b4c7180bd9fa17f8b39129313597ad457b23aaa0074f25c4ff479fa5c9784cd",
+    "skills/insight-explore/SKILL.md": "5d6f315eb0fe7a5cd339d348dfff72b7578cdc1f52cf5b9332382e17e6e742ee",
+    "skills/insight-explore/protocol.yon": "03cd33c78e0047c8292ca7088beb852c90a0769e7eafcfc27a0346e431b9090f",
+    "skills/insight-premortem/SKILL.md": "e2def97e93d7e85364d02465c424d8858dae3654ef4249625dbc8b5908bf9f19",
+    "skills/insight-premortem/protocol.yon": "3a429ae5a3f0c1137933310f4aecdaec8701ab03cd34fd9580ee7be7614ca614",
+    "skills/insight-reference-class/SKILL.md": "a61e52520689e996a76862a55fe9e6c44c183510ec62deb7de0a3c1de7a74a55",
+    "skills/insight-reference-class/protocol.yon": "a0bcdf1e98f0ebebe39be771d0d608c7fb253f4e8c3f12f907f1089034b7d271",
+    "skills/insight-retro/SKILL.md": "b79b8e49e6185b102f270a8f478146bcc13293998f16110400b655827f47eb54",
+    "skills/insight-retro/protocol.yon": "b9bb83fc186458a6e3a800f1e79730da7370b7734a0ff5d848c35e2c5b22df69",
+    "skills/insight-root-cause/SKILL.md": "ed3e81cb3f65d5d5531833e63b373c11f22b6afacfc30845893d7e9e4a1ede2a",
+    "skills/insight-root-cause/protocol.yon": "7a570dd77b5b709ea066afc48e5fa8a696ffa21a92d9e894f5dd28e215e62864",
+    "skills/insight-skill-gap/SKILL.md": "7e3d316c13aea7997302951b7579e92b977ccca214d18d3ee52ce60a21e703ac",
+    "skills/insight-skill-gap/protocol.yon": "9259b593ea0db9a2867cdc17a033443fa6ceaec8ae162de01ef072dff625ea64",
+    "skills/insight-test-assumption/SKILL.md": "47656df40cfc830f64d1a6a6193235d030aa53ea0c939eccab2eeb4d640a5f25",
+    "skills/insight-test-assumption/protocol.yon": "bc2f7fad6d5d8495714a7650740867f58bdb3d17877448cc37176c59918d447c",
+    "skills/insight-value-of-information/SKILL.md": "abeb08a2ea4416b2b18bd36cf157e4bdb4c53c29a5a659252dd3a8b3dd751712",
+    "skills/insight-value-of-information/protocol.yon": "a8eee00c678b5f17b9a5846184dd8d22eb50fd284e625ee055111d682999f544",
+    "skills/investigate/SKILL.md": "8fbb69f0ed2193199ad29e9db1604768d5b7e3c495b8194c4e69727ef98a9893",
+    "skills/json-canvas/SKILL.md": "629a9cb4c107f43408c4c3e571011570931bd76f4d34c65ac683a1afd6debc20",
+    "skills/map-check/SKILL.md": "553968a08cd9f77d6e6fe0d41c40ba1b354e4eb57343e2ea9f332e201797cacd",
+    "skills/map-init/SKILL.md": "319cd286b349ee6d5a58e0c4231a9c22b14602e04481d4a59ea5e537de0a56e7",
+    "skills/map-maintain/SKILL.md": "bbc6bbfddf6618d28b0cbc824920381cb6d8b9531a1905d657ebf0cd6d556f68",
+    "skills/map-rules/SKILL.md": "54832c357bd1c4bdd428b77a9afc573f72e14522a87093c19b5aabf4cfaf5cd6",
+    "skills/map-this/SKILL.md": "fd7af8947bb577195d373e281333ad9bad1414e0e76a4d99c3849e916da37cd4",
+    "skills/monorepo-deps/SKILL.md": "e18c52c74970af04501e9c0823b513ca684eb8ac1c39e25aafe2b680a2802c9c",
+    "skills/multi-agent-mode/SKILL.md": "993b2a7d2bda2800a3ae6bad5b452b4d3b3bbae39ef3451e57b1957b45aef40b",
+    "skills/next-skills/SKILL.md": "67675b98f7b804950a12d14072643a19a307fa56e57b0a9df66c66163619fa98",
+    "skills/obsidian-bases/SKILL.md": "c585c531909eed4c2beb5ec0f8e842de2b8bc14a0ff04b7ce13f15066c047870",
+    "skills/obsidian-cli/SKILL.md": "d9be45c810b1c2fe892be6563a7054ff7e8fcbe3b73f7f6b1d4706aa7eb7d9ed",
+    "skills/obsidian-markdown/SKILL.md": "06e6e1d08372784523b4fdf31c70f71b5fca9bad99eac2e383da3c307ca5fec9",
+    "skills/orchestrate-mode/SKILL.md": "43322caea9ea17b9b9beb6f863feb1c00ff645b096ed0820e7913b9bcaa9500d",
+    "skills/orient-gaps/SKILL.md": "b6609e6e69a102509aaa5b401be80333673d29d69eef8d0de95d25488e883345",
+    "skills/orient-map/SKILL.md": "9b66dd5fef3d19fba39075ce34da42a3b71af687bdf8f70739c054f325987917",
+    "skills/orient-roadmap/SKILL.md": "35539b26ab06d7fb23ea0ad5977011e683915adafa6ce8d0fe13f869bf1bdbe7",
+    "skills/orient-status/SKILL.md": "9daaea5ab7019bdf02fc6ec19763d1ba08d6a7b005f2d5c5d2ae2cd914a6d17f",
+    "skills/plan-cleanup/SKILL.md": "ebd42739293f30aa0656dc674de48ee54d2e0bc2ac5df180b2e69b243f92f305",
+    "skills/plan-create/SKILL.md": "7cf003fc276498e33dd3a036bd1642517d06778a284cd6963537daa75fa602dd",
+    "skills/plan-create/protocol.yon": "140cec93e38b46826dc304ed08f4c4a10d657ffd7f1d52eb329d4d096895aab2",
+    "skills/plan-deep-dive/SKILL.md": "a99bd8cb017ed319497d3abbe9ac7bfb1e2b999e3db6b642216c41f9bb51617b",
+    "skills/plan-evolve/SKILL.md": "db8b91694add224763939fe762895c63c58e65e517286ab21dd241a9e9a04961",
+    "skills/plan-execute/SKILL.md": "ff0add2a3afe072b43ace0745227dfd01ef7690b43bac8beffdc29a9d09ef620",
+    "skills/plan-phases/SKILL.md": "6a8e542773df4d58a6c78805169c31ef103f691d8f8b753e7cb8afeb856a3e44",
+    "skills/prime-expand/SKILL.md": "bd6fa88c4b9508263c8bfe520b62f345067ce944d961310449be3d19ff771082",
+    "skills/prime-fetch/SKILL.md": "ff5108d2ff2b2d6a5b3ac37bf28c458d45f388dbf2b7a494015198f2f1dac8a6",
+    "skills/prime-sweep/SKILL.md": "88b194ca0c732e4fedbd43bb58e24af64eb5407274f7ced53ace0c66e7d01168",
+    "skills/prose-audit/SKILL.md": "efeba36ea13da91ad48338315d14a428396cf8c89716029ce311878f6fa2c943",
+    "skills/reflect/SKILL.md": "a107909c302d9d7da1ab3996b9a4a34ea4fd13f49738df4da1cc0c3d7588b023",
+    "skills/route-task/SKILL.md": "5f854807d7392c5d9853cd37a05ddb9d897fbc5e74b9485dc8ef5b7b575df5d3",
+    "skills/self-improve/SKILL.md": "349347e1e363eedd147a377700706824085fe79ca3e455bb043ee77a129f3faf",
+    "skills/skill-library-creator/SKILL.md": "1fb240201b529e6ace194676f7d6d4faa70d55bcb02492db0fdebf187e22512f",
+    "skills/skill-library-creator/references/create-library.md": "79addaa841f496d4c75ee8fcd6a0ddf79bc4ecf133e7d4d1ae891c4f4060d54f",
+    "skills/skill-library-creator/references/upgrades.md": "fcf78f930da1f54332446fa0a12c5a312b2010d6dfb955fd1a45350e94a7d7f9",
+    "skills/skill-smith/SKILL.md": "449fadfc91c3d6238d51d907150badace71f79e09b377df1be1ba823dcaf1366",
+    "skills/skill-smith/references/create.md": "02667476b96187ccc4a8c8283efb63e44dcd97575dd53783b87bd5e182d026f1",
+    "skills/skill-smith/references/assess.md": "811e06bba140c25a1c0429f74c105e8642fdaadbced054e3d518a8f1f364ba29",
+    "skills/skill-smith/references/doctor.md": "7679b53e1f8674781936386a8791cc5d72ae3f1e8e66a018628983c2b6da8df6",
+    "skills/skill-smith/references/update.md": "b2c2b974bc7c1112a7a46de970e69756fbeeb0642d755e542d7fb01c6a9102f1",
+    "skills/skill-smith/references/consolidate.md": "bd747e5f30988fc685f4eb9890a7ecde56fd34f0f581e358d6e959a9ebc63c6c",
+    "skills/skills-help/SKILL.md": "8f19d2fba83bc2ebb13ae3abb11736e0098b2901912c3c84c30ad91111fac524",
+    "skills/synthesize/SKILL.md": "c777373514d3a11b1aca8cf36c738bb846b531b1c3b2ea8b84ae297c7a006ccd",
+    "skills/synthesize-init/SKILL.md": "d96033751f361e2811b8bb42c47eab3696d6442acb9539dd0ab69c6e38f0bbcd",
+    "skills/verify/SKILL.md": "7e6f1eeae4d8c64ee19e16346df7525e52e1ecc14aa2295f1786b3f563f9bf6e",
+    "skills/verify/protocol.yon": "a68d6026ee4e5a0617935fa862be4aadc151a8efbe7f2f4b524d38fe94501ead",
+    "skills/write-copy/SKILL.md": "11b638111303ba7d8315b06ae03a9ba9ac179d82a0444fdab4b03e9acea1dfc8",
+    "skills/write-copy-event-video/SKILL.md": "56c553fb84f288fc6dac998308ac3798f0b73f14d0b960f3d183a3d7afac1ec0",
+    "skills/yon-read/SKILL.md": "e8dc597fe419b95ba30c8bc8386a95301471784b2243cf2df503905892c290df",
+    "skills/yon-write/SKILL.md": "4ca494937159ee00a1744de259b80bb1987284cf9c3e4b721a3f74200bf7eefc",
+    "skills/agent-mailbox/references/QUICKSTART.md": "2b58e24087c1e63603dc14c4ac72ce52df398aa67388420eb87b08306e021188",
+    "skills/agent-mailbox/protocol.yon": "0133fe6a5e121024279cf97440fe862c5af579c80efdac74a5192f4427be0887",
+    "skills/ask-gate/protocol.yon": "a5936ba42cf2e3575249ac8dd0a6f8104a4df8b2ba8ef2917af4da2dd9f4e45b",
+    "skills/budget-check/protocol.yon": "b68f96b14677658c4da94f11fe28a36806375502b62af87a57acd6ae01468d89",
+    "skills/caller-options/protocol.yon": "7f41eaa28f2c91eefa0eda3792a7a9d245d0d01b6b3d7dbd1ac0643144008539",
+    "skills/diff-recap/protocol.yon": "72ecdbc38be37d6be55e8adaae502a06cb6fbd7760a241dcebe0d70f8b913013",
+    "skills/domain-check/protocol.yon": "f1a0641a07eddd85219a27bea923b4a48e0120d9162b45778bba2db998751e0c",
+    "skills/double-check/protocol.yon": "d1eb85ab2692d2ce1c06603a844a00f096fbbe6ce63c445db14ead1c2a4aded1",
+    "skills/extract-signal/protocol.yon": "847937cb399061e85e454e9929bce19d45ea11474218ba41a381e3d299b23919",
+    "skills/handoff/protocol.yon": "7e3d3a184f81e713e81e4f3eb9227ef3f6dd346e6a4e8fb9a49adbb18edf4721",
+    "skills/handoff-execute/protocol.yon": "1009bea82d91eacbd1e81162185b8ee40a5b01002c2db43b35ffa270c7c28981",
+    "skills/headless-claude/protocol.yon": "d2cb3365996bf33db74a3f3e7a0ad81a423158a0635fdd063c648e2c87c9d491",
+    "skills/headless-codex/protocol.yon": "3cac4584cf993fefe505264888b3c3d08593eac22da037775e303da50f5ac0ab",
+    "skills/headless-gemini/protocol.yon": "43f08518b8f2e4ee8544e4a643afde128bbac359c480ad6b15ab24b4396e8c38",
+    "skills/headless-grok/protocol.yon": "54742798f7516641091f53c2beb16bbfbb0f7fc160186d5eeb0132964b7d2be5",
+    "skills/headless-models/protocol.yon": "401a3faad9a11c433b0000c7b542baad193338b8f7b1e8af5df8e2d0c6cb7159",
+    "skills/headless-update-models/protocol.yon": "2d039a1dd51005c0d85851a2821e666a4015bd637296536563d0f4339a2e5acf",
+    "skills/headless-usage/protocol.yon": "56485f06ef60f67a4ad547736c65f49d949eead5cb6522a9bbb468a655c730c0",
+    "skills/improve-codebase-architecture/protocol.yon": "7e5778aebc7c9e7cbb1a2be52582e13f8ca5f6afa57d2fe87a177bbbbf607b82",
+    "skills/investigate/protocol.yon": "d3d94b940742c804000b061daddcb8e09e8553696dd8b0eea125f72ae3bcd633",
+    "skills/map-maintain/protocol.yon": "e8a880664eb7d2741ce6146a18282c3cb9f3dd6efd705c1e80b3364903d669ee",
+    "skills/monorepo-deps/protocol.yon": "ad7f4343b3f9bad7b237655bfb2824c480f60157880ce955844cb1c7e982a6f4",
+    "skills/next-skills/protocol.yon": "80a8b3c46cc6a2aa0b3a780f620799fd904c76c87efb6bf0d364d13edf0e6664",
+    "skills/orient-gaps/protocol.yon": "fc19f018453d3108960bd38c30fd5cdbb7501a8979fe2ec96c1477ccdcd1c6d2",
+    "skills/orient-map/protocol.yon": "78538aa852277217b33f7b401c86514b2598b4dedde40ea0b752c4ba83759aae",
+    "skills/orient-roadmap/protocol.yon": "ccf7021cf6a38252f3d294fab8758d9f4fa83b06ec58d0f15a4b62c4438ad59f",
+    "skills/orient-status/protocol.yon": "7058bcfa6d5f542c49b3dfdb29969b6d0ac2b2e5518b33c7d52c4fb4d3aacb1a",
+    "skills/plan-cleanup/protocol.yon": "d786940a2a45f585afbdb5a627519f7f85bc5aea549f3ccb5737c37138a2daef",
+    "skills/plan-deep-dive/protocol.yon": "524326219b3c91dea965a519a65a6dba437222406f8904e66d98f7276950c045",
+    "skills/plan-execute/protocol.yon": "b549824881025a499c97e3053f804615b83984f79094e857004e27a1277608a5",
+    "skills/plan-phases/protocol.yon": "9131ac97b3541eb35007c394f352798ef23c4c59c4a15f45eb4c2c0b5c1401d7",
+    "skills/prime-expand/protocol.yon": "9ed3d29c0557c747e00ea288c5f61634390d89e1b5de07625d785e6133259cf4",
+    "skills/prime-fetch/protocol.yon": "d38d50cd11ca6cd79445b9357041a0faf92fd2a07e45a73d9988a9648330c1df",
+    "skills/prime-sweep/protocol.yon": "eea8fb887c802749df1ad52b8f4e9928b07e375713e6d749b2df1933c689aca7",
+    "skills/self-improve/protocol.yon": "97ceca6c2fadfc8dd9e76373cbc5723f278bfcabffd95e9b8ab87c2d2a41cb17",
+    "skills/skill-library-creator/protocol.yon": "4744d51a5c6d84a8ef816c4d44b92ffde1218ae5de974038e13f73a5a69e69ad",
+    "skills/write-copy-event-video/protocol.yon": "ab8d03b3e13d12696b88f98e993a78aceec4daef43b2eb8f5a783cec4b8401fe"
+  }
+}

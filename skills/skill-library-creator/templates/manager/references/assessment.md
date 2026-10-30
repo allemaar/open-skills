@@ -1,0 +1,11 @@
+# Assess and boil a skill
+
+Load when asked to assess, audit, simplify or boil an existing skill, or when authoring reveals unnecessary detail. Assessment is read-only until edits are requested. Read the complete skill and affected callers; judge against the [authoring contract](authoring-contract.md).
+
+1. Establish the intended task and a representative success and failure. Trace the entrypoint's selected routes: what must be loaded for each task, what stays lazy, and whether every required resource travels with the skill.
+2. Identify concrete defects with file locations and consequences: ambiguous triggers, competing owners, contradictory or duplicated rules, generic advice, ornamental examples, missing inputs/stops/outputs, broken references, hidden dependencies, or instructions better handled by a script/template. Extra length is a defect only when it adds avoidable reading without changing a decision or preventing a failure.
+3. Propose the smallest useful edit. Prefer deleting repetition, replacing unclear wording and moving conditional detail to its owning reference. Keep the entrypoint execution-sufficient and routes explicit. Preserve authority, negations, thresholds, required syntax, uncertainty, notices, provenance and recovery. An enabled improvement loop is user-selected behavior: retain its self-contained reference and route unless disabling is requested. Do not turn every paragraph into a separate reference.
+4. Show a compact verdict: keep / improve / restructure, with the strongest evidence, exact proposed files and the behavior that must survive. Compare with leaving it unchanged. If nothing meaningful improves, say so; do not manufacture edits or a numerical quality score.
+5. If edits are authorized, load [authoring](authoring.md) before preparing a separate draft, then use [evaluation](evaluation.md) and the normal draft-and-publish procedure. Report affected cases observed and gaps. Word/byte counts can show scope of compression; call a token count an estimate unless the actual tokenizer was used. A smaller file alone proves no quality gain.
+
+Success: necessary decisions remain clear with less avoidable reading on the selected route. Failure: shorter instructions lose a safeguard, require unrelated context or hide a mandatory dependency.

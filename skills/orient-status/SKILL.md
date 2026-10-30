@@ -50,7 +50,7 @@ release evidence; its absence from an installed copy does not block execution.
 
 ## How it works (self-sufficient — works without `protocol.yon`)
 
-`orient-status` **delegates the gathering to a bounded, read-only subagent** so the calling session (a human's, or an agent orienting itself) never sees the search/inference noise — only the result bundle comes back. Nothing is stored; every call recomputes from current reality.
+`orient-status` **delegates the gathering to a bounded, read-only subagent** so the calling session (a human's, or an agent orienting itself) never sees the search/inference noise — only the result bundle comes back. Nothing is stored; every call recomputes from current reality. If its worker is unavailable, refuses or times out, report unavailable/partial evidence; do not infer NO SUBSTRATE, gather inline, retry or extend the bound. Limit unchanged/clean claims to checked inputs and disclose unexamined tiers.
 
 1. **Take intent as input, never prompt for it.** Intent (the goal / what "done" means) is the denominator every read leans on, and it is the *least* recoverable thing from evidence. Accept an `intent` argument if given. If intent can't be grounded (no stated goal, no plan, no README), **gate every intent-dependent field** — render it `— (needs goal)` and cap its confidence to `guessed`. **Never fabricate a goal** and hang a confident read off it. On an evidence-poor surface the highest-value output is the nudge: *"name the goal in one line and I get sharper."*
 
@@ -69,14 +69,23 @@ release evidence; its absence from an installed copy does not block execution.
 
 5. **`--resume` mode**: lead with the **resume-pointer** — the exact spot you stopped + the half-finished thought — then **exactly one next move + its counter-case + the single dropped alternative** (never a menu). Suppress the full snapshot.
 
-6. **Emit the bundle to the consumer that asked — one record, three faces, never all three at one reader.** The **YON record is the AGENT face and goes to an agent consumer only**; a **human gets the plain-language read plus the visual (widget when available, ASCII twin otherwise) and never sees the record, a raw record field, a node-id, or a gate enum**. See *Record emission* below for the YON face (agent-only); the markdown read follows the structure in the worked examples; the **visual face is rendered per the [render-face contract](references/orient-spec/orient-contract.md) §2 (Claude Code only)**: for a human on Claude Code with the visualize tool present on an explicit invocation, build the **status widget** from the kit — call `mcp__visualize__read_me` once, then emit via `mcp__visualize__show_widget` an **identity nameplate + a position track (the phase spine, hand-SVG, fixed `viewBox="0 0 680 …"`) + a remaining load-bar + ledger (open-ended `▰▰▰▒╌╌?` when the denominator is unknown) + an ETA fading uncertainty band** (a point-marker is BANNED — the uncertainty *is* the datum), with the cursor/now the dominant element and `◆◐◌` tier glyphs as redundant **non-color** encoding; an **agent** consumer gets the YON record only; any **other runtime / no tool / indeterminate `handler_type`** gets the ASCII twin (fail-closed). The **information-complete ASCII status twin is always emitted** — it is the only render in a no-SVG channel and carries every datum the widget does. The widget is **sparse** — a learn-once legend + tier glyphs, **never per-node sentences**. Below a grounding threshold (mostly `◌`) draw a **`NO SUBSTRATE`** card instead of a structural visual. The footer is one evidence-derived line — and **only ever suggests a skill that is actually installed** (fall back to a plain prose hint or `/plan-create` otherwise). The footer's four faces, the **staleness short-circuit** (an unchanged last-look anchor → "no change" without a full sweep — most useful under `--resume`), the neutral re-look signal, and handoff-feeder routing follow the shared [`references/orient-spec/family-behaviors.md`](references/orient-spec/family-behaviors.md).
+6. **Emit the bundle to the consumer that asked — one record, three faces, never all three at one reader.** The **YON record is the AGENT face and goes to an agent consumer only**; a **human gets the plain-language read plus the visual (widget when available, ASCII twin otherwise) and never sees the record, a raw record field, a node-id, or a gate enum**. See *Record emission* below for the YON face (agent-only); the markdown read follows the structure in the worked examples; the **visual face is rendered per the [render-face contract](references/orient-spec/orient-contract.md) §2 (Claude Code only)**: for a human on Claude Code with the visualize tool present on an explicit invocation, build the **status widget** from the kit — call `mcp__visualize__read_me` once, then emit via `mcp__visualize__show_widget` an **identity nameplate + a position track (the phase spine, hand-SVG, fixed `viewBox="0 0 680 …"`) + a remaining load-bar + ledger (open-ended `▰▰▰▒╌╌?` when the denominator is unknown) + an ETA fading uncertainty band** (a point-marker is BANNED — the uncertainty *is* the datum), with the cursor/now the dominant element and `◆◐◌` tier glyphs as redundant **non-color** encoding; an **agent** consumer gets the YON record only; any **other runtime / no tool / indeterminate `handler_type`** gets the ASCII twin (fail-closed). The **information-complete ASCII status twin is emitted when the selected face includes a visual** — it is the only render in a no-SVG channel and carries every datum the widget does. The widget is **sparse** — a learn-once legend + tier glyphs, **never per-node sentences**. Below a grounding threshold (mostly `◌`) draw a **`NO SUBSTRATE`** card instead of a structural visual. The footer is one evidence-derived line — and **only ever suggests a skill that is actually installed** (fall back to a plain prose hint or `/plan-create` otherwise). The footer's four faces, the **staleness short-circuit** (an unchanged last-look anchor → "no change in checked Git inputs"; uncovered inputs stay unexamined unless read within the bound), the neutral re-look signal, and handoff-feeder routing follow the shared [`references/orient-spec/family-behaviors.md`](references/orient-spec/family-behaviors.md).
 
 ## Record emission (the YON face — AGENT consumers only; never printed to a human)
+
+Before emission, pipe the actual current record in memory to
+`node <skill-dir>/references/tools/orient-validate.mjs -`. Do not save a derived
+record or substitute an example/self-test pass. The helper covers mapped enums,
+core/schema-version fields, parsing/duplicates, provenance syntax and barren
+status, with an ETA point warning; all other emitter obligations still apply.
+Select the consumer face before applying visual/trailer requirements: agent
+record-only, automator no visual, nominal human auto-loop one line, explicit
+human full face, unknown consumer ASCII fallback; preserve the widget escape.
 
 The structured face is a slice of [`references/orient-spec/orient-record.yon`](references/orient-spec/orient-record.yon) (`schema_version = orient-record/1`). **Reserved tags only** — custom tags like `@SNAPSHOT` are parser-rejected. **List fields go in a sidecar `@MAP`, never an in-set bracket-list** (an in-set bracket-list corrupts the record *silently and still validates*). **Never run `yon format` on an emitted instance** — `CANON` mode is destructive on set-internal lists and the corruption still validates clean; hand-emit the `@MAP` sidecars and leave them. Validate with `--profile exec`. Minimal skeleton:
 
 ```
-@CFG id=orient | set=[schema_version=orient-record/1,computed_at:ts=…,ephemeral:bool=true,tool=orient-status,tier=orient,evidence_mode=git-only,gate_status=degraded,gate_confidence_floor=inferred,family_used=orient-status,family_suggested_next=plan-create,overall_trust=med,degraded:bool=false]
+@CFG id=orient | set=[schema_version=orient-record/1,computed_at:ts=…,ephemeral:bool=true,tool=orient-status,tier=orient,scope=…,evidence_mode=git-only,gate_status=degraded,gate_confidence_floor=inferred,family_used=orient-status,family_suggested_next=plan-create,overall_trust=med,degraded:bool=false]
 @CFG id=subject | set=[name=…,kind=monorepo,purpose=…,purpose_source=readme,intent_status=stated]
 @CFG id=snapshot | set=[status=in-progress,stage=…,stage_idx:int=1,frontier=…,on_branch:bool=true,branch=…,dirty:int=0,ahead:int=0,behind:int=0]
 @CFG id=remaining | set=[open_count:int=4,done_count:int=1,fraction_done:flt=0.2,denominator_trust=inferred,next_open=…]
@@ -106,7 +115,7 @@ Trust: ◆◐◌ · ⚠️ lean here: the ~1–3 day ETA (2 points, not observed
 **Now:** on `wip`, 3 dirty, 12 commits.                   ◆ git `rev-parse`
 **Left:** — (needs goal)  ·  **ETA:** — (needs goal)      ◌ no goal on record
 **→ Next:** name the goal in one line and I get sharper.  ← position is real; distance can't be
-Trust: ◆◌◌ · ⚠️ lean here: there is no goal — every distance/ETA field is gated, not guessed.  [gate: degraded]
+Trust: ◆◌◌ · ⚠️ lean here: there is no goal — every distance/ETA field is gated, not guessed.  [limited evidence]
 ```
 
 **Barren tier (a non-git folder, no plan — honest degradation is the success case):**
@@ -115,10 +124,10 @@ Trust: ◆◌◌ · ⚠️ lean here: there is no goal — every distance/ETA fi
 **Now:** can't tell — barely-started / mid / near-done.   [◌ no durable state]
 **ETA:** unknown — nothing to measure against.
 **→ Next:** name the goal in one line and I get sharper.  ← the cheapest win
-Trust: ◌◌◌ · ⚠️ lean here: every line — no durable state exists.  [gate: indeterminate]
+Trust: ◌◌◌ · ⚠️ lean here: every line — no durable state exists.  [cannot determine from available evidence]
 ```
 
-The ASCII trust trailer with the `⚠️ lean your scrutiny here` line (naming the single load-bearing guess) is **mandatory** on every output.
+The ASCII trust trailer with the `⚠️ lean your scrutiny here` line (naming the single load-bearing guess) is **mandatory** on the selected full human face.
 
 ## Boundaries
 
@@ -133,8 +142,8 @@ The ASCII trust trailer with the `⚠️ lean your scrutiny here` line (naming t
 - MUST take `intent` as input and **gate intent-dependent fields** when it's absent — never fabricate a goal.
 - MUST express ETA as a **band**, never a point estimate; MUST NOT emit a fabricated percentage or confident phase on an unknown denominator.
 - MUST tag every field with a provenance tier and **fail closed** — `gate_status` = `degraded`/`indeterminate` with a sentinel, never a plausible `ready` — on zero evidence.
-- MUST, **when the consumer is an agent (`handler_type = agent`)**, emit a record conformant to `references/orient-spec/orient-record.yon` (reserved tags; list fields as sidecar `@MAP`; never `yon format` an instance). **A human consumer gets the plain-language read plus the visual instead — never the record, a raw record field, a node-id, or a gate enum.**
-- MUST emit the ASCII trust trailer with the `⚠️ lean here` load-bearing-guess line; **the ASCII status twin is mandatory and always emitted** — it is the only render in a no-SVG channel.
+- MUST, **when the consumer is an agent (`handler_type = agent`)**, emit a record conformant to `references/orient-spec/orient-record.yon` (reserved tags; list fields as sidecar `@MAP`; never `yon format` an instance). **A human consumer gets its selected plain-language face (one line when nominal, otherwise the read plus visual) — never the record, a raw record field, a node-id, or a gate enum.**
+- MUST, when the selected face includes a visual, emit the ASCII trust trailer with the `⚠️ lean here` load-bearing-guess line; **the ASCII status twin is mandatory for that selected visual face** — it is the only render in a no-SVG channel.
 - MUST NOT print the YON record — or any raw record field, node-id, gate enum, `@CFG` line, or `@MAP` line — into a human-facing reply. The record is the **agent** face (`handler_type = agent`); the human face is the plain-language read plus the visual (widget when available, ASCII twin otherwise). Per `references/orient-spec/orient-contract.md` §1 (token discipline) and `family-behaviors.md` §6.
 - MUST render the visual face per the render-face contract (Claude Code only, via `mcp__visualize__show_widget`): **agent → YON record only**; **human + Claude + tool + explicit invocation → status widget + ASCII twin**; **other runtime / no tool / indeterminate `handler_type` → ASCII twin (fail-closed)**. The status widget is an **identity nameplate + position track + remaining load-bar + ETA fading-band**, the cursor/now the dominant element; **ETA renders as a band, never a point-marker**.
 - MUST keep the widget and ASCII twin projections of **one node-structure** (same labels + `◆◐◌` tier glyphs as redundant **non-color** encoding), chrome-compliant (colors only via CSS vars / `c-*` classes — no hardcoded hex; no `position:fixed`; `role="img"` + non-empty `<title>`/`<desc>`; fixed `viewBox="0 0 680 …"`), **checked by the repository-only `tools/orient-roundtrip.mjs` release guard when running from a clone; installed copies retain this as an emitter obligation**. The widget MUST be **sparse — a learn-once legend + tier glyphs only, NEVER per-node sentences or interpretive prose glued to elements** (its whole purpose is to *lower* cognitive load).

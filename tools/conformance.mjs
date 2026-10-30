@@ -11,15 +11,12 @@ import { join } from 'node:path';
 
 const SKILLS = 'skills';
 
-// Resolve the validator: a globally-installed `yon` (CI installs it) else npx.
-const VALIDATOR = (() => {
-  try { execSync('yon --version', { stdio: 'ignore' }); return 'yon'; }
-  catch { return 'npx -y @younndai/yon-parser@latest'; }
-})();
+// Use the same supported parser major locally and in CI. npx may fetch it.
+const VALIDATOR = 'npx -y @younndai/yon-parser@2';
 
 function validate(file, profile) {
   try {
-    execSync(`${VALIDATOR} validate "${file}" --profile ${profile}`, { stdio: 'ignore' });
+    execSync(`${VALIDATOR} validate "${file}" --profile ${profile}`, { stdio: 'ignore', timeout: 90_000 });
     return true;
   } catch { return false; }
 }
@@ -36,6 +33,7 @@ for (const name of names) {
   dual++;
   const docLine = readFileSync(yon, 'utf8').split('\n').find((l) => l.startsWith('@DOC')) || '';
   const profile = (docLine.match(/profile=(\w+)/) || [, 'exec'])[1];
+  console.log(`validate ${yon} (${profile})`);
   if (validate(yon, profile)) { pass++; rows.push({ name, profile, status: 'pass' }); }
   else { fail++; rows.push({ name, profile, status: 'fail' }); }
 }

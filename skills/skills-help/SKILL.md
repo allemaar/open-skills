@@ -1,6 +1,6 @@
 ---
 name: skills-help
-description: The skills library menu — every skill grouped by family, each with a one-line description and a dual-doc/single-doc marker; pass a family name to drill into one family in full detail. Trigger with /skills-help, "list my skills", "which skill for X", "skills menu", "what skills do I have". Not /new-skill-creator (which scaffolds a new skill).
+description: The skills library menu — every skill grouped by family, each with a one-line description and a dual-doc/single-doc marker; pass a family name to drill into one family in full detail. Trigger with /skills-help, "list my skills", "which skill for X", "skills menu", "what skills do I have". Not /skill-smith (which scaffolds a new skill).
 visibility: public
 triggers:
   - "/skills-help"
@@ -10,8 +10,8 @@ triggers:
   - "skills menu"
   - "what skills do I have"
 next-skills:
-  - skill: new-skill-creator
-    phrase: "/new-skill-creator"
+  - skill: skill-smith
+    phrase: "/skill-smith"
     why: "When the library menu shows no skill covers the need, create the missing one."
   - skill: insight-skill-gap
     phrase: "/insight-skill-gap"
@@ -41,7 +41,7 @@ The live menu for the **skills library**. Family membership comes from the bundl
 
 - In full-menu mode, show each family label followed by one line per installed skill: marker, name, and the first complete sentence of its live description.
 - In family mode, show name, full live description, trigger phrases, format, and runtime. Runtime defaults to `[claude, codex, agents]` when absent.
-- In need-matching mode, name the matched phrases that support each route. If nothing matches, say so and offer `/new-skill-creator` or `/insight-skill-gap` rather than fabricating a recommendation.
+- In need-matching mode, name the matched phrases that support each route. If nothing matches, say so and offer `/skill-smith` or `/insight-skill-gap` rather than fabricating a recommendation.
 - Keep **Unclassified** last. State that it means “installed but not assigned by this pack's taxonomy,” not “unsafe” or “low quality.”
 
 Marker legend:
@@ -51,4 +51,4 @@ Marker legend:
 
 ## Boundary
 
-This skill reads installed metadata and reports it. It does not install, edit, classify, or execute other skills. To scaffold a new skill use `/new-skill-creator`.
+This skill reads installed metadata and reports it. It does not install, edit, classify, or execute other skills. To scaffold a new skill use `/skill-smith`.

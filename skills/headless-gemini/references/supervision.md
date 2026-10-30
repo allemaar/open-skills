@@ -2,6 +2,8 @@
 
 The optional [Node script](../scripts/run-windows.mjs) runs one structured-input turn with a retained child handle, concurrent file capture, 30-second progress, an external deadline, and scoped Windows process-tree termination. It requires Node and an installed native `agy.exe`. Read it before running it. It is a supervisor, not a security boundary or a replacement for the skill's preflight.
 
+The model filter accepts `gemini-*` and exactly `claude-opus-5-5-{low,medium,high}` and `claude-sonnet-5-5-{low,medium,high}`. Braces describe alternatives, not literal slugs. Check the exact selected slug against current local `agy models` before inference; parser acceptance alone proves neither catalog availability nor account access. GPT and other Claude slugs remain unsupported. For Claude, read [model routing and evidence](claude-models.md); the Antigravity tool monitor and permission contract apply regardless of model family.
+
 Prepare a private prompt file and a JSON spec with absolute paths. The output directory must not already exist and its parent must exist. The script rejects symbolic links and junctions in inspected path chains. It does not provide an atomic defense against concurrent filesystem replacement; use a trusted directory without concurrent writers.
 
 ```json
@@ -32,7 +34,7 @@ The adapter uses forced Windows termination on interruption, failure, or deadlin
 
 An exit-zero adapter result means its parsed evidence is ready for independent verification. Check the requested artifact or answer, actual tool targets, and cleanup before completion. The adapter deliberately converts denied actions, tool errors, suspicious timeout diagnostics, malformed events, missing output, wrong model/CWD/mode, and unexpected tools into a failed run. It never retries, changes configuration, exposes credentials, or enables bypass.
 
-The script supports one turn, exact file calls and one optional immutable launcher call. Resume, alternative models/providers, selected skills, large event payloads, POSIX cancellation, and strictly isolated workloads require a different verified adapter under the same skill contract. The one-megacharacter pending-event limit is a capture guard, not a model context or output-token limit; exceeding it preserves raw bytes and fails the run.
+The script supports one turn, the model filter above, exact file calls and one optional immutable launcher call. Resume, models outside that filter, alternative providers, selected skills, large event payloads, POSIX cancellation, and strictly isolated workloads require a different verified adapter under the same skill contract. The one-megacharacter pending-event limit is a capture guard, not a model context or output-token limit; exceeding it preserves raw bytes and fails the run.
 
 The native process deadline is timeoutMs, followed by shutdownGraceMs for cancellation. The outer host must also bound the complete adapter process, including filesystem capture and final reporting, and investigate any cleanup-unverified result. Root close does not prove all descendants stopped.
 

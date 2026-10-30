@@ -1,8 +1,16 @@
 # Antigravity headless validation
 
-Latest verified route: 2026-09-15, Antigravity 1.2.3 on Windows. The repaired-route section records successful Codex, Claude and Gemini worker dispatch. The earlier observations below were checked on 2026-09-14 against `agy 1.2.2` with the existing login. These are bounded smoke observations, not guarantees for another installation. Raw prompts, process identifiers, logs and local paths remain outside the public repository.
+Latest prompt-only verification: 2026-10-25, Antigravity 1.4.7 on Windows. One explicitly selected `gemini-4-argon-low` turn returned the exact literal marker with exit 0, SUCCESS, no tools and no remaining root/direct-child processes. CLI init matched the selection; this is not independent backend attestation. No settings or billing route changed. Existing-login headless response worked; quota tier and broader file workflows remain unverified. The broader dispatch route below was verified 2026-09-15 on Antigravity 1.2.3. The repaired-route section records successful Codex, Claude and Gemini worker dispatch. The earlier observations below were checked on 2026-09-14 against `agy 1.2.2` with the existing login. These are bounded smoke observations, not guarantees for another installation. Raw prompts, process identifiers, logs and local paths remain outside the public repository.
 
-## Observed behavior
+## Claude catalog and prompt smoke, 2026-10-25
+
+Local Antigravity 1.4.7 catalog output listed Claude Opus 5.5 and Sonnet 5.5 at low, medium and high effort. The supported exact slugs and execution-route boundaries are in [Claude model routing](claude-models.md). Sonnet and Opus medium/high remain catalog-only observations.
+
+One explicitly selected `claude-opus-5-5-low` prompt through the generic file-backed process runner returned the exact expected literal marker, one `SUCCESS` envelope and exit 0 with no observed tool calls. Init matched model and working directory. Usage reported 11,265 input tokens, 15 output tokens and 11,280 total tokens. Root and direct-child processes were checked absent.
+
+A second Opus low prompt exercised the bundled Antigravity adapter after its model-filter extension. It returned the exact expected literal marker in 7.589 seconds, exit 0, one `SUCCESS` envelope, matched model/CWD and `request-review` mode, no observed tool calls, no parser failures and empty stderr. Reported usage was 6,108 input tokens, 18 output tokens and 6,126 total tokens; the separate cache-read field reported 5,168 tokens. Independent process inspection confirmed the root and direct children absent. These observations confirm existing-login prompt responses and the extended adapter route for this exact Opus low invocation; independent backend identity, quota, Sonnet, other effort levels, file workflows and native Claude Code guarantees remain unproved. Raw logs remain outside the repository.
+
+## Earlier observed behavior
 
 The probes used synthetic data and `gemini-3.8-flash-low` from the current `agy models` catalog. Normal runs had a 90-second native timeout and a 120-second external ceiling. No permission bypass, credential change, direct API call or persistent permission edit was used.
 

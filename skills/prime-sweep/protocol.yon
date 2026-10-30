@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=prime-sweep | title="Prime Sweep — Parallel Sub-Agent Investigation of Large Source Surfaces" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Prime the calling agent with high-signal context from large source surfaces (multiple files, packages, folders) via parallel delegated sub-agents. Sub-agents absorb noise; only digested findings + source:line pointers enter the caller's context. Iterative with documented relevance signals, sufficiency checklist, max 8 waves, proof-of-work on every finding and every unfollowed pointer. Family invariant: caller context stays clean." | trigger="user runs /prime-sweep, chained from /prime-expand when sources are too large to read directly, or auto-fire on handoff receipt with listed sources"
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-10-30T15:49:33Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Boundary ---
 
@@ -25,7 +25,7 @@
 # --- Step 2: Input Typology ---
 
 @SEC name="Step 2 — Input Typology"
-@MAP name=InputCategory | pairs=["single-source"->"one large file or folder, listed — one sub-agent, deep read","multi-source"->"multiple listed sources — parallelize ≤3 sub-agents by source OR by lens","discovery"->"topic known, sources not — wave 1 discovery sub-agent, wave 2 deep-read if relevance signal","mixed"->"listed sources + discovery topic — compose: parallel on listed + one discovery"]
+@MAP name=InputCategory | pairs=["single-source"->"one large file or folder, listed — one sub-agent, objective-led deep read; use prime-fetch for one noisy call or extraction","multi-source"->"multiple listed sources — parallelize ≤3 sub-agents by source OR by lens","discovery"->"topic known, sources not — wave 1 discovery sub-agent, wave 2 deep-read if relevance signal","mixed"->"listed sources + discovery topic — compose: parallel on listed + one discovery"]
 @STEP rid=step:typology | n:int=2 | op=std:ai.prompt@v1 | args=[task="Classify the input per InputCategory. The classification drives briefing flavor and dispatch."] | in=[ref:trigger] | use=[cfg:InputCategory] | out=[ref:category]
 
 # --- Step 3: Objective Extraction ---
@@ -51,16 +51,16 @@
 # --- Step 6: Consolidation ---
 
 @SEC name="Step 6 — Consolidation"
-@MAP name=VerificationMechanism | pairs=["files-on-disk"->"Grep the quoted excerpt against the cited file, ±3 lines","ephemeral-sources"->"all non-file sources (in-context dumps, out-of-context dumps, MCP results, search results, conversation excerpts) get materialized to a temp path via Write then Grepped — the in-context substring check is removed because it has no real tool primitive","discrete-id-source"->"materialize the cited unit (conversation-msg-N, search-result-#N, url-anchor#section) to a temp file before verification; quote must appear within that file","large-dump-handling"->"if the dump is too large to materialize whole, the sub-agent provides a narrow excerpt (cited unit ± 50 lines) and the lead writes that excerpt to a temp file"]
+@MAP name=VerificationMechanism | pairs=["files-on-disk"->"Grep the quoted excerpt against the cited file, ±3 lines","ephemeral-sources"->"materialize non-file sources from an independently retained capture or a re-readable source to a temp path via Write then Grep; worker-authored dumps or excerpts are not independent captures regardless of size, so without independent provenance use only the attributed provenance-unverified gap branch","discrete-id-source"->"materialize the cited unit (conversation-msg-N, search-result-#N, url-anchor#section) from that independent capture or re-readable source to a temp file before verification; quote must appear within that file","large-dump-handling"->"a worker-supplied narrow excerpt (cited unit ± 50 lines) can establish only an excerpt match; verify provenance against the re-readable source or an independently retained capture of the cited unit; otherwise report only as attributed provenance-unverified material in gaps"]
 @RULE rid=rule:tool-issued-verify | lvl=MUST | when="verifying any quote" | then="issue a deterministic tool call per VerificationMechanism — never pattern-match from memory"
-@RULE rid=rule:drop-unverifiable | lvl=MUST | when="a finding or pointer is unverifiable" | then="drop it — unverifiable findings never reach the caller; unverifiable pointers never influence next-wave dispatch"
+@RULE rid=rule:drop-unverifiable | lvl=MUST | when="a finding or pointer is unverifiable" | then="exclude it from verified findings and next-wave dispatch; worker-excerpt matches may appear only as attributed provenance-unverified gaps"
 @RULE rid=rule:lead-recomputes | lvl=MUST | when="closing consolidation" | then="recompute sufficiency independently via the Step 7 checklist — never relay sub-agent self-verdicts"
 @STEP rid=step:consolidate | n:int=6 | op=std:ai.prompt@v1 | args=[task="Verify proof-of-work on every finding AND every unfollowed pointer via VerificationMechanism. Dedupe findings across sub-agents. Surface conflicts as gaps. Aggregate discarded-categories. Drop unverifiable items."] | in=[ref:wave-reports] | use=[cfg:VerificationMechanism] | out=[ref:verified-wave] | rules=[rid:rule:tool-issued-verify,rid:rule:drop-unverifiable,rid:rule:lead-recomputes]
 
 # --- Step 7: Sufficiency Gate ---
 
 @SEC name="Step 7 — Sufficiency Gate"
-@MAP name=SufficiencyChecklist | pairs=["primary-covered"->"each primary objective has ≥1 finding with verified citation","secondary-covered-or-accepted"->"each secondary objective has ≥1 verified finding OR a gap-acknowledged-as-acceptable note that (a) names the specific primary objective it does not block AND (b) states a verifiable reason a downstream /verify pass could sample-check","no-unresolved-contradictions"->"contradictions are either reconciled or flagged as gaps","no-high-relevance-unfollowed"->"no high-relevance unfollowed pointer remains (subject to decay rule)","no-orphan-new-objective"->"no surfacing-find introduces a new objective without its own verified finding"]
+@MAP name=SufficiencyChecklist | pairs=["primary-covered"->"each primary objective has ≥1 finding with verified citation","secondary-covered-or-accepted"->"each secondary objective has ≥1 verified finding OR a gap-acknowledged-as-acceptable note that (a) names the specific primary objective it does not block AND (b) states a verifiable reason a downstream /verify pass could sample-check","no-unresolved-contradictions"->"all contradictions are reconciled; flagging an unresolved contradiction as a gap does not pass","no-high-relevance-unfollowed"->"no high-relevance unfollowed pointer remains (subject to decay rule)","no-orphan-new-objective"->"no surfacing-find introduces a new objective without its own verified finding"]
 @MAP name=WaveLadder | pairs=["1-3"->"silent","4-6"->"log to user: entering wave N, signal: <which check failed + what to investigate next>","7"->"stop and ask user explicitly whether to continue; approval extends through wave 8","8"->"final allowed wave under wave-7 approval","after-8-with-failures"->"declare stuck rather than entering wave 9 (hard cap)"]
 @MAP name=RelevanceSignals | pairs=["referenced-unread"->"sub-agent referenced a source not yet investigated","contradiction"->"sub-agents disagree on a fact","surfacing-find"->"sub-agent flagged something load-bearing outside the stated objectives","source-to-source-pointer"->"a cited source references another worth investigating"]
 @STEP rid=step:sufficiency | n:int=7 | op=std:ai.prompt@v1 | args=[task="Apply SufficiencyChecklist. If all checks pass, declare primed and emit (step 8). If any check fails AND a RelevanceSignal exists, start next wave per WaveLadder. If any check fails AND no RelevanceSignal, declare partial — gaps: [...] and emit."] | in=[ref:verified-wave] | use=[cfg:SufficiencyChecklist,cfg:WaveLadder,cfg:RelevanceSignals] | out=[ref:sufficiency-verdict]
@@ -87,13 +87,13 @@
 @SEC name="Known Runtime Gaps"
 @NOTE text="Wave counter as deterministic state — neither TodoWrite (Claude Code) nor an inline note (other runtimes) is a native counter primitive; both approximate. The wave-counter-location rule picks one mechanism per runtime; that's the operational baseline until a runtime offers a real counter."
 @NOTE text="Relevance-signal threshold is described qualitatively; document the operative threshold explicitly in each invocation's briefing."
-@NOTE text="(Previously a third gap — in-context substring verification — has been resolved: all ephemeral sources are now temp-file-backed via Write+Grep, so verification is deterministic throughout.)"
+@NOTE text="A deterministic excerpt match alone does not establish provenance."
 
 # --- Rules ---
 
 @SEC name="Rules"
 @RULE rid=rule:delegate-source-reads | lvl=MUST | when="invoked" | then="delegate all source-reading to sub-agents — lead never reads sources directly"
-@RULE rid=rule:family-invariant | lvl=MUST | when="any /prime-* skill runs" | then="keep the caller's context clean — sub-agents absorb the noise, lead emits only verified primed context"
+@RULE rid=rule:family-invariant | lvl=MUST | when="any /prime-* skill runs" | then="keep the caller's context clean — sub-agents absorb the noise, lead emits verified primed context and may report attributed provenance-unverified material only in gaps"
 
 # --- Next Skills ---
 
@@ -106,4 +106,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-10-30T15:49:33Z | src="Alexandru Mares | allemaar.com" | method=generated

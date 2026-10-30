@@ -38,7 +38,7 @@ node <this-skill>/references/tools/map-check.mjs <target-path> [--json]
 
 - **Target classes:** an explicit path inside a scope, or a scope root (a directory containing `.myk/README.md` or a declared root map). Ambiguous or contested scopes fail closed (`scope-conflict`).
 - **Modes:** FULL when [`scope.md` — Organized-scope evidence](../map-rules/references/scope.md#organized-scope-evidence) resolves `.myk/README.md`; DEGRADED when the caller supplies another exact declared root-map source. Absence of a declaration is never a finding; undeclared trees are outside jurisdiction.
-- **Inventory honesty:** the script walks the scope itself (never following links/junctions out of it; skipped boundaries are counted against completeness) and reports `inventory: {source, complete, scanned}`.
+- **Inventory honesty:** the script checks the supplied target, scope root and required read paths with lstat and native-realpath identity before use, then walks the scope with bounded inventory. Visible redirects, unreadable required evidence and skipped boundaries produce operationally incomplete exit `2`. These mechanisms cannot observe every reparse form and do not prevent races; the result is not proof of race-free containment. The report includes `inventory: {source, complete, scanned}`.
 - **Exit codes:** `0` ran, zero findings (qualified-clean) · `1` ran, findings present · `2` operational error · `3` target/scope resolution error.
 
 ## Checks

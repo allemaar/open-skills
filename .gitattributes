@@ -7,3 +7,17 @@
 
 # Binary assets — never touched by EOL normalization.
 *.png binary
+
+# These exact relocated excerpts retain their source padding for byte preservation.
+# Other whitespace checks and LF normalization still apply.
+skills/human-draw/references/examples/bad-figure.md whitespace=-blank-at-eof
+skills/human-draw/references/examples/bar.md whitespace=-blank-at-eof
+skills/human-draw/references/examples/fork.md whitespace=-blank-at-eof
+skills/human-draw/references/examples/lane.md whitespace=-blank-at-eof
+skills/human-draw/references/examples/matrix.md whitespace=-blank-at-eof
+skills/human-draw/references/examples/overview-detail.md whitespace=-blank-at-eof
+skills/human-draw/references/examples/small-multiple.md whitespace=-blank-at-eof
+skills/human-draw/references/examples/spine.md whitespace=-blank-at-eof
+skills/human-draw/references/examples/tree.md whitespace=-blank-at-eof
+skills/human-merge/references/examples/museum-archive.md whitespace=-blank-at-eof
+skills/human-rewrite/references/examples/estuary-rewrite.md whitespace=-blank-at-eof

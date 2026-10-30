@@ -11,11 +11,43 @@ or guard changes that neither add nor remove a skill.
 
 ---
 
+## [Unreleased]
+
+## [2.0.0] — 2026-10-30
+
+### Breaking
+
+- **Skill Smith replaces two entrypoints.** skills-audit and new-skill-creator are retired without compatibility entrypoints. Use [skill-smith](skills/skill-smith/) for skill authoring and maintenance, including useful rename and migration guidance. Install the complete replacement folder, update explicit references, and preserve local customizations before removing old installations. Library setup and publication retain separate owners.
+
+### Added
+
+- **[Skill Smith](docs/skills/skill-smith.md)** provides task-selected creation, assessment, consolidation, diagnosis and update procedures. Optional type recipes, nested primer navigation, record-keeping and scoped data handling load when relevant; assessment remains read-only unless edits are explicitly in scope.
+- **[Skill Library Creator](docs/skills/skill-library-creator.md)** creates portable libraries with a self-contained family manager, guided setup, templates and link tools. The manager operates independently of the creator, supports selected local installation scopes, and preserves customizations through reviewed upgrades.
+- **Five insight skills** extend the family: [premortem](docs/skills/insight-premortem.md) for future failure paths, [root cause](docs/skills/insight-root-cause.md) for observed problems, [reference class](docs/skills/insight-reference-class.md) for outside-view estimates, [test assumption](docs/skills/insight-test-assumption.md) for bounded test design, and [value of information](docs/skills/insight-value-of-information.md) for deciding whether further evidence is worth its cost.
+- **Seven headless skills** cover bounded Claude, Codex, Gemini and Grok CLI work, provider/model selection, model-state refresh and usage checks. The family includes provider-specific execution, supervision, authentication and evidence handling.
+- **The write-copy family** adds a promotional-writing router and an event-video route for campaign copy, voiceover handoff and reusable event details.
+- **[A guide for every skill](docs/README.md)** explains purpose, use and non-use cases, an invocation example, workflow, outputs and subagent use. Guides share the catalog inventory; cited-source fingerprints and generated-file checks expose documentation drift.
+
+### Changed
+
+- **Insight methods use evidence more selectively.** Cross-examination reuses valid findings, distinguishes missing evidence from missing options, selects at most one relevant specialist and keeps deeper loops and fan-out behind their existing gates. Assessment makes evidence, source dependence, optional decision methods and insufficient-evidence outcomes explicit. Adversarial passes keep substantive critics fresh while retaining their required recurring self-view.
+- **Worked examples load conditionally** in human-draw, human-merge and human-rewrite. Core procedures and safeguards remain available on required routes; moved example content is preserved. This reduces mandatory reading on ordinary routes without claiming measured token savings.
+- **Public discovery describes 84 skills and 53 protocols.** Version sources, plugin metadata, README, catalog, relationship graph and guides move together. The contributor guide now includes a maintainer closeout checklist.
+- **Coordination and improvement guidance is clearer.** Mode ownership and worker eligibility are explicit; self-improvement distinguishes concrete useful practices and fixed pitfalls while retaining approval and deduplication boundaries.
+
+### Fixed
+
+- **Planning, cleanup and Git scope:** named-plan selection, safety prerequisites, physical cleanup targets, authorization boundaries and exact outgoing commit scope are explicit. Plan examples now provide the concrete actions their consumer requires.
+- **Handoff and orientation:** confirmed-empty changes are distinguished from absent or unconfirmed evidence; output forms, manifests, freshness and validation agree more closely. These changes preserve recovery and verification requirements.
+- **Mapping and evidence:** bounded discovery reports missing or failed evidence honestly; checker descriptions and arithmetic examples match what their checks establish. Priming separates excerpt matching from independent source verification and retains unresolved contradictions.
+- **Provider tooling and dependencies:** valid quota results survive partial failures, runner finalization stays within its budget, stale process PATH handling can find installed CLIs, and optional tool dependencies no longer imply silent installation.
+- **Conformance uses the parser's version-2 line** in local fallback and CI rather than an unbounded latest-version fallback.
+
 ## [1.8.0] — 2026-09-10
 
 ### Added
 
-- **Instruction quality control is public and portable.** [`skills-audit`](skills/skills-audit/) moved from the maintainer-only library into this pack, and [`directives-audit`](skills/directives-audit/) adds the same audit-first, explicitly gated housekeeping model for agent directives.
+- **Instruction quality control is public and portable.** [`skills-audit`](https://github.com/allemaar/open-skills/tree/v1.8.0/skills/skills-audit) moved from the maintainer-only library into this pack, and [`directives-audit`](skills/directives-audit/) adds the same audit-first, explicitly gated housekeeping model for agent directives.
 
 ### Changed
 
@@ -238,7 +270,7 @@ or guard changes that neither add nor remove a skill.
 
 - **`new-skill-creator` says which side of the trust line it is on.** It shipped a `MUST` telling agents to symlink skills into all three runtimes — sound advice for an author, and the exact topology [`README.md`](README.md) and [`THREAT-MODEL.md`](THREAT-MODEL.md) argue against for anyone *installing* this pack. Nothing marked which case it was, so a public skill read as a hard rule contradicting the rest of the repo. It is now scoped, in the description, the body, the rules and `protocol.yon`, to what it always was: a maintainer's loop over a skills repo you own. The drift a link carries is not absent there, only accepted on README's terms. Installing skills you did not write is still a copy.
 
-- **`new-skill-creator`'s rename checklist pointed at tooling this repo does not ship.** [`references/RENAME-CHECKLIST.md`](skills/new-skill-creator/references/RENAME-CHECKLIST.md) told you to run `python tools/lint_skills.py --check-symlinks`, and to sweep `VISIBILITY.md` and `docs/` — all three are the private library's, carried over on export and never re-pointed. The lint is `node tools/lint.mjs`, it takes no flags, and it does not check symlinks: nothing shipped here does, so the checklist now says the snapshot diff is what verifies them rather than naming a command that cannot run.
+- **`new-skill-creator`'s rename checklist pointed at tooling this repo does not ship.** [`references/RENAME-CHECKLIST.md`](https://github.com/allemaar/open-skills/blob/v1.2.1/skills/new-skill-creator/references/RENAME-CHECKLIST.md) told you to run `python tools/lint_skills.py --check-symlinks`, and to sweep `VISIBILITY.md` and `docs/` — all three are the private library's, carried over on export and never re-pointed. The lint is `node tools/lint.mjs`, it takes no flags, and it does not check symlinks: nothing shipped here does, so the checklist now says the snapshot diff is what verifies them rather than naming a command that cannot run.
 
 ### Added
 

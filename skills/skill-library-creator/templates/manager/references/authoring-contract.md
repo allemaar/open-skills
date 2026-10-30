@@ -1,0 +1,14 @@
+# Authoring contract
+
+Load for creation, assessment or revision, then return to the selected procedure. This contract does not authorize writes.
+
+Establish the useful task, audience, trigger, inputs, output and scope from the request. Name the family-prefixed skill and check live inventory for overlaps. Prefer enriching the current owner over creating a competing route. Do not invent business facts, historical dates or permissions.
+
+- Keep one necessary job per instruction. Ask what changes if it is removed; cut repetition, generic competence advice and ornamental examples. Detail earns its place by changing a decision or preventing a concrete failure. No arbitrary token/line cap. Keep constraints scoped to the evidence: one example, failure or personal preference does not establish a universal requirement. Prescribe a fixed method only where deviation causes a concrete problem.
+- State goal, authority/scope, required inputs, output, stop/failure conditions and observable success. Preserve negations, thresholds, syntax, uncertainty, provenance and recovery when boiling text.
+- Keep the entrypoint small and execution-sufficient. Route conditional specialties to references, and sub-specialties from their owning reference. Each route states when to load it and what to do if absent. Never eagerly load the whole tree or duplicate rules at each level.
+- Use a separate family-prefixed skill only when a specialty deserves its own invocation. References provide progressive detail, not a second discovery surface. Add scripts for deterministic/repeated mechanics; templates for reusable output. Scripts are executed only for the selected task, not imported into context by default.
+- Include brief do/don't distinctions and a task checklist with success/failure criteria where they add operational meaning. Common constraints stay at their owner; do not repeat the checklist in prose.
+- Preserve intended automatic or explicit-only invocation during creation, import and updates; do not infer explicit-only behavior from action approvals. Keep existing policy unless a change is requested; for new skills without a stated preference, retain the selected harness defaults. Ask only when an unresolved difference materially affects the task. When policy needs translation, consult current documentation for the affected harness, preserve unrelated metadata and bundle any required adapter guidance with the skill. Never assume a flag is portable; report unsupported behavior without claiming equivalent enforcement.
+- Declare dependencies, detected runtime capabilities and safe fallback. All required resources travel with the complete skill. Optional external audit/review tools may enhance quality but never become undeclared prerequisites.
+- Resolve authoring placeholders before activation; preserve clearly identified runtime fields in reusable output templates until the corresponding output is created.

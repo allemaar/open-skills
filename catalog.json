@@ -1,9 +1,9 @@
 {
   "name": "open-skills",
-  "version": "1.8.0",
+  "version": "2.0.0",
   "homepage": "https://allemaar.com",
   "repository": "https://github.com/allemaar/open-skills",
-  "generated": "2026-09-29",
+  "generated": "2026-10-30",
   "generator": "tools/spine.mjs",
   "license": "Apache-2.0",
   "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL.",
@@ -152,8 +152,8 @@
       ]
     }
   ],
-  "count": 79,
-  "dualDoc": 48,
+  "count": 84,
+  "dualDoc": 53,
   "install": "Resolve requiresSkills recursively and install dependencies first. Then copy the requested skill folder into your runtime skills dir (copy-default, not symlink) and validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.",
   "skills": [
     {
@@ -562,6 +562,7 @@
         "delegated-gate=ABORT"
       ],
       "rules": [
+        "venue-owner=MUST",
         "triage-skip=MUST",
         "never-delegate=MUST_NOT",
         "self-orch=MUST_NOT",
@@ -747,7 +748,7 @@
       "name": "diff-recap",
       "family": "git-sync",
       "familyLabel": "Git & sync",
-      "description": "Turn a git diff into a PR-pasteable recap — one row per changed file whose path, status, and line counts are transcribed verbatim from `git diff --numstat` (true by construction; the model writes only the labels), emitted as an inline annotated widget plus a mandatory ASCII twin and a `diff-recap/1` record whose totals equal the sum of the rows. Fills the PR-summary gap the orient- family does not cover. Not /orient-map (shape + delta of the work) or /orient-status (position + ETA) — diff-recap recaps a concrete change-set. Zero external dependency: it renders inline, never to a hosted service.",
+      "description": "Turn a git diff into a PR-pasteable recap — one row per changed file whose path, status, and line counts are transcribed verbatim from `git diff --name-status` and `--numstat` (the model writes only the labels), emitted as a `diff-recap/1` record whose totals equal the sum of the rows, with a complete ASCII recap for human readers and an inline widget when the render-face contract permits it. Fills the PR-summary gap the orient- family does not cover. Not /orient-map (shape + delta of the work) or /orient-status (position + ETA) — diff-recap recaps a concrete change-set. Zero external dependency: it renders inline, never to a hosted service.",
       "visibility": "public",
       "triggers": [
         "/diff-recap",
@@ -1404,6 +1405,7 @@
         "scope=MUST",
         "auth=MUST",
         "model=MUST",
+        "claude-route=MUST",
         "model-map=MUST",
         "isolation=MUST",
         "trusted-context=MUST",
@@ -1451,13 +1453,17 @@
       ],
       "rules": [
         "no-setup=MUST_NOT",
+        "lazy-setup=MUST",
         "preflight=MUST",
         "auth=MUST",
         "baseline=MUST",
+        "lean-limits=MUST",
+        "single-cwd=MUST",
         "isolation=MUST_NOT",
         "supervision=MUST",
         "acceptance=MUST",
         "cost=MUST",
+        "session-usage=MUST",
         "access-contract=MUST"
       ],
       "steps": 6,
@@ -1568,6 +1574,7 @@
         "bounded=MUST",
         "claude=MUST",
         "grok=MUST",
+        "grok-prompts=MUST_NOT",
         "semantics=MUST",
         "privacy=MUST",
         "access-contract=MUST"
@@ -1619,6 +1626,11 @@
           "path": "references/tools/human-output-check.mjs",
           "optional": false,
           "why": "The required mechanical figure-output checker; bundled inside this skill."
+        },
+        {
+          "path": "references/examples",
+          "optional": false,
+          "why": "Bundled shape and repair cards; read only the routes selected in The seven shapes."
         },
         {
           "path": "../human-output",
@@ -1685,6 +1697,11 @@
           "path": "references/tools/human-output-check.mjs",
           "optional": false,
           "why": "The required mechanical merged-output checker; bundled inside this skill."
+        },
+        {
+          "path": "references/examples/museum-archive.md",
+          "optional": false,
+          "why": "Bundled worked example; read only for the conditions in the worked-example section."
         },
         {
           "path": "../human-output",
@@ -1801,6 +1818,11 @@
           "path": "references/tools/human-output-check.mjs",
           "optional": false,
           "why": "The required mechanical rewritten-output checker; bundled inside this skill."
+        },
+        {
+          "path": "references/examples/estuary-rewrite.md",
+          "optional": false,
+          "why": "Bundled worked example; read only for the conditions in the worked-example section."
         },
         {
           "path": "../human-output",
@@ -2009,11 +2031,14 @@
       "name": "insight-assess",
       "family": "insight",
       "familyLabel": "Insight & decision",
-      "description": "Structured decision evaluation — pros/cons, impact assessment, quality analysis, recommendation. Trigger when the user runs /assess or asks for evaluation, comparison, or impact analysis of an approach, decision, option, or implementation. Use insight-explore for divergent option generation, insight-critique for focused output review, and insight-adversarial for multi-POV stress testing.",
+      "description": "Structured decision evaluation — pros/cons, impact assessment, quality analysis, recommendation. Trigger when the user runs /assess or asks for evaluation, comparison, or impact analysis of an approach, decision, option, or implementation. Optional methods: decision tree, SWOT/TOWS, and impact versus effort. Use insight-explore for divergent option generation, insight-critique for focused output review, and insight-adversarial for multi-POV stress testing.",
       "visibility": "public",
       "triggers": [
         "/assess",
-        "/insight-assess"
+        "/insight-assess",
+        "do a SWOT",
+        "build a decision tree",
+        "prioritize by impact versus effort"
       ],
       "requiresSkills": [],
       "nextSkills": [
@@ -2047,14 +2072,16 @@
       ],
       "rules": [
         "concrete=MUST",
+        "evidence=MUST",
         "full-quality=MUST",
         "consistent-dims=MUST",
         "no-execution=MUST_NOT",
         "no-hedge=MUST_NOT",
         "caveats=SHOULD",
-        "alternatives=SHOULD"
+        "alternatives=SHOULD",
+        "optional-method=MUST"
       ],
-      "steps": 8,
+      "steps": 9,
       "install": {
         "copy": "cp -r skills/insight-assess <skills-dir>/insight-assess",
         "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-assess/protocol.yon --profile exec"
@@ -2066,7 +2093,7 @@
       "name": "insight-critique",
       "family": "insight",
       "familyLabel": "Insight & decision",
-      "description": "Advisory review workflow. Reviews the last plan, code, architecture, or UI output and returns a structured report: Summary, Strengths, Risks, Fixes. Use when the user runs /critique, asks to \"review this\", \"critique this\", or \"what's wrong with this\", or wants focused feedback on a specific output. Also trigger as a quality gate before /execute. Advisory only — never blocks unless a kernel-prime violation is present. For multi-POV adversarial stress-testing with personas, use /insight-adversarial instead.",
+      "description": "Advisory review workflow. Reviews the last plan, code, architecture, or UI output and returns a structured report: Summary, Strengths, Risks, Fixes. Use when the user runs /critique, asks to \"review this\", \"critique this\", or \"what's wrong with this\", or wants focused feedback on a specific output. Also trigger as a quality gate before /execute. Advisory only; applicable controlling authority and safety rules still govern. For multi-POV adversarial stress-testing with personas, use /insight-adversarial instead.",
       "visibility": "public",
       "triggers": [
         "/critique",
@@ -2174,6 +2201,8 @@
         "escalate-not-grind=MUST",
         "fit-redirect=SHOULD",
         "ground-whole-artifact=MUST",
+        "reuse=MUST",
+        "method=MAY",
         "consistent-dims=MUST",
         "present-orthogonal=MUST",
         "commit-verdict=MUST_NOT"
@@ -2232,6 +2261,65 @@
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
+      "name": "insight-premortem",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
+      "description": "Find plausible failure paths before committing to a plan. Use for a premortem or \"how could this plan fail?\" For an observed failure use insight-root-cause; for broad critique use insight-adversarial.",
+      "visibility": "public",
+      "triggers": [
+        "/insight-premortem",
+        "run a premortem",
+        "how could this plan fail?"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [],
+      "rules": [
+        "bounds=MUST",
+        "workers=MUST"
+      ],
+      "steps": 5,
+      "install": {
+        "copy": "cp -r skills/insight-premortem <skills-dir>/insight-premortem",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-premortem/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "insight-reference-class",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
+      "description": "Forecast from outcomes of comparable past cases. Use for \"reference-class forecast\", \"outside-view estimate\" or \"are our estimates optimistic?\" Use insight-value-of-information for the worth of research; this skill estimates outcomes, not priorities.",
+      "visibility": "public",
+      "triggers": [
+        "/insight-reference-class",
+        "reference-class forecast",
+        "outside-view estimate",
+        "are our estimates optimistic?"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [],
+      "rules": [
+        "bounds=MUST",
+        "workers=MUST"
+      ],
+      "steps": 5,
+      "install": {
+        "copy": "cp -r skills/insight-reference-class <skills-dir>/insight-reference-class",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-reference-class/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
       "name": "insight-retro",
       "family": "insight",
       "familyLabel": "Insight & decision",
@@ -2283,6 +2371,35 @@
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
+      "name": "insight-root-cause",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
+      "description": "Investigate causes of an observed or recurring problem using evidence-linked why questions. Use for \"find the root cause\" or \"five whys\". Use insight-premortem for future failure and insight-retro for broader post-implementation learning.",
+      "visibility": "public",
+      "triggers": [
+        "/insight-root-cause",
+        "find the root cause",
+        "five whys"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [],
+      "rules": [
+        "bounds=MUST",
+        "workers=MUST"
+      ],
+      "steps": 5,
+      "install": {
+        "copy": "cp -r skills/insight-root-cause <skills-dir>/insight-root-cause",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-root-cause/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
       "name": "insight-skill-gap",
       "family": "insight",
       "familyLabel": "Insight & decision",
@@ -2297,8 +2414,8 @@
       "requiresSkills": [],
       "nextSkills": [
         {
-          "skill": "new-skill-creator",
-          "phrase": "/new-skill-creator",
+          "skill": "skill-smith",
+          "phrase": "/skill-smith",
           "why": "Scaffold the new skill the gap analysis identified"
         }
       ],
@@ -2320,6 +2437,64 @@
       "install": {
         "copy": "cp -r skills/insight-skill-gap <skills-dir>/insight-skill-gap",
         "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-skill-gap/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "insight-test-assumption",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
+      "description": "Design a bounded test of a decision-critical assumption. Use for \"test this assumption\" or \"what would falsify this bet?\" Use insight-value-of-information to decide whether more information is worth its cost. Designs tests; does not run them.",
+      "visibility": "public",
+      "triggers": [
+        "/insight-test-assumption",
+        "test this assumption",
+        "what would falsify this bet?"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [],
+      "rules": [
+        "bounds=MUST",
+        "workers=MUST"
+      ],
+      "steps": 5,
+      "install": {
+        "copy": "cp -r skills/insight-test-assumption <skills-dir>/insight-test-assumption",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-test-assumption/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "insight-value-of-information",
+      "family": "insight",
+      "familyLabel": "Insight & decision",
+      "description": "Decide whether research or a test could improve a pending choice enough to justify its cost. Use for \"is more research worth it?\" or \"value of information\". Use insight-test-assumption to design the selected test; this skill does not run it.",
+      "visibility": "public",
+      "triggers": [
+        "/insight-value-of-information",
+        "is more research worth it?",
+        "value of information"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [],
+      "rules": [
+        "bounds=MUST",
+        "workers=MUST"
+      ],
+      "steps": 5,
+      "install": {
+        "copy": "cp -r skills/insight-value-of-information <skills-dir>/insight-value-of-information",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-value-of-information/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2730,53 +2905,6 @@
       "install": {
         "copy": "cp -r skills/multi-agent-mode <skills-dir>/multi-agent-mode",
         "validate": null
-      },
-      "license": "Apache-2.0",
-      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
-    },
-    {
-      "name": "new-skill-creator",
-      "family": "skill-library",
-      "familyLabel": "Skill library",
-      "description": "Scaffold a new Agent Skill end-to-end into a skills repo you maintain (folder, SKILL.md, optional protocol.yon for dual-doc skills, tri-runtime links for Claude Code + Codex + the shared .agents/ dir, commit and push). The maintainer's authoring loop — it links your own clone into your runtimes because you write the changes those links carry. Trigger when the user runs /new-skill-creator or says \"create a skill\", \"make a new skill for X\", \"add a slash command\", \"turn this workflow into a skill\", \"codify this as a skill\". Not for editing existing skills — edit the SKILL.md directly. Not for installing skills you did not write — copy those, per README.md. For migrating an existing single-doc skill to the dual-doc YON pattern, see section 6 below.",
-      "visibility": "public",
-      "triggers": [
-        "/new-skill-creator",
-        "create a skill",
-        "make a new skill for X",
-        "add a slash command",
-        "turn this workflow into a skill",
-        "codify this as a skill"
-      ],
-      "requiresSkills": [],
-      "nextSkills": [
-        {
-          "skill": "cold-review",
-          "phrase": "/cold-review",
-          "why": "Review the new skill against its objectives before relying on it"
-        }
-      ],
-      "companions": [],
-      "hasProtocol": true,
-      "profile": "exec",
-      "gates": [
-        "no-overwrite=ABORT",
-        "dual-validate=ABORT"
-      ],
-      "rules": [
-        "no-overwrite=MUST_NOT",
-        "confirm=MUST",
-        "kebab=MUST",
-        "boundary=MUST",
-        "under-500=MUST",
-        "three-links=MUST",
-        "self-sufficient=MUST",
-        "no-elevate=MUST"
-      ],
-      "steps": 8,
-      "install": {
-        "copy": "cp -r skills/new-skill-creator <skills-dir>/new-skill-creator",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/new-skill-creator/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3904,7 +4032,7 @@
       "name": "self-improve",
       "family": "skill-library",
       "familyLabel": "Skill library",
-      "description": "The Self-Improvement Protocol (SIP). After a participating skill runs, detect concrete signals that the skill itself could be better — ambiguous instructions, an uncovered edge case, a misfired rule, a stale cross-reference, a user correction — and propose a specific diff to it, surfaced for approval and never auto-applied. Conservative by default: silent unless a ready, blocking, or recurring fix exists. Trigger via /self-improve, or automatically when a self-improvable skill completes. Not /insight-skill-gap (deliberate batch scan for new/updated skills) or /insight-retro (post-implementation review) — SIP is the in-the-moment, per-skill detector.",
+      "description": "The Self-Improvement Protocol (SIP). After a participating skill runs, detect concrete signals that the skill itself could be better — ambiguous instructions, an uncovered edge case, a misfired rule, a stale cross-reference, a user correction, a practice that improved the result, a fixed pitfall — and propose a specific diff to it, surfaced for approval and never auto-applied. Conservative by default: silent unless a ready, material, or recurring fix exists. Trigger via /self-improve, or automatically when a self-improvable skill completes. Not /insight-skill-gap (deliberate batch scan for new/updated skills) or /insight-retro (post-implementation review) — SIP is the in-the-moment, per-skill detector.",
       "visibility": "public",
       "triggers": [
         "/self-improve",
@@ -3923,8 +4051,8 @@
           "why": "When the in-the-moment signal points to a recurring pattern, escalate to the deliberate batch scan for new or updated skills."
         },
         {
-          "skill": "new-skill-creator",
-          "phrase": "/new-skill-creator",
+          "skill": "skill-smith",
+          "phrase": "/skill-smith",
           "why": "If the detected gap is a whole missing capability rather than a tweak, scaffold it as a new skill."
         }
       ],
@@ -3938,6 +4066,8 @@
         "per-run-detector=MUST",
         "concrete-diff=MUST",
         "delegate-new-skill=SHOULD",
+        "bounded-proposal=MUST",
+        "cross-examine-before-surface=MUST",
         "no-auto-apply=MUST_NOT",
         "dedup=MUST",
         "conservative=MUST",
@@ -3945,7 +4075,7 @@
         "no-reentry=MUST_NOT",
         "surface-through-ask-gate=SHOULD"
       ],
-      "steps": 4,
+      "steps": 5,
       "install": {
         "copy": "cp -r skills/self-improve <skills-dir>/self-improve",
         "validate": "npx @younndai/yon-parser validate <skills-dir>/self-improve/protocol.yon --profile exec"
@@ -3954,52 +4084,116 @@
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
-      "name": "skills-audit",
+      "name": "skill-library-creator",
       "family": "skill-library",
       "familyLabel": "Skill library",
-      "description": "Audit or explicitly housekeep an Agent Skill or library for instruction quality, routing, decomposition, portability, dependencies, and consumed behavior. Trigger on /skills-audit or \"boil this skill\". Not for directives or prose.",
+      "description": "Create a portable skill library with its own family manager, guided setup, templates and link tools. Use for \"create a skill library\" or \"set up a skill pool\"; individual skills belong to the generated manager.",
       "visibility": "public",
       "triggers": [
-        "/skills-audit",
-        "audit this skill",
-        "audit my skills",
-        "boil this skill",
-        "skills housekeeping",
-        "apply selected skill findings"
+        "/skill-library-creator",
+        "create a skill library",
+        "set up a skill pool",
+        "create a family skills manager"
       ],
       "requiresSkills": [],
-      "nextSkills": [
-        {
-          "skill": "cold-review",
-          "phrase": "/cold-review",
-          "why": "After housekeeping, independently review the changed skill artifacts"
-        }
-      ],
+      "nextSkills": [],
       "companions": [
         {
-          "path": "references/instruction-quality.md",
+          "path": "references/create-library.md",
           "optional": false,
-          "why": "Required routed contract for instruction value, compression, goals, and guardrails."
+          "why": "Guided setup and installation procedure, loaded when creating a library."
         },
         {
-          "path": "references/decomposition.md",
+          "path": "references/upgrades.md",
           "optional": false,
-          "why": "Required routed contract for domain, path, runtime, and use-case decomposition."
+          "why": "Reviewed generator upgrades and customization-preserving manual merges."
         },
         {
-          "path": "references/routing-metadata.md",
+          "path": "templates",
           "optional": false,
-          "why": "Required routed contract for discovery, invocation, metadata, and sibling boundaries."
+          "why": "Self-contained manager, authoring resources and onboarding templates."
         },
         {
-          "path": "references/implementation.md",
+          "path": "scripts",
           "optional": false,
-          "why": "Required routed contract for dependencies, portability, validators, consumed form, and drift."
+          "why": "Portable library operations and native Windows path checks."
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "targets=ABORT"
+      ],
+      "rules": [
+        "scope=MUST",
+        "paths=MUST",
+        "standalone=MUST",
+        "walkthrough=MUST",
+        "links=MUST",
+        "upgrade=MUST",
+        "activation=MUST",
+        "adoption=MUST",
+        "interruption=MUST",
+        "primer=SHOULD",
+        "evaluation=SHOULD",
+        "improvement-opt-in=MUST",
+        "assessment=SHOULD",
+        "upstream-comparison=MUST",
+        "recovery-guidance=MUST"
+      ],
+      "steps": 5,
+      "install": {
+        "copy": "cp -r skills/skill-library-creator <skills-dir>/skill-library-creator",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/skill-library-creator/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "skill-smith",
+      "family": "skill-library",
+      "familyLabel": "Skill library",
+      "description": "Create, assess, boil, diagnose, update or consolidate skills using concise instructions and task-selected references. Use for skill authoring, skill audits or reorganizing a skill collection. Not for standing directives, prose editing or library installation.",
+      "visibility": "public",
+      "triggers": [
+        "/skill-smith",
+        "create a skill",
+        "make a new skill for X",
+        "add a slash command",
+        "turn this workflow into a skill",
+        "codify this as a skill",
+        "audit my skills",
+        "audit this skill",
+        "skills housekeeping",
+        "apply selected skill findings",
+        "boil this skill",
+        "consolidate my skills",
+        "reorganize my skills",
+        "diagnose this skill",
+        "update this skill"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [
+        {
+          "path": "references",
+          "optional": false,
+          "why": "Bundled operation procedures and conditional checks; load only the selected route."
         },
         {
-          "path": "references/housekeeping.md",
+          "path": "templates",
           "optional": false,
-          "why": "Required mutation gate; load only after an explicit housekeeping request."
+          "why": "Adaptable templates, loaded only when drafting the corresponding artifact."
+        },
+        {
+          "path": "../yon-write",
+          "optional": true,
+          "why": "Author YON only when the selected representation migration needs it."
+        },
+        {
+          "path": "../yon-read",
+          "optional": true,
+          "why": "Interpret YON only when the selected representation migration needs it."
         }
       ],
       "hasProtocol": false,
@@ -4008,7 +4202,7 @@
       "rules": [],
       "steps": 0,
       "install": {
-        "copy": "cp -r skills/skills-audit <skills-dir>/skills-audit",
+        "copy": "cp -r skills/skill-smith <skills-dir>/skill-smith",
         "validate": null
       },
       "license": "Apache-2.0",
@@ -4018,7 +4212,7 @@
       "name": "skills-help",
       "family": "skill-library",
       "familyLabel": "Skill library",
-      "description": "The skills library menu — every skill grouped by family, each with a one-line description and a dual-doc/single-doc marker; pass a family name to drill into one family in full detail. Trigger with /skills-help, \"list my skills\", \"which skill for X\", \"skills menu\", \"what skills do I have\". Not /new-skill-creator (which scaffolds a new skill).",
+      "description": "The skills library menu — every skill grouped by family, each with a one-line description and a dual-doc/single-doc marker; pass a family name to drill into one family in full detail. Trigger with /skills-help, \"list my skills\", \"which skill for X\", \"skills menu\", \"what skills do I have\". Not /skill-smith (which scaffolds a new skill).",
       "visibility": "public",
       "triggers": [
         "/skills-help",
@@ -4031,8 +4225,8 @@
       "requiresSkills": [],
       "nextSkills": [
         {
-          "skill": "new-skill-creator",
-          "phrase": "/new-skill-creator",
+          "skill": "skill-smith",
+          "phrase": "/skill-smith",
           "why": "When the library menu shows no skill covers the need, create the missing one."
         },
         {
@@ -4270,6 +4464,10 @@
         "cta=MUST",
         "layers=MUST",
         "voice=MUST",
+        "delivery-table=MUST",
+        "selective-control=MUST",
+        "pronunciation=MUST",
+        "casting=MUST",
         "voice-facts=MUST_NOT",
         "language=MUST",
         "reuse=MUST",

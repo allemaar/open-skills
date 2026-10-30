@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "skill": "<family>-<capability>",
+  "cases": [
+    {
+      "id": "representative-task",
+      "kind": "behavior",
+      "request": "<realistic user request>",
+      "inputs": ["<sanitized fixture or input description>"],
+      "criteria": ["<observable useful result>", "<plausible failure to exclude>"]
+    },
+    {
+      "id": "missing-input",
+      "kind": "refusal",
+      "request": "<request missing a necessary input or permission>",
+      "criteria": ["<correct stop or clarification>", "<state or artifact that must be preserved>"]
+    },
+    {
+      "id": "routing-near-miss",
+      "kind": "routing",
+      "request": "<similar request owned by another capability>",
+      "expectedSelection": "<other owner or no selection>"
+    }
+  ],
+  "observations": []
+}

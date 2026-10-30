@@ -51,14 +51,14 @@ State the reason and the suggested alternative, then let the handler decide. **I
 Classify two axes, then read the depth level off the matrix. The output is a level on a graduated **depth dial** — so a rich single subject gets a light touch and an open question gets discovery-first. **Every phase below, including Angle Discovery, scales to this level.**
 
 - **Form** — `single` · `comparison (A vs B)` · `list (small ≤~5)` · `set (large >~5)` · `open-question (no candidates yet)`
-- **Corpus** — `over-large` · `thin` · `adequate` · `rich`
+- **Corpus** — `over-large` · `thin` · `adequate` · `rich`. Judge relevance, reliability and decision coverage, not document volume. Missing evidence is different from missing options.
 
 **Depth dial:**
 
 - **L0** — refuse/escalate (Gate 0; overridable)
 - **L1** — light: one quick assess; Angle Discovery skipped or one line; no explore/hybrids
 - **L2** — standard: brief Angle Discovery → critique → assess
-- **L3** — expanded: full Angle Discovery → critique → assess → explore → re-assess
+- **L3** — expanded: full Angle Discovery → critique → assess → explore if options are missing → assess additions
 - **L4** — comparative: full Angle Discovery → per-item critique+assess + typed hybrids
 - **L5** — deep: re-assess loops, adversarial, fan-out — **never auto; HIL-gated**
 
@@ -80,19 +80,23 @@ Before assessment hardens around the known options, surface what isn't yet visib
 
 ## Phase 2 — Run the battery (depth-driven, depth-guarded)
 
-Run the sub-skills the level calls for, all **inline under `CX-RESOLVED`** so they skip their own NSP/SIP/gate surfacing and return raw findings — you own the single final presentation.
+Run selected sub-skills **inline under depth-1 `CX-RESOLVED`**. As caller, suppress their NSP/SIP/gate surfacing and nested delegation; collect findings for one final presentation. Load only selected skills. If one is unavailable, name the coverage gap and continue the ordinary assessment without claiming that method ran.
 
 - **L1** — one quick `/insight-assess`.
 - **L2** — `/insight-critique` then `/insight-assess`.
-- **L3** — L2, then `/insight-explore` to expand, then **re-assess the expanded set**.
+- **L3** — L2, then `/insight-explore` when options need expansion; assess additions and update only conclusions affected by new evidence or options.
 
-**Avoid premature closure.** Run a light explore/angle pass before hardening the recommendation when *any* of: the handler says they're exploring angles; the subject is high-ambiguity; or the first critique/assess **converges suspiciously fast** — concretely, all options score in one band *and* critique surfaced zero High/Medium risks *and* explore hasn't run yet. Exploration is not only a thin-input fallback; it's the guard against closing too early.
+**Reuse before rerunning.** Carry forward assessments whose evidence and criteria still apply, including per-item findings. Reassess only new options or affected conclusions; keep extra loops subject to the existing escalation gate.
+
+**Choose a method only for a decision-changing uncertainty.** Within the selected depth, use at most one relevant specialist: `/insight-premortem` for future failure paths; `/insight-root-cause` for observed failures; `/insight-value-of-information` for whether more evidence is worth obtaining; `/insight-test-assumption` for a discriminating test design; `/insight-reference-class` for an outside-view estimate. Feed findings into assess. Do not run a checklist or chain their handoffs; ordinary cases need none.
+
+**Avoid premature closure.** Keep a light explore/angle pass when the handler requests exploration, framing is ambiguous, or all options score in one band with no High/Medium critique risks and no prior explore pass. If candidates are already adequate and the gap is evidence, name the missing evidence instead of generating more options. A recommendation to defer or obtain specific evidence is valid; do not invent a winner.
 
 ## Phase 3 — Sets & typed hybrids
 
-For `comparison` / `list` / `set` forms (or any post-discovery space with **≥2 combinable elements**):
+At L2 or above, for `comparison` / `list` / `set` forms (or any post-discovery space with **≥2 combinable elements**):
 
-1. **Per-item** — critique+assess each item with the **same dimensions**. For a large set, *offer* fan-out — never auto-spawn (token burn → HIL consent).
+1. **Per-item** — reuse completed critique+assess findings and fill only gaps, with the **same dimensions** across items. For a large set, *offer* fan-out — never auto-spawn (token burn → HIL consent).
 2. **Typed hybrid synthesis** — find *coherent* combinations and **classify why each exists**:
    - **complementary** — A covers B's weakness
    - **sequential** — A unlocks B later
@@ -100,7 +104,7 @@ For `comparison` / `list` / `set` forms (or any post-discovery space with **≥2
    - **reframed** — A and B imply a better C
    - **constraint-splitting** — use A under one condition, B under another
 
-   Hybrids are **first-class options** alongside the individuals. Surface **at most 3**; log-and-truncate the rest. Don't manufacture hybrids just to fill type categories.
+   Hybrids are **first-class options** alongside the individuals. Surface **at most 3**; log-and-truncate the rest. Don't manufacture hybrids just to fill type categories. Before recommending a hybrid, critique and assess its combined feasibility, dependencies and costs against the same criteria; reuse constituent findings rather than assuming their benefits simply add. If evidence is insufficient, label it provisional.
 
 ## Phase 4 — Coverage check (adaptive critic)
 
@@ -118,7 +122,7 @@ Mode is decided by **fire-context**, independent of the depth level:
 - **Sub-step / agent caller / a `*-RESOLVED` marker present** → **inline**: return the full decision surface as a structured block.
 - **Override** — `--gate` / `--inline` forces a mode.
 
-**Decision surface** carries: the **committed recommendation**; the **top 2–3 alternatives**; and — always — the **assumption most likely to be wrong** and **what would change the recommendation**. At L3+ it also carries the **strongest unseen angle discovered** and the **most important connection found**, plus an optional *"go deeper?"* offer when (and only when) it would add value. Lighter passes (L1/L2) keep the trail short.
+**Decision surface** carries: the **committed recommendation** (including deferral or specific evidence gathering when no choice is defensible); the **top 2–3 alternatives**; and — always — the **assumption most likely to be wrong** and **what would change the recommendation**. At L3+ it also carries the **strongest unseen angle discovered** and the **most important connection found**, plus an optional *"go deeper?"* offer when (and only when) it would add value. Lighter passes (L1/L2) keep the trail short.
 
 ## Constraints
 

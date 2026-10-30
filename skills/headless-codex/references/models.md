@@ -3,7 +3,7 @@
 This page explains model evidence. The machine-readable freshness source is `model-state.json`, checked before every run by `../scripts/check-model-freshness.mjs` when Node is available or by the identical `policy.reminderDays` logic in `SKILL.md`. Missing, future-dated, failed, or invalidated evidence is due immediately. A due snapshot is never refreshed automatically, and an explicit Handler selection is never replaced by a recommendation.
 
 **Written:** 2026-09-10  
-**Last verified:** 2026-10-14
+**Local catalog last verified:** 2026-10-29
 
 Model availability is runtime-, account-, workspace-, and client-specific. Discover it immediately before a consequential run:
 
@@ -15,14 +15,14 @@ Use only entries whose local catalog reports `visibility: "list"`. Treat hidden 
 
 ## Local CLI observation
 
-In Codex CLI 0.160.0 on 2026-10-14, the exposed local catalog contained:
+In Codex CLI 0.160.0 on 2026-10-29, the exposed local catalog contained:
 
 | Local choice | Supported efforts observed |
 | --- | --- |
-| `gpt-6.1-sol`, `gpt-6-sol`, `gpt-6-astra`, `gpt-5.6-sol`, `gpt-5.6-terra` | low, medium, high, xhigh, max, ultra |
+| `gpt-6.1-sol`, `gpt-6.1-terra`, `gpt-6-sol`, `gpt-6-astra`, `gpt-5.6-sol`, `gpt-5.6-terra` | low, medium, high, xhigh, max, ultra |
 | `gpt-6-luna`, `gpt-5.6-luna` | low, medium, high, xhigh, max |
 
-Hidden: `gpt-reserve`, `codex-auto-review`; not selectable. There is no GPT-6 Terra. `gpt-5.5` was retired from ChatGPT-login Codex on 2026-10-14. `ultra` splits a divisible task across subagents; it is not deeper single-run reasoning.
+The 2026-10-14 catalog recorded `gpt-reserve` and `codex-auto-review` as hidden and not selectable. `gpt-5.5` was retired from ChatGPT-login Codex on 2026-10-14. `ultra` splits a divisible task across subagents; it is not deeper single-run reasoning.
 
 ## Official documentation, kept separate
 

@@ -28,7 +28,7 @@ Review the session's git changes, cluster them into an ordered commit plan, get 
 
 ## Step 1 — Gather changes
 
-Run in parallel: `git diff --stat HEAD`, `git diff HEAD`, `git status`, `git log --oneline -5` (for commit-style reference).
+Run in parallel: `git diff --stat HEAD`, `git diff HEAD`, `git status`, `git log --oneline -5` (for commit-style reference). Resolve the actual push destination and the complete initial outgoing commit set, including older unpushed commits and their identities. If either cannot be determined, stop before commit or push.
 
 ## Step 2 — Build the change assessment
 
@@ -38,7 +38,7 @@ Always route unrelated or unsafe-to-stage work into `Excluded Changes`: worktree
 
 ## Step 3 — Propose an ordered commit plan
 
-Present a complete ordered commit plan before asking for approval:
+Present the actual push destination and complete initial outgoing commit set alongside the proposed new commits in the complete ordered commit plan before asking for approval:
 
 ```
 ## Commit Plan
@@ -64,7 +64,7 @@ Commit messages match recent repo style; subject lines concise (≤72 chars when
 
 ## Step 4 — Wait for approval
 
-Do NOT proceed until the user explicitly says yes. Approval applies only to the exact plan shown, including the exact full commit message blocks. Stop and ask for a revised plan if any drift appears before push: branch changes, changed files differ from the plan, new dirty files, commit order changes, any commit subject/body/trailer line changes, staged files mismatch, attribution text appears, or push fails.
+Do NOT proceed until the user explicitly says yes. Approval applies only to the exact plan shown, including the destination, initial outgoing commit identities, and exact full commit message blocks. Stop and ask for a revised plan if any drift appears before push: branch changes, changed files differ from the plan, new dirty files, commit order changes, any commit subject/body/trailer line changes, staged files mismatch, attribution text appears, or push fails.
 
 ## Step 5 — Commit and push
 
@@ -80,7 +80,7 @@ Once approved:
 6. Run the attribution-trailer check against the same output. Verify the message contains no co-author, generated-by, assisted-by, assistant/tool/AI attribution, or similar attribution or ownership trailer. A `Signed-off-by` line is clean only when repository policy requires DCO and that exact line appeared in the approved message.
 7. If the message differs or contains unsolicited attribution or an unapproved sign-off, STOP. Do not push. Remove it with `git commit --amend` using only the clean approved message, then rerun both checks. Repeat until exact and clean.
 8. Run `git status --short --branch`. Confirm the remaining dirty state matches `Excluded Changes` plus expected post-commit state.
-9. After all approved commits are clean, `git push`.
+9. Before pushing, recheck the actual destination and approved initial outgoing commit identities and history. The expected approved new commits extend that history and are not themselves drift. If the destination or initial history changed, any unexpected outgoing commit appears, or either cannot be established, stop and request a revised plan. After all approved commits are clean and the check passes, `git push`.
 
 If push fails, report the error and stop — do not retry automatically.
 

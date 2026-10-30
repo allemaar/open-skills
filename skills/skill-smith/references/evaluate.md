@@ -1,0 +1,11 @@
+# Evaluate the changed behavior
+
+Load for new behavior, changed routing or substantive revision. Reuse relevant cases; add one only when it separates success from a plausible failure. Use the [case template](../templates/evaluation-case.md) when reusable cases earn their upkeep.
+
+1. Set realistic inputs and observable output requirements before running. Include meaningful missing-input or refusal behavior. Routing changes need a matching request and a nearby request belonging elsewhere. Consolidation covers each original capability, not only the common path. When changing a safeguard, reuse or add a case that plausibly tempts bypass; simulate hazardous effects. Check a materially different input when generalization from the development example is uncertain.
+2. Use an available host and reviewed draft, fresh context when practical; disclose carried context. Keep evaluation context explicit so improvement loops do not activate unless that is the case under test. Execute only inspected scripts within scope. Evaluation does not authorize live messages, publication, destructive actions or provider changes.
+3. Inspect resulting artifacts or behavior and record pass, fail or not-observed with evidence and actual harness. Explicit invocation does not test automatic selection. Exercise relevant harness differences where available; mark missing coverage untested. Source parity, installation and portable wording do not prove runtime behavior. When claiming efficiency, inspect available file reads, tool calls and time/token evidence for unnecessary work; leave unavailable measures unmeasured.
+4. Compare the prior version or ordinary no-skill workflow on the same inputs when claiming improvement and practical. A check passed by both versions supports preservation; it does not alone demonstrate improvement. Do not fabricate baselines, numerical confidence or scores. Manual artifact walkthroughs are valid but must be labelled, not presented as execution.
+5. Repair demonstrated weaknesses and rerun affected cases, not an automatic full review fleet. Report checked scope, failures and remaining gaps. No particular model, paid service, runner or subagent API is required.
+
+[load.complete] skill-smith.evaluate

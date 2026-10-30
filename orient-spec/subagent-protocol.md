@@ -24,6 +24,10 @@ The premise of the family: a handler — human *or* an agent orienting itself �
 - **`orient-*` (public)** reads ONLY universal surfaces: git history/branch/dirty-tree, any plan/TODO/markdown file, the file tree, and the conversation/transcript if passed in.
 - **A private conforming extension** *additionally* reads its own declared artifacts, which short-circuit inference because identity / status / rationale are declared rather than guessed. Those reads live in the private skill only; the public protocol never names them.
 
+A Git-only unchanged anchor supports only a claim about checked Git inputs.
+Inspect relevant uncovered plan/conversation/trunk evidence within the same bound,
+or disclose it as unexamined. A clean gap result also names unexamined tiers.
+
 ## 4. Return = the triple bundle, signal only
 
 `{ the YON record (per orient-record.yon) + the markdown banner+block+trailer + the visual spec and its ASCII fallback }` — **nothing else**: no narration of the scan, no raw logs.
@@ -34,3 +38,10 @@ The premise of the family: a handler — human *or* an agent orienting itself �
 ## 5. Monitor
 
 The dispatch watchdog applies even to a single 60–90 s subagent: state an ETA at dispatch; if it passes, investigate — never wait in silence. For a longer sweep, edge-trigger on completion plus a periodic poll fallback. The caller's context stays clean throughout; only the vetted bundle (provenance + confidence + residual gaps) re-enters it.
+
+
+A missing, refused or timed-out worker returns unavailable/partial evidence with
+the cause. Do not infer NO SUBSTRATE from an absent result, substitute inline
+gathering, retry or extend the bound. Validate the current in-memory record via
+the bundled orient-validate stdin route before selecting the consumer face;
+do not persist a derived record merely to validate it.

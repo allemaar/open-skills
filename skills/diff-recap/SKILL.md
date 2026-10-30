@@ -1,7 +1,7 @@
 ---
 name: diff-recap
 description: >
-  Turn a git diff into a PR-pasteable recap — one row per changed file whose path, status, and line counts are transcribed verbatim from `git diff --numstat` (true by construction; the model writes only the labels), emitted as an inline annotated widget plus a mandatory ASCII twin and a `diff-recap/1` record whose totals equal the sum of the rows. Fills the PR-summary gap the orient- family does not cover. Not /orient-map (shape + delta of the work) or /orient-status (position + ETA) — diff-recap recaps a concrete change-set. Zero external dependency: it renders inline, never to a hosted service.
+  Turn a git diff into a PR-pasteable recap — one row per changed file whose path, status, and line counts are transcribed verbatim from `git diff --name-status` and `--numstat` (the model writes only the labels), emitted as a `diff-recap/1` record whose totals equal the sum of the rows, with a complete ASCII recap for human readers and an inline widget when the render-face contract permits it. Fills the PR-summary gap the orient- family does not cover. Not /orient-map (shape + delta of the work) or /orient-status (position + ETA) — diff-recap recaps a concrete change-set. Zero external dependency: it renders inline, never to a hosted service.
 visibility: public
 self-improvable: true
 companions:
@@ -28,9 +28,9 @@ next-skills:
 
 # /diff-recap
 
-Turns a **git diff into a recap you can paste into a pull request** — a per-file change table whose numbers are *transcribed from git*, grouped and labelled, rendered as an inline annotated widget with a **mandatory ASCII twin**, and backed by a `diff-recap/1` record. It fills the gap the `orient-` family leaves open: `orient-map` shows the *shape* of the work and `orient-status` shows *where you stand*, but neither recaps **what a concrete change-set contains** for a reviewer. diff-recap does exactly that, and only that.
+Turns a **git diff into a recap you can paste into a pull request** — a per-file change table whose numbers are *transcribed from git*, grouped and labelled, backed by a `diff-recap/1` record, with a **complete ASCII recap for human readers** and an inline widget when the render-face contract permits it. It fills the gap the `orient-` family leaves open: `orient-map` shows the *shape* of the work and `orient-status` shows *where you stand*, but neither recaps **what a concrete change-set contains** for a reviewer. diff-recap does exactly that, and only that.
 
-Its differentiator is **true by construction**: the structured numbers (per-file `added`/`removed`/`status` and the headline totals) come straight from `git diff --numstat` and `--name-status` — the model authors *only* the prose labels. A record whose totals don't equal the sum of its rows is **rejected by a value gate before it can be shown**, so the recap cannot quietly lie about the diff. And unlike a hosted recap renderer, it has **zero external dependency** — the ASCII twin is self-contained and PR-pasteable in any channel.
+Its differentiator is **true by construction**: the structured numbers (per-file `added`/`removed`/`status` and the headline totals) come straight from `git diff --numstat` and `--name-status` — the model authors *only* the prose labels. A record whose totals don't equal the sum of its rows is **rejected by a value gate before it can be shown**, which checks internal arithmetic; source fidelity still depends on the required Git capture and transcription. And unlike a hosted recap renderer, it has **zero external dependency** — the ASCII twin is self-contained and PR-pasteable in any channel.
 
 > **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical steps, rules, and gates; this file is the human-readable, self-sufficient explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date.
 
@@ -54,7 +54,7 @@ Every call recomputes from the real diff; nothing is stored.
 
 5. **Fail closed.** No git, or an empty diff → `gate_status = barren`, `attested = false`, and a **NO DIFF card** — never a fabricated recap. A `clean` recap requires a real git source (`attested = true`); a partial source caps the verdict at `partial`.
 
-6. **Emit the triple bundle.** The YON record (below), the PR-pasteable markdown summary, and the visual face (Claude Code only). diff-recap honors the **three render-face branches**: a human on Claude Code with the visualize tool present on an explicit invocation gets the **widget + ASCII twin**; an **agent** gets the YON record only; any **other runtime / no tool / indeterminate `handler_type`** gets the **ASCII twin** (fail-closed). See the bundled, self-contained [`render-face contract`](references/render-face-contract.md). diff-recap adopts only this branching, **not** the orient family's footer roster, "you are here" breadcrumb, or staleness short-circuit. The **information-complete ASCII twin is always emitted** — it carries every file row, count, group, and total the widget does (worked trio at [`examples/diff-recap.{ascii.txt,widget.svg,example.yon}`](examples/)).
+6. **Emit the selected bundle.** Emit the YON record (below); human-facing branches add the PR-pasteable markdown summary and selected visual face. diff-recap honors the **three render-face branches**: a human on Claude Code with the visualize tool present on an explicit invocation gets the **widget + ASCII twin**; an **agent** gets the YON record only; any **other runtime / no tool / indeterminate `handler_type`** gets the **ASCII twin** (fail-closed). See the bundled, self-contained [`render-face contract`](references/render-face-contract.md). diff-recap adopts only this branching, **not** the orient family's footer roster, "you are here" breadcrumb, or staleness short-circuit. Every human-facing or indeterminate branch emits the **information-complete ASCII twin** — it carries every file row, count, group, and total the widget does (worked trio at [`examples/diff-recap.{ascii.txt,widget.svg,example.yon}`](examples/)).
 
 ## Record emission (the YON face — reserved tags only)
 
@@ -73,7 +73,7 @@ On **barren** evidence the envelope degrades honestly: `gate_status=barren, atte
 
 ### The value gate — why the recap can't lie
 
-`yon validate` checks *structure*, not *values*: a record can be valid YON yet state `total_added=999` while its rows sum to `155`. [`references/tools/diff-recap-check.mjs`](references/tools/diff-recap-check.mjs) travels inside this skill folder and is the missing half — it asserts **Σ per-file == totals**, enum membership, and the fail-closed/attested gates, and with `--numstat` it checks every row against the real git numstat. An emitter runs it before emit; the source repository additionally exercises the worked and deliberately broken fixtures as release evidence.
+`yon validate` checks *structure*, not *values*: a record can be valid YON yet state `total_added=999` while its rows sum to `155`. [`references/tools/diff-recap-check.mjs`](references/tools/diff-recap-check.mjs) travels inside this skill folder and is the missing half — it asserts **Σ per-file == totals**, enum membership, and the fail-closed/attested gates, and with `--numstat` it compares row paths and counts against the supplied capture. It does not compare statuses with `--name-status` or establish capture origin or freshness; an `attested` flag alone is not source evidence. The emitter still verifies the bound Git source and transcribes statuses. An emitter runs it before emit; the source repository additionally exercises the worked and deliberately broken fixtures as release evidence.
 
 ```bash
 node <skill-dir>/references/tools/diff-recap-check.mjs <skill-dir>/examples/diff-recap.example.yon --numstat <skill-dir>/examples/diff-recap.numstat
@@ -108,7 +108,7 @@ Trust: ◆◆◆ every count git-attested · the model wrote only the labels · 
 Trust: ◌◌◌ · [gate: barren · attested: false]
 ```
 
-The ASCII twin + the `Σ rows == headline` line + the trust trailer are **mandatory** on every output.
+The ASCII twin + the `Σ rows == headline` line + the trust trailer are **mandatory** on human-facing and indeterminate output; an agent consumer receives only the record.
 
 ## Boundaries
 
@@ -123,8 +123,8 @@ The ASCII twin + the `Σ rows == headline` line + the trust trailer are **mandat
 - MUST be **true by construction** — transcribe `path`, `status`, `added`, `removed` verbatim from `git diff --name-status`/`--numstat`; never count by hand. The model authors **only** `label` and `group`.
 - MUST set `total_files`/`total_added`/`total_removed` to the exact count and sums of the rows, so the headline equals the sum of the attested rows; the value gate **rejects** any record where they drift.
 - MUST **fail closed** — no git or an empty diff → `gate_status = barren`, `attested = false`, NO DIFF card; a `clean` verdict requires `attested = true`.
-- MUST always emit the **information-complete ASCII twin** — it is the only render in a no-SVG channel and is PR-pasteable verbatim.
-- MUST render the visual face per the render-face contract (Claude Code only, via `mcp__visualize__show_widget`): agent → YON record only; human + Claude + tool + explicit invocation → widget + ASCII twin; other runtime / no tool / indeterminate `handler_type` → ASCII twin (fail-closed). Widget and ASCII twin are projections of **one row-structure** (same rows + totals), chrome-compliant (no hardcoded color, `role="img"` with non-empty title/desc, fixed 680 viewBox).
+- MUST emit the **information-complete ASCII twin** on human-facing and indeterminate branches — it is the only human render in a no-SVG channel and is PR-pasteable verbatim. The agent-only branch emits only the record.
+- MUST select the output per the render-face contract (the widget is Claude Code only, via `mcp__visualize__show_widget`): agent → YON record only; human + Claude + tool + explicit invocation → widget + ASCII twin; other runtime / no tool / indeterminate `handler_type` → ASCII twin (fail-closed). Widget and ASCII twin are projections of **one row-structure** (same rows + totals), chrome-compliant (no hardcoded color, `role="img"` with non-empty title/desc, fixed 680 viewBox).
 - MUST emit file rows as `@CFG id=file.<n>` and list fields (`groups`, `provenance`) as sidecar `@MAP`; never a bare in-set bracket-list; never `yon format` an instance.
 - MUST take `intent` as input and cap labels to descriptive when it's ungrounded — never fabricate a rationale.
 

@@ -78,7 +78,7 @@ Required for all profiles:
 - `evidence` — pointer to error/commit/file/line that prompted this
 - `acceptance` — acceptance sentence
 - `verify` — list of verifiable shell commands (REQUIRED — if user can't name one, push back: "this task isn't measurable enough for a handoff; reconsider scope")
-- `sources_required` — file paths or wikilinks the cold agent MUST read before planning. Asked interactively as: **"Which sources MUST the cold agent read before planning? (file paths or wikilinks, comma-separated.)"** If the user supplies a non-empty list → write to `@SOURCES.required`, brief executes in gated mode. If the user supplies an empty list → **push back** with: *"You haven't named any required sources. Either name what the cold agent must read before planning, OR explicitly confirm 'no sources required' — the brief will run in advisory mode with a prominent warning, and the cold agent will not gate on source ingestion. Confirm 'no sources required' to proceed."* Default is to re-prompt for sources. Only after explicit confirmation does the brief write with empty `@SOURCES.required` and an advisory-mode marker. Writes to the brief's `@SOURCES.required` block (see [`handoff-execute/references/SOURCES-BLOCK.md`](../handoff-execute/references/SOURCES-BLOCK.md)).
+- `sources_required` — file paths or wikilinks the cold agent MUST read before planning. Asked interactively as: **"Which sources MUST the cold agent read before planning? (file paths or wikilinks, comma-separated.)"** If the user supplies a non-empty list → write to `@SOURCES.required`, brief executes in gated mode. If the user supplies an empty list → **push back** with: *"You haven't named any required sources. Either name what the cold agent must read before planning, OR explicitly confirm 'no sources required' — the brief will run in advisory mode with a prominent warning, and the cold agent will not gate on source ingestion. Confirm 'no sources required' to proceed."* Default is to re-prompt for sources. Only after explicit confirmation does the brief write with empty `@SOURCES.required` and `confirmed_empty:bool=true` in the same block. Never infer this confirmation from an empty list. Writes to the brief's `@SOURCES.required` block (see [`handoff-execute/references/SOURCES-BLOCK.md`](../handoff-execute/references/SOURCES-BLOCK.md)).
 
 Optional with defaults:
 - `sources_optional` — additional sources surfaced for on-demand reading mid-execution. Asked as: **"Any additional sources to surface as optional reading? (Empty = none.)"** Writes to `@SOURCES.optional`.
@@ -227,7 +227,7 @@ tags:
 ---
 ```
 
-The retro body MUST include YON blocks for: `@OUTCOME_DELIVERED`, `@GROUND_TRUTH` (with `artifacts_modified` paths+hashes and `git_diff_summary`), `@GATE_STATUS` (per-clause `verified|unverified|failed` + gate-suite outcome), `@DELTA_FROM_BRIEF`, `@RECOMMENDATIONS`, `@VERDICT`. **Narrative-only retros are rejected** — ground truth (file paths, hashes, git diff) is non-negotiable.
+The retro body MUST include YON blocks for: `@OUTCOME_DELIVERED`, `@GROUND_TRUTH` (with `artifacts_modified` paths+hashes and `git_diff_summary`), `@GATE_STATUS` (per-clause `verified|unverified|failed` + gate-suite outcome), `@DELTA_FROM_BRIEF`, `@RECOMMENDATIONS`, `@VERDICT`. **Narrative-only retros are rejected.** For real task changes, paths, hashes and diff evidence remain required. If zero task changes are evidenced, use `artifacts_modified="none"` with the supporting observation; the retro file itself is not a task change. `git_diff_summary` records the actual scoped comparison or why it was unavailable, distinguishing pre-existing changes. Unknown mutation state must be reported as unknown with a blocked task outcome, never converted to "none"; a failed retro write still requires the existing partial final verdict. This branch preserves every mandatory block and any source/premise failures and resume hint.
 
 The brief sign-off section instructs the cold agent on this, and points back to the originating session for `/insight-critique` (or any LLM-agnostic equivalent).
 
@@ -245,15 +245,15 @@ The brief sign-off section instructs the cold agent on this, and points back to 
 
 - "I'll figure out the right place" — name the file path explicitly
 - "Make sure not to break anything" — replace with `forbidden_actions` list
-- "Run /verify after" — `/verify` is a Claude Code skill marked `disable-model-invocation`, so even on Claude Code the cold agent can't invoke it; on other runtimes (Codex, etc.) it doesn't exist at all. Use outcome-based briefs (verifiable shell commands in `verify:`) instead of prescribing skill invocations.
+- "Run /verify after" — skill availability and invocation permissions depend on the receiving runtime; `disable-model-invocation` does not mean the skill cannot be installed elsewhere or explicitly invoked. Use outcome-based briefs (verifiable shell commands in `verify:`), and do not assume a skill name grants permission to invoke it.
 - "Use the Agent tool with isolation: worktree" — that's a Claude-Code-specific spawning mechanism; Codex and other runtimes have different (or no) equivalents. Describe the *behavior* you want ('spawn a fresh isolated agent session', 'run in a clean worktree') in runtime-agnostic prose, and let the cold agent's runtime supply the mechanism. If a step truly only works on one runtime, tag it (e.g. '(Claude Code only)').
-- Skipping `@SOURCES.required` because "the brief is small" — if it's worth a handoff, it has critical context. Declare what the cold agent must read; let the gate work for you. Empty `sources_required` drops `/handoff-execute` into advisory mode (no gate, only a warning).
+- Skipping `@SOURCES.required` because "the brief is small" — if it's worth a handoff, it has critical context. Declare what the cold agent must read; let the gate work for you. Only explicit no-required-sources confirmation plus `confirmed_empty:bool=true` permits advisory source ingestion; an empty list alone remains unresolved.
 
 ## Companion skills
 
 - [`/handoff-execute`](../handoff-execute/SKILL.md) — the receiving-side executor. Consumes the brief this skill produces, gates on `@SOURCES.required`, runs verify commands, writes the retro to the canonical vault path.
 
-Briefs that declare `@SOURCES` are executed in **gated mode** by `/handoff-execute` (source ingestion is a hard gate before planning). Briefs without `@SOURCES` execute in **advisory mode** (best-effort source scan, no gate, prominent warning emitted). Legacy briefs without `@SOURCES` continue to work; add `@SOURCES` to upgrade.
+Source ingestion follows the [receiving contract](../handoff-execute/references/SOURCES-BLOCK.md): nonempty `@SOURCES.required` is **gated**; an empty list with explicit `confirmed_empty:bool=true` is **advisory** with a warning, while the premise gate remains. Empty or missing `required` in a present block without confirmation is unresolved and blocks by default; explicit `--force` may proceed degraded but never supplies confirmation. Without `@SOURCES`, legacy `@SCOPE.must_read` takes precedence, then real required-read headings with enumerable paths or wikilinks; fenced or quoted examples do not count. Only when no such required tier exists are legacy reads advisory. The receiver's existing premise and `--force` rules remain in force.
 
 ## Inspirations
 

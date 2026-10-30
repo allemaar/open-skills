@@ -1,0 +1,13 @@
+# Rename, retire, restore and delete
+
+Read the whole affected skill, known callers and current local links. Preview exact source, destination, link entries, references and shared impact. Preserve preimages outside active discovery and guard every physical path. General management permission is not destructive confirmation.
+
+For rename, choose an unused family-prefixed name. Update loader name, protocol ID if present, graph/primer references and known callers in one reviewed change. Preserve imported origin and record the additional name in provenance history. Use the helper's rename preview and exact confirmation only after caller review. The old name is explicitly retired, allowing each machine to remove only its recorded old link and install the new name on reconciliation. Shared adoption dependencies block rename until each originating machine resolves and releases its caller; private caller paths need not be shared.
+
+For retirement, prefer archive over physical deletion. Preview `retire --library SKILLS --name FAMILY-NAME`: `adoptionDependencies` lists shared opaque dependency IDs separately from private local `adoptionCallers` paths. Resolve those callers and use the [adoption release procedure](imports.md) first. Read back exact source/archive paths and impact, then apply with `--confirm FAMILY-NAME`. The helper moves the complete source under `.library/retired`, records retirement in shared configuration, and retains recovery. Reconcile local links afterward. The manager itself requires a separate library-lifecycle plan.
+
+For restore, inspect the archived complete source and current name collisions. Use the bundled [manual maintenance controls](recovery.md) for the reviewed guarded restore, remove the corresponding retirement marker only with the restored physical source present, then run inventory and reconciliation. Do not rebuild from cached catalog text or fabricate missing files.
+
+Physical deletion is a deliberate manual operation. Enumerate links without following them, prove containment, show exact irreversibility and obtain confirmation. Use an available no-follow native method; never recursively delete an unverified link-capable tree. No cleanup command is bundled. To unregister one local target, preview `configure --library SKILLS --targets JSON_ARRAY --unregister` with a single target, then apply with exact `--confirm TARGET`. This preserves its links. Uninstalling links is a separate exact reviewed plan; unregistering does not retire shared skills.
+
+Success: references and names agree, recovery is readable, and remaining other-machine actions are stated. Failure: a dangling adopted caller, an unowned link removed, or unavailable sync mistaken for retirement.

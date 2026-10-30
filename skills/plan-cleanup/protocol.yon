@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=plan-cleanup | title="Post-Execution Cleanup — Remove Planning Artifacts" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Remove planning artifacts and tech debt left behind after a plan has been executed. No new work, no scope additions, just cleanup." | trigger="user runs /plan-cleanup, says clean up artifacts, remove the plan file, or no tech debt"
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-10-30T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Governance ---
 
@@ -22,14 +22,14 @@
 # --- Phase 2: Confirm and Remove ---
 
 @SEC name="Phase 2 — Confirm and Remove"
-@STEP rid=step:confirm | n:int=2 | op=std:human.review@v1 | args=[task="Present artifact list to user. Format: 'Found the following planning artifacts: ...' Ask: Remove all? (y / skip [filename] / cancel)"] | in=[ref:candidates] | out=[ref:approved-removal] | rules=[rid:rule:list-first]
-@STEP rid=step:remove | n:int=3 | op=std:fs.delete@v1 | args=[strategy="git rm if tracked, rm if untracked"] | in=[ref:approved-removal] | out=[ref:removed] | rules=[rid:rule:scope-bound,rid:rule:respect-skip] | note="Never remove files outside current project scope. Honor user skips."
+@STEP rid=step:confirm | n:int=2 | op=std:human.review@v1 | args=[task="Before confirmation establish the exact physical target of each candidate with no-follow leaf and parent-chain identity and prove it remains within the project; for recursive removal enumerate links and prove containment. Stop on escaping or unknown redirects or missing proof. Present exact physical targets and irreversible effects to the user. Ask: Remove all? (y / skip [filename] / cancel)"] | in=[ref:candidates] | out=[ref:approved-removal] | rules=[rid:rule:list-first]
+@STEP rid=step:remove | n:int=3 | op=std:fs.delete@v1 | args=[strategy="Immediately before each deletion recheck that target and proof match the physical identity shown and approved. Stop on changed identity, missing proof, forbidden redirect, or an unapproved target. Use git rm if tracked only when its exact index effects preserve unrelated staged and worktree changes; otherwise stop the Git portion. Use rm if untracked."] | in=[ref:approved-removal] | out=[ref:removed] | rules=[rid:rule:scope-bound,rid:rule:respect-skip] | note="Never remove files outside current project scope. Honor user skips."
 
 # --- Phase 3: Verify and Commit ---
 
 @SEC name="Phase 3 — Verify and Commit"
 @STEP rid=step:verify-gone | n:int=4 | op=std:fs.list@v1 | args=[task="Confirm each artifact is gone. List what was removed."] | in=[ref:removed] | out=[ref:removal-confirmation]
-@STEP rid=step:commit | n:int=5 | op=std:shell.exec@v1 | args=[cmd="git commit -m 'chore: remove planning artifacts'"] | in=[ref:removal-confirmation] | note="Only if in git repo and files were tracked. Push if user's workflow includes pushing."
+@STEP rid=step:commit | n:int=5 | op=std:shell.exec@v1 | args=[cmd="git commit -m 'chore: remove planning artifacts'"] | in=[ref:removal-confirmation] | note="Only if in a git repo and files were tracked: establish exact authorized removal paths and proposed commit contents; commit only if actual effects match authorization and preserve unrelated index and worktree state. Otherwise stop the Git portion and report already removed and skipped items. Push only if separately authorized and exact destination and outgoing effects are bound to that authorization; prior pushes alone do not authorize it."
 
 @MAP name=TerminalDeclarations | pairs=["clean-success"->"Cleanup complete — [N] artifacts removed.","already-clean"->"Cleanup complete — workspace was already clean.","halted"->"Cleanup halted — [reason]. Removed: [list]. Skipped: [list]."]
 @STEP rid=step:declare | n:int=6 | op=std:ai.prompt@v1 | args=[task="Emit a terminal declaration line per TerminalDeclarations."] | in=[ref:removal-confirmation] | use=[cfg:TerminalDeclarations] | rules=[rid:rule:terminal-decl]
@@ -40,4 +40,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=7 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-10-30T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

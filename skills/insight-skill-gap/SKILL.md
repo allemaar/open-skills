@@ -5,8 +5,8 @@ description: >
 visibility: public
 self-improvable: true
 next-skills:
-  - skill: new-skill-creator
-    phrase: "/new-skill-creator"
+  - skill: skill-smith
+    phrase: "/skill-smith"
     why: "Scaffold the new skill the gap analysis identified"
 triggers:
   - "/skill-gap"
@@ -54,24 +54,24 @@ For each gap, draft a skill specification:
 - **Complexity estimate** — how large/involved the skill content will be
 - **Key sections to cover** — what the skill should teach
 
-Check `new-skill-creator` for template requirements before drafting. Present proposals to the user and wait for approval before proceeding.
+Check `skill-smith` for template requirements before drafting. Present proposals to the user and wait for approval before proceeding.
 
 ## Phase 4 — Execution (only if approved)
 
-Create approved skills via `/new-skill-creator`. For updates, apply targeted edits to the relevant sections.
+Create approved skills via `/skill-smith`. For updates, apply targeted edits to the relevant sections.
 
 ## Rules
 
 - MUST verify no existing skill covers the same domain before proposing a new one.
 - MUST follow the domain-prefix naming convention.
 - MUST specify which sections are missing or outdated when proposing updates.
-- MUST check `new-skill-creator` for template requirements before proposing new skills.
+- MUST check `skill-smith` for template requirements before proposing new skills.
 - MUST NOT propose skills for one-off patterns with no reuse potential.
 - SHOULD recommend immediate creation (not deferral) when reuse potential is HIGH.
 
 ## Next Steps
 
-- `/new-skill-creator` — to build approved skills
+- `/skill-smith` — to build approved skills
 
 > **Human output.** This skill's handler-facing output obeys the human-output
 > contract (`human-output/SKILL.md`).

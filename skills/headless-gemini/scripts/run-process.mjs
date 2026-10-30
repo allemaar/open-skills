@@ -136,46 +136,105 @@ export async function runProcess(spec, hooks = {}) {
   const stderrReader = await open(stderrPath, 'r');
   const stdin = checked.stdinFile ? await open(checked.stdinFile, 'r') : null;
   const startedAt = new Date().toISOString();
+  const finalDeadline = performance.now() + checked.timeoutMs + checked.shutdownGraceMs;
   let child;
   let timedOut = false;
   let settled = false;
+  let finishing = false;
   let heartbeat;
   let streamPoll;
   let timeout;
   let grace;
+  let finalTimer;
   let stopping = false;
   let captureError = null;
   let requestStop = null;
   let stdoutOffset = 0;
   let stderrOffset = 0;
   let drainPromise = null;
+  let closePromise = null;
+  let filesClosed = false;
+  let terminalOutcome = null;
+  let rootClose = null;
+  let statusQueue = Promise.resolve();
   let latest = { status: 'starting', pid: null, startedAt, timedOut: false, cleanup: 'pending' };
-  const persist = async () => {
-    try { await writeStatus(statusPath, latest); }
-    catch (error) {
+  const persist = () => {
+    const snapshot = { ...latest };
+    const attempt = statusQueue.then(() => writeStatus(statusPath, snapshot));
+    // Serialize snapshots so earlier writes cannot overtake terminal reporting.
+    statusQueue = attempt.catch(error => {
+      if (settled) return;
       captureError ??= `status persistence failed: ${error.message}`;
-      latest = { ...latest, captureError };
-      void requestStop?.('capture-error');
-      throw error;
-    }
+      if (!finishing) void requestStop?.('capture-error');
+    });
+    return attempt;
   };
-  const record = () => { void persist().catch(() => {}); };
-  const closeFiles = async () => Promise.allSettled([stdout.close(), stderr.close(), stdoutReader.close(), stderrReader.close(), stdin?.close()]);
+  const record = () => { if (!finishing && !settled) void persist().catch(() => {}); };
+  const closeFiles = () => closePromise ??= Promise.allSettled([stdout.close(), stderr.close(), stdoutReader.close(), stderrReader.close(), stdin?.close()]).then(results => {
+    filesClosed = results.every(result => result.status === 'fulfilled');
+    return results.filter(result => result.status === 'rejected').map(result => `file closure failed: ${result.reason?.message ?? result.reason}`);
+  });
+  const clearRunTimers = () => {
+    clearInterval(heartbeat);
+    clearInterval(streamPoll);
+    clearTimeout(timeout);
+    clearTimeout(grace);
+  };
+  const terminalStatus = (outcome, errors) => {
+    latest = { ...latest, status: errors.length ? 'error' : 'exited', endedAt: new Date().toISOString(), exitCode: outcome.exitCode ?? null, signal: outcome.signal ?? null, timedOut, cleanup: outcome.cleanup, errors: [...errors] };
+  };
 
   const completed = new Promise(resolveResult => {
-    const finish = async ({ exitCode = null, signal = null, cleanup, error } = {}) => {
+    const settle = (outcome, errors, statusPersisted) => {
       if (settled) return;
       settled = true;
-      clearInterval(heartbeat);
-      clearInterval(streamPoll);
-      clearTimeout(timeout);
-      clearTimeout(grace);
-      const errors = [error, captureError].filter(Boolean);
-      latest = { ...latest, status: errors.length ? 'error' : 'exited', endedAt: new Date().toISOString(), exitCode, signal, timedOut, cleanup, ...(errors.length ? { errors } : {}) };
-      try { await persist(); } catch { if (captureError && !errors.includes(captureError)) errors.push(captureError); }
-      await closeFiles();
-      resolveResult({ status: errors.length ? 'error' : 'exited', executable: checked.executable, cwd: checked.cwd, outputDirectory: checked.outputDirectory, stdoutPath, stderrPath, statusPath, timedOut, cleanupCheckRequired: true, errors, processes: [{ pid: child?.pid ?? null, startedAt, exitCode, signal, cleanup }] });
+      clearRunTimers();
+      clearTimeout(finalTimer);
+      resolveResult({ status: errors.length ? 'error' : 'exited', executable: checked.executable, cwd: checked.cwd, outputDirectory: checked.outputDirectory, stdoutPath, stderrPath, statusPath, timedOut, cleanupCheckRequired: true, statusPersistence: statusPersisted ? 'confirmed' : 'unverified', fileClosure: filesClosed ? 'confirmed' : 'unverified', errors: [...errors], processes: [{ pid: child?.pid ?? null, startedAt, exitCode: outcome.exitCode ?? null, signal: outcome.signal ?? null, cleanup: outcome.cleanup }] });
     };
+    const finish = async ({ exitCode = null, signal = null, cleanup, error } = {}) => {
+      if (finishing || settled) return;
+      finishing = true;
+      clearRunTimers();
+      terminalOutcome = { exitCode, signal, cleanup };
+      const errors = [error, captureError].filter(Boolean);
+      errors.push(...await closeFiles());
+      // Observe preceding status failures before constructing the terminal snapshot.
+      await statusQueue;
+      if (settled) return;
+      if (captureError && !errors.includes(captureError)) errors.push(captureError);
+      terminalStatus(terminalOutcome, errors);
+      let statusPersisted = false;
+      try { await persist(); statusPersisted = true; }
+      catch (failure) {
+        const message = captureError ?? `status persistence failed: ${failure.message}`;
+        if (!errors.includes(message)) errors.push(message);
+      }
+      if (settled) return;
+      settle(terminalOutcome, errors, statusPersisted);
+    };
+    const watchFinalDeadline = () => {
+      if (settled) return;
+      const remaining = finalDeadline - performance.now();
+      if (remaining > 0) {
+        // Avoid Node's timer overflow at the already-supported maximum timeout.
+        finalTimer = setTimeout(watchFinalDeadline, Math.min(remaining, MAX_TIMEOUT_MS));
+        return;
+      }
+      timedOut = true;
+      finishing = true;
+      clearRunTimers();
+      const outcome = terminalOutcome ?? rootClose ?? { cleanup: 'unverified' };
+      const errors = [captureError, 'finalization deadline expired; capture, status persistence or file closure is incomplete'].filter(Boolean);
+      terminalStatus(outcome, errors);
+      // Best effort only: neither a pending write nor a close can delay return.
+      // This terminal error is queued after every earlier snapshot, including a
+      // possibly pending terminal write. Persistence remains unverified on return.
+      void persist().catch(() => {});
+      void closeFiles();
+      settle(outcome, errors, false);
+    };
+    watchFinalDeadline();
 
     try {
       child = spawn(checked.executable, checked.args, { cwd: checked.cwd, shell: false, windowsHide: true, stdio: [stdin ? stdin.fd : 'ignore', stdout.fd, stderr.fd] });
@@ -187,48 +246,60 @@ export async function runProcess(spec, hooks = {}) {
     record();
     const drain = () => {
       if (drainPromise) return drainPromise;
-      if (settled) return Promise.resolve();
+      if (finishing || settled) return Promise.resolve();
       drainPromise = (async () => { try {
         for (const stream of [{ handle: stdoutReader, callback: callbacks.onStdoutChunk, offset: () => stdoutOffset, set: value => { stdoutOffset = value; } }, { handle: stderrReader, callback: callbacks.onStderrChunk, offset: () => stderrOffset, set: value => { stderrOffset = value; } }]) {
           if (!stream.callback) continue;
           const buffer = Buffer.allocUnsafe(64 * 1024);
-          while (true) {
+          while (!finishing && !settled) {
             const { bytesRead } = await stream.handle.read(buffer, 0, buffer.length, stream.offset());
-            if (!bytesRead) break;
+            if (!bytesRead || finishing || settled) break;
             stream.set(stream.offset() + bytesRead);
             await stream.callback(Buffer.from(buffer.subarray(0, bytesRead)));
           }
         }
       } catch (error) {
-        captureError ??= `stream callback failed: ${error.message}`;
-        void requestStop?.('callback-failed');
-      } finally {} })().finally(() => { drainPromise = null; });
+        if (!finishing && !settled) {
+          captureError ??= `stream callback failed: ${error.message}`;
+          void requestStop?.('callback-failed');
+        }
+      } })().finally(() => { drainPromise = null; });
       return drainPromise;
     };
     streamPoll = setInterval(() => { void drain(); }, STREAM_POLL_MS);
     requestStop = async reason => {
-      if (settled || stopping || !child?.pid || child.exitCode !== null || child.signalCode !== null) return { attempted: false, reason: 'already-stopping-or-exited' };
+      if (finishing || settled || stopping || !child?.pid || child.exitCode !== null || child.signalCode !== null) return { attempted: false, reason: 'already-stopping-or-exited' };
       stopping = true;
       latest = { ...latest, status: 'cancelling', cancellationRequestedAt: new Date().toISOString(), cancellationReason: reason };
       record();
-      grace = setTimeout(() => { child.unref(); void finish({ cleanup: 'unverified', error: captureError ?? `cancellation grace expired after ${reason}` }); }, checked.shutdownGraceMs);
+      grace = setTimeout(() => { child.unref(); void finish({ cleanup: 'unverified', error: captureError ?? `cancellation grace expired after ${reason}` }); }, Math.max(0, Math.min(checked.shutdownGraceMs, finalDeadline - performance.now())));
       grace.unref();
       const result = await taskkill(child.pid);
-      latest = { ...latest, taskkill: result };
-      record();
+      if (!finishing && !settled) {
+        latest = { ...latest, taskkill: result };
+        record();
+      }
       return result;
     };
     Promise.resolve().then(() => callbacks.onStart?.({ pid: child.pid, stop: () => requestStop('caller-request'), statusPath, stdoutPath, stderrPath })).catch(error => {
-      captureError ??= `onStart failed: ${error.message}`;
-      void requestStop('callback-failed');
+      if (!finishing && !settled) {
+        captureError ??= `onStart failed: ${error.message}`;
+        void requestStop('callback-failed');
+      }
     });
     heartbeat = setInterval(() => {
-      latest = { ...latest, heartbeatAt: new Date().toISOString() };
-      record();
+      if (!finishing && !settled) {
+        latest = { ...latest, heartbeatAt: new Date().toISOString() };
+        record();
+      }
     }, HEARTBEAT_MS);
     child.once('error', error => { void requestStop?.('spawn-error'); void finish({ cleanup: 'spawn-failed', error: error.message }); });
-    child.once('close', (exitCode, signal) => { void drain().then(() => drain()).finally(() => finish({ exitCode, signal, cleanup: timedOut || stopping ? 'closed-after-cancellation' : 'close-observed' })); });
+    child.once('close', (exitCode, signal) => {
+      rootClose = { exitCode, signal, cleanup: timedOut || stopping ? 'closed-after-cancellation' : 'close-observed' };
+      void drain().then(() => drain()).finally(() => finish(rootClose));
+    });
     timeout = setTimeout(() => {
+      if (finishing || settled) return;
       timedOut = true;
       latest = { ...latest, status: 'cancelling', timedOut: true };
       record();

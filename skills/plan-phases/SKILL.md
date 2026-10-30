@@ -41,7 +41,7 @@ A `/verify` gate may sit before or after an action. It must block **before** mut
 
 ## Phase 1 — Locate & Load Existing Plan
 
-1. **Find the plan** — check `implementation_plan.md`, `PLAN.md`, `task.md`, recent conversation context, or user-provided file. Load the full content. If multiple candidates exist, use the most recently modified file and note the choice.
+1. **Find the plan** — when an explicit plan is supplied, select it; if the named source is missing or ambiguous, stop and ask for clarification. Otherwise check `implementation_plan.md`, `PLAN.md`, `task.md`, or recent conversation context. If multiple file candidates exist without an explicit source, use the most recently modified file and note the choice. Load the full content.
 2. **Assess structure** — flat (single list)? Partially phased? Missing verification steps? Identify structural gaps.
 
 **If no plan is found** after checking all locations → stop. Ask the user to provide the plan before continuing.

@@ -1,0 +1,64 @@
+name: Skill library behavior
+on:
+  push:
+    paths:
+      - 'skills/skill-library-creator/**'
+      - '.github/workflows/skill-library.yml'
+  pull_request:
+    paths:
+      - 'skills/skill-library-creator/**'
+      - '.github/workflows/skill-library.yml'
+jobs:
+  behavior:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node skills/skill-library-creator/scripts/test-library.mjs
+      - run: node --test skills/skill-library-creator/scripts/test-safety.mjs
+  comparison:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node skills/skill-library-creator/scripts/test-learning.mjs
+  portability:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node skills/skill-library-creator/scripts/test-portability.mjs
+  review-regressions:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node skills/skill-library-creator/scripts/test-review-regressions.mjs

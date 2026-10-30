@@ -70,7 +70,7 @@ for (const p of [cwd, promptFile]) noLinks(p);
 noLinks(out, true);
 if (!lstatSync(exe).isFile() || !lstatSync(cwd).isDirectory()) throw Error('Invalid executable or cwd');
 if (extname(exe).toLowerCase() !== '.exe') throw Error('launcher-required: resolve the native agy.exe before using this supervisor');
-if (!/^gemini-[a-zA-Z0-9._-]+$/.test(s.model || '')) throw Error('Explicit Gemini model slug required');
+if (!/^(?:gemini-[a-zA-Z0-9._-]+|claude-(?:opus|sonnet)-5-5-(?:low|medium|high))$/.test(s.model || '')) throw Error('Explicit locally listed Gemini or Claude 5.5 model slug required');
 if (!Number.isInteger(s.timeoutMs) || s.timeoutMs < 100 || s.timeoutMs > 600000) throw Error('timeoutMs must be 100..600000');
 if (!Number.isInteger(s.printTimeoutSeconds) || s.printTimeoutSeconds < 1 || s.printTimeoutSeconds * 1000 >= s.timeoutMs) throw Error('Native timeout must be positive and below external timeout');
 const shutdownGraceMs = s.shutdownGraceMs ?? 5000;
@@ -158,8 +158,12 @@ function consume(line) {
       if(step.tool_name==='run_command')validateCommandStep(step);
       else {
       const p = step.tool_info?.parameters || {};
-      const target = p.AbsolutePath || p.TargetFile;
-      if (typeof target !== 'string' || !isAbsolute(target) || !allowed.some(a => a.tool === step.tool_name && norm(a.path) === norm(target))) stop('unexpected tool or file target');
+      // agy 1.4.11 streams view_file reads as read_file with Path and optional line bounds.
+      const alias = step.tool_name === 'read_file';
+      if (alias && (step.tool_info?.name !== 'read_file' || Object.keys(p).some(k => !['Path', 'StartLine', 'EndLine'].includes(k)) || typeof p.Path !== 'string' || ['StartLine', 'EndLine'].some(k => p[k] !== undefined && (!Number.isSafeInteger(p[k]) || p[k] < 1)) || (p.StartLine !== undefined && p.EndLine !== undefined && p.StartLine > p.EndLine))) { stop('unexpected read_file shape'); return; }
+      const toolName = alias ? 'view_file' : step.tool_name;
+      const target = alias ? p.Path : (p.AbsolutePath || p.TargetFile);
+      if (typeof target !== 'string' || !isAbsolute(target) || !allowed.some(a => a.tool === toolName && norm(a.path) === norm(target))) stop('unexpected tool or file target');
       }
     }
     if (step?.subagent_info) stop('unexpected subagent');

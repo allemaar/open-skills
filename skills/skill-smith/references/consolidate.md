@@ -1,0 +1,13 @@
+# Consolidate and reorganize
+
+Load for a collection-level organization request or confirmed competing owners. Read [authoring](authoring.md) and [routing](checks/routing.md). Default to a read-only proposal, not migration.
+
+1. Bound the selected collection. Inventory entrypoints, real user intents, outputs, permission boundaries, conditional procedures, dependencies, known callers and installed/generated surfaces. Use metadata to find candidates, then read complete candidate trees and affected callers before recommending a merge. Sampling is not a complete collection audit.
+2. Group by shared intent and reusable decisions, not names or vocabulary. Recommend KEEP for cohesive independent capabilities; MERGE for overlapping workflows whose differences can be routed reliably; MOVE for conditional detail with one owner; SPLIT when distinct triggers, permissions, domains or evidence need independent invocation. Different runtimes, paths, read-only/mutating modes and rare recovery often make useful branches. Do not move or combine content across incompatible authority or privacy boundaries.
+3. Propose a before/after map: each original entrypoint and procedure, new owner, selected reference route, preserved inputs/outputs, safeguards, visibility, publication surfaces and invocation policy, callers to update and retirement/recovery plan. Show one typical route and its necessary reading. Identify unresolved collisions; fewer names alone is no benefit. Preserve unique behavior, attribution/notices and provenance.
+4. A merged router must select branches from the user's intent without scanning every branch. Keep shared invariants at the root, specialized guards on their selected path and all mandatory parent checks reachable. No forced depth, reference per paragraph or monolithic dispatcher. Leave short cohesive skills intact when merging adds ambiguity or reading.
+5. Apply only an explicitly selected migration through [write](write.md). Exercise representative requests and meaningful failure/refusal cases from each original skill using [evaluate](evaluate.md), plus routing near-misses. Verify callers and intended consumed surfaces separately. Retire old entrypoints only after required replacement behavior and migration are checked; use a compatibility route only for a demonstrated caller need. Preserve recoverable originals. Unapproved installation changes stay pending and visible.
+
+Success: less duplicate guidance and clearer selection without lost capability or changed permissions. Failure: a smaller catalog hides independent intents, broadens authority or breaks callers.
+
+[load.complete] skill-smith.consolidate

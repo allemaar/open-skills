@@ -11,6 +11,9 @@ companions:
   - path: references/tools/human-output-check.mjs
     optional: false
     why: "The required mechanical merged-output checker; bundled inside this skill."
+  - path: references/examples/museum-archive.md
+    optional: false
+    why: "Bundled worked example; read only for the conditions in the worked-example section."
   - path: ../human-output
     optional: true
     why: "Optional sibling with the full prose layer; the bundled style floor is the fallback."
@@ -140,7 +143,7 @@ Then apply the counterfactual, in words: *could report A have been wrong while
 report B stayed right?* If no, they are one source.
 
 **If you dispatched the workers, their briefs are your best independence
-evidence.** Read the briefs before the reports. Two workers sent the same
+evidence.** Read supplied briefs before the reports; if unavailable, use the unknown-independence fallback below. Two workers sent the same
 context and the same question will agree, and the reports will not say so.
 
 **Self-merge.** If you wrote some of the inputs, you are not independent of
@@ -265,7 +268,7 @@ mood. It is one row per merged claim carrying: the claim, which reports it came
 from, **how many independent sources those reports collapse to**, its label,
 and the report-and-section pointer that lets a reader return to the argument
 under it. Its closing summary — source collapses, contradictions, supersessions,
-parked items — is what the example prints in italics at the end. Whenever this
+parked items — is illustrated at the end of the [museum example](references/examples/museum-archive.md). Whenever this
 file says *"say so in the ledger"*, that row is where it goes. Sourcing a claim
 is `human-output`'s rule; what is added here is the source *count* beside it,
 because that is the number a single-report writer never had to produce.
@@ -300,238 +303,21 @@ The shape is exact:
 
 ## Worked example — a museum archive
 
-The frozen inputs first, so every figure below can be checked against them.
+The [museum example and numeral trace](references/examples/museum-archive.md)
+are bundled separately. Read them for an explicit onboarding or demonstration
+request, or when a procedural ambiguity remains after reading the core rules.
+Ordinary merges skip the example. It illustrates this procedure and supplies
+no evidence about the current inputs.
 
-### The inputs, as received
+Keep the example's frame discipline on every route: a chosen analysis frame,
+such as a time horizon, is a choice rather than a source finding. Label it where
+first used and expose any decision-reversing alternative alongside it.
 
-```
-  R1  Conservation, 2026-02-10
-      Surveyed 4 of the 11 archive rooms, taking own readings:
-      rooms 3, 5, 7, 9. Relative humidity above the 60 per cent
-      ceiling in rooms 3, 5 and 7. The other 7 rooms were locked.
-
-  R2  Finance, 2026-03-06
-      Keep on site: new climate plant, EUR 610,000 to install and
-      EUR 48,000 a year to run. Move off site: EUR 90,000 removals
-      once, EUR 71,000 a year to lease. Lease price quoted by the
-      store operator; both capital figures from the same 2025
-      outline pricing note. Assumes the EUR 55,000 annual
-      conservation grant continues.
-
-  R3  Registrar, 2026-04-14
-      The store operator states its halls hold 55 per cent relative
-      humidity year round. Basis: the operator's brochure.
-
-  R4  Reader services, 2026-05-08
-      1,240 reader visits in 2025; 380 of those consulted archive
-      material. Off-site retrieval adds 2 working days per request.
-
-  R5  Building surveyor, 2026-05-20
-      Water ingress through the north range roof recorded in rooms
-      5 and 7 during February 2026. Own inspection.
-
-  R6  Finance addendum, 2026-06-30
-      The EUR 55,000 conservation grant was not renewed for 2027.
-      The 2027 budget submission was filed on 2026-04-30, carries the
-      grant as income, and is the standing submission; no revision
-      has been filed. Basis for the non-renewal: not stated.
-```
-
-### The merged surface
-
-> **Moving off site is cheaper by EUR 290,000 over ten years but dearer for
-> ever after year 22.6, and no report says how long the museum intends to hold
-> this archive — so the ten-year frame may be the wrong one and the EUR
-> 290,000 with it. Two of the three damp rooms also have a leaking roof that
-> neither option fixes and that no report prices, and the standing 2027 budget
-> still counts a
-> EUR 55,000 grant that Finance now says was not renewed. Do not sign the
-> lease on these reports.**
->
-> **Decision needed before the 2027 budget is reopened:** refile the budget
-> without the grant, and commission an independent humidity reading at the
-> store. Both are prerequisites, not alternatives.
->
-> **No longer true: the EUR 55,000 grant — on Finance's own unattributed
-> word.** R2 assumed the grant continues; R6 says it was not renewed for 2027.
-> R6 also says the 2027 submission was filed on 2026-04-30, carries the grant
-> as income, and is still the standing submission with no revision filed. The
-> non-renewal was reported on 2026-06-30, so the submission was filed two
-> months before the fact that breaks it was known, and the live document still
-> counts money Finance says is gone. That is the verdict of this merge — and
-> it rests on one source. (Estimate; the test is the next paragraph.)
->
-> **Why that is an estimate and not "confirmed, R2 and R6".** Two reports, so
-> run the five keys. R6 is titled a *Finance addendum* and R2 is the Finance
-> report — same author function and same corpus, so key 3 matches on the face
-> of it; and an addendum to a corpus is written with that corpus in hand,
-> which is key 4 (an inference from the title, not a stated fact, and it is
-> not what decides this). The counterfactual: could R2
-> have been wrong about the grant while R6 stayed right? Not independently.
-> They are one source, and their agreement adds nothing. R6 also states no
-> basis for the non-renewal, and an unattributed claim reaches estimate at
-> best however much else points the same way. Both rules bind and the weaker
-> wins. Confirming it is one telephone call to the grant body, and it is the
-> highest-value check in this set. (R2 and R6.)
->
-> R6 does not say the non-renewal falls differently on the two options, and
-> this merge does not assume that it does. It bears on whether either option
-> is affordable, not on which one is cheaper.
->
-> **Together: the ten-year cost, which no report states.** The ten-year window
-> is this merge's own choice and appears in no report; it is here only because
-> it is the conventional frame, and the crossover below is what actually
-> decides. Keep on site is
-> EUR 610,000 plus ten years at EUR 48,000, so EUR 610,000 + EUR 480,000 =
-> EUR 1,090,000. Move off site is EUR 90,000 plus ten years at EUR 71,000, so
-> EUR 90,000 + EUR 710,000 = EUR 800,000. The gap is EUR 1,090,000 -
-> EUR 800,000 = EUR 290,000. (Arithmetic on R2.)
-
-```
-  Ten-year cost, one cell = EUR 50,000
-
-  Keep on site   ######################   EUR 1,090,000
-  Move off site  ################         EUR   800,000
-
-  Staying is dearer until year 22.6, then cheaper for ever after.
-```
-
-> **The crossover, so the ten-year window is not doing the arguing.** Moving
-> is EUR 610,000 - EUR 90,000 = EUR 520,000 cheaper to start, and costs
-> EUR 71,000 - EUR 48,000 = EUR 23,000 more each year. EUR 520,000 divided by
-> EUR 23,000 is 22.6 years. If the museum expects to hold this archive longer
-> than that, the cheaper option reverses. No report says how long it expects
-> to hold it. (Arithmetic on R2; estimate — see the label below.)
->
-> **Both capital figures rest on one costing note, so this comparison is an
-> estimate.** R2's EUR 610,000 and EUR 90,000 both come from the same 2025
-> outline pricing note — a primary record R2 did not produce but does name, so
-> confirmed is reachable on access alone. Two figures from one document
-> are one source, not two, so the merged cost conclusion is capped at
-> estimate whatever its arithmetic. (R2.)
->
-> **The damp is two problems, not one — but that split is itself an
-> estimate.** R1 measured rooms 3, 5 and 7 over the ceiling. R5 recorded roof
-> ingress in rooms 5 and 7. Two of the three overlap; room 3 is over the
-> ceiling with no ingress reported. A climate plant does not stop water
-> entering through a roof, so the plant and the roof are separate spends.
-> R1 and R5 each measured or inspected the thing themselves, but both use
-> the same room numbering and neither says whether the surveyor had R1 in
-> hand. *Independence not established* — counted as one source for the
-> room-matching claim, which is therefore an estimate. (R1 and R5.)
->
-> **The retrieval delay matters only because of the move — and it cannot be
-> sized from these reports.** R4's 380 archive consultations a year are
-> unremarkable alone; against R2's off-site option they become the reader cost
-> of moving. R4 is the load, R2 is what makes it heavy. **But the two figures
-> do not multiply.** R4 counts 380 *consultations* and prices 2 working days
-> per *retrieval request* — different units. No report says how many requests
-> a consultation raises, or whether one request serves several, so 380 x 2 is
-> a number with no parent. It becomes combinable when someone states the
-> requests-per-consultation ratio, or R4 recounts in one unit. Until then the
-> delay is real, unpriced, and not 760 days. (R4 counted its own visits;
-> parked as non-combining.)
->
-> **Does not combine: the store's 55 per cent.** R3 passes on the operator's
-> brochure — an interested party on its own condition, so judgement at best —
-> about a different building; R1 measured this one itself. Different building
-> and different basis: netting them would produce a number with no parent. It
-> becomes combinable when someone takes an independent reading inside the
-> store's halls.
->
-> **Two reports carry a figure that favours the store; behind both is one
-> source, and it is the party being paid.** R2's lease price and R3's humidity
-> figure both come from the store operator. Neither report states a view on
-> whether the store is suitable — that reading is this merge's, and it is why
-> the two figures are counted once.
-
-```
-  claim: "the off-site store is a suitable home for the archive"
-
-  R2 finance    lease EUR 71,000 a year --.
-                                           +-- store operator -> 1 source
-  R3 registrar  55 per cent humidity    --'
-
-  R1 conservation  own readings, 4 of 11 rooms -> 1 source, this building
-
-  reports carrying a figure that favours the store: 2
-  independent sources behind them: 1
-  and that one source is the party being paid
-```
-
-> **No contradiction anywhere in the set.** No two reports state incompatible
-> values for the same subject, attribute and scope. The apparent humidity
-> clash is a scope mismatch (two buildings) and the grant is vintage.
->
-> **Nobody checked, pooled across all six:** what it costs to repair the north
-> range roof — the fact the verdict rests on, and no report gives a figure or
-> was asked for one; whether the lease has a break clause; the reader cost of
-> off-site retrieval, which cannot be sized from R4 as written; how long the
-> museum expects to hold this archive, which decides whether year 22.6 falls
-> inside the horizon or outside it; and the condition of the 7 rooms R1 found
-> locked, on which no report in this set reports. Each author's own gap
-> list omits all five, because none of the five sits inside one report's
-> scope.
->
-> *Merged 6 reports; source counts are per claim and given beside each — 2
-> reports collapse to 1 source on store suitability, 2 reports to 1 source on
-> the grant, 2 capital figures to 1 costing note. 0 contradictions. 1
-> superseded figure with a live document resting on it. 2 items parked as
-> non-combining. 3 claims left at estimate — the grant, the cost comparison,
-> the room match. 5 pooled gaps.*
-
-### The numeral trace
-
-Every numeral above falls into one of four classes: verbatim from the frozen
-block; arithmetic on numbers that are; a count of the merge's own items or of
-this file's own lists; or — in exactly one case, flagged as such — a frame
-this merge chose. Every one of them is in the table. Shown longhand:
-
-| Figure in the merge | Where it comes from |
-|---|---|
-| 11 rooms, 4 surveyed, 7 not surveyed | R1, verbatim |
-| rooms 3, 5, 7, 9; 60 per cent | R1, verbatim |
-| EUR 610,000 / 48,000 / 90,000 / 71,000 / 55,000 | R2, verbatim |
-| 55 per cent (the store) | R3, verbatim |
-| 1,240 visits, 380 consultations, 2 days | R4, verbatim |
-| rooms 5 and 7, February 2026 | R5, verbatim |
-| 2026-04-30 and 2026-06-30 | R6, verbatim |
-| EUR 1,090,000 | 610,000 + (10 x 48,000) = 610,000 + 480,000 |
-| EUR 800,000 | 90,000 + (10 x 71,000) = 90,000 + 710,000 |
-| EUR 290,000 | 1,090,000 - 800,000 |
-| EUR 520,000 | 610,000 - 90,000 |
-| EUR 23,000 | 71,000 - 48,000 |
-| 22.6 years | 520,000 / 23,000 |
-| two months | 2026-04-30 to 2026-06-30 |
-| 760 working days | 380 x 2 — **shown only to reject it**; the units differ |
-| 22 cells | 1,090,000 / 50,000 = 21.8, drawn as 22, rounded up |
-| 16 cells | 800,000 / 50,000 = 16, exact |
-| 2 of 3 rooms overlap | rooms 5, 7 in both lists; room 3 in one |
-| 2027 (x3) | R6, verbatim — the budget year |
-| 2025 (visits) | R4, verbatim. 2025 (pricing note): R2, verbatim |
-| keys 3 and 4 | positions in this file's five-key list, not a report figure |
-| 6 reports; the collapses (2 to 1, three times); 0, 1, 2, 3, 5 in the ledger line | counts of the merge's own items, each countable above |
-| **ten years** | **no report states it.** This merge's chosen frame — see below |
-
-**One number in the merge comes from no report: the ten-year horizon.** It is a
-frame this merge picked, not a finding, and it is labelled as one where it is
-first used — which is why the crossover at year 22.6 is printed beside it
-rather than below it. Change the horizon and the EUR 290,000 changes with it;
-the crossover does not.
-
-No date, deadline, headcount or threshold was invented, and no input's
-confidence was raised: the two figures resting on a single costing note are
-labelled estimate even though the arithmetic on them is exact.
-
-Notice what the merge did **not** do. It did not average anything. It did not
-say "three reports agree the store is fine". It did not resolve the humidity
-question, because the reports cannot. It did not multiply two figures whose
-units differ merely because both were to hand. And it did not invent a fact to
-demonstrate a feature — the live decision resting on the dead figure is the
-2027 budget submission, and each element of it (the filing date, the grant
-carried as income, the submission still standing) is **stated in R6** rather
-than inferred from R6 and R2 together. Where this merge did reason across two
-reports, it said so and dropped the label to estimate.
+Resolve the reference relative to this installed skill directory. If it is
+missing or unreadable, report that gap and use the core procedure; do not
+reconstruct the example or resolve unknown input facts from it. Report any
+remaining procedural limitation. Return to **Checking** after the example;
+the ordered procedure, ledger and complete numeral trace remain mandatory.
 
 ## Checking
 
@@ -579,7 +365,7 @@ member handles which material — is `references/human-contract.md` section 1.
   source structure or the joint figure is relational or proportional; the prose
   around it stays this merge's output.
 - Not `/extract-signal` — that gathers and vets signal from noisy *sources*.
-  Merge is handed finished reports and reads nothing beyond them.
+  Merge reads the supplied finished reports and accompanying provenance briefs; it does not retrieve new source material.
 - Not `/double-check` or `/verify` — merge never re-verifies a claim against the
   world. It grades and traces what it was given, and names the check that would
   settle a conflict for someone else to run.

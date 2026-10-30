@@ -70,6 +70,10 @@ After the universal frontmatter (with `profile: new-session`), the body looks li
 
 ## Sources
 
+For an explicitly confirmed no-required-sources brief only, replace the required
+list with `required=[]` and add `confirmed_empty:bool=true` to `@SOURCES`.
+Never infer confirmation from an empty list; nonempty required sources stay gated.
+
 @SOURCES
   required=[
     [[some-vault-file]]                       # session-context note — gated
@@ -101,7 +105,7 @@ After the universal frontmatter (with `profile: new-session`), the body looks li
 >
 > ALSO emit it as a chat block.
 >
-> Your retro MUST include `@GROUND_TRUTH` (paths + hashes + git_diff_summary) and `@DELTA_FROM_BRIEF` (what was in `What's left` that you completed; what new items emerged).
+> Your retro MUST include `@GROUND_TRUTH` (paths + hashes + git_diff_summary) and `@DELTA_FROM_BRIEF` (what was in `What's left` that you completed; what new items emerged). For evidenced zero task changes, use the canonical Retro schema's "none" branch; unknown is not none.
 >
 > If you're handing off again to ANOTHER fresh session (long-running work spanning multiple session-switches), use the same `/handoff` skill with profile=new-session. Each handoff is its own file.
 ````

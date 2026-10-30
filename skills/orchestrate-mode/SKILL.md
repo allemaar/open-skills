@@ -87,7 +87,7 @@ For code-changing workers, add runtime-specific workspace checks:
 - Verify the current branch and workspace before editing.
 - Before the first write, confirm whether the assigned workspace is isolated or shared. In an isolated workspace, verify every written path resolves inside it. In a shared workspace, recheck branch and status before each mutation and stay inside the assigned disjoint pen.
 - Check for unexpected existing changes and report them before touching files.
-- Commit or clearly preserve completed work according to the orchestrator's instructions.
+- In an isolated workspace, record the starting base before work. Identify the accepted changes against that base, including committed and uncommitted changes, while leaving unrelated state outside the accepted set. Commit or clearly preserve completed work according to the orchestrator's instructions.
 - Before any cleanup, inspect for uncommitted changes and refuse destructive cleanup if work is present.
 
 For mass-refactor workers, add to the "Do not touch" list by default:
@@ -101,25 +101,11 @@ When workers run in proven isolated worktrees (`isolation: "worktree"` on Claude
 
 This means: if Wave 2 depends on filesystem state Wave 1 produced (a directory rename, a regenerated file, an updated path constant), Wave 2 workers spawning from `main`'s HEAD will not see those changes unless the orchestrator consolidates them first.
 
-For isolated worktrees, the integration pattern between waves is to spawn a consolidation worker whose job is to:
+For isolated worktrees, spawn a consolidation worker to inspect each prior worker's accepted output against its recorded starting base and transfer the complete accepted delta into the integration worktree. Include accepted committed and uncommitted changes, untracked and binary files, and deletions where applicable. Exclude and preserve unrelated state; do not stage or reset unrelated work. Inspect the integration result and prove it contains the complete accepted delta. Apply cross-scope fixes and regenerate output when the next wave depends on them. Leave changes uncommitted unless the user has approved per-wave commits.
 
-1. Generate a patch from each prior-wave worker's worktree:
-   ```bash
-   cd <worktree-path>
-   git add -A
-   git diff --staged --binary > <tmp>/wN.patch
-   git reset
-   ```
-2. Apply each patch to main without committing:
-   ```bash
-   cd <main-repo>
-   git apply --index --whitespace=fix <tmp>/wN.patch
-   ```
-3. Apply any cross-scope coupling fixes flagged by the wave's workers (e.g., a path constant in worker B that points into worker A's renamed directory).
-4. Run codegen scripts on main when the next wave's edits depend on regenerated output from prior waves (e.g., `npm run sync:domains` after a spec-directory rename).
-5. Leave changes staged but uncommitted unless the user has approved per-wave commits.
+Before a dependent isolated worker reads or changes dependent inputs, prove its actual receiving workspace contains the full prior accepted integration state, including accepted uncommitted work. A worker may initialize, transfer and prove that state as a bounded first step when dispatch creates the receiver; a receiver prepared and proved earlier also satisfies the barrier. Keep concrete initialization and transfer in workers. If permitted transfer or proof is unavailable, stop the dependent work and report the gap. Do not assume a new worktree from HEAD contains uncommitted integration state.
 
-The consolidation worker targets the integration worktree by necessity. Treat it as a distinct worker spawn, not as direct orchestrator action. In a runtime where all workers already share one worktree, do not run this patch-consolidation recipe; serialize shared Git mutations and integrate directly from the assigned pens.
+The consolidation worker targets the integration worktree by necessity. Treat it as a distinct worker spawn, not as direct orchestrator action. In a runtime where all workers already share one worktree, do not use isolated-worktree transfer; serialize shared Git mutations and integrate directly from the assigned pens.
 
 Skip the consolidation step between waves only when wave scopes are fully disjoint AND no later wave depends on filesystem state any earlier wave produced.
 

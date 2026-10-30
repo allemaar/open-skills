@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=plan-phases | title="Plan Restructuring — Phases + /verify Gates" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Restructure an existing flat or unstructured plan into phased execution with /verify gates after each phase and critical outcomes, plus blocking pre-action gates for safety prerequisites. Restructure, never delete." | trigger="user runs /phase-plan, asks to add phases, gate this plan, restructure the plan, or add checkpoints"
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-10-30T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Governance ---
 
@@ -27,7 +27,7 @@
 # --- Phase 1: Locate & Load ---
 
 @SEC name="Phase 1 — Locate & Load Existing Plan"
-@STEP rid=step:find-plan | n:int=1 | op=std:fs.read@v1 | args=[search="implementation_plan.md, PLAN.md, task.md, recent conversation context, or user-provided file"] | out=[ref:plan] | note="If multiple candidates, use the most recently modified file and note the choice."
+@STEP rid=step:find-plan | n:int=1 | op=std:fs.read@v1 | args=[search="implementation_plan.md, PLAN.md, task.md, recent conversation context, or user-provided file"] | out=[ref:plan] | note="Select the explicit plan when supplied; if the named source is missing or ambiguous, stop and ask for clarification. Only without an explicit source, use the most recently modified file among multiple file candidates and note the choice."
 @CHECK rid=check:plan-found | assert="ref:plan is non-empty" | fail=ABORT | msg="No plan found. Ask the user to provide the plan before continuing. Do not proceed to Phase 2."
 @STEP rid=step:assess-structure | n:int=2 | op=std:ai.prompt@v1 | args=[task="Assess structure: flat single list? Partially phased? Missing verification steps? Identify structural gaps."] | in=[ref:plan] | out=[ref:structure-assessment]
 
@@ -69,4 +69,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-10-30T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated

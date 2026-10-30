@@ -6,9 +6,9 @@
 
 ## 1. The family footer (concrete render)
 
-Every output ends with the footer, computed from [`family-manifest.yon`](family-manifest.yon) → `family{used, suggested_next, reason_code, all}`. Four faces (`rule:footer-faces`):
+Expose the footer according to the consumer face below, computed from [`family-manifest.yon`](family-manifest.yon) → `family{used, suggested_next, reason_code, all}`. Four faces (`rule:footer-faces`):
 
-- **Human** — a one-line **text** footer, ALWAYS: `· family: {used} → next: {suggested_next} ({reason_code})`.
+- **Human** — a one-line text footer in the selected human face: `· family: {used} → next: {suggested_next} ({plain-language reason})`. Translate the reason enum; a nominal one-line face incorporates this without a separate board or trailer.
 - **`--family`** — an opt-in **visual** map of the roster, marking the `used` node and highlighting `suggested_next`; its ASCII twin is mandatory.
 - **Agent** — reads `suggested_next` + the `reason_code` enum directly; no prose needed.
 - **Automator** — ignores the footer entirely.
@@ -24,20 +24,20 @@ legend:  ✓ used · ──▶ suggested-next · all three shipped
 
 ## 2. Staleness short-circuit (F2 half)
 
-Keyed on the **last-look anchor** (`delta.anchor_ref` = HEAD sha + dirty-tree hash), caller-supplied or git-inferred, **never stored**. If the anchor is unchanged while wall-clock advanced:
+Keyed on the **last-look anchor** (`delta.anchor_ref` = HEAD sha + dirty-tree hash), caller-supplied or git-inferred, **never stored**. If the anchor is unchanged while wall-clock advanced, first bind the claim to what that anchor actually covers:
 
-- Return **"no change since your last look"** WITHOUT running the full evidence ladder — a cheap git-tier anchor check answers it.
-- Set `reason_code = subject_unchanged`; `family_suggested_next` routes to the internal **`staleness-short-circuit`** action (per `family-manifest.yon` routing) — an internal action, **not** a skill.
-- Still emit the `delta` slice honestly: empty `changes`, `no_change_zones` spanning the subject, a fresh `computed_at`, `ephemeral=true`.
+- Return **"no change in the checked Git inputs since your last look"** without a full ladder only for that covered scope. HEAD plus a dirty-tree hash does not attest unchanged intent, conversation, external plans or an advancing trunk. If those inputs matter to the requested conclusion, inspect them within the existing bound or disclose them as unexamined.
+- Set `reason_code = subject_unchanged` only for the evidenced, bounded subject; `family_suggested_next` routes to the internal **`staleness-short-circuit`** action (per `family-manifest.yon` routing) — an internal action, **not** a skill.
+- Still emit the `delta` slice honestly: empty `changes`, `no_change_zones` limited to the checked scope, a fresh `computed_at`, `ephemeral=true`.
 
-The short-circuit is an **optimization, not a cache** — nothing is persisted; it simply stops the sweep early when the attested anchor proves nothing moved.
+The short-circuit is an **optimization, not a cache** — nothing is persisted; it simply stops the sweep early when the attested anchor proves nothing moved in the inputs covered by the claim.
 
 ## 3. Neutral typed signal (F2 half)
 
 A machine-readable signal that the handler is **re-looking**:
 
 - The typed value is `reason_code = subject_unchanged` (an enum member every face can read).
-- The **human** nudge renders ONLY when `handler_type = human`, and it is **neutral** — *"no change since `HEAD@…`"* — **never behavioral** (*"avoiding this?"*).
+- The **human** nudge renders ONLY when `handler_type = human`, and it is **neutral** — *"no change in checked Git inputs since `HEAD@…`"* — **never behavioral** (*"avoiding this?"*).
 - **No persisted look-counter.** A running `looks_since_change` would require cross-call memory, which the no-store invariant **forbids** (it follows directly from `orient-record.yon`'s `rule:ephemeral`). The signal is derived per-call from the anchor, never accumulated.
 
 ## 4. Anti-Goodhart disclosure (F2 half)
@@ -68,9 +68,16 @@ The bundle is **one record, three faces**; *which* face renders is a function of
 | `handler_type = automator` | ignores the visual entirely (faces discipline) |
 | `handler_type` **indeterminate** (no caller arg, inference inconclusive) | **ASCII twin — fail-closed default** (never guess the widget) |
 
-- **Dark-cockpit (render on exception).** A board that always renders trains the eye to ignore it, so the one red state no longer stands out. For **auto/loop** callers, collapse to one line when nominal and expand only on a gap/drift/branch. An **explicit handler invocation always renders full** — the handler asked, the handler sees. (For the explicitly-invoked `orient-*` slash-commands the collapsed face is a near-empty case today; it is the contract for future loop callers.)
+- **Dark-cockpit (render on exception).** A board that always renders trains the eye to ignore it, so the one red state no longer stands out. For **auto/loop** callers, collapse to one line when nominal and expand only on a gap/drift/branch. An **explicit human invocation always renders full** — the handler asked, the handler sees. (For the explicitly-invoked `orient-*` slash-commands the collapsed face is a near-empty case today; it is the contract for future loop callers.)
 - **Polish ⊥ confidence (couple them).** Render-fidelity tracks evidence tier: a mostly-`◌` read renders **visibly degraded** (the `NO SUBSTRATE` card) and low-confidence elements are non-interactive. A polished widget must never imply more certainty than the evidence carries.
 - **Widget-disabled escape.** A contract switch forces any skill to the ASCII twin regardless of consumer — the safety valve when a render is broken; no code change needed.
+
+ASCII twins, separate trust trailers and visual legends apply only when the
+selected face includes that visual or full human read. Agent record-only,
+automator and nominal one-line routes do not acquire an extra board or trailer.
+The existing explicit widget-disabled escape remains available. A missing,
+refused or timed-out worker is unavailable/partial evidence, not observed barren
+substrate; do not convert it into a NO SUBSTRATE finding.
 
 ## 7. Interactivity rails (the `sendPrompt` ceiling)
 

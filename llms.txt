@@ -1,8 +1,8 @@
 # open-skills
 
-Version: 1.8.0
+Version: 2.0.0
 
-> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; 48 of 79 also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.
+> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; 53 of 84 also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.
 
 ## About YON (YounndAI Object Notation™)
 The protocol.yon files are written in YON (https://github.com/YounndAI/yon), a stream-first data format for AI-agent workflows with a public spec (https://github.com/YounndAI/yon-spec) and an Apache-2.0 reference parser (@younndai/yon-parser). YON makes a skill's declared rules (MUST / MUST_NOT) and gates (ABORT / WARN) inspectable as named, typed objects; it does not enforce runtime obedience.
@@ -45,12 +45,17 @@ Updating later: these are frozen copies — they do not change until you re-copy
 - double-check [protocol.yon] — Targeted re-verification of a specific claim, output, or decision. — triggers: /double-check, verify this, re-check this, are you sure about this
 - insight-adversarial [protocol.yon] — Multi-pass adversarial critique from dynamically selected personas — including Claude's own POV. — triggers: /insight-adversarial, adversarial, red team this, multi-POV review
 - insight-angles [protocol.yon] — Angle & connection discovery engine. — triggers: /insight-angles, find unseen angles, what connections am I missing, what are we not seeing
-- insight-assess [protocol.yon] — Structured decision evaluation — pros/cons, impact assessment, quality analysis, recommendation. — triggers: /assess, /insight-assess
+- insight-assess [protocol.yon] — Structured decision evaluation — pros/cons, impact assessment, quality analysis, recommendation. — triggers: /assess, /insight-assess, do a SWOT, build a decision tree
 - insight-critique [protocol.yon] — Advisory review workflow. — triggers: /critique, review this, critique this, what's wrong with this
 - insight-cross-examine [protocol.yon] — Context-routed deliberation engine. — triggers: /insight-cross-examine, cross-examine this, weigh these options, pick between these and recommend
 - insight-explore [protocol.yon] — Brainstorm 3+ possible implementations before committing. — triggers: /explore, brainstorm options, what are the ways to do this, explore approaches
+- insight-premortem [protocol.yon] — Find plausible failure paths before committing to a plan. — triggers: /insight-premortem, run a premortem, how could this plan fail?
+- insight-reference-class [protocol.yon] — Forecast from outcomes of comparable past cases. — triggers: /insight-reference-class, reference-class forecast, outside-view estimate, are our estimates optimistic?
 - insight-retro [protocol.yon] — Post-implementation retrospective — map blast radius, audit documentation, extract skills, update KIs, document lessons learned. — triggers: /retro, retrospective, post-mortem, lessons learned
+- insight-root-cause [protocol.yon] — Investigate causes of an observed or recurring problem using evidence-linked why questions. — triggers: /insight-root-cause, find the root cause, five whys
 - insight-skill-gap [protocol.yon] — Scan recent work and identify if new skills should be created or existing ones updated. — triggers: /skill-gap, check for skill gaps, what skills should we add, did we miss anything worth capturing
+- insight-test-assumption [protocol.yon] — Design a bounded test of a decision-critical assumption. — triggers: /insight-test-assumption, test this assumption, what would falsify this bet?
+- insight-value-of-information [protocol.yon] — Decide whether research or a test could improve a pending choice enough to justify its cost. — triggers: /insight-value-of-information, is more research worth it?, value of information
 - investigate [protocol.yon] — Gather facts (files, deps, patterns) without making changes. — triggers: /investigate, look into this, explore the codebase, understand how this works
 
 ### Priming
@@ -61,10 +66,10 @@ Updating later: these are frozen copies — they do not change until you re-copy
 
 ### Skill library
 - directives-audit [md-only] — Audit or explicitly housekeep agent directives for authority, scope, safety, density, routing, drift, and consumed parity. — triggers: /directives-audit, audit these directives, boil my directives, directive housekeeping
-- new-skill-creator [protocol.yon] — Scaffold a new Agent Skill end-to-end into a skills repo you maintain (folder, SKILL.md, optional protocol.yon for dual-doc skills, tri-runtime links for Claude Code + Codex + the shared .agents/ dir, commit and push). — triggers: /new-skill-creator, create a skill, make a new skill for X, add a slash command
 - next-skills [protocol.yon] — The Next Skills protocol (NSP). — triggers: /next-skills
 - self-improve [protocol.yon] — The Self-Improvement Protocol (SIP). — triggers: /self-improve, /self-improve [skill]
-- skills-audit [md-only] — Audit or explicitly housekeep an Agent Skill or library for instruction quality, routing, decomposition, portability, dependencies, and consumed behavior. — triggers: /skills-audit, audit this skill, audit my skills, boil this skill
+- skill-library-creator [protocol.yon] — Create a portable skill library with its own family manager, guided setup, templates and link tools. — triggers: /skill-library-creator, create a skill library, set up a skill pool, create a family skills manager
+- skill-smith [md-only] — Create, assess, boil, diagnose, update or consolidate skills using concise instructions and task-selected references. — triggers: /skill-smith, create a skill, make a new skill for X, add a slash command
 - skills-help [md-only] — The skills library menu — every skill grouped by family, each with a one-line description and a dual-doc/single-doc marker; pass a family name to drill into one family in full detail. — triggers: /skills-help, /skills-help {family}, list my skills, which skill for X
 
 ### Orchestration & dispatch
@@ -127,7 +132,7 @@ Updating later: these are frozen copies — they do not change until you re-copy
 - domain-check [protocol.yon] — Reconcile domain-name availability across sources that disagree. — triggers: /domain-check, is this domain available, check these domain names, did the availability tool lie
 
 ### Git & sync
-- diff-recap [protocol.yon] — Turn a git diff into a PR-pasteable recap — one row per changed file whose path, status, and line counts are transcribed verbatim from `git diff --numstat` (true by construction; the model writes only the labels), emitted as an inline annotated widget plus a mandatory ASCII twin and a `diff-recap/1` record whose totals equal the sum of the rows. — triggers: /diff-recap, recap this diff, summarize these changes for a PR, what changed in this branch
+- diff-recap [protocol.yon] — Turn a git diff into a PR-pasteable recap — one row per changed file whose path, status, and line counts are transcribed verbatim from `git diff --name-status` and `--numstat` (the model writes only the labels), emitted as a `diff-recap/1` record whose totals equal the sum of the rows, with a complete ASCII recap for human readers and an inline widget when the render-face contract permits it. — triggers: /diff-recap, recap this diff, summarize these changes for a PR, what changed in this branch
 - github-sync [protocol.yon] — Review the session's git changes, summarize them for approval, then commit and push to GitHub. — triggers: /github-sync, sync to github, commit and push, push this session
 
 ### Write copy

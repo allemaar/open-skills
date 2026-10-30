@@ -1,6 +1,6 @@
 # YON Conformance
 
-**48 / 48** skills that ship a `protocol.yon` pass YON conformance validation, checked with the public [`@younndai/yon-parser`](https://www.npmjs.com/package/@younndai/yon-parser) using the `exec` profile. 31 skills are Markdown-only.
+**53 / 53** skills that ship a `protocol.yon` pass YON conformance validation, checked with the public [`@younndai/yon-parser`](https://www.npmjs.com/package/@younndai/yon-parser) using the `exec` profile. 31 skills are Markdown-only.
 
 > Run it yourself: `npx @younndai/yon-parser validate skills/<skill>/protocol.yon --profile exec`.
 > Regenerate this table: `node tools/conformance.mjs`. Enforced in CI on every push.
@@ -43,8 +43,13 @@
 | `insight-critique` | exec | ✅ valid |
 | `insight-cross-examine` | exec | ✅ valid |
 | `insight-explore` | exec | ✅ valid |
+| `insight-premortem` | exec | ✅ valid |
+| `insight-reference-class` | exec | ✅ valid |
 | `insight-retro` | exec | ✅ valid |
+| `insight-root-cause` | exec | ✅ valid |
 | `insight-skill-gap` | exec | ✅ valid |
+| `insight-test-assumption` | exec | ✅ valid |
+| `insight-value-of-information` | exec | ✅ valid |
 | `investigate` | exec | ✅ valid |
 | `json-canvas` | — | — (md-only) |
 | `map-check` | — | — (md-only) |
@@ -54,7 +59,6 @@
 | `map-this` | — | — (md-only) |
 | `monorepo-deps` | exec | ✅ valid |
 | `multi-agent-mode` | — | — (md-only) |
-| `new-skill-creator` | exec | ✅ valid |
 | `next-skills` | exec | ✅ valid |
 | `obsidian-bases` | — | — (md-only) |
 | `obsidian-cli` | — | — (md-only) |
@@ -77,7 +81,8 @@
 | `reflect` | — | — (md-only) |
 | `route-task` | — | — (md-only) |
 | `self-improve` | exec | ✅ valid |
-| `skills-audit` | — | — (md-only) |
+| `skill-library-creator` | exec | ✅ valid |
+| `skill-smith` | — | — (md-only) |
 | `skills-help` | — | — (md-only) |
 | `synthesize` | — | — (md-only) |
 | `synthesize-init` | — | — (md-only) |

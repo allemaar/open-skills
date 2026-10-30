@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=monorepo-deps | title="Monorepo Deps — syncpack + manypkg Orchestrator" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Run the end-to-end syncpack + manypkg flow on an npm-workspaces monorepo: detect prerequisites, gate on install consent, then check/fix/update/init-config/maintain-config. Cap unwanted majors in root overrides before npm update. Handle EOVERRIDE and peer-dep conflicts deterministically. Verify with syncpack lint + manypkg check + npm ci --dry-run before declaring done." | trigger="user runs /monorepo-deps (with optional subcommand check|fix|update|init-config|maintain-config), or says update deps, sync deps, check deps, fix syncpackrc, create syncpackrc, my lock file is out of sync"
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-10-30T15:49:33Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Boundary ---
 
@@ -8,7 +8,7 @@
 @RULE rid=rule:npm-only | lvl=MUST | when="invoked" | then="target an npm-workspaces monorepo — abort cleanly if pnpm-lock.yaml or yarn.lock is present without package-lock.json"
 @RULE rid=rule:end-to-end | lvl=MUST | when="invoked" | then="orchestrate syncpack + manypkg + npm together — do not duplicate single-tool reference content from sibling skills"
 @MAP name=SiblingBoundary | pairs=["syncpack-usage"->"overview, decision gate, version-group behaviors","syncpack-cli"->"per-command flag reference, globs, --dependency-types values","syncpack-config"->".syncpackrc.json schema reference","manypkg-usage"->"manypkg CLI + rule names"]
-@NOTE text="This skill is the orchestration layer. Reference the siblings for deep API/config detail rather than duplicating."
+@NOTE text="The four sibling skills are optional external references. Check availability before use; if absent, use available authoritative documentation or report the gap. Never install them implicitly."
 
 # --- Phase 1: Detect prerequisites ---
 
@@ -115,4 +115,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=91 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-10-30T15:49:33Z | src="Alexandru Mares | allemaar.com" | method=manual

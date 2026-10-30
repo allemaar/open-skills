@@ -11,7 +11,8 @@
 //
 // Usage:
 //   node tools/orient-validate.mjs                 # self-test: example must PASS, bad fixtures must be REJECTED
-//   node tools/orient-validate.mjs <instance.yon>  # validate one emitted record; exit 0 = conformant, 1 = not
+//   node tools/orient-validate.mjs <instance.yon>  # validate one emitted record; exit 0 = accepted, 1 = rejected
+//   node tools/orient-validate.mjs -               # same checks on the actual record from stdin; no record file
 //
 // Zero-dependency. Apache-2.0. "YON" and "YounndAI" are trademarks of MARLINK TRADING SRL.
 
@@ -215,9 +216,9 @@ export function validate(instancePath, schemaPath = SCHEMA) {
 
 // --- CLI -------------------------------------------------------------------
 function reportOne(file) {
-  if (!existsSync(file)) { console.error(`orient-validate: FAIL — missing ${file}`); return { ok: false }; }
-  const r = validate(file);
-  const rel = path.relative(ROOT, file).replace(/\\/g, '/');
+  if (file !== '-' && !existsSync(file)) { console.error(`orient-validate: FAIL — missing ${file}`); return { ok: false }; }
+  const r = validate(file === '-' ? 0 : file);
+  const rel = file === '-' ? '<stdin>' : path.relative(ROOT, file).replace(/\\/g, '/');
   if (r.ok) console.log(`orient-validate: OK — ${rel} (${r.warnings.length} warning(s))`);
   else { console.error(`orient-validate: FAIL — ${rel}`); r.errors.forEach((e) => console.error('  ✗ ' + e)); }
   r.warnings.forEach((w) => console.error('  ⚠ ' + w));
@@ -226,7 +227,7 @@ function reportOne(file) {
 
 const arg = process.argv[2];
 if (arg) {
-  process.exit(reportOne(path.resolve(arg)).ok ? 0 : 1);
+  process.exit(reportOne(arg === '-' ? '-' : path.resolve(arg)).ok ? 0 : 1);
 }
 
 // No arg → self-test: the example must PASS; the two bad fixtures (the schema's own cited

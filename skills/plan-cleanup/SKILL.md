@@ -53,9 +53,9 @@ For each candidate, verify: **is this file needed by the project going forward?*
 
 ## Phase 2 — Confirm and Remove
 
-Present the artifact list to the user:
+Before confirmation, establish the exact physical target of each candidate using no-follow leaf and parent-chain identity, and prove it remains within the project. For recursive removal, enumerate links and prove containment. Stop if proof is unavailable or a redirect escapes or is unknown. Present the exact physical target list and irreversible effects to the user:
 
-> "Found the following planning artifacts:
+> "Found the following planning artifacts and exact physical targets; removal is irreversible:
 > - [file 1]
 > - [file 2]
 >
@@ -63,8 +63,9 @@ Present the artifact list to the user:
 
 On confirmation:
 
+- Immediately before each deletion, recheck that the target and proof match the physical identity shown and approved. Stop on changed identity, missing proof, a forbidden redirect, or an unapproved target.
 - Remove each confirmed artifact
-- For git repos: use `git rm` if the file is tracked, `rm` if untracked
+- For git repos: use `git rm` if tracked and its exact index effects are proven to preserve unrelated staged and worktree changes; otherwise stop the Git portion. Use `rm` if untracked.
 - Never remove files outside the current project scope
 
 **Gate:** do not remove any file not explicitly identified in Phase 1. Do not remove files the user skipped.
@@ -72,8 +73,8 @@ On confirmation:
 ## Phase 3 — Verify and Commit
 
 1. Confirm each artifact is gone — list what was removed.
-2. If in a git repo and files were tracked: commit with message `chore: remove planning artifacts`.
-3. Push if the user's workflow includes pushing (check if prior commits in this session were pushed).
+2. If in a git repo and files were tracked: establish the exact authorized removal paths and proposed commit contents. Commit with message `chore: remove planning artifacts` only if the actual effects match the authorization and preserve unrelated index and worktree state. If that cannot be proven, stop the Git portion and report what was already removed and skipped.
+3. Push only when separately authorized and the exact destination and outgoing effects are bound to that authorization. Prior pushes alone do not authorize a push.
 
 **Terminal declaration (required):**
 

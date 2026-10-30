@@ -59,7 +59,7 @@ Read the brief file in full. Parse YAML frontmatter; validate `type: handoff`. L
 - `@TASK` — task description + scope paths + evidence pointer
 - `@OUTCOME` — acceptance sentence + verify commands
 - `@SCOPE` (if present) — forbidden actions + time budget
-- `@SOURCES` (if present) — `required` and `optional` source tiers
+- `@SOURCES` (if present) — `required` and `optional` source tiers, plus optional `confirmed_empty:bool=true`
 - `@GROUND_TRUTH_REQUIRED` — retro discipline declaration
 - Profile-specific blocks: `@SUBTASKS` (orchestrator), `@CONTINUATION` (new-session)
 
@@ -67,10 +67,16 @@ Emit a one-line confirmation: `Brief loaded: <slug> · profile=<p> · required-s
 
 ### Phase 2 — Source ingestion (two modes)
 
-Mode is determined by what the brief declares:
+Mode is determined by what the brief declares. For a present `@SOURCES` block:
 
-- **Gated mode** — brief has `@SOURCES.required`, OR legacy `@SCOPE.must_read`, OR an explicit markdown heading matching `Read-first` / `Read these first` / `locked inputs` (a real heading line — not the phrase inside a fenced example). For the markdown case, the required tier = the numbered/bulleted lines under that heading bearing a path or `[[wikilink]]` (lines tagged `(optional)` go to the optional tier). Enumerate the required tier, read each entry fully via the runtime's read tool, gate planning on completion. **Hybrid severity for the markdown case:** ≥1 cleanly-enumerable entry → gated (ABORT-on-fail); a prose-only section with no enumerable entries → downgrade to WARN (can't gate on nothing). *(Many hand-authored briefs declare locked inputs this way rather than as a YON block; the gate still fires. The durable producer-side fix is for the brief author to emit `@SOURCES.required` / author via `/handoff`, which already does so — this markdown path is the consumer-side safety net for hand-authored + legacy briefs.)*
-- **Advisory mode** — brief has *none* of the above. Scan the brief body for explicit references (`[[wikilinks]]`, absolute paths), read them best-effort, emit a prominent warning, proceed to planning regardless:
+- Nonempty `required` stays gated, even if an inconsistent `confirmed_empty` marker is present.
+- `required=[]` plus `confirmed_empty:bool=true` records explicit no-required-sources confirmation. Source ingestion is advisory with a prominent confirmed-empty warning; the premise gate still applies unless `--force` is set.
+- Empty or missing `required` without confirmation is an unresolved source declaration. Record it as a source failure and halt with a blocked retro and resume hint. Explicit `--force` may proceed degraded with that failure recorded; it never supplies confirmation.
+
+Otherwise apply the legacy precedence below. Optional sources alone do not confirm an empty required tier.
+
+- **Gated mode** — brief has nonempty `@SOURCES.required` or an unresolved declaration as above, OR legacy `@SCOPE.must_read`, OR an explicit markdown heading matching `Read-first` / `Read these first` / `locked inputs` (a real heading line — not the phrase inside a fenced example). For the markdown case, the required tier = the numbered/bulleted lines under that heading bearing a path or `[[wikilink]]` (lines tagged `(optional)` go to the optional tier). Enumerate the required tier, read each entry fully via the runtime's read tool, gate planning on completion. **Hybrid severity for the markdown case:** ≥1 cleanly-enumerable entry → gated (ABORT-on-fail); a prose-only section with no enumerable entries → downgrade to WARN (can't gate on nothing). *(Many hand-authored briefs declare locked inputs this way rather than as a YON block; the gate still fires. The durable producer-side fix is for the brief author to emit `@SOURCES.required` / author via `/handoff`, which already does so — this markdown path is the consumer-side safety net for hand-authored + legacy briefs.)*
+- **Legacy advisory mode** — the brief lacks `@SOURCES` and has *none* of the legacy gated triggers above. Scan the brief body for explicit references (`[[wikilinks]]`, absolute paths), read them best-effort, emit a prominent warning, proceed to planning regardless:
 
   > ⚠ ADVISORY MODE: brief did not declare @SOURCES; no source-read gate enforced. Recommend amending the brief to add @SOURCES.required.
 
@@ -144,7 +150,7 @@ $VAULT/Handoffs/{project}/retros/{date}-{slug}-retro.md
 ```
 (Or the brief's `output_location` override if present. See Invocation → Vault path dependency.)
 
-The retro frontmatter and body schema is canonical in [`handoff/SKILL.md` "Retro schema"](../handoff/SKILL.md). Mandatory YON blocks: `@OUTCOME_DELIVERED`, `@GROUND_TRUTH` (with `artifacts_modified` paths+hashes and `git_diff_summary`), `@GATE_STATUS` (per-clause `verified|unverified|failed` + gate-suite outcome), `@DELTA_FROM_BRIEF`, `@RECOMMENDATIONS`, `@VERDICT`. Narrative-only retros are rejected at write time.
+The retro frontmatter and body schema is canonical in [`handoff/SKILL.md` "Retro schema"](../handoff/SKILL.md). Mandatory YON blocks: `@OUTCOME_DELIVERED`, `@GROUND_TRUTH` (with `artifacts_modified` paths+hashes and `git_diff_summary`), `@GATE_STATUS` (per-clause `verified|unverified|failed` + gate-suite outcome), `@DELTA_FROM_BRIEF`, `@RECOMMENDATIONS`, `@VERDICT`. Narrative-only retros are rejected at write time. For evidenced zero task changes, use `artifacts_modified="none"` and state the observation; exclude the retro itself. Record the actual scoped diff comparison or its unavailable reason, preserving pre-existing changes. If mutation state is unknown, report unknown with a blocked task outcome, never "none"; the existing write-failure rule may still make the final verdict partial. Real changes still require paths and hashes; source/premise failures, resume hints and all mandatory blocks remain.
 
 Also emit the retro as a chat block — full content if <500 lines, otherwise a summary + path — so the originating session can paste it back for second-assessment.
 
@@ -157,7 +163,7 @@ Also emit the retro as a chat block — full content if <500 lines, otherwise a 
 - MUST read all `@SOURCES.required` entries fully before emitting any plan text (gated mode).
 - MUST run the premise pre-flight (git state for already-shipped work, cited test/schema baselines, structural claims) before emitting any plan, and halt with a `@PREMISE_DRIFT` `verdict: blocked` retro if the work is already shipped or a baseline premise is stale. Downgraded to WARN under `--force`.
 - SHOULD statically reconcile the brief's stated `verify:` / spot-check commands against the repo before planning (named path exists; CLI subcommand resolves via a side-effect-free `--help` probe — never run the full verify here). WARN + surface a corrected command on an `unknown command` / `no such file` mismatch; do not abort (the task is still executable; only the verify command is mis-pathed).
-- MUST write the retro with `@GROUND_TRUTH` (paths + hashes + git diff). Narrative-only retros are rejected.
+- MUST write the retro with `@GROUND_TRUTH`: real changes require paths + hashes + diff evidence; evidenced zero changes and unknown/blocked state use the explicit branches above. Narrative-only retros are rejected.
 - MUST halt and write a `verdict: blocked` retro if a `@SOURCES.required` entry fails to read in gated mode **and `--force` is not set**. With `--force`, proceed in degraded mode and record the failure list in the retro instead.
 - MUST emit retro to chat with a `@WRITE_FAILURE` block and set `@VERDICT` to `partial` if the vault write fails. Do not silently exit; do not retry.
 - SHOULD cite at least one source per plan step.

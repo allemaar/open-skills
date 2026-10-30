@@ -23,7 +23,7 @@ next-skills:
 
 Use Defuddle CLI to extract clean readable content from web pages. Prefer over WebFetch for standard web pages — it removes navigation, ads, and clutter, reducing token usage.
 
-If not installed: `npm install -g defuddle`
+If the CLI is unavailable, report the capability gap and use an already available suitable extraction route, or obtain separate authorization for setup.
 
 ## Usage
 

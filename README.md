@@ -9,12 +9,12 @@
 <p align="center">
   <strong>open-skills</strong><br />
   A personal, field-used pack of reusable skills for AI coding agents.<br />
-  Every skill is readable Markdown; 48 of 79 also carry a declarative <strong>YON (YounndAI Object Notation™)</strong> protocol you can validate.<br />
+  Every skill is readable Markdown; 53 of 84 also carry a declarative <strong>YON (YounndAI Object Notation™)</strong> protocol you can validate.<br />
   <em>Read before you trust.</em>
 </p>
 
 <p align="center">
-  <a href="#start-with-the-work">Start</a> · <a href="SKILLS.md">Catalog</a> · <a href="#install">Install</a> · <a href="#agent-mailbox">Agent Mailbox</a> · <a href="#updating">Update</a> · <a href="CHANGELOG.md">Changelog</a> · <a href="https://github.com/allemaar/open-skills/discussions">Discussions</a> · <a href="LICENSE">Apache 2.0</a>
+  <a href="#start-with-the-work">Start</a> · <a href="SKILLS.md">Catalog</a> · <a href="docs/README.md">Guides</a> · <a href="#install">Install</a> · <a href="#agent-mailbox">Agent Mailbox</a> · <a href="#updating">Update</a> · <a href="CHANGELOG.md">Changelog</a> · <a href="https://github.com/allemaar/open-skills/discussions">Discussions</a> · <a href="LICENSE">Apache 2.0</a>
 </p>
 
 <p align="center">
@@ -41,7 +41,7 @@ These skills came from repeated work with Claude Code, Codex, and other runtimes
 | establish facts before deciding | [`investigate`](skills/investigate/) | read-only evidence gathering with provenance and gaps |
 | challenge work with fresh eyes | [`cold-review`](skills/cold-review/) | bounded outside review against actual artifacts |
 | make any agent output scannable and decision-ready | [`synthesize`](skills/synthesize/) | an output compiler: bottom line first, protected facts preserved, one visual grammar |
-| audit or housekeep an Agent Skill | [`skills-audit`](skills/skills-audit/) | instruction-quality findings first; edits only when explicitly requested |
+| create, audit or consolidate Agent Skills | [`skill-smith`](skills/skill-smith/) | task-selected procedures; assessment read-only, edits scoped and authorized |
 | audit or housekeep agent directives | [`directives-audit`](skills/directives-audit/) | a lean-core, routed-detail audit with the same explicit edit gate |
 | make a report easier to decide from | [`human-output`](skills/human-output/) | a writing contract built around verdict, consequence, evidence, and omissions |
 | coordinate agents through a shared folder | [`agent-mailbox`](skills/agent-mailbox/) | traceable, append-only agent communication with Handler-readable state |
@@ -57,9 +57,39 @@ The [`write-copy`](skills/write-copy/) family starts with [`write-copy-event-vid
 
 Inside an agent, `/skills-help` reads that same bundled taxonomy and the skills actually installed beside it. Unknown third-party skills remain visible under `Unclassified`; they are not guessed into one of this pack's families.
 
-## New in 1.8.0
+## New in 2.0.0
 
-Instruction quality control is now public and portable. [`skills-audit`](skills/skills-audit/) moved from the maintainer-only library into this pack, and [`directives-audit`](skills/directives-audit/) applies the same model to agent directives: audit first, read-only by default, housekeeping only behind an explicit gate. `skills-audit`, `map-rules`, and `synthesize` now route from a small core into task-selected references, so an agent loads the rules a task needs rather than the whole family. [`plan-phases`](skills/plan-phases/) gates safety prerequisites before the action they protect instead of only verifying outcomes afterwards, and the MYK kernel moves to v2.4 with `map-check` and `map-scan` reading `map-rules` as their protocol source.
+This release brings the pack to **84 skills**, with **53 declarative protocols**. The [skill guides](docs/README.md) explain each skill's purpose, when not to use it, an example request, its flow and its use of subagents.
+
+### Build a skill or a library
+
+[Skill Smith](docs/skills/skill-smith.md) is the authoring and maintenance entrypoint: create, assess, consolidate, diagnose or update a skill. It loads the selected procedure and relevant checks, with optional recipes for different skill types. Assessment stays read-only by default; edits preserve the selected scope and safeguards.
+
+[Skill Library Creator](docs/skills/skill-library-creator.md) creates a portable library with its own family manager, guided setup, templates and installation tools. The generated manager can help, list, create and import skills without requiring the creator at runtime. It previews the chosen locations, preserves customizations during upgrades and distinguishes verified links from actual runtime discovery.
+
+**Migration:** skill-smith replaces the retired skills-audit and new-skill-creator entrypoints. Install the complete skill-smith folder, update explicit references, and retain any local customizations before removing old copies. Library setup remains with skill-library-creator; publication stays a separate operation.
+
+### Choose an insight method for the question
+
+The insight family spans exploration, evaluation and learning. Five additions separate future failure, observed causes, outside-view estimates, test design and the value of more research:
+
+| Question | Start with | Result |
+|---|---|---|
+| How could this plan fail? | [insight-premortem](docs/skills/insight-premortem.md) | plausible failure paths, prevention and warning signals |
+| Why did this happen? | [insight-root-cause](docs/skills/insight-root-cause.md) | supported causes separated from hypotheses and missing evidence |
+| What happened in comparable cases? | [insight-reference-class](docs/skills/insight-reference-class.md) | a traceable outside-view estimate, or an honest evidence gap |
+| What would test this assumption? | [insight-test-assumption](docs/skills/insight-test-assumption.md) | a bounded test design with decision rules, without running it |
+| Is more research worth the delay and cost? | [insight-value-of-information](docs/skills/insight-value-of-information.md) | gather, decide now or unresolved, with a stopping rule |
+
+[insight-explore](docs/skills/insight-explore.md) generates options; [insight-angles](docs/skills/insight-angles.md) finds missing frames; [insight-critique](docs/skills/insight-critique.md) reviews an artifact; [insight-adversarial](docs/skills/insight-adversarial.md) challenges it through distinct personas; [insight-assess](docs/skills/insight-assess.md) evaluates a decision. [insight-cross-examine](docs/skills/insight-cross-examine.md) selects the useful depth and methods, reuses valid findings and distinguishes missing evidence from missing options. It can select one specialist for a decision-changing uncertainty without chaining the whole family. [insight-retro](docs/skills/insight-retro.md) looks back after implementation; [insight-skill-gap](docs/skills/insight-skill-gap.md) proposes improvements from recurring work.
+
+### Run bounded work and write for the reader
+
+The seven [headless guides](docs/README.md) cover Claude Code, Codex, Antigravity (agy) and Grok CLI tasks, model selection, model refresh and usage checks. They expose provider-specific limits, authentication and evidence boundaries. [write-copy](docs/skills/write-copy.md) routes promotional writing, with [write-copy-event-video](docs/skills/write-copy-event-video.md) covering event campaign copy and voiceover handoff.
+
+The human-draw, human-merge and human-rewrite guides retain their existing procedures while worked examples load only when relevant. Repairs across planning, handoff, mapping, orientation and coordination make conflicting instructions and failure reporting more precise. Structural checks and targeted behavior evidence have distinct limits; neither proves every future run.
+
+See [CHANGELOG.md](CHANGELOG.md) for release details and [Maintainer closeout](CONTRIBUTING.md#maintainer-closeout) for the update and release process.
 
 ## New in 1.7.0
 
@@ -71,7 +101,7 @@ Four output skills now form a coherent path from diagnosis to delivery: [`agent-
 
 Each skill folder carries its core instructions and required runtime companions.
 Optional sibling skills and repository-only release checks are declared separately
-and do not block the core skill when absent. Forty procedural skills also carry
+and do not block the core skill when absent. Procedural skills also carry
 `protocol.yon`, a declarative companion that names steps, rules (`MUST` /
 `MUST_NOT`), and gates (`ABORT` / `WARN`) as typed records.
 

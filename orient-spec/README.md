@@ -11,7 +11,7 @@ A small family of **orientation** skills: a handler (human *or* an agent orienti
 | File | What it is |
 |---|---|
 | [`orient-record.yon`](orient-record.yon) | The structured record schema (envelope, subject, the per-field provenance rider, and the per-slice shapes) + the invariant rules and gates. **Reserved-tag emission, no custom tags, no domain.** |
-| [`orient-contract.md`](orient-contract.md) | The text-render + visual-render contracts (banner → block → trust trailer; one visual per slice + a mandatory ASCII fallback; tree-when-on-a-branch). |
+| [`orient-contract.md`](orient-contract.md) | The text-render + visual-render contracts (banner → block → trust trailer; one visual per selected visual face + its mandatory ASCII fallback; tree-when-on-a-branch). |
 | [`family-manifest.yon`](family-manifest.yon) | The single source of truth for the footer: the skill roster, each skill's `gate_field` + `trigger`, and the evidence-derived `reason_code` routing. One-file edit to add/cut/rename a skill. |
 | [`family-behaviors.md`](family-behaviors.md) | The cross-cutting family behaviors over the frozen record: the concrete footer render (four faces), the staleness short-circuit, the neutral typed signal, the anti-Goodhart disclosure, and handoff-feeder routing. No schema bump — all ride existing fields/enums. |
 | [`subagent-protocol.md`](subagent-protocol.md) | How a skill spawns its bounded, read-only, depth-1 subagent and receives only the bundle. |
@@ -24,6 +24,11 @@ npx @younndai/yon-parser validate orient-spec/orient-record.yon --profile exec
 npx @younndai/yon-parser validate orient-spec/family-manifest.yon --profile exec
 npx @younndai/yon-parser validate orient-spec/examples/orient-record.example.yon --profile exec
 ```
+
+For a fresh invocation, pass the actual in-memory record to
+`node tools/orient-validate.mjs -` on stdin before emission. The structural
+commands above and the helper's example/self-test mode do not validate that
+current record. The helper checks a defined subset; all emitter obligations remain.
 
 ## Two tiers, one contract
 

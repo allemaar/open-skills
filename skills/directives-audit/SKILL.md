@@ -28,7 +28,7 @@ Audit one directive file or routed directive system. Default to read-only `audit
 Route by dimension, not filename:
 
 - `directives-audit`: standing authority, cross-task scope or safety, load order, conditional directive routing, and managed projections.
-- `skills-audit`: invocation, workflow, decomposition, frontmatter, references, dependencies, portability, and consumed skill behavior.
+- `skill-smith`: invocation, workflow, decomposition, frontmatter, references, dependencies, portability, and consumed skill behavior.
 - `prose-audit`: reader-facing wording after operational meaning is fixed.
 
 For a mixed artifact, send each dimension to its owner. This skill does not replace a maintenance adapter, projector, installer, or managed-file owner.

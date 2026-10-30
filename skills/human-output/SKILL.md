@@ -109,11 +109,12 @@ failure, not a service.
 
 **Good** — same facts, decidable in two lines:
 
-> **The valuation is fine; two clauses under it cost you about EUR 2.2M in a
-> EUR 10M exit. Do not sign as drafted.**
+> **In the illustrated EUR 10M exit, the preference costs about EUR 1.0M.
+> The option pool separately reduces headline valuation; those amounts cannot
+> be added as one exit cost. Do not sign as drafted.**
 >
 > **Decision needed by day 10:** push back on the participating preference and
-> the pre-money employee option pool, or accept and know the number.
+> the pre-money employee option pool, or accept their separate effects.
 >
 > **The preference is "1x participating"** — the investor takes their EUR 1.2M
 > back *and* their share of the rest. EUR 1.2M into a EUR 6M pre-money is
@@ -221,6 +222,11 @@ Resolve this installed skill's directory, then run
 grades, and the far longer list of what no script can grade — including the
 fact that nothing verifies a number in your prose against a number in your
 source — is the family checker contract, `references/human-contract.md` §3.
+
+If the runtime or draft is unavailable, or the checker was not run or failed,
+report that outcome and the unchecked scope. Do not claim a green check. Keep
+the manual checks and any controlling workflow's required-check gate; the
+optional craft layer does not waive mandatory applicable work.
 
 ## How other skills use this
 

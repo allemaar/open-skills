@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: '20'
       - name: Install the public YON parser
-        run: npm install -g @younndai/yon-parser
+        run: npm install -g @younndai/yon-parser@2
       - name: Validate all protocol.yon (strict)
         run: node tools/conformance.mjs
       - name: Structural lint (cross-references, names, dual-doc sync)

@@ -28,23 +28,34 @@ function remainingPercent(value) {
   return Number.isFinite(value) ? Math.max(0, Math.min(100, 100 - value)) : null;
 }
 
-function normalizeWindow(bucket, label, raw, nowMs) {
-  if (!raw || typeof raw !== 'object') return null;
+function normalizeWindow(bucket, label, raw, nowMs, diagnostics) {
+  if (raw == null) return null;
+  const identity = label ? `${bucket}:${label}` : bucket;
+  if (typeof raw !== 'object' || Array.isArray(raw)) {
+    diagnostics.push(`codex quota window ${identity} is malformed`);
+    return null;
+  }
   const usedPercent = Number.isFinite(raw.usedPercent) ? raw.usedPercent : null;
-  const resetsAtSeconds = Number.isFinite(raw.resetsAt) ? raw.resetsAt : null;
-  const windowMins = Number.isFinite(raw.windowDurationMins) ? raw.windowDurationMins : null;
-  if (usedPercent === null || resetsAtSeconds === null || windowMins === null || windowMins <= 0 || !Number.isFinite(new Date(resetsAtSeconds * 1000).getTime())) return null;
+  const resetValid = Number.isFinite(raw.resetsAt) && Number.isFinite(new Date(raw.resetsAt * 1000).getTime());
+  const resetsAtSeconds = resetValid ? raw.resetsAt : null;
+  const windowMins = Number.isFinite(raw.windowDurationMins) && raw.windowDurationMins > 0 ? raw.windowDurationMins : null;
+  const missing = [];
+  if (usedPercent === null) missing.push('usedPercent');
+  if (resetsAtSeconds === null) missing.push('resetsAt');
+  if (windowMins === null) missing.push('windowDurationMins');
+  if (missing.length) diagnostics.push(`codex quota window ${identity} has unknown or invalid fields: ${missing.join(', ')}`);
+  if (missing.length === 3) return null;
   return {
-    bucket: label ? `${bucket}:${label}` : bucket,
+    bucket: identity,
     windowMins,
     usedPercent,
     remainingPercent: remainingPercent(usedPercent),
-    resetsAt: isoFromSeconds(resetsAtSeconds),
+    resetsAt: resetsAtSeconds === null ? null : isoFromSeconds(resetsAtSeconds),
     resetInSeconds: resetsAtSeconds === null ? null : Math.max(0, Math.ceil(resetsAtSeconds - nowMs / 1000)),
   };
 }
 
-export function normalizeCodexRateLimits(result, nowMs = Date.now()) {
+export function normalizeCodexRateLimits(result, nowMs = Date.now(), diagnostics = []) {
   const byId = result?.rateLimitsByLimitId;
   const entries = byId && typeof byId === 'object'
     ? Object.entries(byId)
@@ -53,7 +64,7 @@ export function normalizeCodexRateLimits(result, nowMs = Date.now()) {
       : [];
   return entries.flatMap(([fallbackBucket, limit]) => {
     const bucket = typeof limit?.limitId === 'string' ? limit.limitId : fallbackBucket;
-    return [normalizeWindow(bucket, 'primary', limit?.primary, nowMs), normalizeWindow(bucket, 'secondary', limit?.secondary, nowMs)]
+    return [normalizeWindow(bucket, 'primary', limit?.primary, nowMs, diagnostics), normalizeWindow(bucket, 'secondary', limit?.secondary, nowMs, diagnostics)]
       .filter(Boolean);
   });
 }
@@ -243,6 +254,13 @@ async function readCodex(executable, outputDirectory, options, result) {
               send({ method: 'account/rateLimits/read', id: 2 });
             }
           } else if (message.id === 2) {
+            if (message.result && !message.error) {
+              const receivedAt = Date.now();
+              result.observedAt = new Date(receivedAt).toISOString();
+              result.windows = normalizeCodexRateLimits(message.result, receivedAt, result.errors);
+              const count = message.result.rateLimitResetCredits?.availableCount;
+              result.credits = Number.isFinite(count) ? { availableCount: count } : null;
+            }
             if (options.history) send({ method: 'account/usage/read', id: 3 });
             else child.stdin.end();
           } else if (message.id === 3) {
@@ -258,9 +276,6 @@ async function readCodex(executable, outputDirectory, options, result) {
   if (run.timedOut || run.outputLimited || protocolLimited || run.writeError) throw new Error(`codex quota query failed: ${run.writeError || (run.outputLimited || protocolLimited ? 'output limit exceeded' : 'timed out')}`);
   if (run.process.exitCode !== 0 || run.process.cleanup !== 'close-observed') throw new Error('codex quota query did not exit cleanly');
   if (!quota?.result || quota.error) throw new Error('codex quota query failed; see private protocol diagnostics');
-  result.windows = normalizeCodexRateLimits(quota.result);
-  const count = quota.result.rateLimitResetCredits?.availableCount;
-  result.credits = Number.isFinite(count) ? { availableCount: count } : null;
   if (options.history) {
     const usage = messages.get(3);
     if (usage?.result) result.activity = activitySummary(usage.result);
@@ -307,7 +322,7 @@ export async function readDirect(provider, executable, outputDirectory, { timeou
     result.runtimeVersion = await verifyExecutable(inputs.executable, inputs.outputDirectory, result.processes);
     if (provider === 'codex') await readCodex(inputs.executable, inputs.outputDirectory, { timeoutMs, history }, result);
     else await readAgy(inputs.executable, inputs.outputDirectory, { timeoutMs }, result);
-    result.observedAt = new Date().toISOString();
+    if (provider !== 'codex') result.observedAt = new Date().toISOString();
     result.status = result.windows.length && result.processes.every((entry) => entry.cleanup === 'close-observed') ? 'live' : 'unavailable';
     if (!result.windows.length) result.errors.push('provider returned no recognized quota windows');
   } catch (error) {

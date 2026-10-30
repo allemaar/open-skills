@@ -14,8 +14,8 @@ next-skills:
   - skill: insight-skill-gap
     phrase: "/insight-skill-gap"
     why: "When the in-the-moment signal points to a recurring pattern, escalate to the deliberate batch scan for new or updated skills."
-  - skill: new-skill-creator
-    phrase: "/new-skill-creator"
+  - skill: skill-smith
+    phrase: "/skill-smith"
     why: "If the detected gap is a whole missing capability rather than a tweak, scaffold it as a new skill."
 ---
 

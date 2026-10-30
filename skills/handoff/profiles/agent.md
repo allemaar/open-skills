@@ -46,7 +46,7 @@ After the universal frontmatter (see router `SKILL.md`), the body looks like:
     [[Architecture/overview]]                 # background reading
   ]
 
-(Canonical schema and tier semantics: [`handoff-execute/references/SOURCES-BLOCK.md`](../../handoff-execute/references/SOURCES-BLOCK.md). Empty `required=[]` drops `/handoff-execute` into advisory mode — no gate.)
+(Canonical schema and tier semantics: [`handoff-execute/references/SOURCES-BLOCK.md`](../../handoff-execute/references/SOURCES-BLOCK.md). Only explicitly confirmed `required=[]` with `confirmed_empty:bool=true` selects advisory source ingestion; an empty list alone is unresolved.)
 
 ## Scope guards
 
@@ -70,7 +70,7 @@ After the universal frontmatter (see router `SKILL.md`), the body looks like:
 > ALSO emit it as a chat block — full content if <500 lines, otherwise summary + path —
 > so the user can paste into the originating session for second-assessment.
 >
-> Your retro MUST include `@GROUND_TRUTH` with `artifacts_modified` (paths + hashes) and `git_diff_summary`. Narrative-only retros are rejected.
+> Your retro MUST include `@GROUND_TRUTH` with `artifacts_modified` (paths + hashes) and `git_diff_summary`. For evidenced zero task changes, use the canonical Retro schema's explicit "none" branch; unknown is not none. Narrative-only retros are rejected.
 ````
 
 ## Field defaults specific to this profile

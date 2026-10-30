@@ -24,7 +24,7 @@ triggers:
 
 # /monorepo-deps
 
-Run the full syncpack + manypkg flow on an npm monorepo: check version mismatches, fix what's auto-fixable, bump deps via `npm update` with handler-set major caps in root `overrides`, verify, and maintain the `.syncpackrc.json` that governs all of this. One skill covers the whole loop. Use the underlying single-purpose skills (`syncpack-usage`, `syncpack-cli`, `syncpack-config`, `manypkg-usage`) when you need API or config detail beyond what this orchestrator carries inline.
+Run the full syncpack + manypkg flow on an npm monorepo: check version mismatches, fix what's auto-fixable, bump deps via `npm update` with handler-set major caps in root `overrides`, verify, and maintain the `.syncpackrc.json` that governs all of this. One skill covers the whole loop. The single-purpose skills (`syncpack-usage`, `syncpack-cli`, `syncpack-config`, `manypkg-usage`) are optional external references for API or config detail beyond this orchestrator. Check availability before using them; if absent, use available authoritative documentation or report the gap. Do not install them implicitly.
 
 > **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date.
 
@@ -37,7 +37,7 @@ Use `/monorepo-deps` for the **end-to-end** loop on an npm workspaces monorepo: 
 - `syncpack-config` — `.syncpackrc.json` schema reference (versionGroups, semverGroups, customTypes)
 - `manypkg-usage` — manypkg CLI + rule names (EXTERNAL_MISMATCH, INTERNAL_MISMATCH, …)
 
-This skill assumes **npm** (not pnpm or yarn). For pnpm/yarn monorepos the syncpack story is the same but the lock-file commands differ — adapt as needed.
+This skill assumes **npm** (not pnpm or yarn). Abort cleanly if a pnpm or yarn lockfile is present without `package-lock.json`; do not adapt this flow to mutate pnpm or yarn lockfiles.
 
 ## Phase 1 — Detect prerequisites
 

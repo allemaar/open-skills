@@ -19,6 +19,8 @@ Before every run, read [access and failure handling](references/access.md) and d
 
 Run one bounded task through xAI's official Grok Build coding-agent CLI. This skill preserves the Handler's model, authentication route, permissions, directory, deadline, and retry decision. It does not install the CLI, change credentials or settings, enable billing, buy credits, or turn an X Premium/Grok subscription into API entitlement.
 
+Load [setup and login](references/setup-and-login.md) only when the CLI is absent, login is required, or the Handler explicitly requests setup. Setup is a separate authorized workflow; execution never performs it automatically. Reuse an existing selected subscription login. For simple literal text work, load the tested [lean run](references/lean-run.md) and bundled [profile](profiles/lean-text.md); verify them on the current platform and CLI version before use.
+
 **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync; update both when their contract changes and refresh the `@STAMP` date.
 
 ## Preflight
@@ -27,13 +29,13 @@ Read the shared [run contract](references/run-contract.md), [freshness policy](r
 
 1. Resolve the actual `grok` executable. Run `grok --version`, `grok --help`, and `grok models`; verify every flag against current local help before launch. Determine platform support on the target host. Dated absence or runtime results from the maintainer host belong only to [validation boundaries](references/validation.md) and do not constrain another machine.
 2. Record exact working directory, outcome, inputs, read/write scope, tools, model and reasoning choice, authentication route, output destination, timeout, monitoring and cancellation mechanism, and retry limit. Ambiguous writes are read-only. Assign a retained artifact for substantial work. A session works only in its cwd: grok 1.0.70 rejected `--add-dir` with "additionalDirectories is not supported", so a multi-root review needs one bundled working directory holding the reviewed inputs. Re-verify against current help.
-3. Respect explicit model and authentication choices. The currently documented coding/API model is `grok-4.6`, with a 500k context window and configurable reasoning. Documentation is not local entitlement; use only a model returned by `grok models`. Never silently substitute a model or auth route.
+3. Respect explicit model and authentication choices. The currently documented flagship API model is `grok-4.7`, with a 500k context window and configurable reasoning. Documentation is not local entitlement; use only a model returned by `grok models`. Never silently substitute a model or auth route.
 4. Distinguish consumer OIDC login from `XAI_API_KEY`. Existing browser/device login is preferred only when the Handler selects the consumer route. An API key has separate billing and requires explicit authorization plus a budget. Never print keys or inspect credential stores. Verify documented credential precedence and diagnose only variable presence/scope.
-5. Current public API list pricing for Grok 4.6, reviewed 2026-09-17 against [xAI API pricing](https://x.ai/api), is tiered by prompt length: below 200k prompt tokens, $2 per million input tokens, $0.50 per million cached input tokens, and $6 per million output tokens; at or above 200k prompt tokens, $4 per million input tokens, $1 per million cached input tokens, and $12 per million output tokens. These are API rates, not a consumer subscription charge. Consumer paid plans share a weekly Chat/Imagine/Voice/Build pool shown in Settings -> Usage. No public exact quota matrix is promised. X Premium or a Grok subscription does not prove API credits.
+5. API rates for Grok 4.7 and 4.6 were reconciled on 2026-10-25 against the [official model page](https://docs.x.ai/developers/models/grok-4.7) and its public pricing data: US east/west standard rates are $2/M input, $0.50/M cached input and $6/M output; requests exceeding 200K use $4/M, $1/M and $12/M. US central is 10% higher. East/west batch discount is 20%; central has none. These are API rates, not a consumer subscription charge. Consumer paid plans share a weekly Chat/Imagine/Voice/Build pool shown in Settings -> Usage. No public exact quota matrix is promised. X Premium or a Grok subscription does not prove API credits.
 
 ## Bound authority
 
-For a literal baseline, use `--permission-mode dontAsk`, `--no-subagents`, `--no-memory`, `--disable-web-search`, `--no-auto-update`, and no tools. Add only exact required tools and path rules using locally help-verified `--tools`, `--disallowed-tools`, `--allow`, and `--deny`. A prompt is not a permission boundary. Never broaden settings or remove a denial to make a run pass.
+For a literal baseline, use the locally verified lean profile, `--permission-mode dontAsk`, `--no-subagents`, and `--disable-web-search`, with zero advertised tools required for acceptance. The tested CLI did not support legacy `--no-memory` or `--no-auto-update`; use the child-scoped environment controls in [lean run](references/lean-run.md). An empty `--tools` argument alone did not remove advertised tools in the trial. Add only exact required tools and path rules using locally help-verified controls. A prompt is not a permission boundary. Never broaden settings or remove a denial to make a run pass.
 
 The documentation describes sandboxing, but Windows containment has not been established for this workflow. Do not claim enforced read-only or exact filesystem isolation unless independently verified on the target version. For work requiring that boundary, stop. Otherwise disclose that tool monitoring detects actions after dispatch and use a trusted minimal directory.
 
@@ -46,7 +48,7 @@ Use a foreground child owned by a supervisor that returns control, retains the p
 After verifying current help, a baseline literal run has this shape:
 
 ```text
-grok -p "<bounded prompt>" --model <listed-model> --output-format streaming-json --permission-mode dontAsk --tools "" --no-subagents --no-memory --disable-web-search --no-auto-update
+grok -p "<literal prompt>" --agent <skill-directory>/profiles/lean-text.md --model <listed-model> --reasoning-effort <supported-effort> --max-turns 1 --output-format streaming-json --permission-mode dontAsk --no-subagents --disable-web-search --verbatim --disallowed-tools read_file,search_tool,use_tool
 ```
 
 Pass arguments separately with shell execution disabled. Do not interpolate untrusted text into shell syntax. Use `json` or `streaming-json` only after verifying the current output contract; retain raw stdout, stderr, process identity, exit code, session ID when present, and terminal result. Plain output is for short human use, not structured acceptance.
@@ -79,7 +81,7 @@ Read [validation boundaries](references/validation.md) before changing command, 
 
 **Self-improvement.** If a run exposes a concrete material or recurring weakness, missing good practice, or unrecorded fixed pitfall, propose a specific repair for approval. Otherwise remain silent. Never auto-apply.
 
-For current account quota and reset times, use headless-usage. It reports Grok consumer usage only when a verified native or dated authenticated surface is available; otherwise it returns manual/cached/unavailable with Settings -> Usage guidance.
+For current account quota and reset times, use headless-usage. `grok usage <SESSION_ID> [TURN]` reports persisted session accounting, not remaining subscription quota or reset time. Use the current interactive **/usage** or Settings -> Usage for the remaining shared pool; without an observed surface, report unknown.
 
 ## Compatible parent route
 
