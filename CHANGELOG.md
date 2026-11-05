@@ -13,6 +13,14 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+## [3.0.1] — 2026-11-05
+
+### Fixed
+
+- Map-check establishes readability of every governed Markdown entrypoint before emitting usable resolution, including plain links without fragments. Unreadable entrypoints return `check-incomplete`; readable plain and fragment targets retain their existing resolution.
+- Repository-root helper commands match the bundled fixes for required recap status and unique paths, malformed provenance pairs, point-forecast warnings, and receipt-marked figure checks. Repository-relative schema and example paths remain intact.
+- Verify discovery metadata now agrees with its procedure and guide: a missing plan retains intent/source checks and cannot yield a clean verdict. Affected docs, source fingerprints and discovery projections are synchronized.
+
 ## [3.0.0] — 2026-11-05
 
 ### Breaking and migration

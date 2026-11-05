@@ -31,7 +31,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 4. Report exactly what was and was not checked
 5. If map-rules is absent, keep the compiled checker boundary and report manual rule/provenance review unavailable.
 6. In DEGRADED mode, supply the established scope root with a contained relative root-map locator; nested-target walk-up is not promised.
-7. Keep invalid declarations and unreadable or capped resolution distinct from qualified-clean. Dotted Markdown stems stay eligible; only raw targets with an extension admit attachments. Manual rulings never rewrite the deterministic verdict.
+7. Require every governed Markdown entrypoint to be readable, even for a plain link without a fragment. Keep invalid declarations and unreadable or capped resolution distinct from qualified-clean; manual rulings never rewrite the deterministic verdict.
 
 ## Subagents
 

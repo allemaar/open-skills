@@ -53,7 +53,7 @@ You do not need the whole collection. Start with one task and one skill. Read it
 | Create or improve a reusable skill | [skill-smith](docs/skills/skill-smith.md) | A scoped authoring route or a read-only assessment |
 | Coordinate agents through a shared folder | [agent-mailbox](docs/skills/agent-mailbox.md) | Messages, durable dispositions and explicit continuity limits |
 
-This table describes the **3.0.0** source. Check the [published releases](https://github.com/allemaar/open-skills/releases) for a frozen version and read the [upgrade notes](#current-source-and-releases) before updating.
+This table describes the **3.0.1** source. Check the [published releases](https://github.com/allemaar/open-skills/releases) for a frozen version and read the [upgrade notes](#current-source-and-releases) before updating.
 
 The [full catalog](SKILLS.md) groups all skills by family. The [guides](docs/README.md) explain when each skill is useful, when to avoid it, what to ask and what it returns. Inside an agent, /skills-help reads its bundled taxonomy and the skills installed beside it. It leaves unknown third-party skills visible under Unclassified.
 
@@ -268,7 +268,9 @@ Other distribution tools may also consume the repository, including `gh skill in
 
 ## Current source and releases
 
-The **3.0.0** source adds ask-me, build-prototype, debug-task, write-spec, define-terms and teach-topic, plus the workflow recipes linked above. Every skill has a [guide](docs/README.md). I use the smaller capabilities independently; interviews, saved records, prototypes and implementation are separate choices.
+The **3.0.0** release added ask-me, build-prototype, debug-task, write-spec, define-terms and teach-topic, plus the workflow recipes linked above. Every skill has a [guide](docs/README.md). I use the smaller capabilities independently; interviews, saved records, prototypes and implementation are separate choices.
+
+The **3.0.1** source fixes unreadable mapping entrypoints, aligns repository helper commands with bundled checks, and corrects verify discovery text. Read the [patch notes](CHANGELOG.md) before updating a frozen copy.
 
 Before upgrading from 2.x, read the [3.0.0 migration notes](CHANGELOG.md). Exclusive mailbox work now waits for an exact causal grant. Orientation consumers must preserve absent topology as unknown. Diff-recap stops on rename/copy input instead of squeezing it into a single-path record. Existing skill names remain; no skill is removed in this release. Check the [release page](https://github.com/allemaar/open-skills/releases) for publication status.
 

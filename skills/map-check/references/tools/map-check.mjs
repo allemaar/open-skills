@@ -508,6 +508,7 @@ function main() {
         const ep = norm(e.entrypoint);
         if (!okLoc(ep)) { gerr(`entrypoint locator violation ${ep}`); continue; }
         if (!checkedStat(join(scopeRoot, ep), "governed entrypoint")) return opError(2, "check-incomplete", `declared entrypoint does not exist: ${ep}`);
+        if (ep.endsWith(".md")) requiredRead(join(scopeRoot, ep), "governed Markdown entrypoint");
         gbt.push(ep);
       }
       if (grammarErrors) return opError(2, "contract-invalid", JSON.stringify(findings.filter(f=>f.check === "link-contract-grammar")), "repair declarations and recheck before healing");

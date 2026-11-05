@@ -1254,7 +1254,7 @@
         "Report exactly what was and was not checked",
         "If map-rules is absent, keep the compiled checker boundary and report manual rule/provenance review unavailable.",
         "In DEGRADED mode, supply the established scope root with a contained relative root-map locator; nested-target walk-up is not promised.",
-        "Keep invalid declarations and unreadable or capped resolution distinct from qualified-clean. Dotted Markdown stems stay eligible; only raw targets with an extension admit attachments. Manual rulings never rewrite the deterministic verdict."
+        "Require every governed Markdown entrypoint to be readable, even for a plain link without a fragment. Keep invalid declarations and unreadable or capped resolution distinct from qualified-clean; manual rulings never rewrite the deterministic verdict."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -2534,7 +2534,7 @@
     "skills/insight-value-of-information/protocol.yon": "a8eee00c678b5f17b9a5846184dd8d22eb50fd284e625ee055111d682999f544",
     "skills/investigate/SKILL.md": "8fbb69f0ed2193199ad29e9db1604768d5b7e3c495b8194c4e69727ef98a9893",
     "skills/json-canvas/SKILL.md": "7c56a3b38497834bbde5dbf38a2996a7dea483c01efed8a8ffae80ec7a72dee8",
-    "skills/map-check/SKILL.md": "2f94b539815b9ceebb7f1469b56090d0f1bc58246d0cf881076218e02cdf219b",
+    "skills/map-check/SKILL.md": "937f372471c594789177c06adac7480bc070cbfcfc235348264df49d61b77b19",
     "skills/map-init/SKILL.md": "ba7044b35f97200630d901d97b734c4e6b370e5fe5d0fc0216bd12c138d61d85",
     "skills/map-maintain/SKILL.md": "ba657520d0d1c84438b6744a17d4c85db1da4c5942f1c80ffd81d710b988945f",
     "skills/map-rules/SKILL.md": "54832c357bd1c4bdd428b77a9afc573f72e14522a87093c19b5aabf4cfaf5cd6",
@@ -2576,7 +2576,7 @@
     "skills/skills-help/SKILL.md": "10221d2551599f4a4ee38185e6f24115258cb32d28e757455998bc2e90df3ae2",
     "skills/synthesize/SKILL.md": "c777373514d3a11b1aca8cf36c738bb846b531b1c3b2ea8b84ae297c7a006ccd",
     "skills/synthesize-init/SKILL.md": "3ebfd1b3a9be7d4b6941251a5a2e402ddc480e1a7ff8f4317ce806def082e816",
-    "skills/verify/SKILL.md": "01a486b872a83a4eb9cbb4f33ba0fbfc71376787070dd182a9f1eadfedd2288a",
+    "skills/verify/SKILL.md": "32dcaa83a5f9dc3376157ccc6a6f781c46d3e17f4355e6c555cec89aa299dadd",
     "skills/verify/protocol.yon": "a6018f4ca48827505eaa501e7261b22fd4950d5027dcab90330563b18f8c84f4",
     "skills/write-copy/SKILL.md": "11b638111303ba7d8315b06ae03a9ba9ac179d82a0444fdab4b03e9acea1dfc8",
     "skills/write-copy-event-video/SKILL.md": "56c553fb84f288fc6dac998308ac3798f0b73f14d0b960f3d183a3d7afac1ec0",
@@ -2665,7 +2665,7 @@
     "skills/caller-options/references/CANDIDATES.md": "d539110edcac52a96c45c2cbf0d6fe28ed3a5844fcbf9984f321fbc7acc0f69f",
     "skills/agent-mailbox/references/MESSAGE-TEMPLATE.md": "e662ba8a4e117b603b4b89fd391ee13d79160286756ab1fd4acbc72e9d20ac4b",
     "skills/agent-mailbox/references/PRIMER-TEMPLATE.md": "443362510f34acf290a49f5e8e87e5e7670f604ae24130e33bace92308d71279",
-    "skills/map-check/references/tools/map-check.mjs": "a2cbf1b27a49ab9b96dd0c2b6d2c2636b61390e86bded5a8eb4b2783bcb30535",
+    "skills/map-check/references/tools/map-check.mjs": "c4eefe41869fa89d1549f2ccf0cdce1d77f03a8346c8dfc1f1920d7f2f1da857",
     "skills/map-rules/references/ownership.md": "3e963dadb57fefc679cbdf36e59ed2370130998097c05293e7e92d16b4b034b0",
     "skills/map-rules/references/link-resolution.md": "6a238f8c98fa71fd9853bee8ea624d1779f9e0db29cc886fba55552d2072f6ef",
     "skills/map-this/references/tools/map-scan.mjs": "406742811bfca2b742ae5dedc43bf589fa199850f28cb3599989940d0df0f752",

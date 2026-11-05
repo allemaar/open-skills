@@ -28,7 +28,7 @@ npx @younndai/yon-parser validate orient-spec/examples/orient-record.example.yon
 For a fresh invocation, pass the actual in-memory record to
 `node tools/orient-validate.mjs -` on stdin before emission. The structural
 commands above and the helper's example/self-test mode do not validate that
-current record. The helper checks a defined subset; all emitter obligations remain.
+current record. The repository command and bundled orientation helpers use the same checks: malformed nonempty provenance pairs are rejected, and an asserted point forecast warns regardless of confidence. Explicit unknown or unschedulable forecasts are not point estimates. The helper checks a defined subset; all emitter obligations remain.
 
 ## Two tiers, one contract
 

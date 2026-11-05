@@ -25,7 +25,7 @@ read it and act. Each member owns one shape that material can take.
 
 There is **no machine record** in this family — no schema, nothing emitted. The
 contract is prose plus one checker, [`tools/human-output-check.mjs`](../tools/human-output-check.mjs),
-which grades the mechanical half only.
+which grades the mechanical half only. Its behavior matches the bundled human-output checker: figure checks apply only to receipt-marked figures; ordinary code and data fences are not figures. Prose checks still apply.
 
 ## Check it yourself
 

@@ -186,11 +186,15 @@ export function validate(instancePath, opts = {}) {
   // 4. File rows — enum status, required fields, integer + NON-NEGATIVE counts (numstat never emits
   //    negatives; a negative row would mask another row's inflation while Σ still matches).
   const rows = [];
+  const seenPaths = new Set();
   for (const [id, f] of Object.entries(cfgs)) {
     if (!FILE_ID.test(id)) continue;
+    if (!('status' in f)) errors.push(`${id} missing required field "status"`);
     if ('status' in f && enums.status && !enums.status.has(f.status))
       errors.push(`${id}.status = "${f.status}" is not a valid status (allowed: ${[...enums.status].join(', ')})`);
     if (!('path' in f)) errors.push(`${id} missing required field "path"`);
+    else if (seenPaths.has(f.path)) errors.push(`${id} repeats path "${f.path}" — one row per logical path`);
+    else seenPaths.add(f.path);
     for (const k of ['added', 'removed']) {
       if (!(k in f)) { errors.push(`${id} missing required field "${k}"`); continue; }
       if (!isInt(f[k])) errors.push(`${id}.${k} = "${f[k]}" is not an integer`);

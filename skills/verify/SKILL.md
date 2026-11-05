@@ -1,6 +1,6 @@
 ---
 name: verify
-description: "Formal phase gate — checks intent, plan, and execution artifacts for drift, then actively re-checks each load-bearing claim against its source (an agent's self-report of having checked is not evidence). Requires the intent and execution artifacts (the plan is optional; an absent plan short-circuits to a plan-not-found verdict). Produces structured output. Trigger when the user runs /verify or needs to decide whether to proceed to the next phase. Not /double-check (quick re-check of one claim), /reflect (informal thinking, no gate), or /insight-critique (advisory output review) — verify is the formal gate against intent, plan, and execution."
+description: "Formal phase gate — checks intent, plan, and execution artifacts for drift, then actively re-checks each load-bearing claim against its source (an agent's self-report of having checked is not evidence). Requires the intent and execution artifacts (the plan is optional; its absence retains intent/source checks and prevents a clean verdict). Produces structured output. Trigger when the user runs /verify or needs to decide whether to proceed to the next phase. Not /double-check (quick re-check of one claim), /reflect (informal thinking, no gate), or /insight-critique (advisory output review) — verify is the formal gate against intent, plan, and execution."
 visibility: public
 self-improvable: true
 next-skills:
