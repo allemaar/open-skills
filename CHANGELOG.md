@@ -13,6 +13,53 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+## [3.0.0] — 2026-11-05
+
+### Breaking and migration
+
+- **Mailbox exclusive claims require settlement.** Existing claim order is no longer enough to start exclusive work. Obtain a causal grant from the declared task/artifact writer or current Handler naming the exact holder, scope, output and finite lease; reconcile conflicts before acting. FULL retains its implemented session, handshake, claim and rollup mechanics, but frozen membership/recipient snapshots, quorum authority and built-in authentication are unavailable. Update room instructions and callers relying on those promises before continuing dependent work.
+- **Unknown topology is absence, not trunk.** Consumers of `orient-record/1` must treat an omitted optional `on_branch` as unknown, preserve the uncertainty gate, and omit unsupported dependent layout/fields and forecasts. Known true/false meanings and the record version remain unchanged. Update consumers that assume every topology field is present or coerce absence to false.
+- **Rename/copy recaps stop explicitly.** `diff-recap` returns UNSUPPORTED INPUT for rename/copy statuses, scored forms and two-path input; it emits no single-path recap for them. Keep the diagnostic distinct from NO DIFF. Callers needing those inputs must handle the unsupported result; do not strip scores, discard paths or disable detection to bypass it. Ordinary A/M/D rows retain their format.
+
+### Added
+
+- Six skills: `ask-me` for constructive interviews with optional records, `build-prototype` for bounded runnable experiments, `debug-task` for executed diagnosis and authorized repairs, `write-spec` for conversation-to-spec synthesis, `define-terms` for domain language and selective decision records, and `teach-topic` for evidence-based learning progression. All have dedicated [guides](docs/README.md).
+- Six additional [workflow recipes](docs/workflows/README.md) cover expert questionnaires, workflow discovery, interactive coauthoring, TDD where useful, module-boundary enforcement and PR evidence. [Design scope](docs/design-scope.md) records separate reasons and reconsideration conditions for three deferred capabilities.
+- Two [worked recipes](docs/workflows/README.md) cover creating a small skill and previewing a portable library, with runtime-specific installation choices, sample input, expected results and explicit limits.
+- `skills.sh.json` groups all public skills using the existing family taxonomy. The spine generator maintains it with the catalogs; this changes directory presentation, not installation or verified reach.
+
+### Changed
+
+- The README leads with practical usage and a personal account of the collection; the workflow index and generated guide introduction make entry points clearer without changing skill behavior or installation permissions.
+
+- `skills-help` can offer short journeys from installed capabilities. Code reviews in `cold-review` distinguish applicable standards from approved specification while retaining general findings and the existing review budget.
+- New-session `handoff` is compact without losing acceptance, source or canonical-save safeguards; unsaved drafts remain explicitly incomplete.
+- `human-rewrite` may explain a missing premise using explicitly supplied established context with separate attribution. Shared human and orient contracts preserve source facts, uncertainty and their existing render boundaries.
+- `plan-execute` distinguishes task evidence from plan approval and checks the selected current candidate, while retaining every unspecified-decision and drift stop.
+- Skill Smith creation and behavior-changing updates, plus Skill Library Creator setup, clarify only consequential unresolved choices after preflight. Complete briefs skip the interview; deeper questioning is opt-in. Declined or unanswered optional features stay off, and answers do not grant separate action permissions. Assessment, diagnosis, formatting-only updates and existing generated managers retain their behavior.
+
+### Fixed
+
+- Mapping retains dotted Markdown stems alongside eligible attachments, caches exact-path lookup, rejects stray or duplicate M3 declarations and malformed scanner frontmatter, and fails incomplete on unreadable governed entrypoints. Orientation rules consistently omit unsupported topology while retaining independent evidence; ordinary in-session extraction no longer inherits a leaf-only primed-brief prerequisite.
+- Extraction now coordinates gathering and cold review at the root without nested mandatory delegation. Mailbox exclusive claims require causal settlement; unsupported FULL membership/recipient snapshots, quorum and built-in authentication are explicitly unavailable. Existing CORE and implemented FULL mechanics remain.
+- Mapping owns one M3/address contract across its independent engines, preserves invalid/capped outcomes and raw style/alias disagreements, and documents full-scope rechecks separately from mutation bounds. Unknown orientation topology omits the optional boolean rather than asserting trunk; existing known values and record version remain.
+- Domain checks separate registration, parking, verified sale and purchasability, use exact operator matches and retain authoritative lookup for every bulk candidate. YON writing declares versioned field/profile dependencies and repairs extended examples; diff-recap explicitly stops on unsupported scored rename/copy or two-path inputs without changing ordinary rows.
+- Worked examples and discovery now preserve stated precision, coverage, provenance and independence; headless historical login wording and all five source projections agree without refreshing access evidence. Inline routing cards and conditional module/API handoffs are explicit.
+- Retrospectives apply the repository’s adopted documentation conventions and disclose incomplete catalog coverage instead of assuming library-specific formats or an empty index.
+- Handoff activation and execution clauses, audit search coverage, mailbox recovery, map-maintenance early exits and copy-versus-production records now agree with their existing owners; no implicit push-only operation is introduced.
+- Verification, exploration, freshness and priming now preserve unavailable evidence, honest candidate sets and pointer closure; orientation audit proxies follow acceptance, topology uses one worker, and ETA point warnings no longer exempt high confidence.
+- Helper and review routes now preserve subject fit, required lens coverage, canonical update ownership and honest missing-owner outcomes; selective human-family installations can finish without inventing an unavailable improvement pass.
+- Dependency maintenance resolves existing local tools, checks actual exit status and uses bounded conflict repair; existing headless package membership and library target subsets stay exact.
+- Artifact edits preserve current identity, unrelated content and recoverable preimages; objective gates precede writes, selected amendments stay exact, and source-owner and publication-target boundaries are explicit.
+- Existing mode, priming and insight dispatch owners now require bounded observable cancellable workers and honest partial outcomes; prime-sweep capture identities are unique per invocation.
+- Quota-reader shutdown now cancels owned reads within a bounded cleanup window and preserves completed results and partial cleanup evidence. Budget checks use an already-installed reader without package acquisition, reject numeric flags missing values and anchor the wrapper to its skill directory.
+- Recap checks reject duplicate paths and missing status; orient checks reject malformed nonempty provenance pairs. Figure-only checks recognize receipt-marked figures while preserving other code and quotations; shared helper copies stay synchronized.
+- Question defaults cannot supply missing consent, coupled-constant audits distinguish inspection from authorized repair, and cold reviewers remain read-only. Handoff verification inspects command effects within current authorization; legacy source-heading and drift-warning predicates agree.
+- Handoffs, retros and plans preserve existing artifacts on collision and require current identity and recovery for selected revisions. Interview records reuse their destination owner’s protection; synthesize route installation also checks backup and staging paths.
+- Adversarial reviews permit evidenced no-material-finding outcomes, merge convergent findings and rank up to three supported issues without forcing severity; later-pass panel options meet the existing minimum.
+
+- The Windows Antigravity supervisor accepts observed `read_file` byte-offset pagination with integer and exact-path checks, while rejecting unknown fields and combined line/byte addressing. Grok guidance records the observed `rawInput.target_file` read shape. Timeout and incomplete-result checks remain in force.
+
 ## [2.0.0] — 2026-10-30
 
 ### Breaking

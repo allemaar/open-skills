@@ -14,6 +14,7 @@ Summarize an actual Git diff as a reconciled, pasteable recap.
 ## When not to use it
 
 - A substitute for reviewing correctness
+- Rename/copy or two-path input: the current single-path format returns an unsupported-input diagnostic.
 
 ## How to use it
 
@@ -26,9 +27,10 @@ Install this skill in a supported runtime, then give it the relevant material an
 ## Flow
 
 1. Capture file status and counts directly from Git for the selected diff
-2. Group and label rows without inventing intent
-3. Validate rows and totals with the bundled value gate; fail closed if the diff is empty or unavailable
-4. Render the appropriate human or agent output
+2. Rename/copy statuses including scores or two-path forms return UNSUPPORTED INPUT before emission; never collapse paths or label this NO DIFF.
+3. Group and label rows without inventing intent
+4. Validate unique file paths, required status, rows and totals with the bundled value gate; fail closed if the diff is empty or unavailable
+5. Render the appropriate human or agent output
 
 ## Subagents
 
@@ -46,6 +48,7 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/diff-recap/SKILL.md](../../skills/diff-recap/SKILL.md)
 - [skills/diff-recap/protocol.yon](../../skills/diff-recap/protocol.yon)
+- [skills/diff-recap/references/tools/diff-recap-check.mjs](../../skills/diff-recap/references/tools/diff-recap-check.mjs)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

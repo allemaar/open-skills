@@ -27,10 +27,12 @@ Install this skill in a supported runtime, then give it the relevant material an
 ## Flow
 
 1. Set parent folder and family prefix; identify installation scope and actual targets.
-2. Inspect paths and preview the proposed tree and local targets.
-3. Create manager, README, resources, and selected links.
-4. Verify source files and linked content separately from runtime discovery.
-5. Report manager location, installation results, blockers, and starter requests.
+2. Reuse supplied choices and discoverable facts; ask only consequential gaps, with an optional deeper interview. Preferences do not authorize creation or installation, and a preview-only request stays preview-only.
+3. Inspect paths and preview the proposed tree and local targets.
+4. Create manager, README, resources, and selected links.
+5. Verify source files and linked content separately from runtime discovery.
+6. Report manager location, installation results, blockers, and starter requests.
+7. Pass the exact selected target subset explicitly; all-default scope is valid only when all displayed defaults were selected.
 
 ## Subagents
 
@@ -40,7 +42,7 @@ This describes the skill's own workflow. Available tools and the runtime's permi
 
 ## What you get
 
-A portable library and standalone family manager with selected installation links and a creation summary.
+A portable library and standalone family manager with selected installation links and a creation summary. Updating the creator does not change existing generated managers; their upgrades remain separate.
 
 ## Source and installation
 

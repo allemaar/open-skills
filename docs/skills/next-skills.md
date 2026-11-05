@@ -28,6 +28,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Read the declared successor list.
 2. Stop silently if it is empty.
 3. Offer phrases and reasons, and activate only on selection.
+4. Bind the explicitly requested preview skill, or the completed hook source; unresolved preview names never inherit an unrelated predecessor.
 
 ## Subagents
 

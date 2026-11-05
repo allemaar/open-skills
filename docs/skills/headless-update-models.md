@@ -30,6 +30,8 @@ Install this skill in a supported runtime, then give it the relevant material an
 3. Update dated records, project them to registered headless consumers, and refresh the selected established installations through verified installers while retaining preimages.
 4. The explicit update request authorizes that scope; new installations require a separate request.
 5. Verify source and installed parity and report gaps.
+6. When refreshing an existing installation, derive and stage only its verified established cohort; never add a member implicitly.
+7. Projection counts derive from the owner’s current asset and consumer arrays.
 
 ## Subagents
 
@@ -47,6 +49,8 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/headless-update-models/SKILL.md](../../skills/headless-update-models/SKILL.md)
 - [skills/headless-update-models/protocol.yon](../../skills/headless-update-models/protocol.yon)
+- [skills/headless-update-models/references/installation.md](../../skills/headless-update-models/references/installation.md)
+- [skills/headless-update-models/references/refresh.md](../../skills/headless-update-models/references/refresh.md)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

@@ -48,6 +48,9 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/headless-gemini/SKILL.md](../../skills/headless-gemini/SKILL.md)
 - [skills/headless-gemini/protocol.yon](../../skills/headless-gemini/protocol.yon)
+- [skills/headless-gemini/references/supervision.md](../../skills/headless-gemini/references/supervision.md)
+- [skills/headless-gemini/references/validation.md](../../skills/headless-gemini/references/validation.md)
+- [skills/headless-gemini/scripts/run-windows.mjs](../../skills/headless-gemini/scripts/run-windows.mjs)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

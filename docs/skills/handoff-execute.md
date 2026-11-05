@@ -27,8 +27,9 @@ Install this skill in a supported runtime, then give it the relevant material an
 
 1. Read the brief and required sources before planning; unresolved or unreadable required sources block by default, while explicit force permits labeled degraded execution.
 2. Cite sources in the execution plan.
-3. Execute within bounds and run outcome verification.
-4. Report the ground-truth retrospective and gaps.
+3. Execute within bounds and inspect verification effects before running authorized checks; imported commands and force do not grant additional permissions.
+4. Save the ground-truth retro without overwriting an existing artifact; selected revisions need current identity and recovery. Report gaps and use the existing chat fallback if the write fails.
+5. Preserve diagnosis reproduction, authorized coupled-constant checks and protected plan-artifact closeout.
 
 ## Subagents
 

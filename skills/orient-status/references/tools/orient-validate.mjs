@@ -140,6 +140,7 @@ function parseInstance(src) {
       for (const pair of splitTop(body)) {
         const m = pair.match(/^\s*"([^"]+)"\s*->\s*"([^"]+)"\s*$/);
         if (m) provenance.push({ field: m[1], value: m[2] });
+        else if (pair.trim()) parseErrors.push('@MAP name=provenance: malformed quoted pair');
       }
     }
   }
@@ -208,8 +209,8 @@ export function validate(instancePath, schemaPath = SCHEMA) {
 
   // 5. ETA must be a band, not a point estimate (chk:eta-no-point — WARN, mirrors the schema's fail=WARN).
   const fc = cfgs.forecast;
-  if (fc && fc.eta_low !== undefined && fc.eta_low === fc.eta_high && fc.confidence !== 'high')
-    warnings.push(`forecast ETA is a point estimate (eta_low == eta_high == "${fc.eta_low}") without high confidence — band it`);
+  if (fc && fc.eta_low !== undefined && fc.eta_high !== undefined && fc.eta_low === fc.eta_high && String(fc.eta_low).trim() !== '' && String(fc.eta_low).trim().toLowerCase() !== 'unknown' && fc.unschedulable !== 'true')
+    warnings.push(`forecast ETA is a point estimate (eta_low == eta_high == "${fc.eta_low}") — band it; confidence never permits a point forecast`);
 
   return { ok: errors.length === 0, errors, warnings };
 }

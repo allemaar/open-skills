@@ -31,6 +31,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 3. Classify conflicts and order superseded findings without averaging disagreement away.
 4. Pool coverage to reveal gaps absent from individual reports.
 5. Present combined findings and limits in decision-relevant order.
+6. Separate actual source uncertainty from source count; repeated evidence counts once without automatically lowering confirmed facts.
 
 ## Subagents
 
@@ -48,6 +49,7 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/human-merge/SKILL.md](../../skills/human-merge/SKILL.md)
 - [skills/human-merge/references/human-contract.md](../../skills/human-merge/references/human-contract.md)
+- [skills/human-merge/references/examples/museum-archive.md](../../skills/human-merge/references/examples/museum-archive.md)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

@@ -28,6 +28,14 @@ Unlike `agent` and `orchestrator`, this profile does NOT ask Q&A for most fields
 
 User confirms `conventions_specific_to_thread` only — everything else is auto-collected then surfaced for review.
 
+## Compact continuation
+
+Use this profile for lightweight continuation too; do not create another profile. Retain frontmatter, Sources and sign-off obligations. Consolidate narrative to objective, current state/evidence pointers, relevant decisions and thread conventions, next action, and blockers/risks. Omit empty narrative sections; expand only to prevent consequential misunderstanding.
+
+Reuse known chat-only conventions and surface them for correction; ask the existing conventions question only for missing material information. Separate settled decisions, proposals and open choices. Collect Git fields and commands only where applicable tools/evidence exist; otherwise name unknown state. Never invent access or call an unobserved tree clean.
+
+Use references resolvable in the receiving environment, with missing access stated. Preserve configured canonical destinations and vault governance. Without a configured destination, resolve the authorized destination before saving; text-only output is proposed content, not a canonical write or completed handoff. Do not invent an activation path. Ground the resume command in the actual next action and available receiving tools. Compactness waives neither source ingestion, redaction nor retro requirements.
+
 ## Body template
 
 After the universal frontmatter (with `profile: new-session`), the body looks like:
@@ -37,7 +45,7 @@ After the universal frontmatter (with `profile: new-session`), the body looks li
 
 > [!info]
 > Profile: **new-session** · Project: **{project}** · Created: **{date}**
-> Paste this entire file into a fresh agent session as the opening message.
+> In the receiving session, explicitly invoke `/handoff-execute "<actual-saved-brief-absolute-path>"` using the saved brief’s real path. Background-document presence or pasted context alone does not select execution. If that skill is unavailable, use the producer’s explicit fallback activation and preserve its source-ingestion, premise and retro discipline; never invent a saved path.
 > This is a continuation of work already in progress — read carefully before acting.
 
 ## What we were doing
@@ -111,6 +119,9 @@ Never infer confirmation from an empty list; nonempty required sources stay gate
 ````
 
 ## Field defaults specific to this profile
+
+- Remove secrets, credentials and unnecessary personal data from brief text and excerpts; point to an authorized source instead.
+- The empty-verification exception does not extend to dispatched agent or orchestrator tasks. State transfer preserves existing authority without approving new work.
 
 - `verify` field in frontmatter may be empty if continuation work has no single-shot acceptance — that's allowed for this profile only.
 - `time-budget-min` defaults higher (e.g., 180) since continuations are often longer-running.

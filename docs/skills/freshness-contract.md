@@ -28,6 +28,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Classify the artifact and decision.
 2. Identify age anchors, intervening changes and invalidators.
 3. Apply the restrictive table: reuse, spot-check or re-verify; accept labeled risk only in the no-cheap-discriminator case.
+4. After selecting any spot-check row, handle missing discriminators without relaxing mandatory re-verification.
 
 ## Subagents
 

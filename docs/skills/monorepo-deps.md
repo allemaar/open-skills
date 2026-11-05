@@ -29,6 +29,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Establish permitted changes and update bounds for the chosen operation
 3. Run that operation, including lockfile resynchronization when applicable
 4. Run the required checks and report results
+5. Resolve actual repository-local tools without acquisition fallback; retain completed exit status and stop after the single bounded conflict-repair pass.
 
 ## Subagents
 

@@ -28,7 +28,8 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Choose the notes and properties to include
 2. Define filters, optional formulas and views in YAML
 3. Validate syntax and property references
-4. Open the base in Obsidian when available
+4. Validate the candidate before saving; preserve unrelated content and recovery, recheck current identity and read back the protected write. New files use exclusive creation.
+5. Open the base in Obsidian when available
 
 ## Subagents
 

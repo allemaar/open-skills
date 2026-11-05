@@ -28,15 +28,18 @@ The read-only conformance front door for **Map Your Knowledge (MYK)**. It valida
 1. **Read-only forever.** map-check never writes, renames, or proposes-and-applies. Findings go to the Handler, and repairs run through `map-this` (one-off) or `map-maintain` (the tending loop).
 2. **Unqualified CLEAN is banned.** The only positive verdict is: *"clean for checks {list} over inventory {source}, mode {mode}; not checked: {list}."* A crash can never read as a pass: the JSON envelope separates operational errors from findings by shape.
 
+Load the available `map-rules` owner and selected references for manual rule/provenance review. If that sibling is absent, the bundled compiled checker may still run within its documented boundary; report manual rule review unavailable, never invent the missing rules or claim full coverage.
+
 ## Required checker companion
 
 The bundled deterministic companion [`references/tools/map-check.mjs`](references/tools/map-check.mjs) does the mechanical work with Node.js and no model in the validation path:
 
 ```bash
-node <this-skill>/references/tools/map-check.mjs <target-path> [--json]
+node <this-skill>/references/tools/map-check.mjs <target-path> [--root-map <scope-relative-path>] [--json] [--max-files N] [--max-ms N]
 ```
 
 - **Target classes:** an explicit path inside a scope, or a scope root (a directory containing `.myk/README.md` or a declared root map). Ambiguous or contested scopes fail closed (`scope-conflict`).
+- **DEGRADED target:** pass the established scope root itself as `<target-path>` and its contained root-map locator through `--root-map`. The checker resolves that locator relative to the supplied target; it does not promise walk-up scope discovery from a nested target.
 - **Modes:** FULL when [`scope.md` — Organized-scope evidence](../map-rules/references/scope.md#organized-scope-evidence) resolves `.myk/README.md`; DEGRADED when the caller supplies another exact declared root-map source. Absence of a declaration is never a finding; undeclared trees are outside jurisdiction.
 - **Inventory honesty:** the script checks the supplied target, scope root and required read paths with lstat and native-realpath identity before use, then walks the scope with bounded inventory. Visible redirects, unreadable required evidence and skipped boundaries produce operationally incomplete exit `2`. These mechanisms cannot observe every reparse form and do not prevent races; the result is not proof of race-free containment. The report includes `inventory: {source, complete, scanned}`.
 - **Exit codes:** `0` ran, zero findings (qualified-clean) · `1` ran, findings present · `2` operational error · `3` target/scope resolution error.
@@ -59,13 +62,13 @@ node <this-skill>/references/tools/map-check.mjs <target-path> [--json]
 
 ## Bundled checker boundary
 
-The companion implements the named checks above, with address-form limited to owner resolution, duplicate-basename ambiguity, and raw cross-vault prohibition. It independently parses link declarations and resolves the eleven terminal occurrence classes from [`link-resolution.md`](../map-rules/references/link-resolution.md). A cap before inventory closure returns typed `check-incomplete` exit `2`, never clean. `map-scan` and `map-check` share named semantics but no implementation; normalized-record disagreement is evidence.
+The companion implements the named checks above, with address-form limited to owner resolution, duplicate-basename ambiguity, and raw cross-vault prohibition. It independently parses link declarations and resolves the eleven terminal occurrence classes from [`link-resolution.md`](../map-rules/references/link-resolution.md). A cap before inventory or occurrence closure returns typed `check-incomplete` exit `2`, never clean. Invalid machine declarations return `contract-invalid` with diagnostics and no usable resolution. After occurrence closure, a time cap assigns the remaining records `residual-at-cap`, emits incomplete resolution and exit `1`; do not heal or enrich from it. `map-scan` and `map-check` share named semantics but no implementation; normalized-record disagreement is evidence.
 
 Not implemented: optional lifecycle values, eight-field ceremony, snapshot pairs, automatic discovery of scope-local instructions, Unicode/Obsidian heading-slug normalization, embed-specific semantics, and qualified-Lyt-vault resolution. Narrowing the declared boundary requires explicit review.
 
 ## Suppression sources — exactly two
 
-M3 declarations in the scope contract, and Handler-confirmed rulings persisted in the style record. **Raw prose suppresses nothing.** Every suppression is listed in the output with its provenance.
+The script consumes only M3 declarations in the scope contract: `exclusions_honored` and `managed_declared` identify their source paths under `ownership.md`. It does not load style records or suppress findings from prose. A Handler-confirmed style ruling may be applied only in a separate manual disposition ledger naming the ruling source, affected finding and reason; relay the raw deterministic verdict unchanged. Unknown or unconfirmed prose suppresses nothing.
 
 ## Agent duties around the script
 

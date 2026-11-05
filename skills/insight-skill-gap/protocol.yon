@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=insight-skill-gap | title="Skill Gap Discovery — New/Updated Skill Proposals from Recent Work" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Scan recent implementation work and identify whether new skills should be created or existing ones updated" | trigger="user runs /skill-gap, asks to check for skill gaps, what skills should we add, or after /retro flags patterns worth codifying"
-@STAMP ts:ts=2026-10-26T00:24:26Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-11-04T15:22:07Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Governance ---
 
@@ -16,7 +16,7 @@
 
 @SEC name="Phase 1 — Recent Work Scan"
 @STEP rid=step:gather | n:int=1 | op=std:ai.prompt@v1 | args=[task="Gather recent context — conversation history, changed files, new patterns introduced. Summarize: what was built, which libraries/frameworks were used, what novel patterns emerged."] | out=[ref:recent-work]
-@STEP rid=step:load-index | n:int=2 | op=std:fs.read@v1 | args=[path="skill-index"] | out=[ref:skill-index] | note="Read current skill index to know what already exists before analyzing gaps."
+@STEP rid=step:load-index | n:int=2 | op=std:fs.read@v1 | args=[task="Resolve the actual supplied or host/repository skill catalog and record its scope before duplicate checking. If unavailable, keep candidates provisional and explicitly mark duplicate coverage incomplete; a missing index is never an empty library."] | out=[ref:skill-index] | note="Read current skill index to know what already exists before analyzing gaps."
 
 # --- Phase 2: Gap Analysis ---
 
@@ -39,7 +39,7 @@
 
 @SEC name="Phase 4 — Execution"
 @NOTE text="Phase 4 only runs if user approves in Phase 3."
-@STEP rid=step:create | n:int=6 | op=std:ai.prompt@v1 | args=[task="Create approved skills using skill-smith workflow. For updates to existing skills, apply targeted edits to specified sections."] | in=[ref:approved-proposals] | note="Defers to /skill-smith for new skills."
+@STEP rid=step:create | n:int=6 | op=std:ai.prompt@v1 | args=[task="Create approved skills and apply selected updates through Skill Smith create or update/write, preserving exact approval, canonical source, preimages, conflict checks and affected callers/metadata."] | in=[ref:approved-proposals] | note="Defers to Skill Smith create or update/write for the selected operation."
 
 # --- Downstream ---
 
@@ -58,4 +58,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-26T00:24:26Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-11-04T15:22:07Z | src="Alexandru Mares | allemaar.com" | method=generated

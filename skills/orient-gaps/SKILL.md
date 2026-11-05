@@ -43,6 +43,8 @@ The shared record, render contract, worked fixtures, and value validator travel
 inside [`references/`](references/). The repository-only round-trip guard is
 release evidence; its absence from an installed copy does not block execution.
 
+
+Reuse the shared topology-detection contract within the same single bounded worker, or consume supplied topology fields with their stated provenance and limits. Do not invoke another self-orchestrating orientation skill or start a second sweep; supplied and detected interpretations must agree or remain an explicit gap.
 ## When to use
 
 - "What's stuck / what's blocking / what's not done / what's missing" on a project, repo, plan, or task.
@@ -66,7 +68,7 @@ release evidence; its absence from an installed copy does not block execution.
    - **Silent gaps** — the honest-negative: what is *plausibly missing but unproven* (no tests next to new code, a doc that wasn't updated). **Always emitted explicitly** — silently omitting it implies false completeness. Mark each `◐ inferred` or `◌ guessed`; never present a silent gap as a confirmed fact.
 
 4. **`--audit` mode — the third tier ("don't trust the orientation"):**
-   - `audit_mismatches` — a **claim with no corroborating evidence** (a "done" with no commit, a "tested" with no test file).
+   - `audit_mismatches` — a **claim with no corroborating evidence**. Treat missing commits or test files as mismatches only when the actual acceptance contract requires them; otherwise inspect valid uncommitted artifacts, manual results or external records within the same read bound. A missing proxy alone is a gap in evidence, not proof the work was not done..
    - `gamed_signals` — a metric **inflated past its evidence weight** (a commit count padded by whitespace-only commits; "activity" with no substantive diff). Tier-tag the hollow signal `◌` so it reads as hollow — the anti-Goodhart disclosure (see [`references/orient-spec/family-behaviors.md`](references/orient-spec/family-behaviors.md) §4).
 
 5. **Tag every field with a provenance tier** — `◆ git-attested` · `◐ inferred` · `◌ guessed` — and **fail closed**: set **`gate_status`** (enum: `ready | blocked | stalled | degraded | indeterminate`) to `degraded`/`indeterminate` with a **sentinel** — never a plausible `ready` — on barren evidence. **An empty stall surface is a success state** (collapse to one line: *"nothing stuck — clean"*), NOT a failure.

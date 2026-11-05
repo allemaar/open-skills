@@ -1,14 +1,14 @@
 ---
 name: orchestrate-mode
 description: >
-  Activate orchestrator mode in the current session: the lead agent dispatches governed worker subagents and does not execute concrete work directly. Trigger on /orchestrate-mode, "become an orchestrator", "orchestrator mode", "delegate everything", or "do not execute". Use multi-agent-mode instead when the lead agent should still work directly while delegating helper slices.
+  Activate orchestrator mode in the current session: the lead agent dispatches governed worker subagents and does not execute concrete work directly. Trigger on /orchestrate-mode, "become an orchestrator", "orchestrator mode", "delegate everything", or "delegate execution while I coordinate". Use multi-agent-mode instead when the lead agent should still work directly while delegating helper slices.
 visibility: public
 triggers:
   - "/orchestrate-mode"
   - "become an orchestrator"
   - "orchestrator mode"
   - "delegate everything"
-  - "do not execute"
+  - "delegate execution while I coordinate"
 next-skills:
   - skill: handoff
     phrase: "/handoff"
@@ -24,6 +24,8 @@ next-skills:
 # /orchestrate-mode
 
 Switch the current session into pure orchestrator behavior. The lead agent coordinates, dispatches, reviews, and integrates. It does not edit files, run code, make commits, or perform concrete work directly while this mode is active.
+
+A bare request to plan or not execute does not select this mode; explicit orchestrator or delegated-execution intent is required.
 
 ## Platform mapping
 
@@ -50,6 +52,8 @@ Then ask for the work item if none was provided.
 - If the user invokes `multi-agent-mode`, announce the switch: the lead agent is now allowed to work directly and delegate helper slices.
 - If the user exits orchestrator mode without choosing another mode, return to the session's default delegation behavior.
 - Latest explicit mode wins. Do not maintain a hidden mode stack.
+
+Before dispatch, bind the worker and total invocation to finite deadlines and resource limits, with a named monitoring owner, observable progress, a cancellation handle and terminal success/failure/timeout outcomes. Use native controls; include read-only scope and no-child instructions in research briefs. On failure or timeout, cancel owned work and report retained partial results and unchecked coverage. If these controls are unavailable, do not dispatch. Keep the lead dispatch-only: missing lifecycle capability stops dependent execution; serialize bounded workers when that resolves the capability limit.
 
 ## Rules
 
@@ -79,6 +83,9 @@ Do not touch:
 Relevant context:
 Acceptance criteria:
 Verification to run:
+Finite worker / invocation limits, monitoring owner, progress and cancel handle:
+Terminal / partial-result contract:
+Leaf constraint: do not spawn workers.
 Final report must include: changed paths, commands run, result, cross-scope references you chose to leave for the consolidation step, unresolved risks.
 ```
 
@@ -123,7 +130,7 @@ Inspect the cold reviewer's report carefully. Treat any "FIX-FIRST" or "BLOCK" v
 
 Spot-check the reviewer's findings, not only the work under review. A reviewer can miscount or misread. Confirm a flagged defect is real before dispatching a fix, and sample a clean verdict before trusting it. The orchestrator's own checks, the workers' checks, and the reviewer's checks are all fallible in different ways.
 
-When a fix targets a value that appears in more than one place — a number repeated in a summary and a detail block, a name reused across files — the fix-worker brief must instruct enumerate-and-fix-all, not fix-one. An incomplete fix that corrects one occurrence and leaves a stale duplicate is a recurring failure mode. Brief the worker to find every occurrence of the old value and fix each one.
+When a fix targets a value that appears in more than one place — a number repeated in a summary and a detail block, a name reused across files — the fix-worker brief must enumerate all semantically coupled accepted occurrences within the owned scope and fix that set. Equal literals with different purposes must stay unchanged; report unrelated or out-of-scope matches for consolidation.
 
 ## When to use
 

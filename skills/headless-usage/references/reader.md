@@ -17,7 +17,7 @@ Example spec (replace every path with verified local paths):
 }
 ```
 
-The output directory must not exist; its parent must exist and paths must not traverse links. Each provider receives its own directory. Calls run independently. CLI version/help and query processes have finite deadlines and cleanup grace. The parent must retain its task handle, observe completion and report unverified cleanup, never dispatch and forget.
+The output directory must not exist; its parent must exist and paths must not traverse links. Each provider receives its own directory. Calls run independently. CLI version/help and query processes have finite deadlines and cleanup grace. The overall watchdog and interruption request cancellation of all active owned reads, then allow a bounded cleanup grace. Completed provider results are preserved; an expired shutdown grace emits incomplete cleanup/report state on stdout and exits unsuccessfully. The parent must retain its task handle, observe completion and report unverified cleanup, never dispatch and forget.
 
 The optional `transport` field accepts only `cli`, the default. Unknown spec fields and API transport are rejected before any query or output-directory creation. Missing or invalid executable paths affect only their provider. API support must be implemented separately; an API key or CLI login never triggers an implicit fallback.
 

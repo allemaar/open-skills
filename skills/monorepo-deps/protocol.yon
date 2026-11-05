@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=monorepo-deps | title="Monorepo Deps — syncpack + manypkg Orchestrator" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Run the end-to-end syncpack + manypkg flow on an npm-workspaces monorepo: detect prerequisites, gate on install consent, then check/fix/update/init-config/maintain-config. Cap unwanted majors in root overrides before npm update. Handle EOVERRIDE and peer-dep conflicts deterministically. Verify with syncpack lint + manypkg check + npm ci --dry-run before declaring done." | trigger="user runs /monorepo-deps (with optional subcommand check|fix|update|init-config|maintain-config), or says update deps, sync deps, check deps, fix syncpackrc, create syncpackrc, my lock file is out of sync"
-@STAMP ts:ts=2026-10-30T15:49:33Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-11-04T15:16:26Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Boundary ---
 
@@ -14,14 +14,14 @@
 
 @SEC name="Phase 1 — Detect prerequisites"
 @STEP rid=step:detect | n:int=1 | op=std:fs.read@v1 | args=[path="package.json"] | out=[ref:root-pkg]
-@STEP rid=step:detect-tools | n:int=2 | op=std:ai.prompt@v1 | args=[task="Check root-pkg.devDependencies for both 'syncpack' and '@manypkg/cli'. Set ref:tools-state to 'both-installed', 'syncpack-missing', 'manypkg-missing', or 'both-missing'."] | in=[ref:root-pkg] | out=[ref:tools-state]
-@CHECK rid=check:both-installed | assert="ref:tools-state == 'both-installed'" | fail=ABORT | msg="Tool(s) missing — go to Phase 1b (install gate). Do not proceed to Phase 2 yet."
+@STEP rid=step:detect-tools | n:int=2 | op=std:ai.prompt@v1 | args=[task="Read package declarations, then resolve and verify the actual repository-local syncpack and manypkg executables and installed versions. Declarations alone do not prove installation. Invoke those exact local binaries with the native process API; command examples use <repo-local-syncpack> and <repo-local-manypkg> placeholders for these resolved paths. Never use a package-acquiring fallback. If either is unavailable, use the existing single install-or-abort decision. Check root-pkg.devDependencies for both 'syncpack' and '@manypkg/cli'. Set ref:tools-state to 'both-installed', 'syncpack-missing', 'manypkg-missing', or 'both-missing'."] | in=[ref:root-pkg] | out=[ref:tools-state]
+@CHECK rid=check:both-installed | assert="ref:tools-state is one of both-installed, syncpack-missing, manypkg-missing or both-missing" | fail=ABORT | msg="Tool state is unresolved; stop. Both-installed skips the install gate; known missing tools enter Phase 1b."
 
 @SEC name="Phase 1b — Install gate (only when a tool is missing)"
-@STEP rid=step:explain-tools | n:int=3 | op=std:ai.prompt@v1 | args=[task="Tell the user, verbatim shape: 'Your repo does not have syncpack/manypkg installed yet. They are the near-canonical pair for npm-workspace monorepos: syncpack finds and fixes dependency version mismatches across workspaces, enforces consistent semver ranges, and lets you ban or pin deps via a single .syncpackrc.json — without it, drift between consumer package.jsons goes unnoticed until a build breaks. manypkg validates that workspace package.jsons are internally consistent and catches deps where one app diverged from the rest. Together they are belt-and-suspenders for a healthy workspace. Install both as root devDeps and continue?' Single decision: yes / no."] | in=[ref:tools-state] | out=[ref:install-consent]
-@CHECK rid=check:consent | assert="ref:install-consent == 'yes'" | fail=ABORT | msg="User declined install — stop the skill silently. Do not attempt any syncpack/manypkg/npm operation."
+@STEP rid=step:explain-tools | n:int=3 | op=std:ai.prompt@v1 | args=[task="Tell the user, verbatim shape: 'Your repo does not have syncpack/manypkg installed yet. They are the near-canonical pair for npm-workspace monorepos: syncpack finds and fixes dependency version mismatches across workspaces, enforces consistent semver ranges, and lets you ban or pin deps via a single .syncpackrc.json — without it, drift between consumer package.jsons goes unnoticed until a build breaks. manypkg validates that workspace package.jsons are internally consistent and catches deps where one app diverged from the rest. Together they are belt-and-suspenders for a healthy workspace. Install both as root devDeps and continue?' Single decision: yes / no."] | when="ref:tools-state != 'both-installed'" | in=[ref:tools-state] | out=[ref:install-consent]
+@CHECK rid=check:consent | assert="ref:tools-state == 'both-installed' OR ref:install-consent == 'yes'" | fail=ABORT | msg="User declined install — stop the skill silently. Do not attempt any syncpack/manypkg/npm operation."
 @STEP rid=step:install | n:int=4 | op=std:shell.exec@v1 | args=[cmd="npm install --save-dev syncpack @manypkg/cli"] | when="ref:install-consent == 'yes'" | out=[ref:install-result]
-@CHECK rid=check:install-succeeded | assert="ref:install-result.exitCode == 0" | fail=ABORT | msg="npm install failed. Surface the error to the user — do not retry blindly."
+@CHECK rid=check:install-succeeded | assert="ref:tools-state == 'both-installed' OR ref:install-result.exitCode == 0" | fail=ABORT | msg="npm install failed. Surface the error to the user — do not retry blindly."
 
 # --- Phase 2: Pick the operation ---
 
@@ -32,16 +32,16 @@
 # --- Phase 3a: check ---
 
 @SEC name="Phase 3 — Execute (op='check')"
-@STEP rid=step:lint | n:int=10 | op=std:shell.exec@v1 | args=[cmd="npx syncpack lint"] | when="ref:op == 'check'" | out=[ref:lint-result]
-@STEP rid=step:manypkg-check | n:int=11 | op=std:shell.exec@v1 | args=[cmd="npx manypkg check"] | when="ref:op == 'check'" | out=[ref:manypkg-result]
+@STEP rid=step:lint | n:int=10 | op=std:shell.exec@v1 | args=[cmd="<repo-local-syncpack> lint"] | when="ref:op == 'check'" | out=[ref:lint-result]
+@STEP rid=step:manypkg-check | n:int=11 | op=std:shell.exec@v1 | args=[cmd="<repo-local-manypkg> check"] | when="ref:op == 'check'" | out=[ref:manypkg-result]
 @STEP rid=step:outdated | n:int=12 | op=std:shell.exec@v1 | args=[cmd="npm outdated --workspaces --include-workspace-root --json"] | when="ref:op == 'check'" | out=[ref:outdated-raw]
 @STEP rid=step:report-check | n:int=13 | op=std:ai.prompt@v1 | args=[task="Group ref:outdated-raw by classification (major/minor/patch/missing) with consumer count per dep. Combine with ref:lint-result and ref:manypkg-result into a single read-only report. Do not modify anything."] | in=[ref:lint-result,ref:manypkg-result,ref:outdated-raw] | when="ref:op == 'check'" | out=[ref:check-report]
 
 # --- Phase 3b: fix ---
 
 @SEC name="Phase 3 — Execute (op='fix')"
-@STEP rid=step:syncpack-fix | n:int=20 | op=std:shell.exec@v1 | args=[cmd="npx syncpack fix"] | when="ref:op == 'fix' || ref:op == 'update'" | out=[ref:syncpack-fix-result]
-@STEP rid=step:manypkg-fix | n:int=21 | op=std:shell.exec@v1 | args=[cmd="npx manypkg fix"] | when="ref:op == 'fix' || ref:op == 'update'" | out=[ref:manypkg-fix-result]
+@STEP rid=step:syncpack-fix | n:int=20 | op=std:shell.exec@v1 | args=[cmd="<repo-local-syncpack> fix"] | when="ref:op == 'fix' || ref:op == 'update'" | out=[ref:syncpack-fix-result]
+@STEP rid=step:manypkg-fix | n:int=21 | op=std:shell.exec@v1 | args=[cmd="<repo-local-manypkg> fix"] | when="ref:op == 'fix' || ref:op == 'update'" | out=[ref:manypkg-fix-result]
 @STEP rid=step:install-after-fix | n:int=22 | op=std:shell.exec@v1 | args=[cmd="npm install"] | when="ref:op == 'fix' || ref:op == 'update'" | out=[ref:install-after-fix-result]
 
 # --- Phase 3c: update ---
@@ -57,17 +57,17 @@
 @CATCH rid=catch:eresolve | when="ref:update-result.stderr matches 'ERESOLVE' && stderr matches 'peer'" | then="go to step:peer-resolve"
 
 @SEC name="Phase 3c — Conflict resolution"
-@MAP name=EoverrideOptions | pairs=["match-ranges"->"set root devDep range equal to override range (e.g., both ^5) — simplest, but may trigger manypkg EXTERNAL_MISMATCH","drop-root-dep"->"remove the dep from root devDependencies entirely — override still applies via dedupe (preferred when root scripts don't need direct access)","scope-transitive-only"->"use { \".\": \"^5\" } syntax in override to leave direct deps alone — useful when root must keep the direct dep at *"]
-@STEP rid=step:eoverride-resolve | n:int=40 | op=std:ai.prompt@v1 | args=[task="EOVERRIDE conflict on dep X: override is incompatible with root devDep. Pick a resolution from EoverrideOptions based on whether root scripts need X directly. Apply the chosen fix to package.json, then retry npm-update."] | use=[cfg:EoverrideOptions] | out=[ref:eoverride-fix]
-@STEP rid=step:peer-resolve | n:int=41 | op=std:ai.prompt@v1 | args=[task="Peer-dep conflict: transitive peer wants dep X@exact-version, but installed range is different. Fix: (1) pin root devDep to the exact version the peer wants (no caret), (2) add a syncpack semver group exception in .syncpackrc.json BEFORE the generic ^ group so syncpack does not re-add the caret on next fix. Pattern: { \"label\": \"X requires exact match for Y peer dep\", \"packages\": [\"**\"], \"dependencies\": [\"X\"], \"dependencyTypes\": [\"prod\", \"dev\"], \"range\": \"\" }. Apply both, retry npm-update."] | out=[ref:peer-fix]
+@MAP name=EoverrideOptions | pairs=["match-ranges"->"set root devDep range equal to override range (e.g., both ^5) — simplest, but may trigger manypkg EXTERNAL_MISMATCH","drop-root-dep"->"remove the dep from root devDependencies entirely — override still applies via dedupe (preferred when root scripts don't need direct access)","parent-scoped-descendant"->"nest the override under its actual parent; dot-object form does not exempt direct dependencies. Direct specs must match or use the supported dependency-reference syntax."]
+@STEP rid=step:eoverride-resolve | n:int=40 | op=std:ai.prompt@v1 | args=[task="EOVERRIDE conflict on dep X: override is incompatible with root devDep. Pick a resolution from EoverrideOptions based on whether root scripts need X directly. Apply the chosen fix to package.json, then retry npm-update at most once within the single selected conflict-repair pass; if still failing, stop with actual state and conflict evidence."] | use=[cfg:EoverrideOptions] | out=[ref:eoverride-fix]
+@STEP rid=step:peer-resolve | n:int=41 | op=std:ai.prompt@v1 | args=[task="Peer-dep conflict: transitive peer wants dep X@exact-version, but installed range is different. Fix: (1) pin root devDep to the exact version the peer wants (no caret), (2) add a syncpack semver group exception in .syncpackrc.json BEFORE the generic ^ group so syncpack does not re-add the caret on next fix. Pattern: { \"label\": \"X requires exact match for Y peer dep\", \"packages\": [\"**\"], \"dependencies\": [\"X\"], \"dependencyTypes\": [\"prod\", \"dev\"], \"range\": \"\" }. Apply both within the one selected repair pass and retry npm-update once; persistent failure stops with actual state and evidence."] | out=[ref:peer-fix]
 
 # --- Phase 3d: init-config ---
 
 @SEC name="Phase 3 — Execute (op='init-config')"
 @RULE rid=rule:no-clobber | lvl=MUST_NOT | when="ref:op == 'init-config'" | then="overwrite an existing .syncpackrc.json — abort with a message pointing to maintain-config instead"
 @STEP rid=step:check-existing | n:int=50 | op=std:fs.read@v1 | args=[path=".syncpackrc.json"] | when="ref:op == 'init-config'" | out=[ref:existing-config]
-@CHECK rid=check:no-existing | assert="ref:existing-config does not exist" | fail=ABORT | msg=".syncpackrc.json already exists. Use maintain-config to edit it, or delete it first if you really want a fresh start."
-@STEP rid=step:write-template | n:int=51 | op=std:fs.write@v1 | args=[path=".syncpackrc.json",content="override-driven monorepo template — see SKILL.md Phase 3 init-config block for the exact JSON. Includes versionGroups ($LOCAL → *, override-managed deps → isIgnored, local/resolutions → isIgnored) and semverGroups (prod/dev → ^, overrides → exact)."] | when="ref:op == 'init-config'" | out=[ref:config-written]
+@CHECK rid=check:no-existing | assert="ref:op != 'init-config' OR ref:existing-config does not exist" | fail=ABORT | msg=".syncpackrc.json already exists. Use maintain-config to edit it, or delete it first if you really want a fresh start."
+@STEP rid=step:write-template | n:int=51 | op=std:fs.write@v1 | args=[path=".syncpackrc.json",content="override-driven monorepo template — see SKILL.md init-config subsection for the exact JSON. Includes versionGroups ($LOCAL → *, override-managed deps → isIgnored, local/resolutions → isIgnored) and semverGroups (prod/dev → ^, overrides → exact)."] | when="ref:op == 'init-config'" | out=[ref:config-written]
 @STEP rid=step:init-overrides | n:int=52 | op=std:ai.prompt@v1 | args=[task="Update root package.json overrides block to declare actual versions for every dep listed in the new .syncpackrc.json 'Override-managed deps' group. Start with * for everything; the user can pin majors as needed."] | in=[ref:config-written] | when="ref:op == 'init-config'" | out=[ref:overrides-seeded]
 
 # --- Phase 3e: maintain-config ---
@@ -79,19 +79,19 @@
 # --- Phase 4: Verify ---
 
 @SEC name="Phase 4 — Verify"
-@STEP rid=step:final-lint | n:int=70 | op=std:shell.exec@v1 | args=[cmd="npx syncpack lint"] | out=[ref:final-lint]
-@STEP rid=step:final-manypkg | n:int=71 | op=std:shell.exec@v1 | args=[cmd="npx manypkg check"] | out=[ref:final-manypkg]
-@STEP rid=step:final-ci-dryrun | n:int=72 | op=std:shell.exec@v1 | args=[cmd="npm ci --dry-run --workspaces --include-workspace-root"] | out=[ref:final-ci]
-@CHECK rid=check:lint-clean | assert="ref:final-lint exit==0 AND stdout matches 'No issues found'" | fail=ABORT | msg="syncpack lint reported issues — surface and stop, do not silently loop"
-@CHECK rid=check:manypkg-clean | assert="ref:final-manypkg exit==0 AND stdout matches 'workspaces valid'" | fail=ABORT | msg="manypkg check failed — surface and stop"
-@CHECK rid=check:lock-sync | assert="ref:final-ci does not match 'Missing .* from lock file'" | fail=ABORT | msg="package-lock.json out of sync with package.json — run npm install before stopping"
+@STEP rid=step:final-lint | n:int=70 | op=std:shell.exec@v1 | args=[cmd="<repo-local-syncpack> lint"] | when="ref:op != 'check'" | out=[ref:final-lint]
+@STEP rid=step:final-manypkg | n:int=71 | op=std:shell.exec@v1 | args=[cmd="<repo-local-manypkg> check"] | when="ref:op != 'check'" | out=[ref:final-manypkg]
+@STEP rid=step:final-ci-dryrun | n:int=72 | op=std:shell.exec@v1 | args=[cmd="npm ci --dry-run --workspaces --include-workspace-root"] | when="ref:op != 'check'" | out=[ref:final-ci]
+@CHECK rid=check:lint-clean | assert="ref:op == 'check' OR (ref:final-lint exit==0 AND stdout matches 'No issues found')" | fail=ABORT | msg="syncpack lint reported issues — surface and stop, do not silently loop"
+@CHECK rid=check:manypkg-clean | assert="ref:op == 'check' OR (ref:final-manypkg exit==0 AND stdout matches 'workspaces valid')" | fail=ABORT | msg="manypkg check failed — surface and stop"
+@CHECK rid=check:lock-sync | assert="ref:op == 'check' OR (ref:final-ci.exitCode == 0 AND ref:final-ci does not match 'Missing .* from lock file')" | fail=ABORT | msg="package-lock.json out of sync with package.json — run npm install before stopping"
 
 # --- Phase 5: Hand off ---
 
 @SEC name="Phase 5 — Hand off"
 @RULE rid=rule:no-commit | lvl=MUST_NOT | when="phase 4 passes" | then="commit, push, or run git operations — that is /github-sync's job"
 @RULE rid=rule:status-summary | lvl=MUST | when="phase 4 passes" | then="report to user: what changed (deps bumped, caps added, config edited), what verifications passed, what to consider next"
-@STEP rid=step:summarize | n:int=80 | op=std:ai.prompt@v1 | args=[task="Report a clean status: list of deps that bumped (from outdated-pre vs final state), list of new overrides caps, any config edits, all three verifications that passed. Mention that /github-sync is the next step to commit, and /verify is appropriate if there are user-visible features to retest."] | out=[ref:final-summary]
+@STEP rid=step:summarize | n:int=80 | op=std:ai.prompt@v1 | args=[task="For check, return the actual read-only check-report and any issues; never claim clean by default. For mutating operations, after completed successful final checks report a clean status: list of deps that bumped (from outdated-pre vs final state), list of new overrides caps, any config edits, all three verifications that passed. Mention that /github-sync is the next step to commit, and /verify is appropriate if there are user-visible features to retest."] | out=[ref:final-summary]
 
 # --- Rules ---
 
@@ -115,4 +115,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=91 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-30T15:49:33Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-11-04T15:16:26Z | src="Alexandru Mares | allemaar.com" | method=manual

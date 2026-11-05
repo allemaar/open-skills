@@ -76,7 +76,9 @@ Each design produces: (1) interface signature, (2) usage example, (3) what compl
 
 > ⚠️ **Don't mistake extraction for deepening.** If a design has the same total interface surface as the original modules combined, it's a rename. The interface must get smaller.
 
-**If sub-agents are available** (Claude Code / Cowork): spawn 3–4 in parallel with the brief template below. Do not share prior designs between agents — isolation is the point. **If not** (Claude.ai): work each constraint sequentially, treating each design as complete and committed before the next — contamination defeats the purpose.
+Before dispatch, bind the worker and total invocation to finite deadlines and resource limits, with a named monitoring owner, observable progress, a cancellation handle and terminal success/failure/timeout outcomes. Use native controls; include read-only scope and no-child instructions in research briefs. On failure or timeout, cancel owned work and report retained partial results and unchecked coverage. If these controls are unavailable, do not dispatch. Use the existing bounded inline fallback when permitted, labeling it non-independent; empty or failed returns never count as completed coverage.
+
+**If sub-agents are available** (Claude Code / Cowork): spawn 3–4 in parallel with the brief template below. Do not share prior designs between agents — isolation is the point. **If not** (Claude.ai): work each constraint sequentially, treating each design as complete before the next; this is useful but correlated same-context generation, not independent cold work.
 
 ```
 ## Design Brief
@@ -113,7 +115,7 @@ After all designs are presented, compare them in prose and give an opinionated r
 
 ## Step 7 — Create GitHub issue
 
-Draft the RFC using the template below. Render the complete draft as a markdown block in the conversation, then ask: **"Should I create this issue now?"** Wait for explicit confirmation before running `gh issue create`. If `gh` is unavailable, print the final draft for manual paste.
+Resolve and read back the exact destination repository with the complete issue draft before approval. Bind that approved repository explicitly in the publication command; ambiguous or changed identity stops publication. Draft the RFC using the template below. Render the complete draft as a markdown block in the conversation, then ask: **"Should I create this issue now?"** Wait for explicit confirmation before running `gh issue create --repo <approved-owner/repository>`. If `gh` is unavailable, print the final draft for manual paste.
 
 ```markdown
 ## Problem
@@ -144,7 +146,7 @@ Draft the RFC using the template below. Render the complete draft as a markdown 
 - How callers should migrate to the new interface
 ```
 
-> ⚠️ **"Old tests to delete"** must name specific test files. If you cannot, return to Step 2 and find them — a vague entry leaves dead test weight behind.
+> **Old tests to delete.** Name specific old tests only when deletion is justified by a behavioral coverage mapping to retained/replacement boundary tests. An evidenced none is valid, including an untested candidate; do not manufacture a deletion list to satisfy the template.
 
 > ⚠️ **"Implementation Recommendations"** must be file-path-agnostic. Write principles a future engineer can apply even after the codebase is reorganized.
 

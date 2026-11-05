@@ -44,6 +44,8 @@ If the tool call has side effects (`Edit`, `Write`, `Bash` with effects), refuse
 
 ## Step 2 — Brief and spawn the sub-agent
 
+Before dispatch, bind the worker and total invocation to finite deadlines and resource limits, with a named monitoring owner, observable progress, a cancellation handle and terminal success/failure/timeout outcomes. Use native controls; include read-only scope and no-child instructions in research briefs. On failure or timeout, cancel owned work and report retained partial results and unchecked coverage. If these controls are unavailable, do not dispatch. Mandatory delegation cannot fall back to inline source gathering; report the missing capability and stop the dependent operation.
+
 Spawn one sub-agent (`Explore` for filesystem, `general-purpose` for mixed/web). Brief contains:
 
 - Tool call spec verbatim.
@@ -88,6 +90,8 @@ Gaps:
 ```
 
 ## Step 5 — Lead verifies proof-of-work
+
+Match quoted proof text and tokens as exact literal strings, using fixed-string matching or complete regex escaping; characters such as a[b] and version dots must not become regex operators. An exact match still does not establish independent provenance.
 
 For each kept finding AND each unfollowed pointer, the lead issues a deterministic verification tool call — **never** memory pattern-matching. **All ephemeral sources are temp-file-backed before verification** — the in-context substring check is removed because it has no real tool primitive.
 

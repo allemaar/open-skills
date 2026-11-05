@@ -46,6 +46,8 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/caller-options/SKILL.md](../../skills/caller-options/SKILL.md)
 - [skills/caller-options/protocol.yon](../../skills/caller-options/protocol.yon)
+- [skills/caller-options/references/VENUE-HEURISTICS.md](../../skills/caller-options/references/VENUE-HEURISTICS.md)
+- [skills/caller-options/references/CANDIDATES.md](../../skills/caller-options/references/CANDIDATES.md)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

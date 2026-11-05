@@ -78,7 +78,7 @@ Once approved:
 4. Commit with only the exact approved `Full commit message` block. Do not invent, shorten, expand, template, or append any subject, body, or trailer line that was not visible in the approved plan.
 5. Run the exact-message check: `git log -1 --format=%B`. Verify the message exactly matches the approved `Full commit message` block.
 6. Run the attribution-trailer check against the same output. Verify the message contains no co-author, generated-by, assisted-by, assistant/tool/AI attribution, or similar attribution or ownership trailer. A `Signed-off-by` line is clean only when repository policy requires DCO and that exact line appeared in the approved message.
-7. If the message differs or contains unsolicited attribution or an unapproved sign-off, STOP. Do not push. Remove it with `git commit --amend` using only the clean approved message, then rerun both checks. Repeat until exact and clean.
+7. If the message differs or contains unsolicited attribution or an unapproved sign-off, STOP. Do not push. Remove it with `git commit --amend` using only the clean approved message, then rerun both checks. Allow at most one correction attempt already covered by the exact approved message and history scope. If either check still fails, stop with the hook output and actual committed message; do not push, bypass hooks or broaden the approved amendment.
 8. Run `git status --short --branch`. Confirm the remaining dirty state matches `Excluded Changes` plus expected post-commit state.
 9. Before pushing, recheck the actual destination and approved initial outgoing commit identities and history. The expected approved new commits extend that history and are not themselves drift. If the destination or initial history changed, any unexpected outgoing commit appears, or either cannot be established, stop and request a revised plan. After all approved commits are clean and the check passes, `git push`.
 
@@ -106,7 +106,7 @@ Done.
 - NEVER push a commit until the exact-message check confirms the committed message is byte-for-byte the approved full message and the attribution-trailer check confirms the message is clean.
 - Message-only verification is the default unless the user requested tests/builds or they were already part of the session.
 - If new dirty files appear, branch state changes, staged files mismatch, or the approved plan no longer matches reality: STOP and ask for a revised plan.
-- If nothing to commit, say so and stop.
+- If there is no new commit to create, distinguish that from no outgoing commits. Report any existing outgoing history and its destination; a push-only request belongs to the existing partial-Git owner and still needs its exact destination/history authorization. Stop this commit-and-push flow without inventing a commit or pushing implicitly.
 
 > **Human output.** This skill's handler-facing output obeys the human-output
 > contract (`human-output/SKILL.md`).

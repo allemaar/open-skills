@@ -1,0 +1,161 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Planning & execution",
+      "skills": [
+        "ask-me",
+        "define-terms",
+        "freshness-contract",
+        "plan-cleanup",
+        "plan-create",
+        "plan-deep-dive",
+        "plan-evolve",
+        "plan-execute",
+        "plan-phases",
+        "reflect",
+        "verify",
+        "write-spec"
+      ]
+    },
+    {
+      "title": "Insight & decision",
+      "skills": [
+        "cold-review",
+        "double-check",
+        "insight-adversarial",
+        "insight-angles",
+        "insight-assess",
+        "insight-critique",
+        "insight-cross-examine",
+        "insight-explore",
+        "insight-premortem",
+        "insight-reference-class",
+        "insight-retro",
+        "insight-root-cause",
+        "insight-skill-gap",
+        "insight-test-assumption",
+        "insight-value-of-information",
+        "investigate"
+      ]
+    },
+    {
+      "title": "Priming",
+      "skills": [
+        "extract-signal",
+        "prime-expand",
+        "prime-fetch",
+        "prime-sweep"
+      ]
+    },
+    {
+      "title": "Skill library",
+      "skills": [
+        "directives-audit",
+        "next-skills",
+        "self-improve",
+        "skill-library-creator",
+        "skill-smith",
+        "skills-help"
+      ]
+    },
+    {
+      "title": "Orchestration & dispatch",
+      "skills": [
+        "agent-mailbox",
+        "ask-gate",
+        "budget-check",
+        "caller-options",
+        "handoff",
+        "handoff-execute",
+        "headless-claude",
+        "headless-codex",
+        "headless-gemini",
+        "headless-grok",
+        "headless-models",
+        "headless-update-models",
+        "headless-usage",
+        "multi-agent-mode",
+        "orchestrate-mode",
+        "route-task"
+      ]
+    },
+    {
+      "title": "Orientation",
+      "skills": [
+        "orient-gaps",
+        "orient-map",
+        "orient-roadmap",
+        "orient-status"
+      ]
+    },
+    {
+      "title": "Human output",
+      "skills": [
+        "agent-output",
+        "human-draw",
+        "human-merge",
+        "human-output",
+        "human-rewrite",
+        "prose-audit",
+        "synthesize",
+        "synthesize-init",
+        "teach-topic"
+      ]
+    },
+    {
+      "title": "Code & architecture",
+      "skills": [
+        "audit-coupled-constant",
+        "build-prototype",
+        "debug-task",
+        "design-an-interface",
+        "improve-codebase-architecture",
+        "monorepo-deps"
+      ]
+    },
+    {
+      "title": "Obsidian & vault",
+      "skills": [
+        "json-canvas",
+        "map-check",
+        "map-init",
+        "map-maintain",
+        "map-rules",
+        "map-this",
+        "obsidian-bases",
+        "obsidian-cli",
+        "obsidian-markdown"
+      ]
+    },
+    {
+      "title": "YON",
+      "skills": [
+        "yon-read",
+        "yon-write"
+      ]
+    },
+    {
+      "title": "Web",
+      "skills": [
+        "defuddle",
+        "domain-check"
+      ]
+    },
+    {
+      "title": "Git & sync",
+      "skills": [
+        "diff-recap",
+        "github-sync"
+      ]
+    },
+    {
+      "title": "Write copy",
+      "skills": [
+        "write-copy",
+        "write-copy-event-video"
+      ]
+    }
+  ]
+}

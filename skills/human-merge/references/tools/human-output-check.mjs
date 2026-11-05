@@ -51,7 +51,7 @@ function partition(text) {
   lines.forEach((raw, i) => {
     if (/^\s*```/.test(raw)) {
       if (open) { fences.push(open); open = null; }
-      else open = { start: i + 1, lines: [] };
+      else open = { start: i + 1, info: raw.trim().slice(3).trim(), lines: [] };
       return;
     }
     if (open) open.lines.push({ n: i + 1, text: raw });
@@ -206,10 +206,16 @@ function checkOneRecommendation(prose) {
 
 function run(text) {
   const { fences, prose } = partition(text);
-  checkFenceAscii(fences);
-  checkFenceWidth(fences);
-  checkBarArithmetic(fences);
-  checkPercentSums(fences);
+  // The producer's last-line [fig ...] receipt identifies a figure. Code/data
+  // fences are not figures; unmarked drawings remain outside these mechanical checks.
+  const figures = fences.filter(f => {
+    const last = f.lines.filter(line => line.text.trim()).at(-1)?.text ?? '';
+    return (!f.info || f.info === 'text') && /^\s*\[fig\s+[^\]]+\]\s*$/.test(last);
+  });
+  checkFenceAscii(figures);
+  checkFenceWidth(figures);
+  checkBarArithmetic(figures);
+  checkPercentSums(figures);
   checkSentenceLength(prose);
   checkAcronyms(prose);
   checkOneRecommendation(prose);
@@ -223,6 +229,7 @@ Next: fit a low-flow head.
 shower   ##################  45 L
 laundry  ##############      34 L
 kitchen  ###########         27 L
+[fig bar | fixture]
 \`\`\`
 `;
 
@@ -231,6 +238,7 @@ const BAD = `**Spending is under control.**
 \`\`\`
 housing  ##################  1420
 food     ###############      630
+[fig bar | fixture]
 \`\`\`
 `;
 
@@ -271,7 +279,7 @@ function main() {
   }
   console.log(
     `human-output-check: ${errors.length} error(s), ${warns.length} warning(s)` +
-    ` — judgement rules (verdict-first, confidence labels, what-was-not-checked) are NOT graded here`);
+    ` — figure checks require a last-line [fig ...] receipt; other fences and judgement rules are NOT graded here`);
   return errors.length ? 1 : 0;
 }
 

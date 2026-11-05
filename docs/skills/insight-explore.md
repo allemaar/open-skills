@@ -30,6 +30,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Generate distinct approaches, including standard, performance-oriented, and minimal options where useful.
 3. Compare on developer experience, robustness, timeline, and alignment.
 4. Recommend a winner and suggest the next step.
+5. Compare the full actual candidate set, including additions; report evidenced single/no-feasible or unresolved outcomes without invented alternatives.
 
 ## Subagents
 

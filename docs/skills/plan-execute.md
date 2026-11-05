@@ -25,10 +25,11 @@ Install this skill in a supported runtime, then give it the relevant material an
 
 ## Flow
 
-1. Load and validate the approved plan.
-2. Execute steps in order without silent additions.
-3. Surface unspecified judgment calls.
-4. Verify outcomes and declare completion or a blocker; name unverified steps and skipped gates.
+1. Load the approved executable plan, identify its approval basis and reconcile tickets or specifications; stop on conflict.
+2. For code, identify independent expectations and approved checks before editing; surface unspecified testing decisions.
+3. Execute steps in order without silent additions.
+4. Surface unspecified judgment calls.
+5. Verify the actual selected current candidate, map outcomes to checks and declare completion or a blocker; name unverified steps and skipped gates.
 
 ## Subagents
 

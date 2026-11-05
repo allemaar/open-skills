@@ -102,8 +102,9 @@ export function emitSkillDocs(skills, families) {
   }
   const lines = [
     '# Skill guides', '',
-    `Practical guides to all **${skills.length} skills** in open-skills: what each does, when to use it, an example request, its flow, and how it uses subagents.`, '',
-    'Start with a guide below, then read the linked skill source for its complete instructions and safeguards. [Install a skill](../README.md#install) or browse the [compact catalog](../SKILLS.md).', '',
+    `These guides cover all **${skills.length} skills**: what each does, when to use it, when to leave it out, a request to try, its flow and the result to expect.`, '',
+    'I keep these guides alongside the skills to help you choose what fits. Read a guide first, then its linked source for the complete procedure and safeguards. [Install a skill](../README.md#install) or browse the [compact catalog](../SKILLS.md).', '',
+    'For a task that spans a few steps, start with the [workflow recipes](workflows/README.md). They cover questionnaires, workflow discovery, coauthoring, testing, review evidence, and creating a skill or library. Each names its prerequisites and stopping points.', '',
     'Subagent labels describe the skill\'s own workflow: **No subagent step prescribed** means no separate worker step is defined; **Conditional** depends on the task or selected route; **Part of the workflow** means separate workers or model calls are integral to that route. A label does not grant permission or promise runtime support.', '',
   ];
   for (const family of families) {

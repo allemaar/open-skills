@@ -63,7 +63,7 @@ Use the selected voice timing to guide the picture. Sound may support an actual 
 
 ### Preserve an approved brand recipe
 
-When the caller approves an audition as a reusable formula, retain the exact audio as the performance reference and load the campaign's local production guide on later work. Carry its preset ID/version, approval scope, provider, model, voice ID, all settings, exact input, pronunciation mapping, pause pattern and known limits into the voice handoff. Keep brand-specific values in that project's guide rather than imposing them on other brands or languages.
+When the caller approves an audition as a reusable formula, retain the exact audio as the performance reference and load the campaign's local production guide on later work. Carry its preset ID/version, approval scope, provider, model, voice ID, all settings, exact input, pronunciation mapping, pause pattern and known limits into a separately stored operational voice handoff. The copy pack retains delivery intent, capability status and a locator, not those identifiers/settings or production records. Keep brand-specific values in that project's guide rather than imposing them on other brands or languages.
 
 Reuse the approved audio when the spoken copy is unchanged. Identical settings do not guarantee identical generated performance. For new copy, preserve the selected voice and approved baseline, adapt selective emphasis and pauses to the meaning, and evaluate the complete new take. Do not silently recast, reset settings, switch models, or treat another language or voice as audition-approved. A small requested delivery refinement should change one meaningful control at a time; record the prior and new values and the listening verdict.
 

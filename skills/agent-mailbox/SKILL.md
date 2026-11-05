@@ -104,7 +104,9 @@ Also resolve the transport adapter, privacy posture, local locus identity, expec
 | Profile | Use when | Adds |
 |---|---|---|
 | **CORE** | Exactly two agents; one project mailbox; no competing concurrent claims | Two-message establishment, delivery receipts, single-writer artifacts, bounded listening, idempotent consumption, visible primer |
-| **FULL** | Three or more agents, long-lived or unreliable sessions, concurrent work claims, quorum, frozen recipients, or authentication | Explicit third-handshake ACK, session identifiers, claims and leases, frozen recipients, durable rollups, optional signed-commit profile |
+| **FULL** | Three or more agents, long-lived or unreliable sessions, or concurrent work claims | Explicit third-handshake ACK, session identifiers, settled claims and leases, durable rollups |
+
+Frozen membership or recipient snapshots, quorum-based decisions, and built-in authenticated identity are unavailable in this version. If a task requires one, stop that dependent operation and name the missing contract; do not silently downgrade or invent it. `ALL` is room-visible addressing, not a frozen recipient set. Advisory votes do not confer quorum authority. A separately verified transport identity may be cited with its exact verification scope, but is not a built-in FULL authentication profile.
 
 FULL is a strict superset of CORE. The Handler may force FULL. Do not silently downgrade FULL requirements merely because only two agents are online today.
 
@@ -399,7 +401,7 @@ Structural independence is not effective independence. Agents can share the same
 
 ### Claims and leases (FULL)
 
-A `claim` names task UUID, exact scope, output, exclusive/shared mode, expiry, and expected completion. Earliest valid causal claim wins an exclusive collision. Later contenders send `conflict` and select unclaimed work. Expired claims do not become permanent locks. Claims coordinate work; they never authorize it.
+A `claim` names task UUID, exact scope, output, exclusive/shared mode, expiry, and expected completion. An exclusive claim is provisional until the declared task/artifact single writer or current Handler grants that exact claim through a causal `ack` naming the task, scope, output, holder and finite lease. A claimant cannot grant itself ownership without current Handler assignment. The grantor reconciles the addressed inbox and existing grants before granting, and never grants overlapping live exclusive scope. Causally unordered contenders send `conflict` and wait for writer or Handler arbitration; arrival time, timestamps, UUID ordering, silence and one sync round do not settle task claims. Before exclusive work, verify the grant, unchanged authority and unexpired lease. Expiry, absent settlement or newly observed conflicting claims/grants stops affected work for reconciliation and arbitration; preserve artifacts and do not overwrite or assume transfer. Shared claims retain their agreed nonexclusive terms. Claims coordinate work; they never authorize it. Callsign election is separate and unchanged.
 
 ### Attestation
 
@@ -411,7 +413,7 @@ One inbox is one room. Every participant can see every message; `to` assigns the
 
 1. **FYI:** `to: [ALL]`; body says no reply expected; silence is correct.
 2. **Directed:** address only the responsible callsigns; do not broadcast the obligation.
-3. **Open task:** `to: [ALL]` plus FULL claim semantics; earliest valid causal claim wins and others stand down.
+3. **Open task:** `to: [ALL]` plus FULL claim semantics; exclusive work waits for the causal grant and conflict settlement above; other contenders stand down only after settlement.
 4. **Vote:** `to: [ALL]` plus “each participant replies with a verdict”; the sender follows up with missing callsigns by name.
 
 Thread IDs and causal parents untangle concurrent conversations. The primer roster and latest-accepted table expose missing responses. A joining participant reads the primer, sends `hello` or `resume` to `ALL`, receives `welcome` or `state`, then the primer writer updates the roster.
@@ -608,7 +610,7 @@ In FULL, closed-thread messages remain in place by default. For long-lived arena
 - No secrets, credentials, private keys, or unrestricted sensitive transcripts in mailbox messages.
 - Sensitivity must match the repository and sync destination.
 - Public examples, validation, release notes, screenshots, and videos use purpose-built sanitized data. Do not publish private paths, participant or project identifiers, real operational UUIDs, exact private timestamps/hashes, raw logs, or private task text.
-- `from` and locus are self-asserted unless an optional FULL authentication profile verifies signed commits or endpoint identity.
+- `from` and locus are self-asserted unless separately verified by the transport with its verification scope recorded; FULL supplies no built-in authentication profile.
 - Hostnames, origin coordinates, and resolved paths may disclose infrastructure. Prefer opaque machine aliases and a normalized-root hash outside a private arena.
 - Artifact references are hashed before reliance.
 - Subprocesses use argument arrays; no user-controlled mailbox value reaches an interpolated shell command. A reused adapter proves its real interpreter/API invocation with a bounded startup-and-stop using the same argument-array and spaced-path boundary that production will consume; correct configuration values behind a broken launch string are not a successful rebind.

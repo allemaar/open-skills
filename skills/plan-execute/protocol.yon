@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=plan-execute | title="Plan Execution — Apply Approved Plan with Precision" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Execute an approved plan exactly. Surface judgment calls. Declare completion explicitly. No silent decisions, no silent drift." | trigger="user runs /execute, says execute the plan, implement this, do it, or go ahead after a plan has been approved"
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-10-31T00:44:14Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Governance ---
 
@@ -26,6 +26,9 @@
 @STEP rid=step:load-plan | n:int=1 | op=std:fs.read@v1 | args=[priority="conversation context first, then PLAN.md, then implementation_plan.md"] | use=[cfg:PlanLoadOrder] | out=[ref:plan]
 @CHECK rid=check:plan-found | assert="ref:plan is non-empty" | fail=ABORT | msg="No plan found. Run /plan-create first. Do not proceed."
 @CHECK rid=check:plan-valid | assert="ref:plan satisfies all PlanRequirements (numbered-steps, concrete-actions, verifiable-outcome)" | fail=ABORT | msg="Plan does not meet Valid Executable Plan definition. State the specific gap (no numbered steps / no verifiable outcome / etc.) and ask user to revise or invoke /plan-create."
+@CHECK rid=check:plan-approved | assert="selected executable plan has identified approval basis and ticket or spec inputs are reconciled against the last approved plan including approved deviations" | fail=ABORT | msg="A ticket, spec or discovered file is not execution approval. Stop for planning or revision when approval is missing or inputs conflict."
+@RULE rid=rule:testing-method | lvl=MUST | when="approved work changes code" | then="before editing identify agreed public behavior or seams, independent expectations and plan or repository checks; use discriminating targeted tests then required broader gates; any testing decision not explicitly named in the approved plan follows the existing judgment-call stop; do not force test-first on unsuitable or non-code work"
+@RULE rid=rule:current-candidate | lvl=MUST | when="verifying execution" | then="identify and check actual current candidate including selected staged and uncommitted work; do not substitute earlier-commit evidence; preserve repository restrictions, outcome-to-check mapping and phase verification; do not automatically commit"
 @STEP rid=step:confirm-mode | n:int=2 | op=std:ai.prompt@v1 | args=[task="Confirm execution mode: no planning, no exploring, no scope additions."] | in=[ref:plan] | out=[ref:execution-mode-confirmed]
 
 # --- Phase 2: Action ---
@@ -64,4 +67,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-10-31T00:44:14Z | src="Alexandru Mares | allemaar.com" | method=generated

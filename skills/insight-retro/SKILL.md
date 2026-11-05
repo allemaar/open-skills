@@ -56,7 +56,9 @@ For each package/app in the blast radius, audit all documentation surfaces.
 
 - **For docs/skills repositories:** also check `SKILL.md` files (description quality, runtime parity), cross-reference maps between skills, per-skill front-matter consistency. Consider a full library-audit pass.
 
-**Sidecar audit:** for each significant changed file (>100 LOC, public API, component/hook/route handler/schema) — does a colocated `.yon` exist? Still accurate? Should one be created?
+Discover the repository’s actual documentation contract first. Apply the following sidecar thresholds only where that convention is adopted or requested; elsewhere inspect the actual local obligations, without treating absent YON sidecars as defects.
+
+**Sidecar audit under that adopted convention:** for each significant changed file (>100 LOC, public API, component/hook/route handler/schema) — does a colocated `.yon` exist? Still accurate? Should one be created?
 
 - New directories with >3 significant files → flag missing `index.yon`
 - Cross-file features touching >2 related files → flag missing `*.feature.yon`
@@ -74,7 +76,7 @@ Report by severity:
 
 **Knowledge Items:** cross-reference changes against existing KI summaries. Report KIs to update (with what changed), KIs to create (with proposed scope), KIs still accurate (no action).
 
-**Skills:** load skill-index. Cross-reference patterns, libraries, and techniques against existing skills:
+**Skills:** Resolve a supplied or current host/repository skill catalog and record its scope. If unavailable, keep proposals provisional with duplicate coverage incomplete; a missing index is not an empty library. Cross-reference patterns, libraries, and techniques against existing skills:
 
 - (A) Skill exists and covers it — no action
 - (B) Skill exists but is incomplete — specify what's missing or outdated

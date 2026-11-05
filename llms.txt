@@ -1,8 +1,8 @@
 # open-skills
 
-Version: 2.0.0
+Version: 3.0.0
 
-> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; 53 of 84 also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.
+> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; 54 of 90 also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.
 
 ## About YON (YounndAI Object Notation™)
 The protocol.yon files are written in YON (https://github.com/YounndAI/yon), a stream-first data format for AI-agent workflows with a public spec (https://github.com/YounndAI/yon-spec) and an Apache-2.0 reference parser (@younndai/yon-parser). YON makes a skill's declared rules (MUST / MUST_NOT) and gates (ABORT / WARN) inspectable as named, typed objects; it does not enforce runtime obedience.
@@ -30,6 +30,8 @@ Updating later: these are frozen copies — they do not change until you re-copy
 ## Skills by family
 
 ### Planning & execution
+- ask-me [md-only] — Constructively interview someone about an idea, task, project or decision so useful work can start. — triggers: /ask-me, ask me, interview me about this idea, help me clarify this through questions
+- define-terms [md-only] — Refine domain terminology in bounded contexts and update authorized definitions or consequential decision records. — triggers: /define-terms, define our domain terms, clarify this overloaded domain term, update the shared domain terminology
 - freshness-contract [md-only] — Categorical decision table for reusing cached evidence — when an artifact you already read, a banked test result, a primer, a worker report, or a probe verdict is still trustworthy, and when it must be spot-checked or re-verified. — triggers: /freshness-contract, is this still current, can I trust what I read earlier, do I need to re-check this
 - plan-cleanup [protocol.yon] — Post-execution cleanup — remove planning artifacts and tech debt left behind after a plan runs. — triggers: /plan-cleanup, clean up artifacts, remove the plan file, no tech debt
 - plan-create [protocol.yon] — Propose a phased, gated implementation plan before any work begins. — triggers: /plan-create, make a plan, plan this out, design before coding
@@ -39,16 +41,17 @@ Updating later: these are frozen copies — they do not change until you re-copy
 - plan-phases [protocol.yon] — Restructure an existing plan into phases with /verify gates after each phase and critical outcomes, plus blocking pre-action gates for safety prerequisites. — triggers: /phase-plan, add phases to this plan, gate this plan, restructure the plan
 - reflect [md-only] — Lightweight cognitive pause — surface assumptions, uncertainty, and what you'd do differently. — triggers: /reflect, step back and think before continuing
 - verify [protocol.yon] — Formal phase gate — checks intent, plan, and execution artifacts for drift, then actively re-checks each load-bearing claim against its source (an agent's self-report of having checked is not evidence). — triggers: /verify
+- write-spec [md-only] — Synthesize a supplied conversation and established evidence into a behavioral specification, preserving decisions, acceptance, exclusions and unresolved matters. — triggers: /write-spec, turn this conversation into a spec, write the spec from our decisions, capture the agreed behavior as a specification
 
 ### Insight & decision
 - cold-review [protocol.yon] — Run outside-agent review of actual work artifacts against objectives, with classification, fresh reviewer lenses, evidence-based findings (re-opened at synthesis, not recalled), scoring, and thresholds; the review self-verifies its own findings before returning. — triggers: /cold-review, cold review this, get outside review, have fresh agents inspect this work
 - double-check [protocol.yon] — Targeted re-verification of a specific claim, output, or decision. — triggers: /double-check, verify this, re-check this, are you sure about this
-- insight-adversarial [protocol.yon] — Multi-pass adversarial critique from dynamically selected personas — including Claude's own POV. — triggers: /insight-adversarial, adversarial, red team this, multi-POV review
+- insight-adversarial [protocol.yon] — Multi-pass adversarial critique from dynamically selected personas — including the current reviewer's own view. — triggers: /insight-adversarial, adversarial, red team this, multi-POV review
 - insight-angles [protocol.yon] — Angle & connection discovery engine. — triggers: /insight-angles, find unseen angles, what connections am I missing, what are we not seeing
 - insight-assess [protocol.yon] — Structured decision evaluation — pros/cons, impact assessment, quality analysis, recommendation. — triggers: /assess, /insight-assess, do a SWOT, build a decision tree
 - insight-critique [protocol.yon] — Advisory review workflow. — triggers: /critique, review this, critique this, what's wrong with this
 - insight-cross-examine [protocol.yon] — Context-routed deliberation engine. — triggers: /insight-cross-examine, cross-examine this, weigh these options, pick between these and recommend
-- insight-explore [protocol.yon] — Brainstorm 3+ possible implementations before committing. — triggers: /explore, brainstorm options, what are the ways to do this, explore approaches
+- insight-explore [protocol.yon] — Explore possible implementations before committing, targeting three distinct options while reporting evidenced constrained or unresolved outcomes honestly. — triggers: /explore, brainstorm options, what are the ways to do this, explore approaches
 - insight-premortem [protocol.yon] — Find plausible failure paths before committing to a plan. — triggers: /insight-premortem, run a premortem, how could this plan fail?
 - insight-reference-class [protocol.yon] — Forecast from outcomes of comparable past cases. — triggers: /insight-reference-class, reference-class forecast, outside-view estimate, are our estimates optimistic?
 - insight-retro [protocol.yon] — Post-implementation retrospective — map blast radius, audit documentation, extract skills, update KIs, document lessons learned. — triggers: /retro, retrospective, post-mortem, lessons learned
@@ -81,7 +84,7 @@ Updating later: these are frozen copies — they do not change until you re-copy
 - handoff-execute [protocol.yon] — Execute a handoff brief with enforced source-read discipline — load the brief's @SOURCES.required tier fully before planning, cite sources per plan step, run @OUTCOME.verify after, emit the retro per @GROUND_TRUTH_REQUIRED. — triggers: /handoff-execute, /handoff-execute <brief-path>
 - headless-claude [protocol.yon] — Run a bounded, observable Claude Code headless task with explicit model, least-privilege tools, and preserved authorization. — triggers: /headless-claude, run Claude headlessly, use Claude -p, supervise a Claude harness
 - headless-codex [protocol.yon] — Run Codex CLI safely in bounded non-interactive workflows, including /headless-codex, "run Codex headlessly", and "automate Codex CLI". — triggers: /headless-codex, run Codex headlessly, automate Codex CLI
-- headless-gemini [protocol.yon] — Run bounded Gemini tasks through Antigravity CLI (agy). — triggers: /headless-gemini, run Gemini headlessly, supervise agy
+- headless-gemini [protocol.yon] — Run bounded tasks through Antigravity CLI (agy), including locally exposed Gemini and Claude models on Antigravity’s separate quota pool. — triggers: /headless-gemini, run Gemini headlessly, supervise agy
 - headless-grok [protocol.yon] — Run bounded Grok Build coding-agent tasks through the official grok CLI. — triggers: /headless-grok, run Grok headlessly, supervise grok -p
 - headless-models [protocol.yon] — Compare providers, models and effort against task quality, cost, latency and local availability. — triggers: /headless-models, which model should I use, compare models and effort
 - headless-update-models [protocol.yon] — Refresh provider models, effort, cost and benchmark evidence across all supported headless skills. — triggers: /headless-update-models, update headless models, refresh all headless model guidance
@@ -105,9 +108,12 @@ Updating later: these are frozen copies — they do not change until you re-copy
 - prose-audit [md-only] — Diagnose semantic repetition, filler, fake structure, stock AI rhetoric, and avoidable reading load in existing text. — triggers: /prose-audit, find the AI filler, audit this for bloat, identify repetition and token padding
 - synthesize [md-only] — Turn agent output into faithful, scannable, purpose-matched delivery. — triggers: /synthesize, synthesize this, make this scannable, I can't read this wall
 - synthesize-init [md-only] — Opt-in installer for a minimal standing /synthesize route in existing agent directive files. — triggers: /synthesize-init, make synthesize my default, wire synthesize into my directives, inject synthesize
+- teach-topic [md-only] — Teach toward a learner goal through explanation, suitable practice, feedback and review. — triggers: /teach-topic, teach me this topic, help me practice this skill, continue my learning on this
 
 ### Code & architecture
 - audit-coupled-constant [md-only] — Audit every site of a constant whose value is duplicated across multiple call sites (retry budgets, timeouts, page sizes, magic numbers, feature flags). — triggers: /audit-coupled-constant, audit budget consistency, find all sites of this value, check coupled invariant
+- build-prototype [protocol.yon] — Build and exercise the smallest runnable artifact that answers a stated design question. — triggers: build a prototype, make a runnable experiment for this design
+- debug-task [md-only] — Reproduce and diagnose a specific software defect, then apply and verify a repair only when authorized. — triggers: /debug-task, debug this failure, reproduce and fix this bug, diagnose this regression
 - design-an-interface [md-only] — Generate multiple radically different interface designs for a module, then compare and synthesize. — triggers: /design-an-interface, design an API, explore interface options, compare module shapes
 - improve-codebase-architecture [protocol.yon] — Explore a codebase to find opportunities for architectural improvement by deepening shallow modules (John Ousterhout, "A Philosophy of Software Design"). — triggers: /improve-codebase-architecture, improve architecture, find refactoring opportunities, make this more testable
 - monorepo-deps [protocol.yon] — End-to-end syncpack + manypkg flow for an npm monorepo: check, fix, update, and maintain `.syncpackrc.json`. — triggers: /monorepo-deps, update deps, sync deps, check deps

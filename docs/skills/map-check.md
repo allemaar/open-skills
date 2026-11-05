@@ -29,6 +29,9 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Run the bundled checker with the appropriate inventory
 3. Inspect findings and operational errors separately
 4. Report exactly what was and was not checked
+5. If map-rules is absent, keep the compiled checker boundary and report manual rule/provenance review unavailable.
+6. In DEGRADED mode, supply the established scope root with a contained relative root-map locator; nested-target walk-up is not promised.
+7. Keep invalid declarations and unreadable or capped resolution distinct from qualified-clean. Dotted Markdown stems stay eligible; only raw targets with an extension admit attachments. Manual rulings never rewrite the deterministic verdict.
 
 ## Subagents
 
@@ -45,6 +48,9 @@ A scoped conformance report.
 The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.
 
 - [skills/map-check/SKILL.md](../../skills/map-check/SKILL.md)
+- [skills/map-check/references/tools/map-check.mjs](../../skills/map-check/references/tools/map-check.mjs)
+- [skills/map-rules/references/ownership.md](../../skills/map-rules/references/ownership.md)
+- [skills/map-rules/references/link-resolution.md](../../skills/map-rules/references/link-resolution.md)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

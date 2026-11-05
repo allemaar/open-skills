@@ -26,7 +26,7 @@ Identify gaps in the skill library based on recent implementation work — propo
 ## Phase 1 — Recent Work Scan
 
 1. **Gather recent context** — conversation history, changed files, new patterns introduced. Summarize: what was built, which libraries/frameworks were used, what novel patterns emerged.
-2. **Load skill index** — read the current skill index to know what already exists before analyzing gaps.
+2. **Load skill index** — Resolve the actual supplied or host/repository skill catalog and record its scope before duplicate checking. If unavailable, keep candidates provisional and explicitly mark duplicate coverage incomplete; a missing index is never an empty library.
 
 ## Phase 2 — Gap Analysis
 
@@ -58,7 +58,7 @@ Check `skill-smith` for template requirements before drafting. Present proposals
 
 ## Phase 4 — Execution (only if approved)
 
-Create approved skills via `/skill-smith`. For updates, apply targeted edits to the relevant sections.
+Create approved skills and apply approved targeted updates through Skill Smith’s selected create or update/write route. Preserve exact existing approval, canonical ownership, preimages and affected references; approval does not replace write prerequisites.
 
 ## Rules
 

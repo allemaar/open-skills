@@ -26,7 +26,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 ## Flow
 
 1. Query registration data and relevant DNS resolvers
-2. Apply the documented evidence precedence and fallbacks
+2. Use RDAP/WHOIS for every candidate including bulk. Match configured operator domains on exact hostname boundaries; separate registration, parking, verified sale and purchasability.
 3. Report uncertainty, coverage gaps and conflicting signals
 
 ## Subagents

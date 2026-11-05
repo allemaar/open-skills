@@ -31,6 +31,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Perform a zero-write assessment and present proposals
 3. Apply only selected changes under the appropriate rules
 4. Verify the affected map and report limitations
+5. Use exact frontmatter and M3 declarations; malformed policy or unreadable governed entrypoints block dependent healing. Dotted Markdown stems remain eligible. Alias healing needs named consumer/manual evidence; preserve raw missing or ambiguous records.
 
 ## Subagents
 
@@ -47,6 +48,8 @@ An assessment and, when selected, mapped changes.
 The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.
 
 - [skills/map-this/SKILL.md](../../skills/map-this/SKILL.md)
+- [skills/map-this/references/tools/map-scan.mjs](../../skills/map-this/references/tools/map-scan.mjs)
+- [skills/map-rules/references/link-resolution.md](../../skills/map-rules/references/link-resolution.md)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

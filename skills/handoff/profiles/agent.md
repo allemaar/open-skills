@@ -19,7 +19,7 @@ After the universal frontmatter (see router `SKILL.md`), the body looks like:
 
 > [!info]
 > Profile: **agent** · Project: **{project}** · Created: **{date}**
-> Paste this entire file into a fresh agent session as the opening message.
+> In the receiving session, explicitly invoke `/handoff-execute "<actual-saved-brief-absolute-path>"` using the saved brief’s real path. Background-document presence or pasted context alone does not select execution. If that skill is unavailable, use the producer’s explicit fallback activation and preserve its source-ingestion, premise and retro discipline; never invent a saved path.
 
 ## Task
 

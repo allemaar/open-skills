@@ -46,7 +46,7 @@ Every call recomputes from the real diff; nothing is stored.
 
 1. **Take `range`, `repo`, and `intent` as inputs — never prompt.** `range` defaults to the working tree against `HEAD` (or a `A..B` range, or `--staged`); `repo` defaults to the cwd. `intent` (the PR's goal) shapes the labels — if it's ungrounded, the recap still emits the mechanical facts but **caps the labels to descriptive** and never invents a rationale.
 
-2. **Gather from git, transcribe verbatim.** Run `git diff --name-status` and `git diff --numstat` over the range. For each file, copy the `status` (`A`/`M`/`D`/`R`) and the `added`/`removed` counts **exactly as git reports them**. A binary file reports `-`/`-` in numstat → record `0`/`0` and mark the row binary in its label. **The model never counts by hand** — the numbers are git's.
+2. **Gather from git, transcribe verbatim.** Run `git diff --name-status` and `git diff --numstat` over the range. Hold the exact repository, range and rename/copy-detection settings constant across both captures. Before transcribing rows, inspect the status and path arity. Any rename/copy status (`R`, `C`, `R100`, `C75`, or another score) or two-path rename/copy form is **UNSUPPORTED INPUT** for the current single-path record: report the exact source case and stop without emitting a recap. Do not strip scores, collapse paths, drop rows, silently disable detection, or mislabel this as barren/NO DIFF. For ordinary single-path files, copy `status` (`A`/`M`/`D`) and `added`/`removed` **exactly as git reports them**. A binary file reports `-`/`-` in numstat → record `0`/`0` and mark the row binary in its label. **The model never counts by hand** — the numbers are git's.
 
 3. **Group and label — the only model-written fields.** Cluster the files by area (feature / tests / docs / config / …), and write one concise label per file and a one-line summary per group. `path`, `status`, `added`, `removed` are git-attested; `label` and `group` are the model's only freedom.
 
@@ -68,6 +68,8 @@ The record is a `diff-recap/1` instance ([`recap-schema.yon`](recap-schema.yon))
 @MAP name=groups | pairs=["feature"->"limiter + wiring (2 files, +112/-6)"]
 @MAP name=provenance | pairs=["recap.total_added"->"git-attested:high:git diff --numstat"]
 ```
+
+**Unsupported input is a separate diagnostic, not a `diff-recap/1` record or a new gate enum.** The legacy `R` schema enum does not provide an old/new-path encoding. Supporting scored renames/copies requires a separately selected compatible format. The value checker does not inspect `--name-status`; the emitter must perform this input boundary before value validation.
 
 On **barren** evidence the envelope degrades honestly: `gate_status=barren, attested:bool=false`, no file rows, and the visual is the **NO DIFF card**. A full worked instance ships at [`examples/diff-recap.example.yon`](examples/diff-recap.example.yon).
 

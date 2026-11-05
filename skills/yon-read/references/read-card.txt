@@ -33,6 +33,9 @@ VALUES — EDGE CASES:
 ---
 
 CONTINUATION LINES:
+Read logical records, not isolated physical lines. When entering a fragment,
+recover its preceding record and enclosing block/boundary context; an @RULE-looking
+line inside a raw block is payload, not an independently executable record.
 A record MAY span multiple physical lines by indenting:
   @THOUGHT rid=t:1 | confidence:float=0.7
     | content="The error rate spiked at 14:00. This correlates with the deployment."

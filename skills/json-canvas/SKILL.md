@@ -35,11 +35,15 @@ A canvas file (`.canvas`) contains two top-level arrays following the [JSON Canv
 - `nodes` (optional): Array of node objects
 - `edges` (optional): Array of edge objects connecting nodes
 
+## Save boundary
+
+Before saving, validate the complete candidate, preserve the original bytes and unrelated or unknown content, and bind the exact target and current revision. Recheck identity immediately before a protected replacement; concurrent changes stop the write. Keep a recoverable preimage and read back persisted bytes. New-file creation is exclusive and must not replace an existing artifact. Apply this after preparing a candidate for any workflow below.
+
 ## Common Workflows
 
 ### 1. Create a New Canvas
 
-1. Create a `.canvas` file with the base structure `{"nodes": [], "edges": []}`
+1. Prepare a new canvas candidate in memory with the base structure `{"nodes": [], "edges": []}`
 2. Generate unique 16-character hex IDs for each node (e.g., `"6f0ad84f44ce9c17"`)
 3. Add nodes with required fields: `id`, `type`, `x`, `y`, `width`, `height`
 4. Add edges referencing valid node IDs via `fromNode` and `toNode`
@@ -69,8 +73,8 @@ A canvas file (`.canvas`) contains two top-level arrays following the [JSON Canv
 1. Read and parse the `.canvas` file as JSON
 2. Locate the target node or edge by `id`
 3. Modify the desired attributes (text, position, color, etc.)
-4. Write the updated JSON back to the file
-5. **Validate**: Re-check all ID uniqueness and edge reference integrity after editing
+4. **Validate before saving**: Parse the serialized candidate and check all ID uniqueness, required fields and edge references
+5. Save through the save boundary above, then read back and re-check the actual saved content
 
 ## Nodes
 

@@ -1,11 +1,40 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { readDirect } from './direct.mjs';
+import { writeSync } from 'node:fs';
+import { readDirect, CLEANUP_GRACE_MS } from './direct.mjs';
 
 const PROVIDERS = new Set(['codex', 'agy', 'claude']);
 const DEFAULT_PROVIDERS = ['codex', 'agy', 'claude'];
 const DEFAULT_TIMEOUT_MS = 30_000;
 const WATCHDOG_MS = 50_000;
+const cancellation = new AbortController();
+const completedResults = new Map();
+const processEvidence = new Map();
+let activeSpec;
+let stoppingReason;
+let shutdownTimer;
+let reportEmitted = false;
+function stop(reason) {
+  if (stoppingReason) return;
+  stoppingReason = reason;
+  cancellation.abort(new Error(reason));
+  shutdownTimer = setTimeout(() => {
+    if (!reportEmitted) {
+      const providers = activeSpec?.providers ?? ['spec'];
+      const results = providers.map(provider => completedResults.get(provider) ?? {
+        ...unavailable(provider, null, reason), status: 'error',
+        processes: (processEvidence.get(provider) ?? []).map(entry => entry.exitCode === null ? { ...entry, cleanup: 'cleanup-unverified' } : entry),
+      });
+      writeSync(1, JSON.stringify({ schemaVersion: 1, checkedAt: null,
+        completedAt: new Date().toISOString(), results,
+        errors: [{ source: 'shutdown', message: reason + '; report/cleanup did not complete within grace' }] }) + '\n');
+    }
+    process.exit(1);
+  }, 2 * CLEANUP_GRACE_MS);
+}
+const interrupt = () => stop('headless usage interrupted');
+process.on('SIGINT', interrupt);
+process.on('SIGTERM', interrupt);
 
 function message(error) {
   return error instanceof Error ? error.message : String(error);
@@ -132,6 +161,7 @@ async function main() {
   const checkedAt = new Date().toISOString();
   if (process.argv.length !== 3) throw new Error('Usage: node usage.mjs <absolute-spec.json>');
   const spec = await parseSpec(process.argv[2]);
+  activeSpec = spec;
   const outputDirectories = await providerDirectories(spec.outputDirectory, spec.providers);
   const results = await Promise.all(spec.providers.map(async (provider) => {
     const observedAt = new Date().toISOString();
@@ -145,6 +175,11 @@ async function main() {
       return await readDirect(provider, resolvedBinary, outputDirectories[provider], {
         timeoutMs: spec.timeoutMs,
         history: spec.history,
+        signal: cancellation.signal,
+        onProcess: entry => {
+          if (!processEvidence.has(provider)) processEvidence.set(provider, []);
+          processEvidence.get(provider).push(entry);
+        },
       });
     } catch (error) {
       return {
@@ -152,28 +187,30 @@ async function main() {
         status: 'error',
       };
     }
-  }));
+  }).map((pending, index) => pending.then(result => {
+    completedResults.set(spec.providers[index], result);
+    return result;
+  })));
   const report = {
     schemaVersion: 1,
     checkedAt,
     completedAt: new Date().toISOString(),
     results,
   };
+  if (stoppingReason) report.errors = [{ source: 'shutdown', message: stoppingReason }];
   let persistenceFailed = false;
   try { await writeReport(spec.outputDirectory, report); }
   catch (error) {
     persistenceFailed = true;
-    report.errors = [{ source: 'report-file', message: message(error) }];
+    report.errors = [...(report.errors ?? []), { source: 'report-file', message: message(error) }];
   }
+  reportEmitted = true;
   process.stdout.write(`${JSON.stringify(report)}\n`);
   const live = results.filter((result) => result.status === 'live').length;
-  process.exitCode = persistenceFailed ? 1 : live === results.length ? 0 : live ? 2 : 1;
+  process.exitCode = persistenceFailed ? 1 : live === results.length && !stoppingReason ? 0 : live ? 2 : 1;
 }
 
-let watchdog = setTimeout(() => {
-  process.stderr.write('headless usage watchdog expired\n');
-  process.exit(1);
-}, WATCHDOG_MS);
+const watchdog = setTimeout(() => stop('headless usage watchdog expired'), WATCHDOG_MS);
 
 main().catch((error) => {
   const report = {
@@ -187,4 +224,9 @@ main().catch((error) => {
   };
   process.stdout.write(`${JSON.stringify(report)}\n`);
   process.exitCode = 1;
-}).finally(() => clearTimeout(watchdog));
+}).finally(() => {
+  clearTimeout(watchdog);
+  clearTimeout(shutdownTimer);
+  process.removeListener('SIGINT', interrupt);
+  process.removeListener('SIGTERM', interrupt);
+});

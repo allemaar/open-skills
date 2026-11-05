@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=plan-deep-dive | title="Phase-by-Phase Deep Inspection of Multi-Phase Plans" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Pressure-test a multi-phase plan one phase at a time: gaps, quality, future-readiness. Stop at every phase. Never batch or skip." | trigger="user runs /deep-dive, asks to do a deep dive, inspect each phase, look at this more carefully, or check if we are missing anything on an existing plan"
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-11-04T15:16:22Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Governance ---
 
@@ -18,6 +18,8 @@
 @NOTE text="If phase-by-phase inspection surfaces gaps that require redesigning the plan rather than tweaking it (missing phase, wrong sequencing, fundamental approach issue), stop the deep-dive and recommend /plan-create to redesign."
 
 # --- Phase 1: Load & Enumerate ---
+
+@NOTE text="For delegated review, dispatch read-only analysis of one phase only and return its findings to the lead before the existing user gate. The lead owns acknowledgement, exact amendment selection and every next-phase transition. Workers never amend the plan or advance phases. If that relay is unavailable, inspect inline."
 
 @SEC name="Phase 1 — Load & Enumerate"
 @STEP rid=step:load-plan | n:int=1 | op=std:fs.read@v1 | args=[search="implementation_plan.md, PLAN.md, current multi-phase artifact, or plan referenced inline by user"] | out=[ref:plan]
@@ -44,14 +46,14 @@
 @STEP rid=step:phase-verdict | n:int=8 | op=std:ai.prompt@v1 | args=[task="Synthesize gaps/quality/future into a verdict from PhaseVerdicts. Present verdict and findings to user. Do NOT apply amendments yet. Update running verdict log."] | in=[ref:gaps,ref:quality,ref:future] | use=[cfg:PhaseVerdicts,cfg:VerdictLogColumns] | out=[ref:phase-verdict] | rules=[rid:rule:no-lgtm,rid:rule:concrete-fixes] | note="Iter Step 5 — phase verdict, presented."
 
 @STEP rid=step:user-gate | n:int=9 | op=std:human.review@v1 | args=[task="User must acknowledge at least one specific finding by name before gate passes. Blanket 'yes' or 'proceed' is not sufficient. If verdict is PASS with no findings, user must confirm 'no findings noted.'"] | in=[ref:phase-verdict] | out=[ref:user-acknowledgment] | rules=[rid:rule:user-approves-amendments] | note="Iter Step 6 — user gate."
-@STEP rid=step:apply-amendments | n:int=10 | op=std:fs.write@v1 | args=[task="After user approval: apply amendments to the plan artifact."] | in=[ref:user-acknowledgment,ref:phase-verdict] | out=[ref:amended-plan] | note="Iter Step 6 (cont) — apply amendments. Then loop back to step:read-phase for next phase."
+@STEP rid=step:apply-amendments | n:int=10 | op=std:fs.write@v1 | args=[task="Record the exact accepted amendment set before writing. Acknowledging a finding may advance inspection without authorizing its remedy; apply only selected amendments and preserve declined or unchanged choices. Reuse explicit approval of the exact set without asking again. After approval of the selected set, apply only those amendments to the plan artifact."] | in=[ref:user-acknowledgment,ref:phase-verdict] | out=[ref:amended-plan] | note="Iter Step 6 (cont) — apply amendments. Then loop back to step:read-phase for next phase."
 
 @CHECK rid=check:phase-passes | assert="ref:user-acknowledgment confirms at least one finding by name (or 'no findings noted' for PASS)" | fail=ABORT | msg="User gate not satisfied. Do not advance to next phase."
 
 # --- Phase 3: Synthesis ---
 
 @SEC name="Phase 3 — Synthesis"
-@MAP name=SynthesisFields | pairs=["per-phase-verdicts"->"copied from running verdict log","total-amendments"->"count and list","residual-risks"->"findings not resolved by amendments","future-considerations"->"3-month/6-month items surfaced during Step 4 passes","overall-confidence"->"1-10, where 10 = all phases PASS with zero findings, 1 = multiple RETHINK with unresolved issues. State score and primary reason it is not higher."]
+@MAP name=SynthesisFields | pairs=["per-phase-verdicts"->"copied from running verdict log","total-amendments"->"count and list","residual-risks"->"findings not resolved by amendments","future-considerations"->"3-month/6-month items surfaced during Step 4 passes","overall-confidence"->"evidence coverage, unchecked scope, unresolved assumptions and concise support judgment; no uncalibrated numeric score or zero-defect proxy"]
 
 @STEP rid=step:synthesize | n:int=11 | op=std:ai.prompt@v1 | args=[task="Produce consolidated deep-dive report using SynthesisFields. Cite per-phase verdicts directly from running verdict log."] | in=[ref:amended-plan] | use=[cfg:SynthesisFields] | out=[ref:final-report]
 @CHECK rid=check:synthesis | assert="ref:final-report includes per-phase-verdicts, total-amendments, residual-risks, future-considerations, overall-confidence" | fail=ABORT | msg="Deep dive incomplete without synthesis."
@@ -79,4 +81,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-11-04T15:16:22Z | src="Alexandru Mares | allemaar.com" | method=generated

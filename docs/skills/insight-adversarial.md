@@ -27,8 +27,8 @@ Install this skill in a supported runtime, then give it the relevant material an
 ## Flow
 
 1. Classify the target and choose distinct relevant personas.
-2. Run focused critiques with specific findings.
-3. Synthesize non-duplicate risks while retaining disagreements.
+2. Run focused critiques with specific evidenced findings, or state no material finding supported with scope and uncertainty.
+3. Merge convergent findings and rank up to three supported issues by actual severity, retaining disagreements.
 4. Apply the pass rules and return the verdict and next step.
 
 ## Subagents

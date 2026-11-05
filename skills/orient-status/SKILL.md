@@ -32,7 +32,7 @@ triggers:
 > **How far along am I, and when will it be done?**
 > **Answers with —** position · what is left · a banded ETA · (`--resume`) the one next move.
 > **Does not answer —** what changed (`/orient-map`) · what is stuck (`/orient-gaps`) · what comes next (`/orient-roadmap`).
-> **Owns for the family —** nothing topological; it consumes `/orient-map`'s topology fields.
+> **Owns for the family —** nothing topological; it reuses the shared topology contract in its existing bounded worker.
 
 Computes a fresh, honest read of **where the current work stands** — position, remaining work, and a banded ETA — and returns it as one ephemeral bundle (a structured YON record + a human markdown read + a small visual). `--resume` re-frames it for the "I just came back and lost the thread" case. Part of the `orient-` family; emits a slice of the shared record at [`references/orient-spec/orient-record.yon`](references/orient-spec/orient-record.yon).
 
@@ -42,6 +42,8 @@ The shared record, render contract, worked fixtures, and value validator travel
 inside [`references/`](references/). The repository-only round-trip guard is
 release evidence; its absence from an installed copy does not block execution.
 
+
+Reuse the shared topology-detection contract within the same single bounded worker, or consume supplied topology fields with their stated provenance and limits. Do not invoke another self-orchestrating orientation skill or start a second sweep; supplied and detected interpretations must agree or remain an explicit gap.
 ## When to use
 
 - "Where are we / what's the status / how far along / what's the ETA" on a project, repo, plan, or task.
@@ -61,7 +63,7 @@ release evidence; its absence from an installed copy does not block execution.
    Every attested field comes back with a re-runnable `source:line`/git-ref **proof**.
 
 3. **Compute three things:**
-   - **Position** — the one-line headline state (phase / `frontier` / `on_branch`).
+   - **Position** — the one-line headline state (phase / `frontier` / `on_branch`). Consume family topology as supplied: an absent `on_branch` means unknown, never false/trunk; do not recompute it or infer a topology-dependent ETA from its absence.
    - **Remaining + distance** — the `open_count` against its denominator (flag when the real remainder may be larger than the visible one — `denominator_trust`).
    - **ETA** — the one *non-observed* output. A **band, never a point estimate** (`~1–3 days`), tagged `estimate, not observed`. With no plan → `ETA: unknown`. A fabricated percentage or confident phase is **banned**.
 
@@ -85,7 +87,7 @@ human full face, unknown consumer ASCII fallback; preserve the widget escape.
 The structured face is a slice of [`references/orient-spec/orient-record.yon`](references/orient-spec/orient-record.yon) (`schema_version = orient-record/1`). **Reserved tags only** — custom tags like `@SNAPSHOT` are parser-rejected. **List fields go in a sidecar `@MAP`, never an in-set bracket-list** (an in-set bracket-list corrupts the record *silently and still validates*). **Never run `yon format` on an emitted instance** — `CANON` mode is destructive on set-internal lists and the corruption still validates clean; hand-emit the `@MAP` sidecars and leave them. Validate with `--profile exec`. Minimal skeleton:
 
 ```
-@CFG id=orient | set=[schema_version=orient-record/1,computed_at:ts=…,ephemeral:bool=true,tool=orient-status,tier=orient,scope=…,evidence_mode=git-only,gate_status=degraded,gate_confidence_floor=inferred,family_used=orient-status,family_suggested_next=plan-create,overall_trust=med,degraded:bool=false]
+@CFG id=orient | set=[schema_version=orient-record/1,computed_at:ts=…,ephemeral:bool=true,tool=orient-status,tier=orient,scope=…,evidence_mode=git-only,gate_status=degraded,gate_confidence_floor=inferred,family_used=orient-status,family_suggested_next=plan-create,overall_trust=med,degraded:bool=true,degrade_reason="inferred advisory status; no attested blocking field"]
 @CFG id=subject | set=[name=…,kind=monorepo,purpose=…,purpose_source=readme,intent_status=stated]
 @CFG id=snapshot | set=[status=in-progress,stage=…,stage_idx:int=1,frontier=…,on_branch:bool=true,branch=…,dirty:int=0,ahead:int=0,behind:int=0]
 @CFG id=remaining | set=[open_count:int=4,done_count:int=1,fraction_done:flt=0.2,denominator_trust=inferred,next_open=…]

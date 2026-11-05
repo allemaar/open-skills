@@ -105,12 +105,13 @@ The frozen inputs first, so every figure below can be checked against them.
 > than that, the cheaper option reverses. No report says how long it expects
 > to hold it. (Arithmetic on R2; estimate — see the label below.)
 >
-> **Both capital figures rest on one costing note, so this comparison is an
-> estimate.** R2's EUR 610,000 and EUR 90,000 both come from the same 2025
-> outline pricing note — a primary record R2 did not produce but does name, so
-> confirmed is reachable on access alone. Two figures from one document
-> are one source, not two, so the merged cost conclusion is capped at
-> estimate whatever its arithmetic. (R2.)
+> **The cost comparison is an estimate because pricing is preliminary and
+> the relevant holding period is unresolved.** R2’s EUR 610,000 and EUR 90,000
+> share one 2025 outline pricing note. Count that source once; one source is
+> not itself a reason to downgrade a confirmed fact. Access could confirm
+> what the note says, while its outline estimates and the unknown time
+> horizon still limit the decision. The arithmetic does not remove those
+> uncertainties. (R2.)
 >
 > **The damp is two problems, not one — but that split is itself an
 > estimate.** R1 measured rooms 3, 5 and 7 over the ceiling. R5 recorded roof

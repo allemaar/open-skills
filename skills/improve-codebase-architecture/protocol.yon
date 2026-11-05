@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=improve-codebase-architecture | title="Improve Codebase Architecture — Deepen Shallow Modules" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Explore a codebase, surface architectural friction, and propose module-deepening refactors (Ousterhout, A Philosophy of Software Design) as GitHub issue RFCs. A deep module has a small interface hiding a large implementation." | trigger="user says improve architecture, find refactoring opportunities, make this more testable, this codebase is hard to navigate, consolidate these modules, find coupling problems, write an RFC for this refactor, or asks why tests are brittle / a module is hard to mock / changing one thing always breaks another"
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-11-04T15:16:20Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Core Principle ---
 
@@ -24,7 +24,7 @@
 # --- Step 2: Present Candidates ---
 
 @SEC name="Step 2 — Present Candidates"
-@MAP name=CandidateFields | pairs=["cluster"->"which modules/concepts are involved","why-coupled"->"shared types, call patterns, co-ownership of a concept","dependency-category"->"one of the four, with a one-sentence rationale","test-delta"->"name the specific test files that would be deleted, and describe the new boundary tests that replace them"]
+@MAP name=CandidateFields | pairs=["cluster"->"which modules/concepts are involved","why-coupled"->"shared types, call patterns, co-ownership of a concept","dependency-category"->"one of the four, with a one-sentence rationale","test-delta"->"Name specific old tests only when deletion is justified by a behavioral coverage mapping to retained/replacement boundary tests. An evidenced none is valid, including an untested candidate; do not manufacture a deletion list to satisfy the template."]
 @STEP rid=step:present-candidates | n:int=2 | op=std:ai.prompt@v1 | args=[task="For each genuine candidate that passes the deepening test, present the CandidateFields. Then ask the user: which of these would you like to explore?"] | in=[ref:friction] | use=[cfg:CandidateFields] | out=[ref:candidates] | rules=[rid:rule:deepening-test]
 @CHECK rid=check:deepening-test | assert="every presented candidate passes the deepening test — merging produces a smaller interface" | fail=ABORT | msg="Candidate is reorganization, not deepening. Drop it before presenting."
 
@@ -43,7 +43,7 @@
 @SEC name="Step 5 — Design Multiple Interfaces"
 @MAP name=DesignConstraints | pairs=["A-Minimal"->"1-3 entry points max; ruthlessly hide everything","B-Flexible"->"support many use cases and extension points; maximize what callers can customize","C-Caller-optimized"->"make the most common call site trivial; ergonomics over generality","D-Ports-and-Adapters"->"if applicable: design around injected adapters for cross-boundary dependencies"]
 @MAP name=DesignOutput | pairs=["1-signature"->"interface signature (types, methods, params)","2-usage"->"usage example showing how a caller uses it","3-hides"->"what complexity it hides internally","4-deps"->"dependency strategy per category","5-tradeoffs"->"trade-offs"]
-@STEP rid=step:design | n:int=5 | op=std:ai.prompt@v1 | args=[task="Produce 3-4 radically different interface designs, each under a constraint from DesignConstraints, each producing DesignOutput. If sub-agents are available, spawn 3-4 in parallel with the sub-agent technical brief from SKILL.md — give each an independent brief, do NOT share prior designs (isolation is the point). If not, work each design constraint sequentially and treat each as complete and committed before the next — no contamination. After all designs, compare them in prose and give an opinionated recommendation (or propose a hybrid)."] | in=[ref:problem-frame] | use=[cfg:DesignConstraints,cfg:DesignOutput] | out=[ref:designs]
+@STEP rid=step:design | n:int=5 | op=std:ai.prompt@v1 | args=[task="Before dispatch, bind the worker and total invocation to finite deadlines and resource limits, with a named monitoring owner, observable progress, a cancellation handle and terminal success/failure/timeout outcomes. Use native controls; include read-only scope and no-child instructions in research briefs. On failure or timeout, cancel owned work and report retained partial results and unchecked coverage. If these controls are unavailable, do not dispatch. Use the existing bounded inline fallback when permitted, labeling it non-independent; empty or failed returns never count as completed coverage. Produce 3-4 radically different interface designs, each under a constraint from DesignConstraints, each producing DesignOutput. If sub-agents are available, spawn 3-4 in parallel with the sub-agent technical brief from SKILL.md — give each an independent brief, do NOT share prior designs (isolation is the point). If not, work each design constraint sequentially and treat each as complete before the next; label that same-context fallback correlated, not independent. After all designs, compare them in prose and give an opinionated recommendation (or propose a hybrid)."] | in=[ref:problem-frame] | use=[cfg:DesignConstraints,cfg:DesignOutput] | out=[ref:designs]
 @CHECK rid=check:not-extraction | assert="each design's total interface surface is smaller than the original modules combined" | fail=WARN | msg="A design with the same total interface surface is a rename, not deepening. The interface must get smaller."
 
 # --- Step 6: User Picks an Interface ---
@@ -55,13 +55,13 @@
 
 @SEC name="Step 7 — Create GitHub Issue (RFC)"
 @STEP rid=step:rfc | n:int=7 | op=std:ai.prompt@v1 | args=[task="Draft the RFC using the template in SKILL.md (Problem, Proposed Interface, Dependency Strategy, Testing Strategy, Implementation Recommendations). Render the complete draft as a markdown block in the conversation, then ask: 'Should I create this issue now?'"] | in=[ref:chosen-design] | out=[ref:rfc-draft] | rules=[rid:rule:name-old-tests,rid:rule:file-agnostic-recommendations]
-@STEP rid=step:create-issue | n:int=8 | op=std:shell.exec@v1 | args=[cmd="gh issue create",task="Only after explicit user confirmation. If gh is not installed or unavailable, print the final draft for manual paste instead."] | in=[ref:rfc-draft] | out=[ref:issue] | rules=[rid:rule:wait-for-confirm]
+@STEP rid=step:create-issue | n:int=8 | op=std:shell.exec@v1 | args=[cmd="gh issue create --repo <approved-owner/repository>",task="Resolve and read back the exact destination repository with the complete issue draft before approval. Bind that approved repository explicitly in the publication command; ambiguous or changed identity stops publication. Only after explicit user confirmation. If gh is not installed or unavailable, print the final draft for manual paste instead."] | in=[ref:rfc-draft] | out=[ref:issue] | rules=[rid:rule:wait-for-confirm]
 @CHECK rid=check:confirmed | assert="user explicitly confirmed before gh issue create runs" | fail=ABORT | msg="Do not create the issue without explicit confirmation. Print the draft instead."
 
 # --- RFC Quality Rules ---
 
 @SEC name="RFC Quality Rules"
-@RULE rid=rule:name-old-tests | lvl=MUST | when="writing the RFC Testing Strategy" | then="name specific test files under 'Old tests to delete'. If you cannot name them, return to Step 2 and find them — a vague entry leaves dead test weight behind."
+@RULE rid=rule:name-old-tests | lvl=MUST | when="writing the RFC Testing Strategy" | then="Name specific old tests only when deletion is justified by a behavioral coverage mapping to retained/replacement boundary tests. An evidenced none is valid, including an untested candidate; do not manufacture a deletion list to satisfy the template."
 @RULE rid=rule:file-agnostic-recommendations | lvl=MUST | when="writing Implementation Recommendations" | then="write durable architectural principles (responsibilities, what to hide, what to expose), not file-path instructions. If a sentence names a current file, rewrite it as a responsibility statement."
 @RULE rid=rule:wait-for-confirm | lvl=MUST | when="about to run gh issue create" | then="wait for explicit user confirmation — never create the issue unprompted"
 
@@ -71,4 +71,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=9 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-11-04T15:16:20Z | src="Alexandru Mares | allemaar.com" | method=generated

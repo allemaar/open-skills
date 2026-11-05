@@ -14,18 +14,21 @@
       "steps": [
         "Identify room, participants, objective, transport and ownership.",
         "Use the canonical handshake for a new room or genuinely new participant; returning participants resume and reconcile without repeating it.",
+        "Settle exclusive claims through an exact causal single-writer or Handler grant before work. Frozen membership/recipient snapshots, quorum decisions and built-in authentication are unavailable.",
         "Reconcile addressed messages and record durable dispositions.",
         "Use bounded listening only when proven, and report parked or degraded continuity."
       ],
       "delegation": {
-        "mode": "required",
-        "detail": "Two or more agents exchange messages. Bounded listening is optional, participant-local and requires proven support; ordinary Standard Exchange works without it."
+        "mode": "not-prescribed",
+        "detail": "Two or more independently running agents exchange messages; this skill does not require spawning a subagent. Bounded listening is optional, participant-local and requires proven support; Standard Exchange works without it."
       },
       "outputs": "Messages, dispositions, primer and continuity status.",
       "sources": [
         "skills/agent-mailbox/SKILL.md",
         "skills/agent-mailbox/references/QUICKSTART.md",
-        "skills/agent-mailbox/protocol.yon"
+        "skills/agent-mailbox/protocol.yon",
+        "skills/agent-mailbox/references/MESSAGE-TEMPLATE.md",
+        "skills/agent-mailbox/references/PRIMER-TEMPLATE.md"
       ]
     },
     "agent-output": {
@@ -59,14 +62,15 @@
         "A consequential decision needs sound framing."
       ],
       "avoid": [
-        "The answer can be resolved from the request or available context."
+        "The answer can be resolved within existing authority from the request or available context; missing consent is never a default."
       ],
       "example": "/ask-gate Check whether I should ask about this choice.",
       "steps": [
-        "Resolve answerable questions without asking.",
+        "Resolve answerable preferences within existing authority; reuse exact authorization, and preserve any still-missing approval.",
         "Classify necessary questions as routine or high stakes.",
         "Use the checklist for routine questions, or critique and assess high-stakes options.",
-        "Ask a clear, appropriately framed question."
+        "Ask a clear, appropriately framed question.",
+        "Check high-stakes helper availability and subject fit; an explicit local checklist fallback does not claim missing methods ran."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -91,8 +95,9 @@
       "steps": [
         "List all representations and units",
         "Search each representation across the relevant scope",
-        "Classify hits and repair missed sites and bidirectional references",
-        "Report evidence and intentional differences"
+        "Classify hits; audit-only reports proposed repairs, while already-authorized repair updates missed sites and bidirectional references",
+        "Report evidence and intentional differences",
+        "Use actual commands and justified search scope; failed or unrun shapes remain coverage gaps."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -114,7 +119,7 @@
       ],
       "example": "/budget-check Check whether this agent wave can start.",
       "steps": [
-        "Run the bundled usage wrapper with a threshold and actual token limit when known.",
+        "Run the bundled wrapper from its skill directory using an already-installed ccusage reader; unavailable readers return unknown without package acquisition. Supplied numeric flags need values; omitted flags retain defaults.",
         "Read the active block, ceiling and verdict.",
         "Reduce or defer a no-go wave; never treat unknown as go."
       ],
@@ -125,7 +130,8 @@
       "outputs": "A verdict with usage context.",
       "sources": [
         "skills/budget-check/SKILL.md",
-        "skills/budget-check/protocol.yon"
+        "skills/budget-check/protocol.yon",
+        "skills/budget-check/references/tools/budget-check.mjs"
       ]
     },
     "caller-options": {
@@ -151,7 +157,9 @@
       "outputs": "A chosen mode and venue.",
       "sources": [
         "skills/caller-options/SKILL.md",
-        "skills/caller-options/protocol.yon"
+        "skills/caller-options/protocol.yon",
+        "skills/caller-options/references/VENUE-HEURISTICS.md",
+        "skills/caller-options/references/CANDIDATES.md"
       ]
     },
     "cold-review": {
@@ -166,9 +174,11 @@
       "example": "/cold-review Review this implementation against its objective.",
       "steps": [
         "Classify the work and choose review breadth.",
-        "Brief fresh reviewers on objectives and artifacts when available; otherwise label the same-session review degraded.",
+        "For code, identify the actual selected candidate and distinguish repository standards from the approved specification, naming each source or unknown.",
+        "Brief fresh reviewers on objectives and artifacts when available, keeping them read-only; otherwise label the same-session review degraded.",
         "Reopen evidence when synthesizing and verify findings.",
-        "Report coverage, findings, score and threshold verdict."
+        "Report coverage, findings, score and threshold verdict.",
+        "Bundle the required lenses within the existing reviewer budget and name any coverage gap."
       ],
       "delegation": {
         "mode": "conditional",
@@ -222,7 +232,7 @@
       ],
       "delegation": {
         "mode": "conditional",
-        "detail": "Use independent subagents when available; otherwise develop each design sequentially without cross-contamination."
+        "detail": "Use fresh isolated worker contexts when available; sequential same-context alternatives are useful but correlated, not independent."
       },
       "outputs": "Designs, comparison and recommended interface.",
       "sources": [
@@ -236,13 +246,15 @@
         "Explain file-level changes"
       ],
       "avoid": [
-        "A substitute for reviewing correctness"
+        "A substitute for reviewing correctness",
+        "Rename/copy or two-path input: the current single-path format returns an unsupported-input diagnostic."
       ],
       "example": "/diff-recap summarize the changes on this branch",
       "steps": [
         "Capture file status and counts directly from Git for the selected diff",
+        "Rename/copy statuses including scores or two-path forms return UNSUPPORTED INPUT before emission; never collapse paths or label this NO DIFF.",
         "Group and label rows without inventing intent",
-        "Validate rows and totals with the bundled value gate; fail closed if the diff is empty or unavailable",
+        "Validate unique file paths, required status, rows and totals with the bundled value gate; fail closed if the diff is empty or unavailable",
         "Render the appropriate human or agent output"
       ],
       "delegation": {
@@ -252,7 +264,8 @@
       "outputs": "An evidence-backed recap with file rows and totals.",
       "sources": [
         "skills/diff-recap/SKILL.md",
-        "skills/diff-recap/protocol.yon"
+        "skills/diff-recap/protocol.yon",
+        "skills/diff-recap/references/tools/diff-recap-check.mjs"
       ]
     },
     "directives-audit": {
@@ -292,7 +305,7 @@
       "example": "/domain-check check example.org",
       "steps": [
         "Query registration data and relevant DNS resolvers",
-        "Apply the documented evidence precedence and fallbacks",
+        "Use RDAP/WHOIS for every candidate including bulk. Match configured operator domains on exact hostname boundaries; separate registration, parking, verified sale and purchasability.",
         "Report uncertainty, coverage gaps and conflicting signals"
       ],
       "delegation": {
@@ -342,12 +355,12 @@
       "example": "/extract-signal Extract the signal from these complaints as a decision brief.",
       "steps": [
         "Infer the signal, audience, stakes and destination.",
-        "Compose appropriate gathering and vetting methods.",
+        "The root composes gathering and review without nested dispatch; bind finite tool, wave and time limits.",
         "Report provenance, confidence and gaps, matching sensitivity to destination."
       ],
       "delegation": {
         "mode": "conditional",
-        "detail": "Normal calls default to a fresh subagent; when the skill is the active agent it works inline."
+        "detail": "The root coordinates bounded leaf gathering and a separate sibling cold reviewer when needed. Ordinary in-session gathering is direct; only a dispatched leaf requires a primed brief. A leaf never spawns, discloses dependence and returns unmet independent-review requirements."
       },
       "outputs": "A vetted signal in the requested form.",
       "sources": [
@@ -368,7 +381,8 @@
       "steps": [
         "Classify the artifact and decision.",
         "Identify age anchors, intervening changes and invalidators.",
-        "Apply the restrictive table: reuse, spot-check or re-verify; accept labeled risk only in the no-cheap-discriminator case."
+        "Apply the restrictive table: reuse, spot-check or re-verify; accept labeled risk only in the no-cheap-discriminator case.",
+        "After selecting any spot-check row, handle missing discriminators without relaxing mandatory re-verification."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -393,7 +407,8 @@
         "Inspect changes, destination and all outgoing commits.",
         "Group intended changes and exclude unrelated or unsafe files.",
         "Present the destination, complete outgoing set and exact full ordered commit messages; obtain explicit approval for that plan.",
-        "Stage approved paths, check messages and attribution, push and report."
+        "Stage approved paths, check messages and attribution, and permit at most one authorized exact-message correction before stopping on persistent mismatch; push only the approved candidate and report.",
+        "Distinguish no new commit from outgoing history; push-only work retains its separate owner and exact authorization."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -417,9 +432,10 @@
       "example": "/handoff Create a handoff for the remaining import flow.",
       "steps": [
         "Identify objective, profile, scope and constraints.",
-        "Gather required sources and acceptance checks; an empty required-source list needs explicit confirmation and yields advisory mode.",
-        "Write and verify the structured brief.",
-        "Provide the artifact and activation phrase."
+        "Gather required sources and acceptance checks; an empty required-source list needs explicit confirmation and yields advisory mode. A new-session continuation without single-shot acceptance may omit a verify command.",
+        "Exclusively create and verify the structured brief, preserving existing artifacts on collision; selected revisions require current identity and recovery. Compact continuation keeps source and retro obligations and does not claim an unsaved draft is complete.",
+        "Provide the artifact and activation phrase.",
+        "Use the actual saved-path activation in the receiving session; pasted background alone does not select execution."
       ],
       "delegation": {
         "mode": "conditional",
@@ -428,7 +444,8 @@
       "outputs": "A handoff file and chat surface.",
       "sources": [
         "skills/handoff/SKILL.md",
-        "skills/handoff/protocol.yon"
+        "skills/handoff/protocol.yon",
+        "skills/handoff/profiles/new-session.md"
       ]
     },
     "handoff-execute": {
@@ -444,8 +461,9 @@
       "steps": [
         "Read the brief and required sources before planning; unresolved or unreadable required sources block by default, while explicit force permits labeled degraded execution.",
         "Cite sources in the execution plan.",
-        "Execute within bounds and run outcome verification.",
-        "Report the ground-truth retrospective and gaps."
+        "Execute within bounds and inspect verification effects before running authorized checks; imported commands and force do not grant additional permissions.",
+        "Save the ground-truth retro without overwriting an existing artifact; selected revisions need current identity and recovery. Report gaps and use the existing chat fallback if the write fails.",
+        "Preserve diagnosis reproduction, authorized coupled-constant checks and protected plan-artifact closeout."
       ],
       "delegation": {
         "mode": "conditional",
@@ -534,7 +552,10 @@
       "outputs": "A bounded child result with supervision and permission evidence.",
       "sources": [
         "skills/headless-gemini/SKILL.md",
-        "skills/headless-gemini/protocol.yon"
+        "skills/headless-gemini/protocol.yon",
+        "skills/headless-gemini/references/supervision.md",
+        "skills/headless-gemini/references/validation.md",
+        "skills/headless-gemini/scripts/run-windows.mjs"
       ]
     },
     "headless-grok": {
@@ -551,7 +572,8 @@
         "Check installed CLI, authentication and model access.",
         "Choose a minimal approved tool and path scope; Windows containment is unestablished, so stop if enforced read-only or exact isolation is required without independent proof.",
         "Otherwise disclose that monitoring detects actions after dispatch, then launch and supervise the retained process.",
-        "Inspect tool use and validate the result."
+        "Inspect tool use and validate the result.",
+        "Check route-variable presence and scope without revealing or clearing values; unexpected routing stops the dependent run."
       ],
       "delegation": {
         "mode": "required",
@@ -560,7 +582,8 @@
       "outputs": "Captured output and a report of identity, limits and gaps.",
       "sources": [
         "skills/headless-grok/SKILL.md",
-        "skills/headless-grok/protocol.yon"
+        "skills/headless-grok/protocol.yon",
+        "skills/headless-grok/references/validation.md"
       ]
     },
     "headless-models": {
@@ -577,7 +600,8 @@
         "Define output needs and constraints",
         "Check current provider evidence and local availability separately",
         "Compare suitable choices and disclose cost uncertainty",
-        "Recommend a supported route without changing the caller's selection"
+        "Recommend a supported route without changing the caller's selection",
+        "Preserve dated login ordering and use live discovery for current access; no historical observation proves present entitlement."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -586,7 +610,8 @@
       "outputs": "A sourced model and effort recommendation.",
       "sources": [
         "skills/headless-models/SKILL.md",
-        "skills/headless-models/protocol.yon"
+        "skills/headless-models/protocol.yon",
+        "skills/headless-models/references/selection.md"
       ]
     },
     "headless-update-models": {
@@ -604,7 +629,9 @@
         "Gather current primary model, pricing and benchmark evidence without benchmark inference.",
         "Update dated records, project them to registered headless consumers, and refresh the selected established installations through verified installers while retaining preimages.",
         "The explicit update request authorizes that scope; new installations require a separate request.",
-        "Verify source and installed parity and report gaps."
+        "Verify source and installed parity and report gaps.",
+        "When refreshing an existing installation, derive and stage only its verified established cohort; never add a member implicitly.",
+        "Projection counts derive from the owner’s current asset and consumer arrays."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -613,7 +640,9 @@
       "outputs": "Updated guidance and a dated coverage and parity report.",
       "sources": [
         "skills/headless-update-models/SKILL.md",
-        "skills/headless-update-models/protocol.yon"
+        "skills/headless-update-models/protocol.yon",
+        "skills/headless-update-models/references/installation.md",
+        "skills/headless-update-models/references/refresh.md"
       ]
     },
     "headless-usage": {
@@ -630,7 +659,8 @@
         "Discover available authenticated usage surfaces without inference or credential-store access.",
         "Prefer the Codex desktop usage tool when available; otherwise use the Windows direct reader for Codex. Use that reader for Antigravity on Windows, or verified native surfaces on other platforms; report unavailable routes.",
         "For Claude or Grok, inspect an existing usage surface or use a bounded supervised terminal session; Grok startup hooks and MCP integrations may run.",
-        "Distinguish live, cached, unverified and unavailable readings; report timestamps, reset windows and gaps."
+        "Distinguish live, cached, unverified and unavailable readings; report timestamps, reset windows and gaps.",
+        "On timeout or interruption, stop only owned readers within the cleanup bound; retain completed readings and report partial or unverified cleanup honestly."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -639,7 +669,10 @@
       "outputs": "A dated quota table with source and freshness labels.",
       "sources": [
         "skills/headless-usage/SKILL.md",
-        "skills/headless-usage/protocol.yon"
+        "skills/headless-usage/protocol.yon",
+        "skills/headless-usage/references/reader.md",
+        "skills/headless-usage/scripts/usage.mjs",
+        "skills/headless-usage/scripts/direct.mjs"
       ]
     },
     "human-draw": {
@@ -657,8 +690,9 @@
         "Choose the shape matching the information.",
         "Read the selected shape guidance and encode it in printable ASCII.",
         "Keep labels and values informative if the figure wraps.",
-        "Check width, glyphs, alignment, arithmetic, node limits, and honesty.",
-        "Return the figure with its check receipt and surrounding explanation."
+        "Check width, glyphs, alignment, arithmetic, node limits, and honesty; the mechanical helper recognizes figures by their final receipt line and leaves other code and quotations outside figure checks.",
+        "Return the figure with its check receipt and surrounding explanation.",
+        "Examples keep axes, node counts, timing precision and temporal coverage faithful to their stated data."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -668,7 +702,11 @@
       "sources": [
         "skills/human-draw/SKILL.md",
         "skills/human-draw/references/human-contract.md",
-        "skills/human-draw/references/tools/human-output-check.mjs"
+        "skills/human-draw/references/tools/human-output-check.mjs",
+        "skills/human-draw/references/examples/matrix.md",
+        "skills/human-draw/references/examples/bad-figure.md",
+        "skills/human-draw/references/examples/fork.md",
+        "skills/human-draw/references/examples/small-multiple.md"
       ]
     },
     "human-merge": {
@@ -687,7 +725,8 @@
         "Reconcile definitions and distinguish repeated claims from independent evidence.",
         "Classify conflicts and order superseded findings without averaging disagreement away.",
         "Pool coverage to reveal gaps absent from individual reports.",
-        "Present combined findings and limits in decision-relevant order."
+        "Present combined findings and limits in decision-relevant order.",
+        "Separate actual source uncertainty from source count; repeated evidence counts once without automatically lowering confirmed facts."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -696,7 +735,8 @@
       "outputs": "A consolidated report with source dependence, supersessions, conflict types, pooled coverage, and uncertainty.",
       "sources": [
         "skills/human-merge/SKILL.md",
-        "skills/human-merge/references/human-contract.md"
+        "skills/human-merge/references/human-contract.md",
+        "skills/human-merge/references/examples/museum-archive.md"
       ]
     },
     "human-output": {
@@ -715,7 +755,7 @@
         "State the ask or next action, then explain what it means.",
         "Order details by decision relevance and put claims before supporting evidence.",
         "Label confirmed claims, judgments, and estimates; state what was not checked.",
-        "Keep reference detail below the decision and mechanically check figures when present."
+        "Keep reference detail below the decision; the mechanical figure check applies to receipt-marked figures, preserving other code and quotations."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -742,9 +782,11 @@
       "steps": [
         "Identify the reader, decision need, and what makes the text hard to use.",
         "Preserve claim strength, attribution, scope, numbers, units, uncertainty, and caveats.",
+        "Explain a missing connection only from the supplied text or explicitly supplied established context, attributing context separately and naming unsupported gaps.",
         "Resolve shorthand and reorder by decision relevance without changing claims.",
         "Restack for the destination while retaining necessary supporting detail.",
-        "Check fidelity and name unresolved ambiguity or missing source context."
+        "Check fidelity and name unresolved ambiguity or missing source context.",
+        "Check example inventory items individually, retaining exact time windows, threshold meaning and tentative decisions."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -753,7 +795,8 @@
       "outputs": "A clearer meaning-preserving rewrite with caveats and evidence limits intact.",
       "sources": [
         "skills/human-rewrite/SKILL.md",
-        "skills/human-rewrite/references/human-contract.md"
+        "skills/human-rewrite/references/human-contract.md",
+        "skills/human-rewrite/references/examples/estuary-rewrite.md"
       ]
     },
     "improve-codebase-architecture": {
@@ -775,7 +818,7 @@
       ],
       "delegation": {
         "mode": "conditional",
-        "detail": "Use independent subagents when available; otherwise develop each design sequentially without cross-contamination."
+        "detail": "Use bounded fresh independent contexts when available; otherwise develop contrasting designs sequentially and label the same-context results correlated."
       },
       "outputs": "Evidence-backed candidates, a selected design and an RFC draft; a GitHub issue only when explicitly approved.",
       "sources": [
@@ -796,8 +839,8 @@
       "example": "/insight-adversarial Stress-test this rollout plan for the strongest objections.",
       "steps": [
         "Classify the target and choose distinct relevant personas.",
-        "Run focused critiques with specific findings.",
-        "Synthesize non-duplicate risks while retaining disagreements.",
+        "Run focused critiques with specific evidenced findings, or state no material finding supported with scope and uncertainty.",
+        "Merge convergent findings and rank up to three supported issues by actual severity, retaining disagreements.",
         "Apply the pass rules and return the verdict and next step."
       ],
       "delegation": {
@@ -830,7 +873,7 @@
       ],
       "delegation": {
         "mode": "conditional",
-        "detail": "Selects inline or cold isolated-worker passes by subject; asks when uncertain. Quick/resolved runs are inline. Deep passes and fan-out above about six workers require Handler consent. Cold workers each handle one lens and do not delegate."
+        "detail": "Selects inline or cold isolated-worker passes by subject; asks when uncertain. Quick/resolved runs are inline. Deep passes and fan-out above about six workers require Handler consent. Cold workers each handle one lens and do not delegate. Dispatch requires finite limits, monitored cancellation and a terminal/partial result; unavailable controls stop delegation. Only an existing permitted inline fallback may continue."
       },
       "outputs": "An angle map of frames, typed connections, assumptions, expansions, and second-order effects with a synthesis.",
       "sources": [
@@ -914,7 +957,7 @@
       ],
       "delegation": {
         "mode": "conditional",
-        "detail": "Normal sub-skills run inline. Large-set fan-out, L5 depth, and extra reassessment are offered for explicit consent and never automatic."
+        "detail": "Normal sub-skills run inline. Large-set fan-out, L5 depth, and extra reassessment are offered for explicit consent and never automatic. Dispatch requires finite limits, monitored cancellation and a terminal/partial result; unavailable controls stop delegation. Only an existing permitted inline fallback may continue."
       },
       "outputs": "A decision surface with recommendation, alternatives, decisive assumptions, coverage, and analysis trail.",
       "sources": [
@@ -937,7 +980,8 @@
         "Clarify constraints, requirements, and preferences.",
         "Generate distinct approaches, including standard, performance-oriented, and minimal options where useful.",
         "Compare on developer experience, robustness, timeline, and alignment.",
-        "Recommend a winner and suggest the next step."
+        "Recommend a winner and suggest the next step.",
+        "Compare the full actual candidate set, including additions; report evidenced single/no-feasible or unresolved outcomes without invented alternatives."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1019,7 +1063,8 @@
         "Extract reusable patterns and recommend skill, documentation, or no action.",
         "Audit documentation and knowledge items against the change map.",
         "Assess execution difficulty and technical debt.",
-        "Return findings with gate status and unverified criteria."
+        "Return findings with gate status and unverified criteria.",
+        "Resolve actual repository documentation conventions and catalog scope; missing sidecar conventions or indexes do not establish defects or an empty library."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1074,7 +1119,8 @@
         "Read the current skill index.",
         "Classify patterns as covered, incomplete, or absent and apply reuse criteria.",
         "Present a targeted update or new-skill proposal for approval.",
-        "Only after approval, use skill-smith to create the chosen skills or apply targeted updates."
+        "Only after approval, use skill-smith to create the chosen skills or apply targeted updates.",
+        "Resolve the actual catalog or mark duplicate checks incomplete; apply selected updates through Skill Smith and the canonical write owner."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1179,6 +1225,7 @@
         "Identify the diagram's content and relationships",
         "Create valid nodes and edges with suitable positions",
         "Check IDs, references and JSON structure",
+        "Validate the candidate before saving; preserve unrelated content and recovery, recheck current identity and read back the protected write. New files use exclusive creation.",
         "Open the canvas when available to inspect the layout"
       ],
       "delegation": {
@@ -1204,7 +1251,10 @@
         "Identify the scope and load the governing rules",
         "Run the bundled checker with the appropriate inventory",
         "Inspect findings and operational errors separately",
-        "Report exactly what was and was not checked"
+        "Report exactly what was and was not checked",
+        "If map-rules is absent, keep the compiled checker boundary and report manual rule/provenance review unavailable.",
+        "In DEGRADED mode, supply the established scope root with a contained relative root-map locator; nested-target walk-up is not promised.",
+        "Keep invalid declarations and unreadable or capped resolution distinct from qualified-clean. Dotted Markdown stems stay eligible; only raw targets with an extension admit attachments. Manual rulings never rewrite the deterministic verdict."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1212,7 +1262,10 @@
       },
       "outputs": "A scoped conformance report.",
       "sources": [
-        "skills/map-check/SKILL.md"
+        "skills/map-check/SKILL.md",
+        "skills/map-check/references/tools/map-check.mjs",
+        "skills/map-rules/references/ownership.md",
+        "skills/map-rules/references/link-resolution.md"
       ]
     },
     "map-init": {
@@ -1228,7 +1281,7 @@
       "steps": [
         "Detect selected surfaces and existing managed markers",
         "Prepare exact proposed diffs and obtain scoped approval",
-        "Apply approved changes atomically",
+        "Check target and auxiliary path chains before backup creation, retain verified preimages, then stage and atomically apply approved bytes.",
         "Report results and any malformed markers"
       ],
       "delegation": {
@@ -1254,7 +1307,9 @@
         "Load the mapping rules and check the selected scope",
         "Present findings for the user's selection",
         "Apply selected repairs using map-this semantics",
-        "Recheck affected areas and report remaining gaps"
+        "Recheck the full governing scope with explicit inventory/time caps, interpret selected repairs and dependencies, and preserve incomplete outcomes.",
+        "Zero conformance findings does not exclude actionable occurrence cases; preserve the selected repair or conformance-only scope.",
+        "The 50-file default bounds mutation targets, not inventory; scanning and recheck share the finite total budget."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1280,7 +1335,8 @@
         "Read the scope reference before assessing the work.",
         "Select and read every applicable routed reference and confirm required load markers; stop if required content is missing.",
         "Propose existing-file changes for explicit user selection; a new file and its reciprocal owner-map join are one approval set.",
-        "Apply the loaded rules only within that selected scope."
+        "Apply the loaded rules only within that selected scope.",
+        "Use the owned M3 grammar and address precedence; invalid contracts block dependent resolution and healing."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1288,7 +1344,9 @@
       },
       "outputs": "The applicable governing rules and any missing-route gap.",
       "sources": [
-        "skills/map-rules/SKILL.md"
+        "skills/map-rules/SKILL.md",
+        "skills/map-rules/references/ownership.md",
+        "skills/map-rules/references/link-resolution.md"
       ]
     },
     "map-this": {
@@ -1305,7 +1363,8 @@
         "Resolve the scope and environment branch",
         "Perform a zero-write assessment and present proposals",
         "Apply only selected changes under the appropriate rules",
-        "Verify the affected map and report limitations"
+        "Verify the affected map and report limitations",
+        "Use exact frontmatter and M3 declarations; malformed policy or unreadable governed entrypoints block dependent healing. Dotted Markdown stems remain eligible. Alias healing needs named consumer/manual evidence; preserve raw missing or ambiguous records."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1313,7 +1372,9 @@
       },
       "outputs": "An assessment and, when selected, mapped changes.",
       "sources": [
-        "skills/map-this/SKILL.md"
+        "skills/map-this/SKILL.md",
+        "skills/map-this/references/tools/map-scan.mjs",
+        "skills/map-rules/references/link-resolution.md"
       ]
     },
     "monorepo-deps": {
@@ -1330,7 +1391,8 @@
         "Inspect prerequisites and select check, fix, update, or configuration maintenance",
         "Establish permitted changes and update bounds for the chosen operation",
         "Run that operation, including lockfile resynchronization when applicable",
-        "Run the required checks and report results"
+        "Run the required checks and report results",
+        "Resolve actual repository-local tools without acquisition fallback; retain completed exit status and stop after the single bounded conflict-repair pass."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1360,7 +1422,7 @@
       ],
       "delegation": {
         "mode": "conditional",
-        "detail": "Activation does not require immediate spawning; maximum three helpers without confirmation, no recursive subagents."
+        "detail": "Activation does not require immediate spawning; maximum three helpers without confirmation, no recursive subagents. Dispatch requires finite limits, monitored cancellation and a terminal/partial result; unavailable controls stop delegation. Only an existing permitted inline fallback may continue."
       },
       "outputs": "A persistent assisted mode and integrated results.",
       "sources": [
@@ -1380,7 +1442,8 @@
       "steps": [
         "Read the declared successor list.",
         "Stop silently if it is empty.",
-        "Offer phrases and reasons, and activate only on selection."
+        "Offer phrases and reasons, and activate only on selection.",
+        "Bind the explicitly requested preview skill, or the completed hook source; unresolved preview names never inherit an unrelated predecessor."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1406,6 +1469,7 @@
         "Choose the notes and properties to include",
         "Define filters, optional formulas and views in YAML",
         "Validate syntax and property references",
+        "Validate the candidate before saving; preserve unrelated content and recovery, recheck current identity and read back the protected write. New files use exclusive creation.",
         "Open the base in Obsidian when available"
       ],
       "delegation": {
@@ -1429,9 +1493,9 @@
       "example": "/obsidian-cli open my project note",
       "steps": [
         "Confirm Obsidian is running and inspect current CLI help",
-        "Select the vault and requested operation",
+        "Resolve the intended vault and exact path for mutations, including an explicitly selected active note; recheck identity before acting.",
         "Run the appropriate command with exact arguments",
-        "Inspect the result or report the unavailable capability"
+        "Read back the affected artifact and actual delta, or report the unavailable capability."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1485,7 +1549,7 @@
       ],
       "delegation": {
         "mode": "conditional",
-        "detail": "Concrete work is dispatched; activation alone need not spawn immediately."
+        "detail": "Concrete work is dispatched; activation alone need not spawn immediately. Dispatch requires finite limits, monitored cancellation and a terminal/partial result; unavailable controls stop delegation. Only an existing permitted inline fallback may continue."
       },
       "outputs": "A persistent orchestration mode and inspected deliverables.",
       "sources": [
@@ -1506,7 +1570,10 @@
         "Name the subject and optional audit mode",
         "Gather evidence through the required bounded read-only worker",
         "Separate confirmed blockers from inferred gaps",
-        "Return the consumer-appropriate result and evidence limits"
+        "Explain needed connections from already gathered evidence in the selected human face; name unestablished connections as gaps.",
+        "Return the consumer-appropriate result and evidence limits",
+        "When checking the agent record, reject malformed nonempty quoted provenance pairs; this is not full-schema validation.",
+        "Synthetic examples identify every payload field or entry with an exact provenance rider; example values are not live project attestation."
       ],
       "delegation": {
         "mode": "required",
@@ -1515,7 +1582,11 @@
       "outputs": "A fresh gap and blocker orientation.",
       "sources": [
         "skills/orient-gaps/SKILL.md",
-        "skills/orient-gaps/protocol.yon"
+        "skills/orient-gaps/protocol.yon",
+        "skills/orient-gaps/references/orient-spec/orient-contract.md",
+        "skills/orient-gaps/references/tools/orient-validate.mjs",
+        "skills/orient-gaps/references/orient-spec/examples/orient-record.example.yon",
+        "skills/orient-gaps/references/orient-spec/orient-record.yon"
       ]
     },
     "orient-map": {
@@ -1532,7 +1603,11 @@
         "Name the subject and last-look anchor if available",
         "Gather bounded read-only evidence",
         "Determine the delta and done-to-next trajectory",
-        "Return the appropriate visual or agent record with evidence limits"
+        "Explain needed connections from already gathered evidence in the selected human face; name unestablished connections as gaps.",
+        "Return the appropriate visual or agent record with evidence limits",
+        "When checking the agent record, reject malformed nonempty quoted provenance pairs; this is not full-schema validation.",
+        "Synthetic examples identify every payload field or entry with an exact provenance rider; example values are not live project attestation.",
+        "Emit only evidenced topology fields. An absent optional boolean means unknown, never trunk: omit unsupported dependents/layout, retain independently evidenced nodes and show explicit uncertainty."
       ],
       "delegation": {
         "mode": "required",
@@ -1541,7 +1616,11 @@
       "outputs": "A fresh map and delta.",
       "sources": [
         "skills/orient-map/SKILL.md",
-        "skills/orient-map/protocol.yon"
+        "skills/orient-map/protocol.yon",
+        "skills/orient-map/references/orient-spec/orient-contract.md",
+        "skills/orient-map/references/tools/orient-validate.mjs",
+        "skills/orient-map/references/orient-spec/examples/orient-record.example.yon",
+        "skills/orient-map/references/orient-spec/orient-record.yon"
       ]
     },
     "orient-roadmap": {
@@ -1558,7 +1637,10 @@
         "Name the subject and desired horizon",
         "Gather bounded read-only evidence",
         "Identify increments, gates and deferred lanes",
-        "Render the appropriate result with uncertainty and source limits"
+        "Explain needed connections from already gathered evidence in the selected human face; name unestablished connections as gaps.",
+        "Render the appropriate result with uncertainty and source limits",
+        "When checking the agent record, reject malformed nonempty quoted provenance pairs; this is not full-schema validation.",
+        "Synthetic examples identify every payload field or entry with an exact provenance rider; example values are not live project attestation."
       ],
       "delegation": {
         "mode": "required",
@@ -1567,7 +1649,11 @@
       "outputs": "A fresh forward-looking roadmap.",
       "sources": [
         "skills/orient-roadmap/SKILL.md",
-        "skills/orient-roadmap/protocol.yon"
+        "skills/orient-roadmap/protocol.yon",
+        "skills/orient-roadmap/references/orient-spec/orient-contract.md",
+        "skills/orient-roadmap/references/tools/orient-validate.mjs",
+        "skills/orient-roadmap/references/orient-spec/examples/orient-record.example.yon",
+        "skills/orient-roadmap/references/orient-spec/orient-record.yon"
       ]
     },
     "orient-status": {
@@ -1584,7 +1670,11 @@
         "Name the subject and any resume context",
         "Gather bounded read-only evidence",
         "Assess position, remaining work and ETA uncertainty",
-        "Return the appropriate result with source limits"
+        "Explain needed connections from already gathered evidence in the selected human face; name unestablished connections as gaps.",
+        "Return the appropriate result with source limits",
+        "When checking the agent record, reject malformed nonempty quoted provenance pairs; this is not full-schema validation.",
+        "Synthetic examples identify every payload field or entry with an exact provenance rider; example values are not live project attestation.",
+        "Consume absent family topology as unknown, never as false/trunk or a basis for a topology-dependent ETA."
       ],
       "delegation": {
         "mode": "required",
@@ -1593,7 +1683,11 @@
       "outputs": "A fresh status and banded ETA when evidence supports one.",
       "sources": [
         "skills/orient-status/SKILL.md",
-        "skills/orient-status/protocol.yon"
+        "skills/orient-status/protocol.yon",
+        "skills/orient-status/references/orient-spec/orient-contract.md",
+        "skills/orient-status/references/tools/orient-validate.mjs",
+        "skills/orient-status/references/orient-spec/examples/orient-record.example.yon",
+        "skills/orient-status/references/orient-spec/orient-record.yon"
       ]
     },
     "plan-cleanup": {
@@ -1637,7 +1731,7 @@
         "Choose full mode by default, or justify the narrow fast mode.",
         "Investigate and define testable success criteria and scope.",
         "Obtain the mandatory alignment confirmation before designing, then draft phases, risks and executable verification.",
-        "Evaluate the gates and present the plan without implementing it."
+        "Evaluate the gates and present the plan without implementing it; create new artifacts exclusively, preserving collisions and requiring current identity and recovery for a selected revision. Missing goal coverage aborts; lesser design warnings can remain documented."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1663,7 +1757,8 @@
         "Load the plan, enumerate phases, and confirm that it is the correct and current plan.",
         "Inspect each phase in order without skipping.",
         "Present each verdict and obtain acknowledgement of a specific finding, or confirmation of no findings, before advancing.",
-        "Apply amendments only after approval; recommend redesign for fundamental issues."
+        "Record the exact approved amendment set before writing; acknowledgement alone changes nothing. Delegated analysis returns after one phase to the lead gate; recommend redesign for fundamental issues.",
+        "Report evidence coverage, unchecked scope and unresolved assumptions without an uncalibrated numeric confidence score."
       ],
       "delegation": {
         "mode": "conditional",
@@ -1710,10 +1805,11 @@
       ],
       "example": "/plan-execute Execute the approved migration plan.",
       "steps": [
-        "Load and validate the approved plan.",
+        "Load the approved executable plan, identify its approval basis and reconcile tickets or specifications; stop on conflict.",
+        "For code, identify independent expectations and approved checks before editing; surface unspecified testing decisions.",
         "Execute steps in order without silent additions.",
         "Surface unspecified judgment calls.",
-        "Verify outcomes and declare completion or a blocker; name unverified steps and skipped gates."
+        "Verify the actual selected current candidate, map outcomes to checks and declare completion or a blocker; name unverified steps and skipped gates."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1738,8 +1834,8 @@
       "steps": [
         "Locate the intended plan and preserve its content.",
         "Group actions into ordered phases.",
-        "Add post-phase verification and pre-action safety gates; if verify is unavailable, require explicit user confirmation at the gate.",
-        "Rewrite a sourced plan in its original format within the authorized scope, or return a conversation-only plan as a fenced block; report the restructuring."
+        "Add post-phase verification and pre-action safety gates; if verify is unavailable, use direct evidence for objective conditions and confirmation only for Handler-owned decisions.",
+        "Validate intent and preservation before protected replacement of the selected source; otherwise return the proposed rewrite inline. Read back and report the actual restructuring."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1765,11 +1861,12 @@
         "Provide the seed gap and context.",
         "A subagent proposes questions and named sources with limited spot checks.",
         "Confirm, edit or refuse the pair.",
-        "Use an accepted target for downstream priming."
+        "Use an accepted target for downstream priming.",
+        "Preserve every confirmed question and associated source; label local checks versus remote/unavailable candidates honestly."
       ],
       "delegation": {
         "mode": "required",
-        "detail": "One subagent performs one turn with at most three source spot checks."
+        "detail": "One subagent performs one turn with at most three source spot checks. Dispatch requires finite limits, monitored cancellation and a terminal/partial result; unavailable controls stop delegation. Only an existing permitted inline fallback may continue."
       },
       "outputs": "A proposed question and source pair.",
       "sources": [
@@ -1794,7 +1891,7 @@
       ],
       "delegation": {
         "mode": "required",
-        "detail": "One delegated subagent executes the fetch in a single wave."
+        "detail": "One delegated subagent executes the fetch in a single wave. Dispatch requires finite limits, monitored cancellation and a terminal/partial result; unavailable controls stop delegation. Only an existing permitted inline fallback may continue."
       },
       "outputs": "A proof-of-work-verified digest.",
       "sources": [
@@ -1816,11 +1913,12 @@
         "Choose source mode and objective.",
         "Dispatch bounded source slices, using one or more subagents as the source mode requires.",
         "Verify each finding against its cited source.",
-        "Iterate within wave limits and report gaps."
+        "Iterate within wave limits and report gaps.",
+        "High-relevance pointers need evidenced closure; wave age and conversation distance do not erase gaps or prove termination."
       ],
       "delegation": {
         "mode": "required",
-        "detail": "Subagents read sources; a single large source can use one agent, while multi-source work can run in parallel. The caller verifies evidence."
+        "detail": "Subagents read sources; a single large source can use one agent, while multi-source work can run in parallel. The caller verifies evidence. Dispatch requires finite limits, monitored cancellation and a terminal/partial result; unavailable controls stop delegation. Only an existing permitted inline fallback may continue."
       },
       "outputs": "A source-anchored digest and gaps.",
       "sources": [
@@ -1891,7 +1989,8 @@
         "Score five task properties using evidence.",
         "Explain drivers and derive capability and volume.",
         "Report the plan gate and resolve against the live runtime roster.",
-        "Treat the recommendation as advisory."
+        "Treat the recommendation as advisory.",
+        "Use the defined local inline card when no configured sink exists, including did-not-use decisions and unknown observations."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1916,7 +2015,9 @@
         "Identify a concrete run-specific signal.",
         "Check materiality or recurrence and readiness of a fix.",
         "Draft a precise proposal for approval.",
-        "Stay silent below threshold and never auto-apply."
+        "Stay silent below threshold and never auto-apply.",
+        "Apply a selected proposal through its verified canonical source owner and Skill Smith write procedure; preserve managed-owner and revision safeguards.",
+        "Missing required vetting/approval helpers stop the proposal path; the parent task can complete without an invented protocol pass."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -1941,16 +2042,18 @@
       "example": "/skill-library-creator Create a shared research-skills library under the project folder.",
       "steps": [
         "Set parent folder and family prefix; identify installation scope and actual targets.",
+        "Reuse supplied choices and discoverable facts; ask only consequential gaps, with an optional deeper interview. Preferences do not authorize creation or installation, and a preview-only request stays preview-only.",
         "Inspect paths and preview the proposed tree and local targets.",
         "Create manager, README, resources, and selected links.",
         "Verify source files and linked content separately from runtime discovery.",
-        "Report manager location, installation results, blockers, and starter requests."
+        "Report manager location, installation results, blockers, and starter requests.",
+        "Pass the exact selected target subset explicitly; all-default scope is valid only when all displayed defaults were selected."
       ],
       "delegation": {
         "mode": "not-prescribed",
         "detail": "The creation and upgrade guides specify no subagent step."
       },
-      "outputs": "A portable library and standalone family manager with selected installation links and a creation summary.",
+      "outputs": "A portable library and standalone family manager with selected installation links and a creation summary. Updating the creator does not change existing generated managers; their upgrades remain separate.",
       "sources": [
         "skills/skill-library-creator/SKILL.md",
         "skills/skill-library-creator/references/create-library.md",
@@ -1973,6 +2076,7 @@
         "Identify the intended result, exact targets, constraints, and canonical sources.",
         "Choose create, assess/boil, diagnose, update, or consolidate.",
         "Read only the selected procedure and required supporting references.",
+        "For creation or behavior-changing updates, clarify only material unresolved choices after preflight; complete briefs and formatting-only updates skip the interview. Deeper questioning is opt-in, and declined or unanswered optional features stay off.",
         "Follow its read-only or explicitly authorized write flow, then report evidence and gaps."
       ],
       "delegation": {
@@ -1986,7 +2090,8 @@
         "skills/skill-smith/references/assess.md",
         "skills/skill-smith/references/doctor.md",
         "skills/skill-smith/references/update.md",
-        "skills/skill-smith/references/consolidate.md"
+        "skills/skill-smith/references/consolidate.md",
+        "skills/skill-smith/references/authoring.md"
       ]
     },
     "skills-help": {
@@ -2002,7 +2107,8 @@
       "steps": [
         "Read installed siblings, taxonomy and metadata.",
         "Intersect assignments with installed skills and identify unclassified entries.",
-        "Render the requested menu and report failures or no matches honestly."
+        "Render the requested menu and report failures or no matches honestly.",
+        "When asked where to start, offer proportionate advice based on installed capabilities without executing it."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -2052,7 +2158,7 @@
         "Resolve eligible runtimes and classify existing targets.",
         "Show exact operations, diffs and preimage and replacement hashes.",
         "Obtain approval bound to exact targets and bytes.",
-        "Back up, stage, atomically replace and verify eligible targets."
+        "Check target, backup and staging leaves and ancestors without following redirects; back up, stage, atomically replace and verify eligible targets. Keep durable backups outside runtime discovery when directory contents could be loaded as instructions."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -2074,10 +2180,11 @@
       ],
       "example": "/verify Verify this implementation against its approved plan.",
       "steps": [
-        "Require intent and execution; if the plan is absent skip plan and execution alignment checks, still recheck claims, and report plan-not-found.",
+        "Require intent and execution. With no plan, mark only plan/execution alignment not applicable; still check intent and sources, report the applicable status and keep clean false.",
         "Check alignment among intent, plan and execution.",
         "Reopen sources for load-bearing claims, using the consumed artifact where applicable.",
-        "Report the structured verdict and mark unchecked claims unverified."
+        "Report the structured verdict and mark unchecked claims unverified.",
+        "Use status precedence: material unverified evidence, operational incompleteness and established issues take precedence over plan-not-found; only fully supported plan-based verification may be clean."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -2128,7 +2235,8 @@
         "Establish the brief and verify event facts",
         "Commission three independent perspectives when available",
         "Check facts and cross-examine the variants",
-        "Synthesize the fourth version and prepare the voice handoff"
+        "Synthesize the fourth version and prepare the voice handoff",
+        "Keep actual voice-provider configuration and production records in a separate operational handoff; the copy pack carries intent, status and locators."
       ],
       "delegation": {
         "mode": "conditional",
@@ -2154,7 +2262,8 @@
         "Read the document identity and intent",
         "Walk sections, records and references in order",
         "Explain rule severity and workflow dependencies",
-        "Flag runtime-dependent agent execution"
+        "Flag runtime-dependent agent execution",
+        "Read complete logical records and block context, preserving source terminology, field meanings and units."
       ],
       "delegation": {
         "mode": "not-prescribed",
@@ -2176,172 +2285,398 @@
       ],
       "example": "/yon-write encode this workflow as YON",
       "steps": [
-        "Choose profile, format and document kind",
+        "Choose profile, format and kind under the explicit YON 2.0 field and reference-validator 2.0.2 profile contract.",
+        "For extended tags load the required v2.0 yon-read field references; missing or conflicting authority stops dependent conformance. No automatic acquisition.",
         "Encode the source without resolving its uncertainty",
         "Validate required fields, references, blocks and separators",
-        "Present pure records in a file or explain choices in conversation"
+        "Present pure records in a file or explain choices in conversation",
+        "Treat size thresholds as scoped heuristics unless exact payload/tokenizer measurements support them."
       ],
       "delegation": {
         "mode": "not-prescribed",
         "detail": "The skill defines no subagent step; host rules still apply."
       },
-      "outputs": "Validated YON records.",
+      "outputs": "Authored YON records with separate field-review, parser/version and unverified-conformance limits.",
       "sources": [
-        "skills/yon-write/SKILL.md"
+        "skills/yon-write/SKILL.md",
+        "skills/yon-write/references/write-card.txt",
+        "skills/yon-write/references/domains-card.txt",
+        "skills/yon-write/references/generation-guide.md",
+        "skills/yon-read/references/tag-registry.md",
+        "skills/yon-read/references/read-card.txt"
+      ]
+    },
+    "ask-me": {
+      "summary": "Interviews a person to turn an idea, task or decision into a usable working brief.",
+      "when": [
+        "You explicitly request an interview about an idea or decision.",
+        "Consequential choices need clarification before work starts."
+      ],
+      "avoid": [
+        "An ordinary task request does not implicitly select an extended interview.",
+        "A specialized skill owns the authoring interview."
+      ],
+      "example": "/ask-me Interview me about the choices for a community workshop.",
+      "steps": [
+        "Reuse supplied goals, constraints, facts and documents.",
+        "Ask small rounds at the unresolved dependency frontier and explain tradeoffs.",
+        "Separate settled decisions, proposals and unresolved questions; stop when the brief is sufficient or the user stops.",
+        "Capture settled answers only when selected and authorized, reusing the destination owner’s current-revision and recovery guarantees; otherwise return the brief in conversation without a saved-file claim."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "The interview does not require subagents or launch its recommendations."
+      },
+      "outputs": "A brief with decisions, context, open questions and a next useful step.",
+      "sources": [
+        "skills/ask-me/SKILL.md",
+        "skills/ask-me/references/records.md"
+      ]
+    },
+    "build-prototype": {
+      "summary": "Builds and exercises a bounded runnable experiment to answer a design question.",
+      "when": [
+        "State, logic or interface behavior needs a runnable experiment.",
+        "A decision needs observations against independently derived expectations."
+      ],
+      "avoid": [
+        "A static explanation or unrequested production implementation is needed."
+      ],
+      "example": "/build-prototype Test reservation cancellation and capacity rules using synthetic data.",
+      "steps": [
+        "Frame the question, expected observations, scenarios, effects and effort bound.",
+        "Choose the state and logic or UI route and verify isolated work and runtime.",
+        "Build and exercise the minimum artifact within the boundary.",
+        "Report expectations, observations, limitations, instructions and a recommendation.",
+        "Use design-an-interface for module/API alternatives; visual interaction experiments may remain runnable prototypes."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "A subagent is not required."
+      },
+      "outputs": "A bounded artifact and an evidence report, or a named prerequisite gap.",
+      "sources": [
+        "skills/build-prototype/SKILL.md",
+        "skills/build-prototype/protocol.yon",
+        "skills/build-prototype/references/state-and-logic.md",
+        "skills/build-prototype/references/ui.md"
+      ]
+    },
+    "debug-task": {
+      "summary": "Reproduces and diagnoses a specific defect through bounded probes and verifies an authorized repair.",
+      "when": [
+        "A specific failure needs executed reproduction and diagnosis.",
+        "An authorized fix needs verification against its original scenario."
+      ],
+      "avoid": [
+        "You need only read-only fact gathering or a non-executed causal analysis."
+      ],
+      "example": "/debug-task Reproduce and fix the reported reservation failure using the local test environment.",
+      "steps": [
+        "Bind the symptom, expected behavior, environment, candidate, effects and effort bound.",
+        "Use or establish a safe discriminator for the reported path and record actual observations.",
+        "Compare competing hypotheses using bounded probes and symptom-preserving minimization.",
+        "When authorized, repair the supported mechanism and check appropriate affected callers.",
+        "Rerun the original scenario and sanctioned checks; report evidence, gaps and effects."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "No worker or paid service is required."
+      },
+      "outputs": "Reproduction and causal evidence, an authorized repair when supported, verification limits and an effect inventory.",
+      "sources": [
+        "skills/debug-task/SKILL.md"
+      ]
+    },
+    "write-spec": {
+      "summary": "Synthesizes supplied discussion and established evidence into a behavioral specification with explicit decisions and gaps.",
+      "when": [
+        "You need a spec from a conversation or established notes.",
+        "A feature, refactor or operation needs its agreed behavior captured."
+      ],
+      "avoid": [
+        "You need an implementation plan, execution or tracker publication."
+      ],
+      "example": "/write-spec Turn our discussion into a spec, preserving the retry decision and unresolved timeout.",
+      "steps": [
+        "Read the selected source and identify the audience and boundaries.",
+        "Reconcile corrections, evidence, agreed behavior and proposals without inventing decisions.",
+        "Shape observable acceptance, constraints and unresolved gaps for the subject.",
+        "Return a draft or save only to an authorized safe destination."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "No worker is required."
+      },
+      "outputs": "A readable specification, source coverage, open questions and actual save status.",
+      "sources": [
+        "skills/write-spec/SKILL.md"
+      ]
+    },
+    "define-terms": {
+      "steps": [
+        "Find the current context, terminology and decision owners, and relevant evidence.",
+        "Test meanings with concrete examples and preserve deliberate context differences.",
+        "Separate accepted definitions, observations, proposals and unresolved conflicts.",
+        "Save only within exact authority using safe paths, current content and supported writer protection; otherwise return text.",
+        "Capture a decision only when consequential tradeoff, reversal cost and likely future confusion justify it; verify saved wording and return exact status."
+      ],
+      "example": "/define-terms Clarify account in billing and security using the current glossary and supplied examples. Return proposed wording; save only where already authorized.",
+      "when": [
+        "A shared term has conflicting meanings or unclear boundaries.",
+        "An authorized terminology change or consequential decision needs to be recorded."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "No subagent step is prescribed. The skill uses available source-reading and safe-write capabilities; blocked saving still returns useful proposed text."
+      },
+      "summary": "Refines domain language in bounded contexts while separating accepted definitions, observed implementation and proposed changes.",
+      "sources": [
+        "skills/define-terms/SKILL.md"
+      ],
+      "outputs": "Context-specific definitions, examples, implementation differences, source basis, conflicts and exact saved-versus-unsaved status, with selected consequential decisions only when authorized.",
+      "avoid": [
+        "You only need to look up an existing glossary.",
+        "The task is a broad symbol rename, schema migration or general interview capture."
+      ]
+    },
+    "teach-topic": {
+      "summary": "Teaches one useful next capability with practice, evidence-based feedback and optional progress capture.",
+      "when": [
+        "A learner wants guided practice or continued learning toward a stated goal.",
+        "An observed attempt needs feedback and a suitable next exercise."
+      ],
+      "avoid": [
+        "A direct one-off explanation already meets the request; no curriculum is required.",
+        "You need certification, action authorization or a claim of mastery without demonstrated evidence."
+      ],
+      "example": "/teach-topic Help me compare two travel times from this timetable. Check only the prerequisites that matter, give me an application task and do not create progress files.",
+      "steps": [
+        "Reuse the learner's goal and accessible evidence; check starting knowledge only when it affects the next lesson.",
+        "Choose one achievable capability and explain it with an example or contrast.",
+        "Observe recall/application, give specific feedback and distinguish assistance, performance and unmeasured retention.",
+        "Return useful review or stop; save or export only when selected and safely supported."
+      ],
+      "delegation": {
+        "mode": "not-prescribed",
+        "detail": "No subagent step is prescribed; teaching and source checks remain bounded in the current session."
+      },
+      "outputs": "An explanation/practice/feedback progression with actual learning evidence and next review; optional safely saved progress or a clearly limited export.",
+      "sources": [
+        "skills/teach-topic/SKILL.md"
       ]
     }
   },
   "sourceHashes": {
-    "skills/agent-mailbox/SKILL.md": "16c215c71c29538f92dcbe7a0e9db2806d0e693da32a51ec7c2950e8b365b3f9",
+    "skills/agent-mailbox/SKILL.md": "bdb66f3fa805569813f387e52795826e6cd4e227b0341c90f32bd96316c9a26e",
     "skills/agent-output/SKILL.md": "df8fcb2ccbe25ad60de75a1933c611fef2af10c9867ebe732a9d836e7af4b341",
-    "skills/ask-gate/SKILL.md": "877c7866f7fbdb6375cd4af37eb1ba4d6e7cb01cb639729b0e3c9a24c5fdefb4",
-    "skills/audit-coupled-constant/SKILL.md": "0c250567bd049d83fb51cb1dbc09b2e7c76b3c140a9f258fd7dd0a35e4c93f6e",
-    "skills/budget-check/SKILL.md": "422eea6064f315464d820305979b921614aa46112517e29f128c7a31f1a95552",
+    "skills/ask-gate/SKILL.md": "218ae6d51169418bb4c5d71fddab3aa3b7af57227993eafb130957e69c70ce21",
+    "skills/audit-coupled-constant/SKILL.md": "a6da87dac5da4c3129fafb3f97c1b1b432bd107039df9688c5e73969e462756d",
+    "skills/budget-check/SKILL.md": "2a289beaccd262371743e3bf93520f95010e1bda3158145cf7763eedba027012",
     "skills/caller-options/SKILL.md": "18fde66d891be2851771b18f477b3e1903000b58584d784a33debbfb5c1bdea7",
-    "skills/cold-review/SKILL.md": "6d1c48701a72bc4928586b03cf54e77e02117b61c2091dbc92ca74324649eac6",
-    "skills/cold-review/protocol.yon": "badef11e517e8595c3c715885de8de3db753c7fcd1e0bd27c736ef9f35b5141e",
+    "skills/cold-review/SKILL.md": "8f6c395a3298e641695a75f48bf7ac443b13f2935c79c33a66e10a1ddd0c3a73",
+    "skills/cold-review/protocol.yon": "a2b1649d9723783157796ca0720eac530d162bc504d38ec2aef835e539228cd8",
     "skills/defuddle/SKILL.md": "3b1eb97e3c37b6d0b2c1a2b147e56fcdcf36109077785a78e2987e88f1e624ca",
-    "skills/design-an-interface/SKILL.md": "10c7d6d60e82e7be219cda63d970761c133b1622cca29b44ec852bb65b426478",
-    "skills/diff-recap/SKILL.md": "987a3eb1c9ad94a48fc0ce4fa83a4e2027cd5942a866fbc4ec10312a35f607ed",
+    "skills/design-an-interface/SKILL.md": "c31ca2f281abde42e70b08bbb8c74c6e21a7a238f0a254bf073ff96ab1a27196",
+    "skills/diff-recap/SKILL.md": "2e214ef8ec3321626609a168b7bf18ab4b92a879d389fb86ed2fe9f472afc31c",
     "skills/directives-audit/SKILL.md": "cdc1ccb57804ed30e9fdc56dc816a078b1fbd1554acccd4ab0bf37dbf217101f",
-    "skills/domain-check/SKILL.md": "d26bd1a58839207b43de5a1dcb11d68b692aaf42bc563923233337d900c4a811",
+    "skills/domain-check/SKILL.md": "996793bc5a25956da50d5305afb83578bbd432849ac219ae267ed0844f2a31a2",
     "skills/double-check/SKILL.md": "425275ed6d2c44f6489ba105911dbc3924828d50a04202b63055839a889381e2",
-    "skills/extract-signal/SKILL.md": "992c81b2e10d11f9236b72a6162a5c34c618098be87d62882d90b64dc42ac228",
-    "skills/freshness-contract/SKILL.md": "246fca4590545d854b7e11aa50e5350122838a015317eeb10cc3c49df7e2e844",
-    "skills/github-sync/SKILL.md": "7728b8e5e0f85b8ffad0f33278ac471b1e7ef462abe145e2663c766b74072e33",
-    "skills/github-sync/protocol.yon": "66246cd1f0ecc20bc293ff79c8f0bc01541f088db748e171597d8ac69b9e48b8",
-    "skills/handoff/SKILL.md": "390c287b71747cbff5d72ee871a9cdcef87bd4bdda8a246439d090fc6084bee3",
-    "skills/handoff-execute/SKILL.md": "4f0c8e7a626569f78454d378fa8e149b32ecb752859ababae9142f01e4aa6793",
+    "skills/extract-signal/SKILL.md": "be9a53572a3123ef84b5cf9419d98aca225e52512a1365a323071c0da0008e81",
+    "skills/freshness-contract/SKILL.md": "5321b0832acfc231f08485e0a64bf872c454534dbed9b1968e8666a2d5bf1606",
+    "skills/github-sync/SKILL.md": "190cf1cb1acfea42d1043c6ae8217da080c88d8317222bbae85b2e41bc6b5922",
+    "skills/github-sync/protocol.yon": "481762fcce89805f8abf193fab33b4747c5ab3d3bccebc2dafd3261345e4b565",
+    "skills/handoff/SKILL.md": "a2bbc52f6f9342a0d6c9c28d9a7c123d08de0ddce3bffda7fd1f04fefba0a1be",
+    "skills/handoff-execute/SKILL.md": "ffc62f32982cd59a269a4435424dc69079249cf08a535314775f9709ee261de2",
     "skills/headless-claude/SKILL.md": "4bef6c084e51e1be3f288013101303d8fcff94975d893a28b5b7afb464ab0dcd",
     "skills/headless-codex/SKILL.md": "40ccc7d2eec7f0140ba81eecc8acc7a06d94597200e408338695fcfbe19e956a",
-    "skills/headless-gemini/SKILL.md": "8418deb7ccc6a732b03317bae0aa6ab928691f4f79665c79fede83b8bdd45d58",
-    "skills/headless-grok/SKILL.md": "35a35a96fa9dcfdc639f98658ef096d5ef2cbd5bc9d38de7ac218e4077b02b23",
+    "skills/headless-gemini/SKILL.md": "a7529f6a2a9fb4341e30af5a9e90771b1e62cdcd2a0fbb83affb3461c398f7f5",
+    "skills/headless-grok/SKILL.md": "dcaf25b03c01d0e4c72da34ead2cb77c4b9d40d5357390de38b5b97b243f222b",
     "skills/headless-models/SKILL.md": "646d2d8c262af9b240289866c76efb8ffe7824b3a799afdbf1c965c15aac5f54",
     "skills/headless-update-models/SKILL.md": "d05eda99cfe42f246abefb81f85073a079297208d51231ed0aba68482fd82440",
     "skills/headless-usage/SKILL.md": "f97ee844e580e6f154060f2f9671dcceb4e73193462f49e0444c0428578b3c8a",
-    "skills/human-draw/SKILL.md": "51299bd1073f96625b1f5e3dfbc5608576c21e31db192faf8261ff54937ede1b",
-    "skills/human-draw/references/human-contract.md": "9ddab70d3af3c638e43cc49fef32185071776b7b831d3246183f61897cab89fc",
-    "skills/human-draw/references/tools/human-output-check.mjs": "949815efcca2d148357ce8d3f31f4039788346a9af17d93586146881a4d53fd1",
-    "skills/human-merge/SKILL.md": "ba07c771f962d680cc09a15f6284c94548e71eaed2eee5a68a49ec557d6aa28b",
-    "skills/human-merge/references/human-contract.md": "9ddab70d3af3c638e43cc49fef32185071776b7b831d3246183f61897cab89fc",
-    "skills/human-output/SKILL.md": "75422769fd5943bb3302dde490f26af1653ef1745c35e31e8c1319f129e88eeb",
-    "skills/human-output/references/human-contract.md": "9ddab70d3af3c638e43cc49fef32185071776b7b831d3246183f61897cab89fc",
-    "skills/human-output/references/tools/human-output-check.mjs": "949815efcca2d148357ce8d3f31f4039788346a9af17d93586146881a4d53fd1",
-    "skills/human-rewrite/SKILL.md": "990865088aaadb68adf1626ecd985a365a6cdd0fa7464fd8aa7c8bedfaf74bd4",
-    "skills/human-rewrite/references/human-contract.md": "9ddab70d3af3c638e43cc49fef32185071776b7b831d3246183f61897cab89fc",
-    "skills/improve-codebase-architecture/SKILL.md": "d3884886bac5b8ce6ceb64c6f8a133a2dc3d88916ab276e9ea4fe54c4ed6020d",
-    "skills/insight-adversarial/SKILL.md": "76018d2755af5dc17eecf6563daf40f4851e80dee2d1f2eee68953360609a2be",
-    "skills/insight-adversarial/protocol.yon": "58c3161284cd372aa78282743856df348a9b0b1e723a6cfc0f0bb0733f36c5f6",
-    "skills/insight-angles/SKILL.md": "0e5dc7ccb8dc2e7bbdc098756ca3230c967dabc241531dcf0db7f6bb4754114c",
-    "skills/insight-angles/protocol.yon": "cc752b37a247452e0935ccfa7e09f612926851bbe2653aa7efc54fc28877cfef",
+    "skills/human-draw/SKILL.md": "18ca2cf15072a436d07ba59fed8a19f52d4193812c5554312d27da005ae19d96",
+    "skills/human-draw/references/human-contract.md": "ee3298ad7cee0d8543e57c51ef1dceb3eec0b347f1bc2df5720dbdf2cef0e4fd",
+    "skills/human-draw/references/tools/human-output-check.mjs": "d63736e2064a9e8ae904f05a2d75de866c442fef50dc0589f1cf4f45f2c74f5c",
+    "skills/human-merge/SKILL.md": "59c0a6cad3107a373f391d1d2349d54a454722646852247df497627bc845edbe",
+    "skills/human-merge/references/human-contract.md": "ee3298ad7cee0d8543e57c51ef1dceb3eec0b347f1bc2df5720dbdf2cef0e4fd",
+    "skills/human-output/SKILL.md": "db5b846d840faac8671c49872d461aa33491e17c9d8e7b0f983c7c5e5197977e",
+    "skills/human-output/references/human-contract.md": "ee3298ad7cee0d8543e57c51ef1dceb3eec0b347f1bc2df5720dbdf2cef0e4fd",
+    "skills/human-output/references/tools/human-output-check.mjs": "d63736e2064a9e8ae904f05a2d75de866c442fef50dc0589f1cf4f45f2c74f5c",
+    "skills/human-rewrite/SKILL.md": "a476114e02082716ae8250f65abf62e6614c545a4d600cf523e02a745fc0d74f",
+    "skills/human-rewrite/references/human-contract.md": "ee3298ad7cee0d8543e57c51ef1dceb3eec0b347f1bc2df5720dbdf2cef0e4fd",
+    "skills/improve-codebase-architecture/SKILL.md": "57f6404ec7b3de731fefa5c986401d59f9f3beb3b661446b56a637feba52ad79",
+    "skills/insight-adversarial/SKILL.md": "25694e7b639c898b80fa29418948bdd4df0f434bf696eb99d80b7249b0409659",
+    "skills/insight-adversarial/protocol.yon": "04e6021809346ba9a0ee7f348a847e7d5b45ed81425c854e645132a1bddb1699",
+    "skills/insight-angles/SKILL.md": "bbd97c8440f33b32e0ead7cb539f255dced43c42d26d79afc18373f88cf3a4fb",
+    "skills/insight-angles/protocol.yon": "b7115a0515ee1d4f8de1bab2e12b3e448d047e762baa47e86320db9575a6d732",
     "skills/insight-assess/SKILL.md": "546411f90a2eba0427bf1ee11d23b83e1c52a9de1d17d93275664fc2c00bfb43",
     "skills/insight-assess/protocol.yon": "de7c39bf0172d2a3959e2ad7927e08d2002c4fa214b62e16ed9639fca7aef364",
-    "skills/insight-critique/SKILL.md": "6f4a27158f361bd7f48aa7cd72cf5a2adf5560bf85ef9267ac4cf21eccda30cf",
-    "skills/insight-critique/protocol.yon": "ce8addda0d40e92329ebc8a905e1c98056a05890e555a0ed46544cf546ccd2bd",
-    "skills/insight-cross-examine/SKILL.md": "3e602cd8fb9e53c46632a5b56e59d3c92eb448378f9da04d3d15483773db72a4",
-    "skills/insight-cross-examine/protocol.yon": "6b4c7180bd9fa17f8b39129313597ad457b23aaa0074f25c4ff479fa5c9784cd",
-    "skills/insight-explore/SKILL.md": "5d6f315eb0fe7a5cd339d348dfff72b7578cdc1f52cf5b9332382e17e6e742ee",
-    "skills/insight-explore/protocol.yon": "03cd33c78e0047c8292ca7088beb852c90a0769e7eafcfc27a0346e431b9090f",
+    "skills/insight-critique/SKILL.md": "6bd17b8d7c2145821747b8851dd51528d2cf1838373c9d913b46ad63f188f120",
+    "skills/insight-critique/protocol.yon": "2ee4637a4b799bedf2acbb2f8533202d666d229c0067e56db856e5a2e627e6d1",
+    "skills/insight-cross-examine/SKILL.md": "7246656187e75464317ce7fbc884fed8e1feb3e60ffc9d2a879bf1682d9bbe13",
+    "skills/insight-cross-examine/protocol.yon": "065a1c06e707fa676e0d5968559115db149d6cbc0f71f620806c03e66437f3bb",
+    "skills/insight-explore/SKILL.md": "b2d0b9a24a713e49529a4a23628ef484dec332d17211c2405475bba5fd2ad74b",
+    "skills/insight-explore/protocol.yon": "b5d5dfcef836a39a69ce3d9828c74a7cb3b67d0f06c974ae2a458f256bd72176",
     "skills/insight-premortem/SKILL.md": "e2def97e93d7e85364d02465c424d8858dae3654ef4249625dbc8b5908bf9f19",
     "skills/insight-premortem/protocol.yon": "3a429ae5a3f0c1137933310f4aecdaec8701ab03cd34fd9580ee7be7614ca614",
     "skills/insight-reference-class/SKILL.md": "a61e52520689e996a76862a55fe9e6c44c183510ec62deb7de0a3c1de7a74a55",
     "skills/insight-reference-class/protocol.yon": "a0bcdf1e98f0ebebe39be771d0d608c7fb253f4e8c3f12f907f1089034b7d271",
-    "skills/insight-retro/SKILL.md": "b79b8e49e6185b102f270a8f478146bcc13293998f16110400b655827f47eb54",
-    "skills/insight-retro/protocol.yon": "b9bb83fc186458a6e3a800f1e79730da7370b7734a0ff5d848c35e2c5b22df69",
+    "skills/insight-retro/SKILL.md": "fa9d9b89414d4aeccfe0370493634b69ab07e966aec1e69df024675e96acff5f",
+    "skills/insight-retro/protocol.yon": "8d9fb1d9901bac92e9e39419d1a4b51b01375fd8601417da1263315c9da5b999",
     "skills/insight-root-cause/SKILL.md": "ed3e81cb3f65d5d5531833e63b373c11f22b6afacfc30845893d7e9e4a1ede2a",
     "skills/insight-root-cause/protocol.yon": "7a570dd77b5b709ea066afc48e5fa8a696ffa21a92d9e894f5dd28e215e62864",
-    "skills/insight-skill-gap/SKILL.md": "7e3d316c13aea7997302951b7579e92b977ccca214d18d3ee52ce60a21e703ac",
-    "skills/insight-skill-gap/protocol.yon": "9259b593ea0db9a2867cdc17a033443fa6ceaec8ae162de01ef072dff625ea64",
+    "skills/insight-skill-gap/SKILL.md": "77a87a1fb18ff2f0d8d067edaae1b33cf1bdb5d26beb763121adb233e031e60e",
+    "skills/insight-skill-gap/protocol.yon": "778ca243da626369bb5a54630bc08d7b5f30bd5d7ae99695d692744df8cd33e9",
     "skills/insight-test-assumption/SKILL.md": "47656df40cfc830f64d1a6a6193235d030aa53ea0c939eccab2eeb4d640a5f25",
     "skills/insight-test-assumption/protocol.yon": "bc2f7fad6d5d8495714a7650740867f58bdb3d17877448cc37176c59918d447c",
     "skills/insight-value-of-information/SKILL.md": "abeb08a2ea4416b2b18bd36cf157e4bdb4c53c29a5a659252dd3a8b3dd751712",
     "skills/insight-value-of-information/protocol.yon": "a8eee00c678b5f17b9a5846184dd8d22eb50fd284e625ee055111d682999f544",
     "skills/investigate/SKILL.md": "8fbb69f0ed2193199ad29e9db1604768d5b7e3c495b8194c4e69727ef98a9893",
-    "skills/json-canvas/SKILL.md": "629a9cb4c107f43408c4c3e571011570931bd76f4d34c65ac683a1afd6debc20",
-    "skills/map-check/SKILL.md": "553968a08cd9f77d6e6fe0d41c40ba1b354e4eb57343e2ea9f332e201797cacd",
-    "skills/map-init/SKILL.md": "319cd286b349ee6d5a58e0c4231a9c22b14602e04481d4a59ea5e537de0a56e7",
-    "skills/map-maintain/SKILL.md": "bbc6bbfddf6618d28b0cbc824920381cb6d8b9531a1905d657ebf0cd6d556f68",
+    "skills/json-canvas/SKILL.md": "7c56a3b38497834bbde5dbf38a2996a7dea483c01efed8a8ffae80ec7a72dee8",
+    "skills/map-check/SKILL.md": "2f94b539815b9ceebb7f1469b56090d0f1bc58246d0cf881076218e02cdf219b",
+    "skills/map-init/SKILL.md": "ba7044b35f97200630d901d97b734c4e6b370e5fe5d0fc0216bd12c138d61d85",
+    "skills/map-maintain/SKILL.md": "ba657520d0d1c84438b6744a17d4c85db1da4c5942f1c80ffd81d710b988945f",
     "skills/map-rules/SKILL.md": "54832c357bd1c4bdd428b77a9afc573f72e14522a87093c19b5aabf4cfaf5cd6",
-    "skills/map-this/SKILL.md": "fd7af8947bb577195d373e281333ad9bad1414e0e76a4d99c3849e916da37cd4",
-    "skills/monorepo-deps/SKILL.md": "e18c52c74970af04501e9c0823b513ca684eb8ac1c39e25aafe2b680a2802c9c",
-    "skills/multi-agent-mode/SKILL.md": "993b2a7d2bda2800a3ae6bad5b452b4d3b3bbae39ef3451e57b1957b45aef40b",
-    "skills/next-skills/SKILL.md": "67675b98f7b804950a12d14072643a19a307fa56e57b0a9df66c66163619fa98",
-    "skills/obsidian-bases/SKILL.md": "c585c531909eed4c2beb5ec0f8e842de2b8bc14a0ff04b7ce13f15066c047870",
-    "skills/obsidian-cli/SKILL.md": "d9be45c810b1c2fe892be6563a7054ff7e8fcbe3b73f7f6b1d4706aa7eb7d9ed",
+    "skills/map-this/SKILL.md": "8a1d69594bb4e20b3e58a80f8096cb916c7eb05ef5e756bfe2edc405da5de497",
+    "skills/monorepo-deps/SKILL.md": "98135207f8cffbd34f91705c05a1419de67c6b720ea5d1a2750349d2f0e892de",
+    "skills/multi-agent-mode/SKILL.md": "995fe2bdb47f2cf4eb0d0626a65bdec60f4e309d62934b4644a5ca11d136c9cc",
+    "skills/next-skills/SKILL.md": "7ac1ea9c88c2dd9312311be25302a098ccc2f4a3320b82904d2e1e13028b8013",
+    "skills/obsidian-bases/SKILL.md": "19f94163fc03f7b16e7252258861d7c77539cf9b378ca808685e31dd5219b34c",
+    "skills/obsidian-cli/SKILL.md": "7788d90b349aad1fae05a29a68dfc2053070573c28d1e0429d52caa0a8b191fe",
     "skills/obsidian-markdown/SKILL.md": "06e6e1d08372784523b4fdf31c70f71b5fca9bad99eac2e383da3c307ca5fec9",
-    "skills/orchestrate-mode/SKILL.md": "43322caea9ea17b9b9beb6f863feb1c00ff645b096ed0820e7913b9bcaa9500d",
-    "skills/orient-gaps/SKILL.md": "b6609e6e69a102509aaa5b401be80333673d29d69eef8d0de95d25488e883345",
-    "skills/orient-map/SKILL.md": "9b66dd5fef3d19fba39075ce34da42a3b71af687bdf8f70739c054f325987917",
-    "skills/orient-roadmap/SKILL.md": "35539b26ab06d7fb23ea0ad5977011e683915adafa6ce8d0fe13f869bf1bdbe7",
-    "skills/orient-status/SKILL.md": "9daaea5ab7019bdf02fc6ec19763d1ba08d6a7b005f2d5c5d2ae2cd914a6d17f",
+    "skills/orchestrate-mode/SKILL.md": "8ed60be17624e2b4122abc1ccb5301cfe0b84fdefcbfbb8bd0f50a56c682d398",
+    "skills/orient-gaps/SKILL.md": "72c9b27067a3589853acc3d500b4f4f30c85719984c415b5a1406e8f8bf5b3d0",
+    "skills/orient-map/SKILL.md": "99050d59d6489e4a00a2cb39e07a32ef898424e5a248787a68b4303c21cab7a0",
+    "skills/orient-roadmap/SKILL.md": "b03403d95bcf73dd7b8c28961e2b3cfc431ea333ae22a58be7fae49565be6bfe",
+    "skills/orient-status/SKILL.md": "df14bca456417a1f5d1d80e77cf9888e5a96904601e9b1a92668c91888af7883",
     "skills/plan-cleanup/SKILL.md": "ebd42739293f30aa0656dc674de48ee54d2e0bc2ac5df180b2e69b243f92f305",
-    "skills/plan-create/SKILL.md": "7cf003fc276498e33dd3a036bd1642517d06778a284cd6963537daa75fa602dd",
-    "skills/plan-create/protocol.yon": "140cec93e38b46826dc304ed08f4c4a10d657ffd7f1d52eb329d4d096895aab2",
-    "skills/plan-deep-dive/SKILL.md": "a99bd8cb017ed319497d3abbe9ac7bfb1e2b999e3db6b642216c41f9bb51617b",
-    "skills/plan-evolve/SKILL.md": "db8b91694add224763939fe762895c63c58e65e517286ab21dd241a9e9a04961",
-    "skills/plan-execute/SKILL.md": "ff0add2a3afe072b43ace0745227dfd01ef7690b43bac8beffdc29a9d09ef620",
-    "skills/plan-phases/SKILL.md": "6a8e542773df4d58a6c78805169c31ef103f691d8f8b753e7cb8afeb856a3e44",
-    "skills/prime-expand/SKILL.md": "bd6fa88c4b9508263c8bfe520b62f345067ce944d961310449be3d19ff771082",
-    "skills/prime-fetch/SKILL.md": "ff5108d2ff2b2d6a5b3ac37bf28c458d45f388dbf2b7a494015198f2f1dac8a6",
-    "skills/prime-sweep/SKILL.md": "88b194ca0c732e4fedbd43bb58e24af64eb5407274f7ced53ace0c66e7d01168",
+    "skills/plan-create/SKILL.md": "055d42e0144065423777ccdfd25f1d0b55e1990568607d26134a6b8afbb1e642",
+    "skills/plan-create/protocol.yon": "b9db84931bdbb3f53b13ce6e31d62c0aff590b6fe39e512e851c6b8b111c46e6",
+    "skills/plan-deep-dive/SKILL.md": "acf9769c1fc2967e0b955c27448ceb028b759e4e897b440590a117e97aa7f1d2",
+    "skills/plan-evolve/SKILL.md": "f050d1eb8bbba73214733b63e73915659dc9030d1e26a4bbbd142f169d2fe1f7",
+    "skills/plan-execute/SKILL.md": "b95a77d5f9635cf09f8831bb8187fd597ca5c25c0f5d7615b3f8f79488df5a5a",
+    "skills/plan-phases/SKILL.md": "6f07ae8fb85abe52faee4533db113ce3a457afaf24247213d92328b6f8422b6b",
+    "skills/prime-expand/SKILL.md": "9019870f1c270176008f396b0fd3a1e35d170bcf0a4b15abb50fb0e5db9119f2",
+    "skills/prime-fetch/SKILL.md": "f787cbdf8970fd9e48e1d13711b73bde21fd4ffe810ec1a48fa46936e7901fb1",
+    "skills/prime-sweep/SKILL.md": "ebf09f6141bd0bde721a7f349583f7264a7258c513d4909f613c538bc0e1419b",
     "skills/prose-audit/SKILL.md": "efeba36ea13da91ad48338315d14a428396cf8c89716029ce311878f6fa2c943",
     "skills/reflect/SKILL.md": "a107909c302d9d7da1ab3996b9a4a34ea4fd13f49738df4da1cc0c3d7588b023",
-    "skills/route-task/SKILL.md": "5f854807d7392c5d9853cd37a05ddb9d897fbc5e74b9485dc8ef5b7b575df5d3",
-    "skills/self-improve/SKILL.md": "349347e1e363eedd147a377700706824085fe79ca3e455bb043ee77a129f3faf",
-    "skills/skill-library-creator/SKILL.md": "1fb240201b529e6ace194676f7d6d4faa70d55bcb02492db0fdebf187e22512f",
-    "skills/skill-library-creator/references/create-library.md": "79addaa841f496d4c75ee8fcd6a0ddf79bc4ecf133e7d4d1ae891c4f4060d54f",
+    "skills/route-task/SKILL.md": "41486429f4f69a567b20633d7391d187216c1491342505559969adc3db491499",
+    "skills/self-improve/SKILL.md": "58cac5fe1cfb07f127a39ca2d5e65350aabfc6387565f0c9426f04f8d902a2a1",
+    "skills/skill-library-creator/SKILL.md": "88c5221387261cba0107069e6e5a73df0864a85a1715bc2b1e1101fcb9075bab",
+    "skills/skill-library-creator/references/create-library.md": "3422ef12492e2f7cf9987de2327a8784d7f79674b7a1ee8004643b054bc1fce1",
     "skills/skill-library-creator/references/upgrades.md": "fcf78f930da1f54332446fa0a12c5a312b2010d6dfb955fd1a45350e94a7d7f9",
-    "skills/skill-smith/SKILL.md": "449fadfc91c3d6238d51d907150badace71f79e09b377df1be1ba823dcaf1366",
-    "skills/skill-smith/references/create.md": "02667476b96187ccc4a8c8283efb63e44dcd97575dd53783b87bd5e182d026f1",
+    "skills/skill-smith/SKILL.md": "57dace6d30bb7ed1409f4c923aaff2e5574bd385fa0cf43b7e449d7b723b0477",
+    "skills/skill-smith/references/create.md": "b22952a68cdf4eabb19addf6fdff0bb68176b64ece7575964f6525d8ce4e1e03",
     "skills/skill-smith/references/assess.md": "811e06bba140c25a1c0429f74c105e8642fdaadbced054e3d518a8f1f364ba29",
     "skills/skill-smith/references/doctor.md": "7679b53e1f8674781936386a8791cc5d72ae3f1e8e66a018628983c2b6da8df6",
-    "skills/skill-smith/references/update.md": "b2c2b974bc7c1112a7a46de970e69756fbeeb0642d755e542d7fb01c6a9102f1",
+    "skills/skill-smith/references/update.md": "73107b0c7db6865f75b7bbcd4852cd1b044906c93af158bd9d6cf15d2e129e9f",
     "skills/skill-smith/references/consolidate.md": "bd747e5f30988fc685f4eb9890a7ecde56fd34f0f581e358d6e959a9ebc63c6c",
-    "skills/skills-help/SKILL.md": "8f19d2fba83bc2ebb13ae3abb11736e0098b2901912c3c84c30ad91111fac524",
+    "skills/skills-help/SKILL.md": "10221d2551599f4a4ee38185e6f24115258cb32d28e757455998bc2e90df3ae2",
     "skills/synthesize/SKILL.md": "c777373514d3a11b1aca8cf36c738bb846b531b1c3b2ea8b84ae297c7a006ccd",
-    "skills/synthesize-init/SKILL.md": "d96033751f361e2811b8bb42c47eab3696d6442acb9539dd0ab69c6e38f0bbcd",
-    "skills/verify/SKILL.md": "7e6f1eeae4d8c64ee19e16346df7525e52e1ecc14aa2295f1786b3f563f9bf6e",
-    "skills/verify/protocol.yon": "a68d6026ee4e5a0617935fa862be4aadc151a8efbe7f2f4b524d38fe94501ead",
+    "skills/synthesize-init/SKILL.md": "3ebfd1b3a9be7d4b6941251a5a2e402ddc480e1a7ff8f4317ce806def082e816",
+    "skills/verify/SKILL.md": "01a486b872a83a4eb9cbb4f33ba0fbfc71376787070dd182a9f1eadfedd2288a",
+    "skills/verify/protocol.yon": "a6018f4ca48827505eaa501e7261b22fd4950d5027dcab90330563b18f8c84f4",
     "skills/write-copy/SKILL.md": "11b638111303ba7d8315b06ae03a9ba9ac179d82a0444fdab4b03e9acea1dfc8",
     "skills/write-copy-event-video/SKILL.md": "56c553fb84f288fc6dac998308ac3798f0b73f14d0b960f3d183a3d7afac1ec0",
-    "skills/yon-read/SKILL.md": "e8dc597fe419b95ba30c8bc8386a95301471784b2243cf2df503905892c290df",
-    "skills/yon-write/SKILL.md": "4ca494937159ee00a1744de259b80bb1987284cf9c3e4b721a3f74200bf7eefc",
-    "skills/agent-mailbox/references/QUICKSTART.md": "2b58e24087c1e63603dc14c4ac72ce52df398aa67388420eb87b08306e021188",
-    "skills/agent-mailbox/protocol.yon": "0133fe6a5e121024279cf97440fe862c5af579c80efdac74a5192f4427be0887",
-    "skills/ask-gate/protocol.yon": "a5936ba42cf2e3575249ac8dd0a6f8104a4df8b2ba8ef2917af4da2dd9f4e45b",
-    "skills/budget-check/protocol.yon": "b68f96b14677658c4da94f11fe28a36806375502b62af87a57acd6ae01468d89",
+    "skills/yon-read/SKILL.md": "41248c47de3072a1483eff0f46e56d41c8cb2f5510a7789e12c75c2a80e39d4a",
+    "skills/yon-write/SKILL.md": "b15e92ec26bd8529bb7d21d78d1b655b14f9313739ef938e7d601168d6a65126",
+    "skills/agent-mailbox/references/QUICKSTART.md": "123669e45c67beeb2861763fbe29fcadcfa803acc7e43f3a635bdd384de551bd",
+    "skills/agent-mailbox/protocol.yon": "ca9ac843f10610c8afe137c20db48f8d310a701aea207ade9a5f631d42a25844",
+    "skills/ask-gate/protocol.yon": "6eb8c5f3fb1c37415c1514f19b7a8c31a963c8dcf6f5af250f7d9fe049b04b5a",
+    "skills/budget-check/protocol.yon": "947f25486552045dfdab3e659db8703afe52618ff5fe80b7e25161821dd3450d",
     "skills/caller-options/protocol.yon": "7f41eaa28f2c91eefa0eda3792a7a9d245d0d01b6b3d7dbd1ac0643144008539",
-    "skills/diff-recap/protocol.yon": "72ecdbc38be37d6be55e8adaae502a06cb6fbd7760a241dcebe0d70f8b913013",
-    "skills/domain-check/protocol.yon": "f1a0641a07eddd85219a27bea923b4a48e0120d9162b45778bba2db998751e0c",
+    "skills/diff-recap/protocol.yon": "e2e492a73fa88bb661f58fb6ab1a4bd8045c0d63e6d8414461724b7e6f4ac4be",
+    "skills/domain-check/protocol.yon": "96f8f752ab5cb046de2ccc0c2f76fc42d850acea4b5a9de5b208f92579be2f1d",
     "skills/double-check/protocol.yon": "d1eb85ab2692d2ce1c06603a844a00f096fbbe6ce63c445db14ead1c2a4aded1",
-    "skills/extract-signal/protocol.yon": "847937cb399061e85e454e9929bce19d45ea11474218ba41a381e3d299b23919",
-    "skills/handoff/protocol.yon": "7e3d3a184f81e713e81e4f3eb9227ef3f6dd346e6a4e8fb9a49adbb18edf4721",
-    "skills/handoff-execute/protocol.yon": "1009bea82d91eacbd1e81162185b8ee40a5b01002c2db43b35ffa270c7c28981",
+    "skills/extract-signal/protocol.yon": "4fdda6ee17faf48e98b72bb18869e5e575d21e89d2ad9a142aabc1a3da438221",
+    "skills/handoff/protocol.yon": "91411777c89e4483d8646a87c77b06fd2f7a1b7140d4ce4074c11e79ae156728",
+    "skills/handoff-execute/protocol.yon": "41c0a9435dcbcd86970e46f29dc24a02d083113436075b29f90ce49e42a17530",
     "skills/headless-claude/protocol.yon": "d2cb3365996bf33db74a3f3e7a0ad81a423158a0635fdd063c648e2c87c9d491",
     "skills/headless-codex/protocol.yon": "3cac4584cf993fefe505264888b3c3d08593eac22da037775e303da50f5ac0ab",
     "skills/headless-gemini/protocol.yon": "43f08518b8f2e4ee8544e4a643afde128bbac359c480ad6b15ab24b4396e8c38",
-    "skills/headless-grok/protocol.yon": "54742798f7516641091f53c2beb16bbfbb0f7fc160186d5eeb0132964b7d2be5",
+    "skills/headless-grok/protocol.yon": "7cdcc78ece2f6ce07eee16f1df6f454c611db1e439446f40e8f6bc6b7979730a",
     "skills/headless-models/protocol.yon": "401a3faad9a11c433b0000c7b542baad193338b8f7b1e8af5df8e2d0c6cb7159",
     "skills/headless-update-models/protocol.yon": "2d039a1dd51005c0d85851a2821e666a4015bd637296536563d0f4339a2e5acf",
-    "skills/headless-usage/protocol.yon": "56485f06ef60f67a4ad547736c65f49d949eead5cb6522a9bbb468a655c730c0",
-    "skills/improve-codebase-architecture/protocol.yon": "7e5778aebc7c9e7cbb1a2be52582e13f8ca5f6afa57d2fe87a177bbbbf607b82",
+    "skills/headless-usage/protocol.yon": "b6ce22b8e4a24c93bd4d2edf39665a60afd91a0bdb3d6c6cdee65ad1d787e27e",
+    "skills/improve-codebase-architecture/protocol.yon": "f45cb97d83bcaea7670b906c4a9f87ed0d92e12c27b2f05ee218fe4c22383260",
     "skills/investigate/protocol.yon": "d3d94b940742c804000b061daddcb8e09e8553696dd8b0eea125f72ae3bcd633",
-    "skills/map-maintain/protocol.yon": "e8a880664eb7d2741ce6146a18282c3cb9f3dd6efd705c1e80b3364903d669ee",
-    "skills/monorepo-deps/protocol.yon": "ad7f4343b3f9bad7b237655bfb2824c480f60157880ce955844cb1c7e982a6f4",
-    "skills/next-skills/protocol.yon": "80a8b3c46cc6a2aa0b3a780f620799fd904c76c87efb6bf0d364d13edf0e6664",
-    "skills/orient-gaps/protocol.yon": "fc19f018453d3108960bd38c30fd5cdbb7501a8979fe2ec96c1477ccdcd1c6d2",
-    "skills/orient-map/protocol.yon": "78538aa852277217b33f7b401c86514b2598b4dedde40ea0b752c4ba83759aae",
+    "skills/map-maintain/protocol.yon": "e1210865b0f45caea9e978ac9c77dca978ba48d9dfb899b2c47dd968284c147c",
+    "skills/monorepo-deps/protocol.yon": "93c6aa986a36e47d38a567c1cf50d4c39249627b67315e554c154d19e580ad03",
+    "skills/next-skills/protocol.yon": "d4c7bab27cac114586c99d36b2acce2f6eb37c6c7351b59f23b33bb5dd67d80e",
+    "skills/orient-gaps/protocol.yon": "27f6d56184444b2fd0f7d2cddcc2b0e572ccb8c975de6b362d04a65dab763fd1",
+    "skills/orient-map/protocol.yon": "c46c813896286b0aecfc0e0fd328f8a03b51b7972db746ee4edbae9d10fca746",
     "skills/orient-roadmap/protocol.yon": "ccf7021cf6a38252f3d294fab8758d9f4fa83b06ec58d0f15a4b62c4438ad59f",
     "skills/orient-status/protocol.yon": "7058bcfa6d5f542c49b3dfdb29969b6d0ac2b2e5518b33c7d52c4fb4d3aacb1a",
     "skills/plan-cleanup/protocol.yon": "d786940a2a45f585afbdb5a627519f7f85bc5aea549f3ccb5737c37138a2daef",
-    "skills/plan-deep-dive/protocol.yon": "524326219b3c91dea965a519a65a6dba437222406f8904e66d98f7276950c045",
-    "skills/plan-execute/protocol.yon": "b549824881025a499c97e3053f804615b83984f79094e857004e27a1277608a5",
-    "skills/plan-phases/protocol.yon": "9131ac97b3541eb35007c394f352798ef23c4c59c4a15f45eb4c2c0b5c1401d7",
-    "skills/prime-expand/protocol.yon": "9ed3d29c0557c747e00ea288c5f61634390d89e1b5de07625d785e6133259cf4",
-    "skills/prime-fetch/protocol.yon": "d38d50cd11ca6cd79445b9357041a0faf92fd2a07e45a73d9988a9648330c1df",
-    "skills/prime-sweep/protocol.yon": "eea8fb887c802749df1ad52b8f4e9928b07e375713e6d749b2df1933c689aca7",
-    "skills/self-improve/protocol.yon": "97ceca6c2fadfc8dd9e76373cbc5723f278bfcabffd95e9b8ab87c2d2a41cb17",
-    "skills/skill-library-creator/protocol.yon": "4744d51a5c6d84a8ef816c4d44b92ffde1218ae5de974038e13f73a5a69e69ad",
-    "skills/write-copy-event-video/protocol.yon": "ab8d03b3e13d12696b88f98e993a78aceec4daef43b2eb8f5a783cec4b8401fe"
+    "skills/plan-deep-dive/protocol.yon": "832abf5788b93f1262a45314d0209de7181b1f0bd9d560b581368912ed428a18",
+    "skills/plan-execute/protocol.yon": "4478ec59087e880f4cd417534da0407b4ee77ff53facf2a0d1c146d6a3dffcd2",
+    "skills/plan-phases/protocol.yon": "16b17ff378fed7c1476677bfc504adc1cbd24f9942639a1cd87e65219f7a1bb6",
+    "skills/prime-expand/protocol.yon": "0345c174dc10552dbc49a490894f52ffe6df4d15c4daf0da496034701cf0cee1",
+    "skills/prime-fetch/protocol.yon": "c3c6d3c49702056d008a17782d766203824fdf6956daa8fde787b2537d84f8cc",
+    "skills/prime-sweep/protocol.yon": "37c2d42075306ec2af78ca5809d95d2e718822b02edb59c85d932933281b76ff",
+    "skills/self-improve/protocol.yon": "7b0b96dff39c912935b7ce807ace9640a6c5998f714067bd317559cce2a2a770",
+    "skills/skill-library-creator/protocol.yon": "3e79c59f1b57a0cade6eb7ee9ef768f72752c82a2110081c8bada6f0e1e49c83",
+    "skills/write-copy-event-video/protocol.yon": "ab8d03b3e13d12696b88f98e993a78aceec4daef43b2eb8f5a783cec4b8401fe",
+    "skills/skill-smith/references/authoring.md": "f8484f301ddece48fa18bc3c208199a304a6b6a0f74f56a383f40b9f99c37098",
+    "skills/headless-gemini/references/supervision.md": "fac7feaa90b0d0b81a5b50514e4399981fd20cbf98503217a3816a7b787ef032",
+    "skills/headless-gemini/references/validation.md": "ff54ab865fec600616fe7ac75af05e611a6040b449a8900df1a6b90ce818ac12",
+    "skills/headless-gemini/scripts/run-windows.mjs": "e45939ac9fff3c16e56eb7649d9888b042e9554c1a56104987fa1a4dc40fa4ae",
+    "skills/headless-grok/references/validation.md": "1689a57fe351ad4ceae071b7814f9501d6c18a97f3d239cebe51ccb600a3d9f4",
+    "skills/ask-me/SKILL.md": "b0b28e92e8cdcd82cffcebaf34f6dd74aed91d00a0806bdfacb850b7552b5f74",
+    "skills/ask-me/references/records.md": "40634347707fe0b08e99eefa680f4d825d9411fa6de9e34c2e5d16ed28d86aa9",
+    "skills/build-prototype/SKILL.md": "015d0204e62593f574d279efeb3526a8e4bad616dec38d24a1178dff058d9150",
+    "skills/build-prototype/protocol.yon": "6d91a29e75bb3992b1240a2e4cdc20a99c58770aa5be6a0594dbf3c766d7114c",
+    "skills/build-prototype/references/state-and-logic.md": "945862a4a27458617c72a48330d051d2f4c5f7ca1dc349f8f1e6f430bb697750",
+    "skills/build-prototype/references/ui.md": "ab93351ff3c25dc3cdd627df76622a6db8c00e5037b96ec68a90a573509b7aef",
+    "skills/handoff/profiles/new-session.md": "9ace0882b3040fbad0ea74a49b60e2d05a2f1d4e00248be65577cd1b4de1a7d4",
+    "skills/orient-gaps/references/orient-spec/orient-contract.md": "3eb31a7be8b143b4daa605d72af7ae8681576482cfe44f8049739773da371c0b",
+    "skills/orient-map/references/orient-spec/orient-contract.md": "3eb31a7be8b143b4daa605d72af7ae8681576482cfe44f8049739773da371c0b",
+    "skills/orient-roadmap/references/orient-spec/orient-contract.md": "3eb31a7be8b143b4daa605d72af7ae8681576482cfe44f8049739773da371c0b",
+    "skills/orient-status/references/orient-spec/orient-contract.md": "3eb31a7be8b143b4daa605d72af7ae8681576482cfe44f8049739773da371c0b",
+    "skills/debug-task/SKILL.md": "d429e6b63d5fa2c16e2e6d3251cb3b91ce27c409060bd9d9b0271191c181f6b8",
+    "skills/write-spec/SKILL.md": "6addc01f1f268f754cef1f437c0d5c66e198bd0d06a9d81b1c00ae80e9856066",
+    "skills/define-terms/SKILL.md": "339c2d0fca492d707c1d058b2bf8a91921959896c12598240b3ff2281bd44d19",
+    "skills/teach-topic/SKILL.md": "123c4f729b55fa7baedf76ca2646cca67ca45ae9c329b48d05f0c64d83a89292",
+    "skills/budget-check/references/tools/budget-check.mjs": "47ac548d47226ebf170c1730f5d83c404dbe82980ab986bd181dc53f1bccbf05",
+    "skills/diff-recap/references/tools/diff-recap-check.mjs": "b7f8c6ea4a0317b68af191a47e3cb8a1cdc70b41da28a54dbb47cfa8dfa7f66d",
+    "skills/headless-usage/references/reader.md": "1ac853880c5ca3463825ca1966178caa313b0785e283098f7d1451f2fd2ed8ff",
+    "skills/headless-usage/scripts/usage.mjs": "8bf50fc49c7c456d3ee0c98e5bf35097a6d2f030df492f1ee3d2cc45026d210b",
+    "skills/headless-usage/scripts/direct.mjs": "fde33924577e9bb171ed51e6662a2449bf4d61fa500b1c96195b68eb82b11fe8",
+    "skills/orient-gaps/references/tools/orient-validate.mjs": "a6e17431f70e990f04f9df0f1a3d06986a46c7400749ca80434ec68fdc443377",
+    "skills/orient-map/references/tools/orient-validate.mjs": "a6e17431f70e990f04f9df0f1a3d06986a46c7400749ca80434ec68fdc443377",
+    "skills/orient-roadmap/references/tools/orient-validate.mjs": "a6e17431f70e990f04f9df0f1a3d06986a46c7400749ca80434ec68fdc443377",
+    "skills/orient-status/references/tools/orient-validate.mjs": "a6e17431f70e990f04f9df0f1a3d06986a46c7400749ca80434ec68fdc443377",
+    "skills/headless-update-models/references/installation.md": "cb95fdc91333e9272a01512622f8b128e77055b0f0c10dd5915a0767ac710ae9",
+    "skills/human-draw/references/examples/matrix.md": "74b2a436425a5053c25ebd9c17169745d9d36db49f955a36fd2aa294176b3aed",
+    "skills/human-draw/references/examples/bad-figure.md": "3693413efa9df41d8d82ae6213226ab908cfd241d02b646e95bc6bdae1415954",
+    "skills/human-draw/references/examples/fork.md": "8041fd26171dae4df3dd8ffeb954b0ddfac17757c6f08fa3fd52f0c89d460aa2",
+    "skills/human-draw/references/examples/small-multiple.md": "c2b6a0758f4497d118ba0f68785b40b70b9031ba47631f94fab84c37c2df9e8d",
+    "skills/human-merge/references/examples/museum-archive.md": "0006a423434e4760e3054ffaf89890519b00d81998043f04b935085ecfdea44e",
+    "skills/human-rewrite/references/examples/estuary-rewrite.md": "80ec586ecd99d8426e0b51d0287dfd6052935ba32e06cf04e01d307bf88e2b4c",
+    "skills/headless-models/references/selection.md": "ee66769728b51f0d4c814bd76ab47297e89409897c67b74a45c52cc89cc3677e",
+    "skills/headless-update-models/references/refresh.md": "96b79429704a66f9c6df124561208484f47c60d339e6d070164c8d69717425c2",
+    "skills/orient-gaps/references/orient-spec/examples/orient-record.example.yon": "e6f86a5811422169ce05094b990e265bb6d6df9d0b46eb2aa10412540ab32f2b",
+    "skills/orient-map/references/orient-spec/examples/orient-record.example.yon": "834dc172997f1013e655d3e1c25faec92d5b995dc461a0ae33e22b41d1163807",
+    "skills/orient-roadmap/references/orient-spec/examples/orient-record.example.yon": "e58a1c3f30b58d445ad7ce8b80d63dad46f471aa25fa4871b8633443f50f3d32",
+    "skills/orient-status/references/orient-spec/examples/orient-record.example.yon": "3ad0694205a742ca75d3d65b76864564cf8e6f4ecd26dede0f7fce5c46b31b53",
+    "skills/caller-options/references/VENUE-HEURISTICS.md": "d7da550958eb65295de93603e2f729e606f9db09acf1b299090111e5a7e5f0be",
+    "skills/caller-options/references/CANDIDATES.md": "d539110edcac52a96c45c2cbf0d6fe28ed3a5844fcbf9984f321fbc7acc0f69f",
+    "skills/agent-mailbox/references/MESSAGE-TEMPLATE.md": "e662ba8a4e117b603b4b89fd391ee13d79160286756ab1fd4acbc72e9d20ac4b",
+    "skills/agent-mailbox/references/PRIMER-TEMPLATE.md": "443362510f34acf290a49f5e8e87e5e7670f604ae24130e33bace92308d71279",
+    "skills/map-check/references/tools/map-check.mjs": "a2cbf1b27a49ab9b96dd0c2b6d2c2636b61390e86bded5a8eb4b2783bcb30535",
+    "skills/map-rules/references/ownership.md": "3e963dadb57fefc679cbdf36e59ed2370130998097c05293e7e92d16b4b034b0",
+    "skills/map-rules/references/link-resolution.md": "6a238f8c98fa71fd9853bee8ea624d1779f9e0db29cc886fba55552d2072f6ef",
+    "skills/map-this/references/tools/map-scan.mjs": "406742811bfca2b742ae5dedc43bf589fa199850f28cb3599989940d0df0f752",
+    "skills/orient-gaps/references/orient-spec/orient-record.yon": "3f608231d6c552632232757314f0178758a75d80a6873e9d4efa03d940f67be6",
+    "skills/orient-map/references/orient-spec/orient-record.yon": "05fb14c8204ba5190ad2d07291f8f8e9cce83cdd4f71becaeceed9777cb10172",
+    "skills/orient-roadmap/references/orient-spec/orient-record.yon": "17d723078eb4f58a1674db1674a2d99fd60dbc8da963f7cbc3059511d6d8e6b2",
+    "skills/orient-status/references/orient-spec/orient-record.yon": "a7022c73026ccbb09bde4a7e59f9fb0660cb4c12177fa265bb57ba858ff0d9c4",
+    "skills/yon-write/references/write-card.txt": "9f29e39337a9646e97f54b802ec00833db18774bdd9595fb7f9c3008a8d901a0",
+    "skills/yon-write/references/domains-card.txt": "f4d446aaf88255c415d2ad582e739fb334f49161f3c7675b0e6097dd3e5a7830",
+    "skills/yon-write/references/generation-guide.md": "17fa3d0e8cfe9b6ec47eb36eac4e1b3236d573130e2a62ba5bc8c1b7e306bc2f",
+    "skills/yon-read/references/tag-registry.md": "7710527879b2515e016d511af7f773f9e384247bd21375454ff997b23b8f1ecc",
+    "skills/yon-read/references/read-card.txt": "e7827ee928ee4c3fceb73c29edd0c9d0a00edadddfa6df1cd6da263089193949"
   }
 }

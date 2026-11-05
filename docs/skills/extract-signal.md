@@ -26,12 +26,12 @@ Install this skill in a supported runtime, then give it the relevant material an
 ## Flow
 
 1. Infer the signal, audience, stakes and destination.
-2. Compose appropriate gathering and vetting methods.
+2. The root composes gathering and review without nested dispatch; bind finite tool, wave and time limits.
 3. Report provenance, confidence and gaps, matching sensitivity to destination.
 
 ## Subagents
 
-Normal calls default to a fresh subagent; when the skill is the active agent it works inline.
+The root coordinates bounded leaf gathering and a separate sibling cold reviewer when needed. Ordinary in-session gathering is direct; only a dispatched leaf requires a primed brief. A leaf never spawns, discloses dependence and returns unmet independent-review requirements.
 
 This describes the skill's own workflow. Available tools and the runtime's permission rules still apply.
 

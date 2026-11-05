@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=plan-phases | title="Plan Restructuring — Phases + /verify Gates" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Restructure an existing flat or unstructured plan into phased execution with /verify gates after each phase and critical outcomes, plus blocking pre-action gates for safety prerequisites. Restructure, never delete." | trigger="user runs /phase-plan, asks to add phases, gate this plan, restructure the plan, or add checkpoints"
-@STAMP ts:ts=2026-10-30T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-11-04T15:16:23Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Governance ---
 
@@ -20,14 +20,14 @@
 # --- Verify Gate Concept ---
 
 @SEC name="/verify Concept"
-@NOTE text="A /verify gate is a verification point where execution stops, current state is validated, and only continues once the gate passes. Safety prerequisites gate before the action; outcomes gate after it. If /verify is not a recognized command in the runtime, replace with an explicit user confirmation prompt."
+@NOTE text="A /verify gate is a verification point where execution stops, current state is validated, and only continues once the gate passes. Safety prerequisites gate before the action; outcomes gate after it. If /verify is unavailable, verify the same objective conditions directly. User confirmation is evidence only for a Handler-owned decision; an uncheckable prerequisite stays unresolved and blocks its dependent action."
 
 @MAP name=GateQuality | pairs=["good-gate"->"observable conditions a different person could verify independently (e.g. migration applied: users.email column non-null, existing rows have values, no FK errors in test suite)","bad-gate"->"vague focus with no observable condition (e.g. make sure the migration looks right) — REJECT"]
 
 # --- Phase 1: Locate & Load ---
 
 @SEC name="Phase 1 — Locate & Load Existing Plan"
-@STEP rid=step:find-plan | n:int=1 | op=std:fs.read@v1 | args=[search="implementation_plan.md, PLAN.md, task.md, recent conversation context, or user-provided file"] | out=[ref:plan] | note="Select the explicit plan when supplied; if the named source is missing or ambiguous, stop and ask for clarification. Only without an explicit source, use the most recently modified file among multiple file candidates and note the choice."
+@STEP rid=step:find-plan | n:int=1 | op=std:fs.read@v1 | args=[search="implementation_plan.md, PLAN.md, task.md, recent conversation context, or user-provided file"] | out=[ref:plan] | note="Select the explicit plan when supplied; if the named source is missing or ambiguous, stop and ask for clarification. Without an explicit source, resolve candidates against the current objective and context; if multiple plausible plans remain, surface the inferred target before replacement or return proposed text inline. Modification time alone does not select the plan."
 @CHECK rid=check:plan-found | assert="ref:plan is non-empty" | fail=ABORT | msg="No plan found. Ask the user to provide the plan before continuing. Do not proceed to Phase 2."
 @STEP rid=step:assess-structure | n:int=2 | op=std:ai.prompt@v1 | args=[task="Assess structure: flat single list? Partially phased? Missing verification steps? Identify structural gaps."] | in=[ref:plan] | out=[ref:structure-assessment]
 
@@ -48,9 +48,9 @@
 # --- Phase 4: Rewrite & Output ---
 
 @SEC name="Phase 4 — Rewrite & Output"
-@STEP rid=step:rewrite | n:int=7 | op=std:fs.write@v1 | args=[task="Rewrite the plan in its original format with the new phased structure. Preserve all original content — restructure, do not delete. Each phase clearly shows: steps, /verify gate, what the gate validates. If plan has no source file (only conversation context), output as fenced code block in response."] | in=[ref:fully-gated] | out=[ref:rewritten-plan] | rules=[rid:rule:preserve-content,rid:rule:preserve-intent,rid:rule:same-format,rid:rule:no-scope-add]
+@CHECK rid=check:final | assert="proposed restructure preserves all original intent; gates are meaningful, not ceremonial; plan is now executable phase-by-phase" | fail=ABORT | msg="Final gate failed. Revise before delivery."
+@STEP rid=step:rewrite | n:int=7 | op=std:fs.write@v1 | args=[task="Before saving, validate the complete candidate, preserve the original bytes and unrelated or unknown content, and bind the exact target and current revision. Recheck identity immediately before a protected replacement; concurrent changes stop the write. Keep a recoverable preimage and read back persisted bytes. New-file creation is exclusive and must not replace an existing artifact. Rewrite the plan in its original format with the new phased structure. Preserve all original content — restructure, do not delete. Each phase clearly shows: steps, /verify gate, what the gate validates. If plan has no source file (only conversation context), output as fenced code block in response."] | in=[ref:fully-gated] | out=[ref:rewritten-plan] | rules=[rid:rule:preserve-content,rid:rule:preserve-intent,rid:rule:same-format,rid:rule:no-scope-add]
 @STEP rid=step:diff-report | n:int=8 | op=std:ai.prompt@v1 | args=[task="Diff report: how many phases created, how many /verify gates added, any steps reordered or split."] | in=[ref:plan,ref:rewritten-plan] | out=[ref:diff-report]
-@CHECK rid=check:final | assert="restructured plan preserves all original intent; gates are meaningful, not ceremonial; plan is now executable phase-by-phase" | fail=ABORT | msg="Final gate failed. Revise before delivery."
 
 # --- Downstream ---
 
@@ -69,4 +69,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-30T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-11-04T15:16:23Z | src="Alexandru Mares | allemaar.com" | method=generated

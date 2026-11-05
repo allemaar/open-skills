@@ -31,6 +31,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 3. Audit documentation and knowledge items against the change map.
 4. Assess execution difficulty and technical debt.
 5. Return findings with gate status and unverified criteria.
+6. Resolve actual repository documentation conventions and catalog scope; missing sidecar conventions or indexes do not establish defects or an empty library.
 
 ## Subagents
 

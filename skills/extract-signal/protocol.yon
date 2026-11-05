@@ -1,7 +1,7 @@
 # Declarative protocol companion to SKILL.md. Canonical operational source: this skill's SKILL.md.
 @DOC ver=2.0 | id=extract-signal | title="Elastic signal-extraction methodology" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Turn a noisy source surface into a vetted signal in the requested form, without contaminating the context that must stay clean." | trigger="user runs /extract-signal, or asks to gather + vet + present a signal about X as form Y"
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-11-05T07:59:55Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Principle ---
 @SEC name="Principle"
@@ -13,13 +13,13 @@
 
 # --- Phase 2: Mode and output ---
 @SEC name="Phase 2 — Mode and output"
-@RULE rid=rule:agentic-default | lvl=MUST | when="a normal call and extract-signal is not itself the running agent" | then="spawn a freshly-primed sub-agent that does the work and returns the signal; output inline to the caller unless a file is specified"
-@RULE rid=rule:in-session | lvl=MUST | when="extract-signal is the running agent (in-session, new-session, or itself a dispatched sub-agent)" | then="do the work inline; output inline by default or to a file if specified"
+@RULE rid=rule:agentic-default | lvl=MUST | when="a normal call and extract-signal is not itself the running agent" | then="the root owns composition and invokes prime gathering at the root so workers are leaves; the root dispatches a separate sibling cold reviewer with question primary-source pointers and artifact but no gatherer conclusions or lead rationale; integrate the signal and return inline unless a file is specified"
+@RULE rid=rule:in-session | lvl=MUST | when="extract-signal is the running agent (in-session, new-session, or itself a dispatched sub-agent)" | then="gather directly as the running agent and vet inline with nested delegation suppressed; only a dispatched leaf requires the bounded direct-gather procedure from its primed brief; do not invoke prime skills requiring a child from a leaf; disclose same-context dependence and never call it cold review; return any required unmet independent review to the root before a readiness verdict; output inline by default or to a file if specified"
 @RULE rid=rule:depth | lvl=MUST_NOT | when="running inside a sub-agent" | then="spawn further sub-agents — the disposable window is the isolation (depth-1 guardrail)"
 
 # --- Phase 3: Compose and run (elastic) ---
 @SEC name="Phase 3 — Compose and run"
-@STEP rid=step:compose | n:int=2 | op=std:ai.prompt@v1 | args=[task="Compose the technique set to fit the task, then run it: gather via prime-sweep / prime-fetch / prime-expand; diverge via insight-explore when candidates are needed first; vet via insight-critique then insight-assess; take a cold-review-style second opinion."] | in=[ref:signal-req] | out=[ref:findings]
+@STEP rid=step:compose | n:int=2 | op=std:ai.prompt@v1 | args=[task="Compose the technique set to fit the task, then run it: the root gathers via prime-sweep / prime-fetch / prime-expand; a leaf uses direct bounded gathering from its brief; diverge via insight-explore when candidates are needed first; vet via insight-critique then insight-assess; take a cold-review-style second opinion."] | in=[ref:signal-req] | out=[ref:findings]
 @RULE rid=rule:no-fixed-seq | lvl=MUST_NOT | when="composing techniques" | then="run a fixed sequence regardless of the signal requested"
 @STEP rid=step:vet | n:int=3 | op=std:ai.prompt@v1 | args=[task="Vet the findings proportionally to stakes."] | in=[ref:findings] | out=[ref:vetted]
 @RULE rid=rule:vet-to-stakes | lvl=MUST | when="vetting" | then="scale depth with stakes; full critique + assess + cold opinion for material signal; reach for the cold opinion whenever the lead has been deep in the material"
@@ -39,7 +39,7 @@
 # --- Bounds ---
 @SEC name="Bounds"
 @RULE rid=rule:concurrency | lvl=MUST | when="agentic or full-agent mode spawns workers" | then="cap at 3 parallel sub-agents, depth-1"
-@RULE rid=rule:terminate | lvl=SHOULD | when="gathering" | then="stop at the gather tool's wave cap or when added waves return no new signal; report what was capped"
+@RULE rid=rule:terminate | lvl=MUST | when="starting extraction" | then="bind finite tool-call wave and elapsed-time limits; before root-owned dispatch also bind monitoring cancellation and terminal success failure timeout; stop the dependent agentic route if unavailable; stop at the first bound or no-new-signal wave, retain partial findings and name unperformed vetting; never retry or extend automatically"
 
 
 # --- Self-improvement ---
@@ -47,4 +47,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=5 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-11-05T07:59:55Z | src="Alexandru Mares | allemaar.com" | method=generated

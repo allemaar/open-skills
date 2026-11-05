@@ -22,6 +22,10 @@ Local provenance: `D:/agent-spaces/grok-setup-20261025/lean-smoke.md`, `lean-pro
 
 The lean session ID was `01a1727c-3c73-7651-9ed5-58ad29c2f770`. The supported `grok usage <SESSION_ID> [TURN]` surface provides persisted session accounting. Its 1,446 input, 58 output and 1,504 total tokens are session usage, not remaining subscription allowance or reset times. Use an observed current interactive **/usage** or Settings -> Usage surface for the remaining shared pool; otherwise mark it unknown.
 
+## Read event observation, 2026-10-30
+
+On Windows, Grok CLI 1.0.70 emitted `read_file` events with `rawInput.target_file`. Two bounded read-only reviews using a corrected private monitor each recorded 44 approved reads, a complete `end_turn`, exit 0, no monitor errors or denials and a checked stopped state. Earlier monitors assuming `rawInput.path` rejected the observed shape. Verify stream formats against the current runtime version; these observations do not establish a stable schema or general reliability, and the zero-tool lean profile remains for literal tasks.
+
 ## Boundaries requiring current-host verification
 
 - Installation, login, version, local help, environment/profile support and model access are target-host facts. Historical successful trials never establish another account's entitlement.

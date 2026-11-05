@@ -29,6 +29,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Prefer the Codex desktop usage tool when available; otherwise use the Windows direct reader for Codex. Use that reader for Antigravity on Windows, or verified native surfaces on other platforms; report unavailable routes.
 3. For Claude or Grok, inspect an existing usage surface or use a bounded supervised terminal session; Grok startup hooks and MCP integrations may run.
 4. Distinguish live, cached, unverified and unavailable readings; report timestamps, reset windows and gaps.
+5. On timeout or interruption, stop only owned readers within the cleanup bound; retain completed readings and report partial or unverified cleanup honestly.
 
 ## Subagents
 
@@ -46,6 +47,9 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/headless-usage/SKILL.md](../../skills/headless-usage/SKILL.md)
 - [skills/headless-usage/protocol.yon](../../skills/headless-usage/protocol.yon)
+- [skills/headless-usage/references/reader.md](../../skills/headless-usage/references/reader.md)
+- [skills/headless-usage/scripts/usage.mjs](../../skills/headless-usage/scripts/usage.mjs)
+- [skills/headless-usage/scripts/direct.mjs](../../skills/headless-usage/scripts/direct.mjs)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

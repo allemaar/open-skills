@@ -3,8 +3,8 @@ name: skill-smith
 description: Create, assess, boil, diagnose, update or consolidate skills using concise instructions and task-selected references. Use for skill authoring, skill audits or reorganizing a skill collection. Not for standing directives, prose editing or library installation.
 disable-model-invocation: true
 visibility: public
-skill-version: 1.1.4
-updated: 2026-10-30
+skill-version: 1.1.5
+updated: 2026-10-31
 companions:
   - path: references
     optional: false

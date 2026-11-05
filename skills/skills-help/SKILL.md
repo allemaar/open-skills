@@ -49,6 +49,21 @@ Marker legend:
 - **◆** `SKILL.md` plus a declarative, mechanically validatable `protocol.yon`
 - **◇** `SKILL.md` without a protocol companion
 
+## Optional journeys
+
+When someone asks where to start, offer a proportionate next step using the live view above. A journey is advice, not an execution chain. Do not add a lifecycle to a simple menu request, change menu formats or require workers.
+
+Resolve suggestions against installed siblings and current descriptions. Name the actual trigger that fits. Upstream, draft and absent skills are not installed; describe the useful activity in prose when no available owner matches. Do not invent registered invocations.
+
+Examples, adapted to actual availability:
+
+- Fuzzy idea: clarify the decision and blocking unknown; suggest an interview only if available and wanted.
+- Bug: gather reproduction and evidence, then choose focused diagnosis. A supplied fix may instead need review.
+- Change or review: distinguish planning, approved-plan execution and inspecting an actual candidate. Offer only the needed stage.
+- Writing: distinguish drafting, repairing one text and combining several reports; suggest the matching installed capability.
+
+Offer a further step only when useful, with material costs or prerequisites. The caller chooses whether to continue. This skill still reads and reports only.
+
 ## Boundary
 
 This skill reads installed metadata and reports it. It does not install, edit, classify, or execute other skills. To scaffold a new skill use `/skill-smith`.

@@ -1,9 +1,9 @@
 {
   "name": "open-skills",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "homepage": "https://allemaar.com",
   "repository": "https://github.com/allemaar/open-skills",
-  "generated": "2026-10-30",
+  "generated": "2026-11-05",
   "generator": "tools/spine.mjs",
   "license": "Apache-2.0",
   "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL.",
@@ -152,8 +152,8 @@
       ]
     }
   ],
-  "count": 84,
-  "dualDoc": 53,
+  "count": 90,
+  "dualDoc": 54,
   "install": "Resolve requiresSkills recursively and install dependencies first. Then copy the requested skill folder into your runtime skills dir (copy-default, not symlink) and validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.",
   "skills": [
     {
@@ -334,6 +334,7 @@
         "found-not-failed=MUST",
         "sync-before-compare=MUST",
         "idempotent-recovery=MUST",
+        "claim-settlement=MUST",
         "resources-no-authority=MUST_NOT",
         "resources-lazy=SHOULD",
         "operation-first=SHOULD",
@@ -432,6 +433,39 @@
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
+      "name": "ask-me",
+      "family": "planning",
+      "familyLabel": "Planning & execution",
+      "description": "Constructively interview someone about an idea, task, project or decision so useful work can start. Use when explicitly asked to be interviewed, including “ask me”; ordinary task requests do not start this interview.",
+      "visibility": "public",
+      "triggers": [
+        "/ask-me",
+        "ask me",
+        "interview me about this idea",
+        "help me clarify this through questions"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [
+        {
+          "path": "references/records.md",
+          "optional": true,
+          "why": "Preserve settled answers only when document capture is selected."
+        }
+      ],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/ask-me <skills-dir>/ask-me",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
       "name": "audit-coupled-constant",
       "family": "code-architecture",
       "familyLabel": "Code & architecture",
@@ -521,6 +555,55 @@
       "install": {
         "copy": "cp -r skills/budget-check <skills-dir>/budget-check",
         "validate": "npx @younndai/yon-parser validate <skills-dir>/budget-check/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "build-prototype",
+      "family": "code-architecture",
+      "familyLabel": "Code & architecture",
+      "description": "Build and exercise the smallest runnable artifact that answers a stated design question. Use for uncertain state, logic or interface behavior; distinguish prototype observations from production claims.",
+      "visibility": "public",
+      "triggers": [
+        "build a prototype",
+        "make a runnable experiment for this design"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [
+        {
+          "path": "protocol.yon",
+          "optional": true,
+          "why": "Common sequence and checks; the entrypoint remains execution-sufficient."
+        },
+        {
+          "path": "references/state-and-logic.md",
+          "optional": false,
+          "why": "Load only for questions about state, rules or transitions."
+        },
+        {
+          "path": "references/ui.md",
+          "optional": false,
+          "why": "Load only for appearance or interaction questions."
+        }
+      ],
+      "hasProtocol": true,
+      "profile": "exec",
+      "gates": [
+        "bounds=ABORT",
+        "route-loaded=ABORT"
+      ],
+      "rules": [
+        "effects=MUST_NOT",
+        "isolation=MUST",
+        "controls=MUST",
+        "simulation=MUST_NOT"
+      ],
+      "steps": 4,
+      "install": {
+        "copy": "cp -r skills/build-prototype <skills-dir>/build-prototype",
+        "validate": "npx @younndai/yon-parser validate <skills-dir>/build-prototype/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -634,11 +717,14 @@
       "gates": [
         "cop=WARN",
         "target-exists=ABORT",
-        "critical-caps-verdict=WARN"
+        "critical-caps-verdict=WARN",
+        "code-axes=WARN"
       ],
       "rules": [
         "artifacts-only=MUST",
         "not-idea-tool=MUST_NOT",
+        "code-candidate=MUST",
+        "code-standards-spec=MUST",
         "max-three=MUST_NOT",
         "degraded-labeled=MUST",
         "narrow-evidence-brief=MUST",
@@ -656,6 +742,60 @@
       "install": {
         "copy": "cp -r skills/cold-review <skills-dir>/cold-review",
         "validate": "npx @younndai/yon-parser validate <skills-dir>/cold-review/protocol.yon --profile exec"
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "debug-task",
+      "family": "code-architecture",
+      "familyLabel": "Code & architecture",
+      "description": "Reproduce and diagnose a specific software defect, then apply and verify a repair only when authorized. Use for executable debugging rather than an analysis-only explanation or general repository survey.",
+      "visibility": "public",
+      "triggers": [
+        "/debug-task",
+        "debug this failure",
+        "reproduce and fix this bug",
+        "diagnose this regression"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/debug-task <skills-dir>/debug-task",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
+      "name": "define-terms",
+      "family": "planning",
+      "familyLabel": "Planning & execution",
+      "description": "Refine domain terminology in bounded contexts and update authorized definitions or consequential decision records. Use for overloaded terms and agreed language, not broad code renaming or schema migration.",
+      "visibility": "public",
+      "triggers": [
+        "/define-terms",
+        "define our domain terms",
+        "clarify this overloaded domain term",
+        "update the shared domain terminology"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/define-terms <skills-dir>/define-terms",
+        "validate": null
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -791,6 +931,7 @@
         "value-gate=ABORT"
       ],
       "rules": [
+        "unsupported-rename-copy=MUST",
         "true-by-construction=MUST",
         "model-writes-labels=MUST",
         "sum-consistency=MUST",
@@ -855,7 +996,7 @@
       "name": "domain-check",
       "family": "web",
       "familyLabel": "Web",
-      "description": "Reconcile domain-name availability across sources that disagree. Registrar availability endpoints report registered, broker-parked domains as available; this skill fixes the precedence — RDAP (Registration Data Access Protocol) is authoritative, DNS (Domain Name System) corroborates, broker nameservers override any \"available\", and the registrar is consulted for price only. Works on one domain or a bulk candidate sweep. Trigger via /domain-check, \"is this domain available\", \"check these domain names\", \"did the availability tool lie\". Not /investigate (read-only fact-gathering over a codebase) or /double-check (re-verifies one already-stated claim) — domain-check owns the availability verdict itself.",
+      "description": "Reconcile domain-name availability across sources that disagree. Registrar availability endpoints report registered, broker-parked domains as available; this skill fixes the precedence — RDAP (Registration Data Access Protocol) is authoritative, DNS (Domain Name System) corroborates, broker/operator evidence stays separate from verified sale status, and the registrar is consulted for price only. Works on one domain or a bulk candidate sweep. Trigger via /domain-check, \"is this domain available\", \"check these domain names\", \"did the availability tool lie\". Not /investigate (read-only fact-gathering over a codebase) or /double-check (re-verifies one already-stated claim) — domain-check owns the availability verdict itself.",
       "visibility": "public",
       "triggers": [
         "/domain-check",
@@ -972,7 +1113,7 @@
       "name": "extract-signal",
       "family": "priming",
       "familyLabel": "Priming",
-      "description": "An elastic signal-extraction methodology run under /multi-agent-mode. INFERS from the call what signal, what form, what stakes, and where output goes. Default is agentic — a normal call spawns a freshly-primed sub-agent that gathers, vets, and returns the signal; when extract-signal IS the agent (in-session / new-session) it works inline with output inline by default (or to a file if specified). Composes techniques per task: gather (/prime-sweep, /prime-fetch, /prime-expand), diverge (/insight-explore), vet (/insight-critique → /insight-assess), cold second opinion (/cold-review-style). Vetting scales with stakes; the presented signal carries provenance and is sensitivity-matched to its destination. Trigger on /extract-signal, \"extract the signal on X and present it as Y\", \"gather + vet + report the signal about X\". Not the prime-* / insight-* / cold-review skills it composes; not /multi-agent-mode (the mode it runs under).",
+      "description": "An elastic signal-extraction methodology run under /multi-agent-mode. INFERS from the call what signal, what form, what stakes, and where output goes. Default is agentic — the root coordinates freshly-primed gathering and separate review workers; when extract-signal IS the agent (in-session / new-session) it works inline with output inline by default (or to a file if specified). Composes techniques per task: gather (/prime-sweep, /prime-fetch, /prime-expand), diverge (/insight-explore), vet (/insight-critique → /insight-assess), cold second opinion (/cold-review-style). Vetting scales with stakes; the presented signal carries provenance and is sensitivity-matched to its destination. Trigger on /extract-signal, \"extract the signal on X and present it as Y\", \"gather + vet + report the signal about X\". Not the prime-* / insight-* / cold-review skills it composes; not /multi-agent-mode (the mode it runs under).",
       "visibility": "public",
       "triggers": [
         "/extract-signal",
@@ -1025,7 +1166,7 @@
         "provenance=MUST",
         "sensitivity=MUST",
         "concurrency=MUST",
-        "terminate=SHOULD"
+        "terminate=MUST"
       ],
       "steps": 5,
       "install": {
@@ -1170,6 +1311,7 @@
         "sources=WARN"
       ],
       "rules": [
+        "compact-continuation=MUST",
         "verifiable=MUST",
         "sources-gate=MUST",
         "no-undersized=MUST_NOT",
@@ -1383,7 +1525,7 @@
       "name": "headless-gemini",
       "family": "orchestration",
       "familyLabel": "Orchestration & dispatch",
-      "description": "Run bounded Gemini tasks through Antigravity CLI (agy). Trigger on /headless-gemini, \"run Gemini headlessly\", or \"supervise agy\". Not for the separate gemini CLI, installation, authentication changes, or API-key setup.",
+      "description": "Run bounded tasks through Antigravity CLI (agy), including locally exposed Gemini and Claude models on Antigravity’s separate quota pool. Trigger on /headless-gemini, \"run Gemini headlessly\", or \"supervise agy\". Not for the separate gemini CLI, installation, authentication changes, or API-key setup.",
       "visibility": "public",
       "triggers": [
         "/headless-gemini",
@@ -1905,7 +2047,7 @@
       "name": "insight-adversarial",
       "family": "insight",
       "familyLabel": "Insight & decision",
-      "description": "Multi-pass adversarial critique from dynamically selected personas — including Claude's own POV. Trigger on: \"adversarial\", \"red team this\", \"multi-POV review\", \"stress-test\", \"poke holes\", \"what am I missing\", \"attack my plan\", \"critique from multiple angles\", \"is this solid\", \"what would a skeptic say\", or any request for rigorous structured criticism of a plan, design, doc, workflow, YON, idea, or system. Runs 1–3 passes. First pass selects 4+ personas from the roster. Each subsequent pass adds 2–4 new personas to the mix. Third pass wraps with a final verdict if all issues are within acceptable params. Do not skip this skill when the user wants real scrutiny — \"just give me feedback\" often means they need this.",
+      "description": "Multi-pass adversarial critique from dynamically selected personas — including the current reviewer's own view. Trigger on: \"adversarial\", \"red team this\", \"multi-POV review\", \"stress-test\", \"poke holes\", \"what am I missing\", \"attack my plan\", \"critique from multiple angles\", \"is this solid\", \"what would a skeptic say\", or any request for rigorous structured criticism of a plan, design, doc, workflow, YON, idea, or system. Runs 1–3 passes. First pass selects 4+ personas from the roster. Each subsequent pass adds 3–4 new personas to the mix. Third pass wraps with a final verdict if all issues are within acceptable params. Do not skip this skill when the user wants real scrutiny — \"just give me feedback\" often means they need this.",
       "visibility": "public",
       "triggers": [
         "/insight-adversarial",
@@ -2219,7 +2361,7 @@
       "name": "insight-explore",
       "family": "insight",
       "familyLabel": "Insight & decision",
-      "description": "Brainstorm 3+ possible implementations before committing. Trigger when the user runs /explore or asks to \"brainstorm options\", \"what are the ways to do this\", \"explore approaches\", \"give me alternatives\", or wants divergent thinking before planning or assessment. Use insight-assess to evaluate known options, insight-critique to review an existing output, and plan-create to turn a chosen direction into an implementation plan.",
+      "description": "Explore possible implementations before committing, targeting three distinct options while reporting evidenced constrained or unresolved outcomes honestly. Trigger when the user runs /explore or asks to \"brainstorm options\", \"what are the ways to do this\", \"explore approaches\", \"give me alternatives\", or wants divergent thinking before planning or assessment. Use insight-assess to evaluate known options, insight-critique to review an existing output, and plan-create to turn a chosen direction into an implementation plan.",
       "visibility": "public",
       "triggers": [
         "/explore",
@@ -2252,7 +2394,7 @@
         "no-code=MUST_NOT",
         "distinct-options=MUST"
       ],
-      "steps": 9,
+      "steps": 10,
       "install": {
         "copy": "cp -r skills/insight-explore <skills-dir>/insight-explore",
         "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-explore/protocol.yon --profile exec"
@@ -2717,6 +2859,7 @@
         "single-engine=MUST",
         "apply-boundary=MUST",
         "one-round=MUST",
+        "complete-resolution=MUST",
         "heal-order=MUST",
         "mech-half=MUST"
       ],
@@ -3091,14 +3234,14 @@
       "name": "orchestrate-mode",
       "family": "orchestration",
       "familyLabel": "Orchestration & dispatch",
-      "description": "Activate orchestrator mode in the current session: the lead agent dispatches governed worker subagents and does not execute concrete work directly. Trigger on /orchestrate-mode, \"become an orchestrator\", \"orchestrator mode\", \"delegate everything\", or \"do not execute\". Use multi-agent-mode instead when the lead agent should still work directly while delegating helper slices.",
+      "description": "Activate orchestrator mode in the current session: the lead agent dispatches governed worker subagents and does not execute concrete work directly. Trigger on /orchestrate-mode, \"become an orchestrator\", \"orchestrator mode\", \"delegate everything\", or \"delegate execution while I coordinate\". Use multi-agent-mode instead when the lead agent should still work directly while delegating helper slices.",
       "visibility": "public",
       "triggers": [
         "/orchestrate-mode",
         "become an orchestrator",
         "orchestrator mode",
         "delegate everything",
-        "do not execute"
+        "delegate execution while I coordinate"
       ],
       "requiresSkills": [],
       "nextSkills": [
@@ -3511,6 +3654,7 @@
       "gates": [
         "gate1=ABORT",
         "gate2=ABORT",
+        "gate3-coverage=ABORT",
         "gate3=WARN",
         "gate4=ABORT",
         "final-gate=ABORT"
@@ -3669,7 +3813,8 @@
       "profile": "exec",
       "gates": [
         "plan-found=ABORT",
-        "plan-valid=ABORT"
+        "plan-valid=ABORT",
+        "plan-approved=ABORT"
       ],
       "rules": [
         "exact-plan=MUST",
@@ -3678,7 +3823,9 @@
         "surface-judgment=MUST",
         "no-add-features=MUST_NOT",
         "report-progress-on-halt=MUST",
-        "terminal-decl=MUST"
+        "terminal-decl=MUST",
+        "testing-method=MUST",
+        "current-candidate=MUST"
       ],
       "steps": 10,
       "install": {
@@ -3778,7 +3925,7 @@
       "gates": [
         "cop=WARN",
         "seed-vague=ABORT",
-        "decision-made=WARN"
+        "decision-made=ABORT"
       ],
       "rules": [
         "vague-seed-only=MUST",
@@ -4129,6 +4276,7 @@
         "paths=MUST",
         "standalone=MUST",
         "walkthrough=MUST",
+        "clarification=MUST",
         "links=MUST",
         "upgrade=MUST",
         "activation=MUST",
@@ -4338,6 +4486,33 @@
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
+      "name": "teach-topic",
+      "family": "human-output",
+      "familyLabel": "Human output",
+      "description": "Teach toward a learner goal through explanation, suitable practice, feedback and review. Use for \"teach me this topic\", \"help me practice\", or continued guided learning; one-off explanations need no curriculum or workspace.",
+      "visibility": "public",
+      "triggers": [
+        "/teach-topic",
+        "teach me this topic",
+        "help me practice this skill",
+        "continue my learning on this"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/teach-topic <skills-dir>/teach-topic",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
       "name": "verify",
       "family": "planning",
       "familyLabel": "Planning & execution",
@@ -4483,6 +4658,33 @@
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
     },
     {
+      "name": "write-spec",
+      "family": "planning",
+      "familyLabel": "Planning & execution",
+      "description": "Synthesize a supplied conversation and established evidence into a behavioral specification, preserving decisions, acceptance, exclusions and unresolved matters. Use for a spec draft, not automatic planning or publication.",
+      "visibility": "public",
+      "triggers": [
+        "/write-spec",
+        "turn this conversation into a spec",
+        "write the spec from our decisions",
+        "capture the agreed behavior as a specification"
+      ],
+      "requiresSkills": [],
+      "nextSkills": [],
+      "companions": [],
+      "hasProtocol": false,
+      "profile": null,
+      "gates": [],
+      "rules": [],
+      "steps": 0,
+      "install": {
+        "copy": "cp -r skills/write-spec <skills-dir>/write-spec",
+        "validate": null
+      },
+      "license": "Apache-2.0",
+      "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
+    },
+    {
       "name": "yon-read",
       "family": "yon",
       "familyLabel": "YON",
@@ -4552,7 +4754,13 @@
           "why": "Commit and push the new .yon file once it is written and validated."
         }
       ],
-      "companions": [],
+      "companions": [
+        {
+          "path": "../yon-read",
+          "optional": true,
+          "why": "Required for extended tags beyond the local field table: load its v2.0 tag-registry.md and read-card.txt; stop dependent extended conformance when unavailable."
+        }
+      ],
       "hasProtocol": false,
       "profile": null,
       "gates": [],

@@ -47,6 +47,10 @@ If the plan does not meet this definition, the Phase 1 gate will reject it with 
    - Then `PLAN.md` in the project root
    - Then `implementation_plan.md` in the project root
    - If none found, see Gate below
+A ticket or specification supplies context, requirements and acceptance evidence; its presence is not approval of an executable plan. Reconcile it with the last approved plan, including approved deviations, and identify the approval basis. File discovery alone establishes no approval. If no approved executable plan exists or inputs conflict, stop for planning or revision; do not convert requirements into execution authority.
+
+For code changes, before editing identify agreed public behavior or seams, independently derived expected results, and checks required by plan and repository. Use targeted tests that distinguish credible failures, then required broader checks at the existing closing gate. Expectations copied from new implementation alone are not independent proof. Test-first is a method when suitable, not universal. Non-code, exploratory and unsuitable changes retain proportionate verification. Any testing decision not explicitly named in the approved plan follows the existing judgment-call stop; this checkpoint authorizes no scope additions.
+
 2. Confirm execution mode: no planning, no exploring, no scope additions.
 
 **Gate:**
@@ -71,6 +75,8 @@ If the user approves a deviation, document it inline: "Proceeding with [substitu
 Do not make implicit decisions. Do not proceed past a judgment call without a user response.
 
 ## Phase 3 — Verification
+
+Verify the actual current candidate, including selected uncommitted and staged work. Identify compared state so earlier-commit results are not passed off as evidence for later edits. Run targeted checks and required broader gates in the order permitted by plan and repository. Successful checks establish only exercised behavior. Verification does not automatically commit work.
 
 Run the verification steps specified in the plan. Report:
 

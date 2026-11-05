@@ -68,7 +68,9 @@ An **optional Handler-owned override** (a local note pinning or forbidding speci
 
 ## Report card — the experimental evidence stream
 
-While this skill is experimental, **every routing decision persists a report card through the configured report-card sink** (a Handler-local configuration entry; this skill ships no path). The sink's `_log-template.md` (schema_version-tagged) is the versioned mirror of the card schema; fill every field — a "did not use the rubric" card is as valuable as a scored one. If no sink is configured, surface the card inline to the Handler rather than dropping it.
+While this skill is experimental, **every routing decision persists a report card through the configured report-card sink** (a Handler-local configuration entry; this skill ships no path). The sink's `_log-template.md` (schema_version-tagged) is the versioned mirror of the card schema; fill every field — a "did not use the rubric" card is as valuable as a scored one. If no sink is configured, surface the following defined card inline to the Handler rather than dropping it.
+
+Local inline card when no sink is configured: schema_version=route-task/1; task and routing-used/did-not-use reason; S/C/R/U/V inputs with their evidence or unknown; computed capability/volume/score or not-computed; actual runtime roster/effort resolution or unknown; selected venue/model and rationale; constraints, observed outcome or not-observed, and feedback. A configured versioned sink template remains its own owner; do not invent a sink path or discard an unscored decision.
 
 ## Worked illustrations (from the origin, not enforcement)
 

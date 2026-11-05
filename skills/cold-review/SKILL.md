@@ -51,6 +51,15 @@ Use `cold-review` for completed or in-progress work artifacts: diffs, files, cod
 
 Identify: the **work assessed**; the **objectives** (infer and label as inferred if not given); the **constraints** (non-goals, compatibility, style, acceptance criteria, preferences); and the **available evidence** (tests, commands, screenshots, docs, diffs, source). If no concrete artifact exists, stop and ask for the target — do not review from vague memory.
 
+For code, bind the selected candidate explicitly: working-tree files, staged content, named commit/range, or stated combination. Inspect actual selected bytes and diff; committed HEAD does not include uncommitted work. Resolve candidate ambiguity before reviewing; label inaccessible portions unchecked.
+
+Keep two questions distinct within selected lenses and reviewer budget:
+
+- **Standards:** does the candidate conform to applicable supplied or discovered repository standards?
+- **Spec:** does it fulfill the approved specification and acceptance criteria?
+
+Name sources for each. Missing standards or approved spec stay unknown; do not invent them or relabel inferred objectives as approved acceptance. A candidate can meet one and fail the other. Report both bases, naming each source or marking it unknown, and place findings under the applicable basis; preserve General findings that fit neither. This adds no reviewer, replaces no existing lens and preserves Caller Options and general-purpose review behavior.
+
 ## Step 2 — Classify the work
 
 Classify the primary target type and choose lenses accordingly:
@@ -75,7 +84,7 @@ Do not spawn more than 3 reviewers without explicit user confirmation. If fresh 
 
 ## Step 4 — Brief reviewers
 
-Each reviewer gets a narrow, evidence-based brief. Do not pass the lead agent's conclusions as ground truth. Assign one lens per reviewer.
+Each reviewer gets a narrow, evidence-based brief. Do not pass the lead agent's conclusions as ground truth. Assign each reviewer a coherent bundle of required lenses, covering every target lens across the selected pool. Name each bundle and its coverage explicitly; preserve the existing reviewer cap and report any uncovered lens as a gap rather than adding reviewers automatically.
 
 **Supply pointers, not a curated evidence set.** The lead choosing *which artifacts exist* correlates every reviewer to one reading of the work — fresh context and distinct lenses do not undo that. Name where the sources are and require each reviewer to open them; a reachable source is what makes an independent check possible, and reviewers who cannot reach past your list can only audit your selection.
 
@@ -87,6 +96,8 @@ You are a cold reviewer. You did not do this work. Start from the pointers below
 Work assessed:
 Objectives:
 Constraints:
+Candidate state and exact selected scope (code only):
+Standards source / approved spec source (code only; unknown if absent):
 Your review lens:
 Primary-source pointers (a starting point, not the boundary — locate and open the sources yourself; add any the list omits):
 If source policy forbids discovery, use only the exact file paths or explicit resolver queries supplied here; do not treat a directory as a sufficient pointer.
@@ -121,6 +132,10 @@ Work assessed:
 Objectives:
 Review type: full cold review | degraded same-session review
 Reviewers/lenses used:
+Candidate state and exact selected scope: (code only)
+Standards conformance: (code only) source or unknown; applicable findings
+Spec fulfillment: (code only) approved source or unknown; applicable findings
+General findings: (when applicable)
 
 Findings
 - Critical:

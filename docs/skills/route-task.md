@@ -29,6 +29,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Explain drivers and derive capability and volume.
 3. Report the plan gate and resolve against the live runtime roster.
 4. Treat the recommendation as advisory.
+5. Use the defined local inline card when no configured sink exists, including did-not-use decisions and unknown observations.
 
 ## Subagents
 

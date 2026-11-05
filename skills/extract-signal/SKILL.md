@@ -1,7 +1,7 @@
 ---
 name: extract-signal
 description: >
-  An elastic signal-extraction methodology run under /multi-agent-mode. INFERS from the call what signal, what form, what stakes, and where output goes. Default is agentic — a normal call spawns a freshly-primed sub-agent that gathers, vets, and returns the signal; when extract-signal IS the agent (in-session / new-session) it works inline with output inline by default (or to a file if specified). Composes techniques per task: gather (/prime-sweep, /prime-fetch, /prime-expand), diverge (/insight-explore), vet (/insight-critique → /insight-assess), cold second opinion (/cold-review-style). Vetting scales with stakes; the presented signal carries provenance and is sensitivity-matched to its destination. Trigger on /extract-signal, "extract the signal on X and present it as Y", "gather + vet + report the signal about X". Not the prime-* / insight-* / cold-review skills it composes; not /multi-agent-mode (the mode it runs under).
+  An elastic signal-extraction methodology run under /multi-agent-mode. INFERS from the call what signal, what form, what stakes, and where output goes. Default is agentic — the root coordinates freshly-primed gathering and separate review workers; when extract-signal IS the agent (in-session / new-session) it works inline with output inline by default (or to a file if specified). Composes techniques per task: gather (/prime-sweep, /prime-fetch, /prime-expand), diverge (/insight-explore), vet (/insight-critique → /insight-assess), cold second opinion (/cold-review-style). Vetting scales with stakes; the presented signal carries provenance and is sensitivity-matched to its destination. Trigger on /extract-signal, "extract the signal on X and present it as Y", "gather + vet + report the signal about X". Not the prime-* / insight-* / cold-review skills it composes; not /multi-agent-mode (the mode it runs under).
 visibility: public
 self-improvable: true
 triggers:
@@ -30,7 +30,7 @@ next-skills:
 
 An **elastic methodology** for turning a noisy source surface into a **vetted signal in the form the requester asked for**, without contaminating the context that must stay clean. It is a goal + a toolkit + the judgment to **compose techniques to fit the task** — not a fixed pipeline. The work it does is determined by the context it is invoked with.
 
-> **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date.
+> **Operational owner:** this `SKILL.md`. [`protocol.yon`](protocol.yon) is its aligned declarative companion. When either changes, update the other and refresh the `@STAMP` date.
 
 ## The principle that motivates this skill
 
@@ -47,8 +47,8 @@ The skill **infers** its parameters from how it was invoked; explicit overrides 
 
 ## Modes & output (inferred)
 
-- **Agentic (default — the normal call).** extract-signal spawns a **freshly-primed sub-agent** that does the gather/vet/present and returns the signal. Relocation keeps the caller's window clean. Output returns to the caller (inline) unless a file is specified.
-- **In-session / new-session (it IS the agent).** extract-signal works directly as the running agent; **output inline by default**, **to a file if specified**. (When it is itself a dispatched sub-agent, this is the same path: it works inline in its disposable window and does NOT spawn further sub-agents — depth-1 guardrail; the isolation already protects the caller.)
+- **Agentic (default — the normal call).** The root agent owns composition, gathering dispatch and review dispatch. Invoke selected `prime-*` skills at the root, so their workers are leaves. For a cold opinion, the root dispatches a separate sibling reviewer with the question, primary-source pointers and artifact, without the gatherer's conclusions or lead rationale. Gatherers and reviewers never orchestrate each other. The root integrates and returns the signal inline unless a file is specified.
+- **In-session / new-session (it IS the agent).** extract-signal gathers and vets directly as the running agent; **output inline by default**, **to a file if specified**. (When it is itself a dispatched sub-agent, this is the same path: it works inline in its disposable window and does NOT spawn further sub-agents — depth-1 guardrail; the isolation already protects the caller.) In a leaf, use the bounded direct-gather procedure from its primed brief, not a `prime-*` invocation that requires another worker. Run permitted vetting inline with nested delegation suppressed. Disclose same-context dependence; it is not a cold opinion. If material vetting requires an independent opinion, return findings and that unmet requirement to the root before a readiness verdict.
 
 ## The methodology (elastic — compose, don't follow blindly)
 
@@ -85,8 +85,8 @@ Signal inherits the sensitivity of what it was extracted from. Before presenting
 
 ## Bounds
 
-- **Concurrency** — in agentic/full-agent mode, ≤3 parallel sub-agents, depth-1 (sub-agents don't spawn sub-agents).
-- **Termination** — gathering stops at the gather tool's wave cap or when added waves return no new signal; report what was capped.
+- **Concurrency** — the root owns at most 3 parallel leaf workers, depth-1. Every composed technique inherits that limit; an active mode owns dispatch rather than adding another layer.
+- **Termination** — before work, bind finite tool-call, wave and elapsed-time limits to the invocation. Before dispatch also bind monitoring, cancellation and terminal success/failure/timeout outcomes. Without those controls, stop the dependent agentic route. Stop at the first exhausted bound or no-new-signal wave; retain partial findings and name capped or unperformed vetting. Do not retry or extend automatically.
 
 ## Signal forms (reference menu — any custom form allowed)
 
@@ -104,7 +104,7 @@ Signal inherits the sensitivity of what it was extracted from. Before presenting
 **1 · Agentic + high-stakes → bill-of-health**
 > **Call:** `extract-signal: is @acme/parser ready to ship publicly?`
 > **Infers:** signal = release-readiness · form = bill-of-health · stakes = high · mode = agentic (default) · output = inline to caller.
-> **Composes:** spawn a primed sub-agent → `prime-sweep` the package → `insight-critique` → `insight-assess` → cold second opinion → return the bill-of-health.
+> **Composes:** root invokes `prime-sweep` to dispatch leaf gathering → root applies inline critique and assess → root dispatches a separate cold sibling reviewer → root returns the bill-of-health.
 > **Returns:** verdict + per-area findings with `source:line`, confidence, residual gaps, techniques-run.
 
 **2 · In-session inline + options → ranked-options**
@@ -127,7 +127,7 @@ Signal inherits the sensitivity of what it was extracted from. Before presenting
 ## Rules
 
 - MUST infer the signal request from the call; MUST NOT demand a rigid input form.
-- MUST default to agentic (spawn a primed sub-agent); when it IS the agent, work inline with output inline-by-default or to a file if specified.
+- MUST default to root-owned agentic gathering and sibling review; when it IS the agent, work inline with output inline-by-default or to a file if specified.
 - MUST keep gathered output complete (report-to-file for large surfaces); MUST NOT impose an arbitrary word/size cap on gathering.
 - MUST compose techniques to fit the task; MUST NOT run a fixed sequence regardless of the signal.
 - MUST vet before presenting; depth MUST scale with stakes.

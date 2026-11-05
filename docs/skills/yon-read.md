@@ -29,6 +29,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Walk sections, records and references in order
 3. Explain rule severity and workflow dependencies
 4. Flag runtime-dependent agent execution
+5. Read complete logical records and block context, preserving source terminology, field meanings and units.
 
 ## Subagents
 

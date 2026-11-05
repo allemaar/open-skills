@@ -27,8 +27,8 @@ Install this skill in a supported runtime, then give it the relevant material an
 
 1. Locate the intended plan and preserve its content.
 2. Group actions into ordered phases.
-3. Add post-phase verification and pre-action safety gates; if verify is unavailable, require explicit user confirmation at the gate.
-4. Rewrite a sourced plan in its original format within the authorized scope, or return a conversation-only plan as a fenced block; report the restructuring.
+3. Add post-phase verification and pre-action safety gates; if verify is unavailable, use direct evidence for objective conditions and confirmation only for Handler-owned decisions.
+4. Validate intent and preservation before protected replacement of the selected source; otherwise return the proposed rewrite inline. Read back and report the actual restructuring.
 
 ## Subagents
 

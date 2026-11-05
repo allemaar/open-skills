@@ -86,6 +86,8 @@ Run selected sub-skills **inline under depth-1 `CX-RESOLVED`**. As caller, suppr
 - **L2** — `/insight-critique` then `/insight-assess`.
 - **L3** — L2, then `/insight-explore` when options need expansion; assess additions and update only conclusions affected by new evidence or options.
 
+Check each selected helper’s declared subject contract first. Keep software-specific critique/exploration for matching subjects; for other domains use an explicit domain-appropriate assessment or expansion within the selected depth and report the skipped software method. Do not force a general decision into code/repository criteria or imply that an unavailable method ran.
+
 **Reuse before rerunning.** Carry forward assessments whose evidence and criteria still apply, including per-item findings. Reassess only new options or affected conclusions; keep extra loops subject to the existing escalation gate.
 
 **Choose a method only for a decision-changing uncertainty.** Within the selected depth, use at most one relevant specialist: `/insight-premortem` for future failure paths; `/insight-root-cause` for observed failures; `/insight-value-of-information` for whether more evidence is worth obtaining; `/insight-test-assumption` for a discriminating test design; `/insight-reference-class` for an outside-view estimate. Feed findings into assess. Do not run a checklist or chain their handoffs; ordinary cases need none.
@@ -109,6 +111,8 @@ At L2 or above, for `comparison` / `list` / `set` forms (or any post-discovery s
 ## Phase 4 — Coverage check (adaptive critic)
 
 Before the recommendation, run a brief completeness pass: from the relevant angle menu — practical · strategic · adversarial · human · systems/second-order · opportunity · failure-mode — **select the angles that fit this subject** and state which were **covered** and which were **intentionally skipped, with the reason**. This is an *adaptive critic*, not a fixed all-green checklist — the honest "we did not look at X because Y" is the deliverable. It helps detect incompleteness when you can't yet name what feels missing.
+
+Before dispatch, bind the worker and total invocation to finite deadlines and resource limits, with a named monitoring owner, observable progress, a cancellation handle and terminal success/failure/timeout outcomes. Use native controls; include read-only scope and no-child instructions in research briefs. On failure or timeout, cancel owned work and report retained partial results and unchecked coverage. If these controls are unavailable, do not dispatch. Use the existing bounded inline fallback when permitted, labeling it non-independent; empty or failed returns never count as completed coverage.
 
 ## Depth escalation — HIL-gated, never auto
 

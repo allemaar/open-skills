@@ -19,7 +19,7 @@ uncertainty as well.**
 
   10-year expected cost:  repair EUR 27 k   replace EUR 19.1 k
 
-  [fig fork | 6 nodes | 66 cols | ascii | expected costs computed below]
+  [fig fork | 7 nodes | 66 cols | ascii | expected costs computed below]
 ```
 
 Caption: *Repair is dearer in expectation and it is the branch that can still

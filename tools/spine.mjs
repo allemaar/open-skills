@@ -33,7 +33,7 @@ import { emitSkillDocs } from './skill-docs.mjs';
 const SKILLS = 'skills';
 const TAXONOMY = join(SKILLS, 'skills-help', 'taxonomy.yon');
 // Keep in sync with .claude-plugin/plugin.json and the newest CHANGELOG release.
-const PACK_VERSION = '2.0.0';
+const PACK_VERSION = '3.0.0';
 const LICENSE = 'Apache-2.0';
 const SRC = 'github.com/allemaar/open-skills';
 const ATTRIBUTION =
@@ -483,6 +483,18 @@ function emitGraph(skills, stampDay) {
 
 // --- driver -----------------------------------------------------------------
 
+// Directory presentation shares the same inventory and family order as the catalog.
+function emitSkillsSh(skills, families) {
+  return JSON.stringify({
+    $schema: 'https://skills.sh/schemas/skills.sh.schema.json',
+    notGrouped: 'bottom',
+    groupings: families.map((family) => ({
+      title: family.label,
+      skills: skills.filter((skill) => skill.family === family.id).map((skill) => skill.name),
+    })),
+  }, null, 2) + '\n';
+}
+
 // Normalize before --check compares: make it EOL-agnostic (a CRLF checkout must
 // not read as drift) and strip the volatile date. Both date regexes are ANCHORED
 // to line start so they can never rewrite a field value that merely contains the
@@ -505,6 +517,7 @@ function main() {
     'llms.txt': emitLlms(skills, families),
     'skills.graph.yon': emitGraph(skills, stampDay),
     'SKILLS.md': emitSkillsMd(skills, families),
+    'skills.sh.json': emitSkillsSh(skills, families),
     ...emitSkillDocs(skills, families),
   };
 
@@ -529,7 +542,7 @@ function main() {
     writeFileSync(file, content);
   }
   console.log(
-    `spine: wrote catalogs, graph, SKILLS.md and skill guides — ${skills.length} skills in ${families.length} families, ${skills.filter((s) => s.hasProtocol).length} with protocol.yon`
+    `spine: wrote catalogs, graph, SKILLS.md, skills.sh grouping and skill guides — ${skills.length} skills in ${families.length} families, ${skills.filter((s) => s.hasProtocol).length} with protocol.yon`
   );
 }
 

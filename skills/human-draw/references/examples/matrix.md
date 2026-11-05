@@ -8,8 +8,11 @@ by locking the business in.**
 
                               high cost
                                   |
-   Build an extension             |   Buy the unit next door
-   EUR 140 k, 18 months           |   EUR 210 k, lease to 2041
+   Build an extension             |
+   EUR 140 k, 18 months           |
+                                  |
+   Buy the unit next door         |
+   EUR 210 k, lease to 2041        |
                                   |
   hard to reverse ----------------+---------------- easy to reverse
                                   |
@@ -33,8 +36,9 @@ Craft notes:
   renewal term, not asserted by placement alone.
 - Nothing else is encoded, so nothing else can mislead. No box sizes, no
   distances from the origin, no shading.
-- An empty quadrant is a finding. Read this one and the top-right — fast and
-  reversible — is empty of anything cheap.
+- Both high-cost options sit on the hard-to-reverse side under the stated
+  commitments. The high-cost/easy-to-reverse quadrant is empty; speed is not
+  an axis, and a matrix need not place one option in each quadrant.
 
 ---
 

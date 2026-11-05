@@ -17,7 +17,7 @@
 //   node tools/budget-check.mjs --json                # machine-readable verdict
 // Exit: 0 = go, 1 = no-go, 2 = unknown (could not determine — fail-closed, never a false go).
 //
-// Zero-dependency (uses npx ccusage on demand). Apache-2.0. "YON" and "YounndAI" are trademarks of MARLINK TRADING SRL.
+// Uses an already-installed ccusage command; never acquires a package. Apache-2.0. "YON" and "YounndAI" are trademarks of MARLINK TRADING SRL.
 
 import { execSync } from 'node:child_process';
 
@@ -28,14 +28,18 @@ const flag = (name, def) => {
   // a "value" that is actually the next flag (or absent) means no value was given → use the default
   return v !== undefined && !v.startsWith('--') ? v : def;
 };
+const missingValues = ['--threshold', '--token-limit'].filter(name => {
+  const i = argv.indexOf(name), value = argv[i + 1];
+  return i >= 0 && (value === undefined || value.startsWith('--') || !value.trim());
+});
 const THRESHOLD = Number(flag('--threshold', '95'));
 const TOKEN_LIMIT = flag('--token-limit', null);
 const JSON_OUT = argv.includes('--json');
 
 function loadBlocks() {
   try {
-    // Pinned to a known-good major for output-shape stability; a future breaking shape fails closed below.
-    const out = execSync('npx -y ccusage@20 blocks --json', { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 120000 });
+    // Execute only the existing command. Missing tools or changed output fail closed below.
+    const out = execSync('ccusage blocks --json', { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 120000 });
     const parsed = JSON.parse(out);
     return Array.isArray(parsed.blocks) ? parsed.blocks : null;
   } catch {
@@ -78,7 +82,9 @@ function compute(blocks) {
     projectedTokens: active.projection?.totalTokens ?? null };
 }
 
-const r = compute(loadBlocks());
+const r = missingValues.length
+  ? { verdict: 'unknown', reason: 'missing numeric value for ' + missingValues.join(', ') }
+  : compute(loadBlocks());
 
 if (JSON_OUT) {
   console.log(JSON.stringify(r, null, 2));

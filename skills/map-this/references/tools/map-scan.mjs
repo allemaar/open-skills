@@ -21,9 +21,10 @@ const EXCLUDES = [];
 const EXCLUDE_SOURCE = EXCLUDES.length ? "caller-supplied (--exclude)" : "caller-default set (.git .obsidian .lyt .myk) — override with --exclude";
 if (!EXCLUDES.length) EXCLUDES.push(".git", ".obsidian", ".lyt", ".myk");
 const EXCLUDE_SET = new Set(EXCLUDES);
-const argN = (flag, dflt) => { const i = process.argv.indexOf(flag); return i >= 0 ? Number(process.argv[i + 1]) || dflt : dflt; };
+const argN = (flag, dflt) => { const i = process.argv.indexOf(flag); return i >= 0 ? Number(process.argv[i + 1]) : dflt; };
 const MAX_FILES = argN("--max-files", 20000);
 const MAX_MS = argN("--max-ms", 60000);
+if (![MAX_FILES,MAX_MS].every(n=>Number.isSafeInteger(n)&&n>0)) fail("max-files and max-ms must be finite positive integers", "invalid-bounds");
 const T0 = Date.now();
 const overTime = () => Date.now() - T0 > MAX_MS;
 
@@ -46,8 +47,8 @@ if (process.env.MYK_CASE_FOLD_REGRESSION === "1") {
   process.exit(0);
 }
 
-function fail(msg) {
-  const env = { schema_version: 1, kernel_version: KV, kernel_source: KERNEL_SOURCE, error: { code: "scan-error", message: msg } };
+function fail(msg, code="scan-error") {
+  const env = { schema_version: 1, kernel_version: KV, kernel_source: KERNEL_SOURCE, error: { code, message: msg } };
   console.log(wantJson ? JSON.stringify(env, null, 2) : `map-scan ERROR ${msg}`);
   process.exit(2);
 }
@@ -152,13 +153,15 @@ try {
         if (!Buffer.from(t0, "utf8").equals(buf)) dialectErrors.push({ rule: "(contract)", error: "malformed-contract: invalid UTF-8" });
         if (t0.charCodeAt(0) === 0xFEFF) { dialectErrors.push({ rule: "(contract)", error: "malformed-contract: BOM present" }); t0 = t0.slice(1); }
         const t = t0.replace(/\r\n/g, "\n");
-        const rm = t.match(/root-map:\s*"?([^"\n]+?)"?\s*$/m);
-        if (rm) { declaredRoot = norm(rm[1].trim()); contractSource = ".myk/" + cand; }
+        contractSource = ".myk/" + cand;
         let fmc = null;
         if (t.startsWith("---\n")) { const e = t.indexOf("\n---", 3);
           if (e > 0) { const after = t.slice(e + 4); if (after === "" || after.startsWith("\n")) fmc = t.slice(4, e + 1);
             else dialectErrors.push({ rule: "(contract)", error: "malformed-contract: frontmatter terminator line is not exactly ---" }); } }
+        if (fmc === null) dialectErrors.push({ rule: "(contract)", error: "malformed-contract: missing exact frontmatter delimiters" });
         if (fmc !== null) {
+          const rm = fmc.match(/root-map:\s*"?([^"\n]+?)"?\s*$/m);
+          if (rm) declaredRoot = norm(rm[1].trim());
           const lines = fmc.split("\n");
           // strict myk: block extraction
           const mykAt = lines.findIndex(l => l === "myk:");
@@ -239,19 +242,36 @@ try {
           }
           // M3 exclusions + managed artifacts (existing contract style under meta.m1 — read for the
           // link-resolution.md — Resolution inventory and fingerprints; declaration shape conformance stays map-check's)
-          let inSec = null, cur = null;
-          for (const ln of lines) {
-            const sec = ln.match(/^\s{4}(exclusions|managed-artifacts):\s*$/);
-            if (sec) { inSec = sec[1]; cur = null; continue; }
-            if (/^\s{2}[a-z-]+:/.test(ln) || /^[a-z-]+:/.test(ln)) { inSec = null; cur = null; continue; }
-            if (!inSec) continue;
-            const item = ln.match(/^\s+-\s+path:\s*"?([^"\n]+?)"?\s*$/);
-            if (item) { cur = { path: norm(item[1].trim()), surfaces: "" }; (inSec === "exclusions" ? m3Exclusions : m3ManagedBodyOwned).push(cur); continue; }
-            if (cur) { const kv = ln.match(/^\s+([a-z-]+):\s*"?([^"\n]*?)"?\s*$/);
-              if (kv) { if (kv[1] === "owned-surfaces") cur.surfaces = kv[2];
-                else if (kv[1] === "graph-entry") cur.graphEntry = kv[2].trim();
-                else if (kv[1] === "entrypoint") cur.entrypoint = norm(kv[2].trim()); } }
+          const mykLines=[];let inMyk=false;
+          for(const ln of lines){if(ln==="myk:"){inMyk=true;continue;}if(inMyk&&ln&&!/^\s/.test(ln))inMyk=false;if(inMyk)mykLines.push(ln);}
+          const m3Starts=mykLines.flatMap((ln,i)=>ln==="  m3:"?[i]:[]);
+          if(m3Starts.length>1)dialectErrors.push({rule:"m3",error:"duplicate m3"});
+          const m3=[];if(m3Starts.length)for(let i=m3Starts[0]+1;i<mykLines.length&&!/^  \S/.test(mykLines[i]);i++)m3.push(mykLines[i]);
+          const groups=new Map();let list=null;
+          for(const ln of m3){const h=ln.match(/^    (exclusions|managed-artifacts):\s*$/);if(h){list=h[1];if(groups.has(list))dialectErrors.push({rule:"m3",error:"duplicate list"});groups.set(list,[]);}else if(list)groups.get(list).push(ln);else if(ln.trim())dialectErrors.push({rule:"m3",error:"unknown list"});}
+          for(const [name,ls]of groups){const entries=[];let item=null;
+            for(const line of ls){if(!line.trim())continue;const row=line.match(/^      - path:\s*(.+?)\s*$/),field=line.match(/^        ([a-z-]+):\s*(.+?)\s*$/);
+              if(row){item={};entries.push(item);}const key=row?"path":field?.[1],raw=row?.[1]??field?.[2];
+              if(!key||!item){dialectErrors.push({rule:"m3",error:"malformed row"});continue;}
+              let val=raw;if(raw.startsWith('"')){try{val=JSON.parse(raw);}catch{val=null;}}
+              const keys=name==="exclusions"?["path","owner","prohibition","graph-entry","reason","established-by","entrypoint"]:["path","owner","owned-surfaces","established-by","map","section","graph-entry","entrypoint","reason","prohibition"];
+              if(!keys.includes(key)||Object.hasOwn(item,key)||typeof val!=="string"||!val.trim())dialectErrors.push({rule:"m3",error:"invalid or duplicate field "+key});else item[key]=val;
+            }
+            const unique=new Set();for(const e of entries){const err=error=>dialectErrors.push({rule:"m3 "+(e.path||"?"),error});
+              const req=name==="exclusions"?["path","owner","prohibition","graph-entry","reason","established-by"]:["path","owner","owned-surfaces","established-by"];
+              if(req.some(k=>!e[k]))err("missing required field");if(unique.has(e.path))err("duplicate path");unique.add(e.path);
+              if(!validLocator(e.path))err("invalid path");const st=validLocator(e.path)?safeLstat(join(root,e.path)):null;
+              if(!st||st.isSymbolicLink()||!pathEq(realpathSync.native(join(root,e.path)),join(root,e.path)))err("missing or unsafe path");
+              if(name==="exclusions"&&st&&!st.isDirectory())err("excluded path must be directory");
+              if(e["graph-entry"]&&!["single-entrypoint","individually-indexed","none"].includes(e["graph-entry"]))err("invalid graph-entry");
+              if(!!e.map!==!!e.section||name==="managed-artifacts"&&!e.map&&!e["graph-entry"])err("map/section or graph-entry required");
+              if(e.map&&(!validLocator(e.map)||!safeLstat(join(root,e.map))?.isFile()||safeLstat(join(root,e.map)).isSymbolicLink()||!pathEq(realpathSync.native(join(root,e.map)),join(root,e.map))))err("invalid covering map");
+              if(e["owned-surfaces"]){const vals=e["owned-surfaces"].replace(/^\[|\]$/g,"").split(",").map(v=>v.trim());if(vals.some(v=>!["frontmatter","body","locator","whole-file"].includes(v))||new Set(vals).size!==vals.length)err("invalid owned-surfaces");}
+              if(e.entrypoint||e["graph-entry"]==="single-entrypoint"||name==="managed-artifacts"&&st?.isDirectory()){if(!validLocator(e.entrypoint)||!(e.entrypoint===e.path||e.entrypoint.startsWith(e.path+"/"))||!safeLstat(join(root,e.entrypoint))?.isFile()||safeLstat(join(root,e.entrypoint)).isSymbolicLink()||!pathEq(realpathSync.native(join(root,e.entrypoint)),join(root,e.entrypoint)))err("invalid contained file entrypoint");}
+              if(name==="exclusions")m3Exclusions.push({...e,graphEntry:e["graph-entry"]});else m3ManagedBodyOwned.push({...e,surfaces:e["owned-surfaces"]||""});
+            }
           }
+
         }
       }
       break;
@@ -290,7 +310,7 @@ try {
   // FAIL-CLOSED (link-resolution.md — Failure behavior): any contract error voids ALL parsed declarations —
   // no partial-rule resolution, and the scan can never claim COMPLETE.
   const contractInvalid = dialectErrors.length > 0;
-  if (contractInvalid) { dialectRules.length = 0; acceptedLinks.length = 0; governedBoundaryTargets.length = 0; }
+  if (contractInvalid) fail(JSON.stringify(dialectErrors), "contract-invalid");
 
   // ---------- 2c. CANONICAL RESOLUTION INVENTORY (link-resolution.md — Resolution inventory and fingerprints) ----------
   // M3 exclusions are governed non-assessment: OUT of the resolution inventory, IN the
@@ -320,6 +340,7 @@ try {
       if (seg === "" || seg === ".") continue; if (seg === "..") { if (!parts.length) return null; parts.pop(); } else parts.push(seg); }
     return parts.join("/"); };
   for (const f of md) {
+    if(overTime())fail("cap before occurrence inventory closure", "check-incomplete");
     const t = safeRead(join(root, f.rel));
     if (t === null) { skipped.push(f.rel + " (unreadable)"); continue; }
     mdHash.update(f.rel).update(HSEP).update(t).update(HSEP);
@@ -359,7 +380,8 @@ try {
   // headings/blocks); reading one entrypoint file is not assessment of its subtree
   for (const f of gbFiles) {
     if (f.ext !== ".md" || headingsOf.has(f.rel)) continue;
-    const t = safeRead(join(root, f.rel)); if (t === null) continue;
+    const t = safeRead(join(root, f.rel));
+    if (t === null) fail("governed entrypoint cannot be read: " + f.rel, "check-incomplete");
     const body = t.startsWith("---") ? (() => { const e = t.indexOf("\n---", 3); return e > 0 ? t.slice(e + 4) : t; })() : t;
     const hs = new Set(); for (const hm of body.matchAll(/^#{1,6}\s+(.+?)\s*$/gm)) hs.add(hm[1].trim()); headingsOf.set(f.rel, hs);
     const bs = new Set(); for (const bm of body.matchAll(/\^([A-Za-z0-9-]+)\s*$/gm)) bs.add(bm[1]); blocksOf.set(f.rel, bs);
@@ -370,27 +392,22 @@ try {
   const stem = p => basename(p).replace(/\.md$/, "");
   // Resolution targets = canonical inventory + governed boundary targets.
   const byStem = new Map(); for (const f of mdTargets) { const s = stem(f.rel); if (!byStem.has(s)) byStem.set(s, []); byStem.get(s).push(f.rel); }
-  const mdSet = new Set(mdTargets.map(f => f.rel));
-  const resolveTarget = t => {
-    if (mdSet.has(t + ".md")) return t + ".md";
-    if (mdSet.has(t)) return t;
-    const suf = mdTargets.filter(f => { const fx = f.rel.replace(/\.md$/, ""); return t.endsWith("/" + fx); }).map(f => f.rel);
-    if (suf.length === 1) return suf[0];
-    if (suf.length > 1) { const mx = Math.max(...suf.map(x => x.length)); const best = suf.filter(x => x.length === mx); return best.length === 1 ? best[0] : "__AMBIG__"; }
-    if (!t.includes("/")) { const c = byStem.get(t) || []; return c.length === 1 ? c[0] : c.length > 1 ? "__AMBIG__" : null; }
+  const markdownPaths = mdTargets.map(f => f.rel), allPaths = targetFiles.map(f => f.rel);
+  const markdownIndex = new Set(markdownPaths), allIndex = new Set(allPaths);
+  const formsByPath = new Map(allPaths.map(p => [p, p.endsWith(".md") ? [p, p.slice(0, -3)] : [p]]));
+  function selectAddress(t, candidates, index) {
+    const forms = p => formsByPath.get(p);
+    for(const exact of [t,t+".md"])if(index.has(exact))return exact;
+    const long=candidates.filter(p=>forms(p).some(k=>t.endsWith("/"+k)));
+    if(long.length){long.sort((a,b)=>b.length-a.length);const best=long.filter(p=>p.length===long[0].length);return best.length===1?best[0]:"__AMBIG__";}
+    const short=candidates.filter(p=>forms(p).some(k=>k.endsWith("/"+t)));
+    if(short.length)return short.length===1?short[0]:"__AMBIG__";
+    if(!t.includes("/")){const bare=candidates.filter(p=>forms(p).some(k=>basename(k)===t));return bare.length===1?bare[0]:bare.length?"__AMBIG__":null;}
     return null;
-  };
-  // full-inventory resolution for extension-bearing non-markdown targets
-  const allSet = new Set(targetFiles.map(f => f.rel));
-  const byBase = new Map(); for (const f of targetFiles) { const b = basename(f.rel); if (!byBase.has(b)) byBase.set(b, []); byBase.get(b).push(f.rel); }
-  const resolveNonMd = t => {
-    if (allSet.has(t)) return t;
-    const suf = targetFiles.filter(f => t.endsWith("/" + f.rel) || f.rel.endsWith("/" + t)).map(f => f.rel);
-    if (suf.length === 1) return suf[0];
-    if (suf.length > 1) return "__AMBIG__";
-    if (!t.includes("/")) { const c = byBase.get(t) || []; return c.length === 1 ? c[0] : c.length > 1 ? "__AMBIG__" : null; }
-    return null;
-  };
+  }
+  const resolveTarget = t => selectAddress(t, markdownPaths, markdownIndex);
+  const resolveAddress = (t, nonMdAllowed) => nonMdAllowed
+    ? selectAddress(t, allPaths, allIndex) : resolveTarget(t);
 
   // ---------- 4b. occurrence-level resolution engine (all-interpretations convergence) ----------
   // Every occurrence lands in exactly ONE terminal class; graph edges are derived only
@@ -422,7 +439,7 @@ try {
   for (const [src, outs] of rawLinks) {
     for (const o of outs) {
       linkOccurrences++;
-      if (occResidual || (linkOccurrences % 500 === 0 && overTime())) { occResidual = true;
+      if (occResidual || overTime()) { occResidual = true;
         classify(src, "residual-at-cap", o, { note: "occurrence not resolved — time cap reached during resolution", cap_ms: MAX_MS }); continue; }
       const t = o.target;
       if (t.startsWith("__ESCAPES__/")) { escaping++; classify(src, "missing-file", o, { note: "relative link escapes the scope root" }); continue; }
@@ -432,10 +449,10 @@ try {
       // interpretations: plain + every dialect rule whose subtree contains the source
       const interpretations = [{ rule: "plain", candidate: null }];
       const hasNonMdExt = /\.[A-Za-z0-9]+$/.test(t) && !t.endsWith(".md");
-      interpretations[0].candidate = hasNonMdExt ? resolveNonMd(t) : resolveTarget(t);
+      interpretations[0].candidate = resolveAddress(t, hasNonMdExt);
       for (const r of dialectRules) if (src === r.subtree || src.startsWith(r.subtree + "/")) {
         const prefixed = r.base + "/" + t;
-        interpretations.push({ rule: r.id, candidate: hasNonMdExt ? resolveNonMd(prefixed) : resolveTarget(prefixed) });
+        interpretations.push({ rule: r.id, candidate: resolveAddress(prefixed, hasNonMdExt) });
         break; // longest-exact-subtree wins: only the first (longest) applicable rule joins the plain interpretation
       }
       const anyAmbig = interpretations.some(i => i.candidate === "__AMBIG__");
@@ -603,7 +620,7 @@ try {
   });
 
   // ---------- terminal status + envelope ----------
-  const scanStatus = partial ? "PARTIAL" : ((skipped.length || exclusionTrouble || contractInvalid) ? "BOUNDED" : "COMPLETE");
+  const scanStatus = (partial || occResidual) ? "PARTIAL" : ((skipped.length || exclusionTrouble || contractInvalid) ? "BOUNDED" : "COMPLETE");
   const exitCode = scanStatus === "COMPLETE" ? 0 : 1;
   const env = {
     schema_version: 2, kernel_version: KV, kernel_source: KERNEL_SOURCE, tool: "map-scan", target: root,
@@ -622,6 +639,8 @@ try {
       contract_fingerprint: contractFingerprint,
       link_dialects: dialectRules, dialect_errors: dialectErrors, accepted_links_declared: acceptedLinks.length },
     resolution: {
+      status: partial || occResidual || skipped.length || exclusionTrouble ? "incomplete" : "complete",
+      usable_for_healing: !(partial || occResidual || skipped.length || exclusionTrouble),
       note: "Eleven terminal occurrence classes from link-resolution.md — Terminal classes and closure; every observed occurrence lands in exactly one; creation_queue and inventory_boundaries are separate ledgers; graph edges derive only after occurrence closure; dialect rules follow link-resolution.md — Scope-contract grammar",
       pinned_to: { resolution_inventory_fingerprint: resolutionInventoryFingerprint, contract_fingerprint: contractFingerprint,
         governed_boundary_target_fingerprint: governedBoundaryTargetFingerprint, membership_fingerprint: membershipFingerprint },
@@ -637,7 +656,7 @@ try {
           governed_boundary_targets: governedBoundaryTargets,
           skipped_boundaries: skipped, system_excluded_trees: systemExcluded.length, cap_residual_lower_bound: omittedLowerBound } },
       not_checked: ["Unicode/Obsidian heading slug normalization (exact heading text only in this version)",
-        "embed (![[...]]) semantics beyond plain link resolution", "alias semantics beyond declared exact aliases",
+        "embed (![[...]]) semantics beyond plain link resolution", "all alias resolution (consumer/manual verification only)",
         "external content drift (deferred content-integrity track)"] },
     ownership: { owned, unowned: md.length - owned, frontmatter_errors: fmErrors,
       legacy_parent_keys: md.filter(f => meta.get(f.rel)?.legacyParent).map(f => f.rel),

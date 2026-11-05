@@ -15,7 +15,7 @@ Skills carrying the COP opt-in block. *Provisional — the venue set and the bor
 | `insight-adversarial` | Venue | Venue-only — pass-count optionality is already caller-surfaced by its own Step 5. |
 | `double-check` | Venue | **Single-doc** — COP opt-in is the SKILL.md prose block only (no `protocol.yon` `@SEC`). Confirmed Participant: its protocol mandates re-reading from sources, the textbook delegate profile. |
 | `cold-review` | Mode | Mode = the Step 3 reviewer-count tiers (1/2/3); venue forced `inline` (self-orchestrating). |
-| `plan-deep-dive` | Venue | Front-matter `venue:[inline,delegated]`. *Reclassified from Never-delegate 2026-06-14, deliberately: front-matter is canonical.* `inline` keeps the per-phase interactive forced-stop gates; `delegated` walks a long plan in a sub-agent and returns the consolidated verdict log. |
+| `plan-deep-dive` | Venue | Front-matter `venue:[inline,delegated]`. *Reclassified from Never-delegate 2026-06-14, deliberately: front-matter is canonical.* `inline` keeps the per-phase interactive forced-stop gates; `delegated` returns read-only analysis of one phase to the lead, which retains user acknowledgement, exact amendment approval and the next-phase gate. |
 | `prime-sweep` | Mode | Mode = wave scope (single-source / multi-source / discovery / mixed); venue forced `inline` (it is itself the delegator). |
 | `prime-fetch` | Venue | Declares **delegation intent** for the `/prime-*` family — `venue:[inline]` today (the prime skill runs inline as the delegator). Deliberate, not vestigial. |
 | `prime-expand` | Venue | Same delegation-intent declaration as `prime-fetch`. |

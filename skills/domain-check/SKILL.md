@@ -1,7 +1,7 @@
 ---
 name: domain-check
 description: >
-  Reconcile domain-name availability across sources that disagree. Registrar availability endpoints report registered, broker-parked domains as available; this skill fixes the precedence — RDAP (Registration Data Access Protocol) is authoritative, DNS (Domain Name System) corroborates, broker nameservers override any "available", and the registrar is consulted for price only. Works on one domain or a bulk candidate sweep. Trigger via /domain-check, "is this domain available", "check these domain names", "did the availability tool lie". Not /investigate (read-only fact-gathering over a codebase) or /double-check (re-verifies one already-stated claim) — domain-check owns the availability verdict itself.
+  Reconcile domain-name availability across sources that disagree. Registrar availability endpoints report registered, broker-parked domains as available; this skill fixes the precedence — RDAP (Registration Data Access Protocol) is authoritative, DNS (Domain Name System) corroborates, broker/operator evidence stays separate from verified sale status, and the registrar is consulted for price only. Works on one domain or a bulk candidate sweep. Trigger via /domain-check, "is this domain available", "check these domain names", "did the availability tool lie". Not /investigate (read-only fact-gathering over a codebase) or /double-check (re-verifies one already-stated claim) — domain-check owns the availability verdict itself.
 visibility: public
 self-improvable: true
 triggers:
@@ -62,7 +62,7 @@ this skill does not assert it as the cause.
 
 ## The precedence order
 
-Strongest source first. When two sources conflict, the higher one wins.
+Apply authority to each fact separately: RDAP owns registry status, DNS corroborates delegation, and a verified candidate-specific listing supplies sale evidence. Preserve disagreements; an operator nameserver is not proof of a sale or purchase opportunity.
 
 **1. RDAP — authoritative.** Resolve the registry endpoint through the IANA
 (Internet Assigned Numbers Authority) bootstrap file at
@@ -87,25 +87,19 @@ availability — the same error class this skill exists to prevent, arriving fro
 the DNS side instead of the registrar side. Query an authoritative server
 before believing a negative, and let RDAP settle it either way.
 
-**3. Broker override.** If the nameservers match a known aftermarket operator,
-the verdict is **registered and brokered**, and it overrides any registrar
-claim of availability. Match on these operators:
+**3. Operator and sale evidence.** A nameserver match identifies a configured operator or parking service only. It neither overrides registry evidence nor proves the candidate is listed for sale. Use these exact domain keys:
 
 ```
-afternic   sedo        dan.com     domainmarket
-bodis      namefind    sedoparking
+afternic.com   sedo.com       dan.com       domainmarket.com
+bodis.com      namefind.com   sedoparking.com
 ```
 
-**Match the nameserver's registrable domain, not a raw substring.** Reduce each
-nameserver hostname to its registrable domain first (`ns1.sedo.com` →
-`sedo.com`) and compare against that. A naive substring test produces real
+**Match exact configured domain boundaries, not a raw substring.** Lowercase an ASCII DNS hostname and remove its final dot. It matches a configured key only when equal to that key or ending in `.` plus that key (`ns1.sedo.com` → `sedo.com`). Reject malformed or unresolved hostname identities as unknown; do not guess a registrable domain from the last two labels of an arbitrary hostname. A naive substring test produces real
 false positives: `sedo` matches `ns1.sedona.com`, and `dan.com` matches
 `ns1.sheridan.com`. Both are ordinary registered domains, and flagging one as
 brokered is the same false verdict running in the opposite direction.
 
-Also treat a `domain-is-4-sale`-style hostname as a broker marker. These
-domains are buyable, but through a broker at an aftermarket price — not at
-registration cost.
+Separately recognize a complete DNS label exactly equal to `domain-is-4-sale` as an unverified sale marker, never a substring or proof. Parking, an operator match or this marker alone leaves sale and purchasability unknown. Use **registered-and-brokered** only with registration evidence plus a separately verified, candidate-specific broker sale listing. A listing still does not guarantee a completed purchase or a current final price.
 
 **4. Registrar API — price context only.** Consult a registrar for pricing,
 premium tiers, and aftermarket asking prices. **Never take its binary
@@ -169,16 +163,14 @@ broker list. Optionally consult a registrar for price. Reconcile by
 precedence, then report.
 
 **Bulk sweep.** Same sequence per candidate, run serially with backoff. DNS
-first is legitimate here as a cheap pre-filter — a candidate with live broker
-nameservers is settled without an RDAP call. Every candidate that survives DNS
-still needs RDAP before it is called available.
+first is legitimate as a cheap ordering step, but never settles a candidate by itself. Every candidate follows the authoritative RDAP or declared WHOIS fallback path before its final registration verdict. Preserve DNS/RDAP conflicts; do not turn a parking match into a bulk shortcut.
 
 ## Reporting
 
 Every verdict carries three parts. Do not drop the third.
 
 1. **The verdict.** Available, registered, registered-and-brokered, or
-   unknown. Fail to unknown when sources conflict and nothing breaks the tie.
+   unknown. Report registration evidence separately from parking/operator, verified sale listing and purchasability. Fail current availability to unknown when contradictory live evidence cannot be reconciled; preserve the RDAP observation rather than discarding it.
 2. **The sources that agreed.** Name them. "RDAP 404 and no nameservers on two
    resolvers" is a verdict a reader can audit; "available" is not.
 3. **The residual uncertainty.** Price and premium status are unknown unless a
@@ -188,9 +180,10 @@ Every verdict carries three parts. Do not drop the third.
 A worked example of the reporting shape:
 
 ```
-vinculum.com   REGISTERED-AND-BROKERED
-  RDAP 200 (rdap.verisign.com) + NS on afternic.com
-  Aftermarket price unknown; no registrar consulted.
+example.com   REGISTERED (illustrative reporting shape, not a live lookup)
+  Registry-direct RDAP 200 + nameserver operator match.
+  Parking/operator evidence is separate; sale listing and purchasability unknown.
+  Price unknown; no registrar consulted.
 ```
 
 ## Boundary

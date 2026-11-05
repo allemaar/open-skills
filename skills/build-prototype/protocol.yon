@@ -1,0 +1,12 @@
+@DOC ver=2.0 | id=build-prototype | title="Build a prototype" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@INTENT goal="Answer a design question with a bounded runnable artifact and honest observations"
+@STEP rid=step:frame | n:int=1 | op=std:ai.prompt@v1 | args=[task="Establish question, independent expectations, scenarios, exact workspace, effects and effort bound"] | out=[ref:contract]
+@CHECK rid=check:bounds | assert="workspace, effects and effort are resolved and required runtime is available" | fail=ABORT | msg="Stop dependent execution and name the missing prerequisite."
+@STEP rid=step:route | n:int=2 | op=std:ai.prompt@v1 | args=[task="Load question-selected state-and-logic or UI route; both only when needed; missing route stops dependent work"] | in=[ref:contract] | out=[ref:route]
+@CHECK rid=check:route-loaded | assert="every selected required route was read completely before construction" | fail=ABORT | msg="Report the missing route and stop dependent work."
+@STEP rid=step:exercise | n:int=3 | op=std:ai.prompt@v1 | args=[task="Build and exercise the minimum artifact within scope; compare independent expectations; distinguish failed and unrun checks"] | in=[ref:contract,ref:route] | out=[ref:evidence]
+@RULE rid=rule:effects | lvl=MUST_NOT | when="building or exercising" | then="infer production mutation, external endpoints, package installation, deployment, commit, promotion or destructive cleanup from prototype authorization"
+@RULE rid=rule:isolation | lvl=MUST | when="writing or running" | then="verify the target leaf and ancestors without following links, refuse redirects, use localhost for listeners, keep previews bounded and cancellable, and stub real write endpoints within scope; ownership grants no destructive cleanup authority"
+@RULE rid=rule:controls | lvl=MUST | when="existing application integration is specifically scoped" | then="preserve authentication, authorization and controls; hidden routes and query parameters are not access control"
+@RULE rid=rule:simulation | lvl=MUST_NOT | when="reporting modeled behavior" | then="claim simulation establishes production behavior"
+@STEP rid=step:return | n:int=4 | op=std:ai.prompt@v1 | args=[task="Return artifact, launch instructions, question, observations, limitations, inventory and recommendation; inconclusive is valid; stop at the bound; on missing prerequisites return the gap and any useful unexecuted artifact without inventing observations"] | in=[ref:evidence] | out=[ref:result]

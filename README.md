@@ -8,13 +8,13 @@
 
 <p align="center">
   <strong>open-skills</strong><br />
-  A personal, field-used pack of reusable skills for AI coding agents.<br />
-  Every skill is readable Markdown; 53 of 84 also carry a declarative <strong>YON (YounndAI Object Notation™)</strong> protocol you can validate.<br />
+  The skills I use with AI agents for planning, coding, review and writing.<br />
+  All 90 are readable Markdown; 54 also carry a declarative <strong>YON (YounndAI Object Notation™)</strong> protocol.<br />
   <em>Read before you trust.</em>
 </p>
 
 <p align="center">
-  <a href="#start-with-the-work">Start</a> · <a href="SKILLS.md">Catalog</a> · <a href="docs/README.md">Guides</a> · <a href="#install">Install</a> · <a href="#agent-mailbox">Agent Mailbox</a> · <a href="#updating">Update</a> · <a href="CHANGELOG.md">Changelog</a> · <a href="https://github.com/allemaar/open-skills/discussions">Discussions</a> · <a href="LICENSE">Apache 2.0</a>
+  <a href="#start-with-the-work">Start</a> · <a href="#how-i-use-them">How I use them</a> · <a href="#install">Install</a> · <a href="docs/README.md">Guides</a> · <a href="SKILLS.md">Catalog</a> · <a href="#updating">Update</a> · <a href="CHANGELOG.md">Changelog</a> · <a href="https://github.com/allemaar/open-skills/discussions">Discussions</a> · <a href="LICENSE">Apache 2.0</a>
 </p>
 
 <p align="center">
@@ -23,98 +23,168 @@
   <a href="https://github.com/YounndAI/yon"><img alt="Uses YON" src="https://img.shields.io/badge/uses-YON-7c3aed.svg" /></a>
 </p>
 
+
 ---
 
-## Why this exists
+<a id="why-this-exists"></a>
 
-A skill is instructions handed to an agent that may be able to touch your files. My rule is simple: you should be able to **read a skill before you trust it**.
+## Why I keep this collection
 
-These skills came from repeated work with Claude Code, Codex, and other runtimes that read the open Agent Skills format: planning, investigation, review, writing, orchestration, priming, architecture, and knowledge work. Some have been in daily use and evolution since well over a year ago; others were added when the work demanded them. That is my account, not a benchmark. What is published here is the working set, not a demo.
+I use Claude Code, Codex and other agents for work that takes more than one good prompt: understanding a codebase, deciding what to build, checking what changed, writing something another person can use. These skills are the instructions I keep for that work.
 
-**Composable, not a framework.** Install one or install fifty. Each skill is its own decision, and your agent keeps room to think between them. Take what earns its place.
+Some have been in daily use and evolution for well over a year; others are recent additions. That is my account of using them, not a benchmark. I publish the working set so you can read it, try the parts that fit your work, and change them for your own needs.
+
+You do not need the whole collection. Start with one task and one skill. Read its instructions and prerequisites before giving it access to your files. A skill is still instructions to an agent; your runtime, permissions and judgment determine what it can actually do.
 
 ## Start with the work
 
-| I need to… | Start with | What it gives you |
+| What you want to do | Where I would start | What to expect |
 |---|---|---|
-| turn an objective into an executable plan | [`plan-create`](skills/plan-create/) | a phased plan with explicit gates and verification |
-| establish facts before deciding | [`investigate`](skills/investigate/) | read-only evidence gathering with provenance and gaps |
-| challenge work with fresh eyes | [`cold-review`](skills/cold-review/) | bounded outside review against actual artifacts |
-| make any agent output scannable and decision-ready | [`synthesize`](skills/synthesize/) | an output compiler: bottom line first, protected facts preserved, one visual grammar |
-| create, audit or consolidate Agent Skills | [`skill-smith`](skills/skill-smith/) | task-selected procedures; assessment read-only, edits scoped and authorized |
-| audit or housekeep agent directives | [`directives-audit`](skills/directives-audit/) | a lean-core, routed-detail audit with the same explicit edit gate |
-| make a report easier to decide from | [`human-output`](skills/human-output/) | a writing contract built around verdict, consequence, evidence, and omissions |
-| coordinate agents through a shared folder | [`agent-mailbox`](skills/agent-mailbox/) | traceable, append-only agent communication with Handler-readable state |
+| Turn a rough idea into a useful brief | [ask-me](docs/skills/ask-me.md) | Questions about the choices that matter, with settled decisions kept separate from gaps |
+| Find out what the code actually does | [investigate](docs/skills/investigate.md) | A read-only account of files, usages, dependencies and constraints |
+| Try uncertain behavior in something runnable | [build-prototype](docs/skills/build-prototype.md) | A small experiment, observed results and remaining limits |
+| Reproduce and diagnose a software failure | [debug-task](docs/skills/debug-task.md) | Evidence from bounded probes; a repair only within the authorized scope |
+| Turn a discussion into agreed behavior | [write-spec](docs/skills/write-spec.md) | A specification with acceptance, exclusions and open decisions |
+| Plan an implementation | [plan-create](docs/skills/plan-create.md) | Concrete phases, dependencies and verification gates |
+| Review the actual work | [cold-review](docs/skills/cold-review.md) | Fresh review where supported, findings tied to evidence and stated coverage |
+| Make a long answer easier to use | [synthesize](docs/skills/synthesize.md) | A response shaped around the reader's task, preserving facts and caveats |
+| Agree on the meaning of domain terms | [define-terms](docs/skills/define-terms.md) | Definitions within their actual context, with proposed changes kept visible |
+| Learn something through explanation and practice | [teach-topic](docs/skills/teach-topic.md) | A useful next step, an exercise and feedback without a claim of mastery |
+| Create or improve a reusable skill | [skill-smith](docs/skills/skill-smith.md) | A scoped authoring route or a read-only assessment |
+| Coordinate agents through a shared folder | [agent-mailbox](docs/skills/agent-mailbox.md) | Messages, durable dispositions and explicit continuity limits |
 
-Throughout these docs, a skill's written command is its **folder name**
-(`/insight-explore`, `/plan-phases`) — the portable form across runtimes. Shorter
-phrases declared in frontmatter `triggers:` (/explore, /phase-plan) are
-recognition aliases that some runtimes also honor.
+This table describes the **3.0.0** source. Check the [published releases](https://github.com/allemaar/open-skills/releases) for a frozen version and read the [upgrade notes](#current-source-and-releases) before updating.
 
-The generated [`SKILLS.md`](SKILLS.md) catalog groups the current skills into families. It is built from live `SKILL.md` metadata plus the pack's [`taxonomy.yon`](skills/skills-help/taxonomy.yon), so the human catalog and machine catalogs share one source rather than parallel hand-maintained menus.
+The [full catalog](SKILLS.md) groups all skills by family. The [guides](docs/README.md) explain when each skill is useful, when to avoid it, what to ask and what it returns. Inside an agent, /skills-help reads its bundled taxonomy and the skills installed beside it. It leaves unknown third-party skills visible under Unclassified.
 
-The [`write-copy`](skills/write-copy/) family starts with [`write-copy-event-video`](skills/write-copy-event-video/): event campaign copy, a separate voiceover handoff, and reusable occurrence details. It drafts text without generating media or publishing.
+Commands in these docs use the skill's folder name, such as /insight-explore or /plan-phases. Shorter phrases in its frontmatter, such as /explore, are recognition aliases that some runtimes honor. Copying a folder and having a runtime discover it are separate things.
 
-Inside an agent, `/skills-help` reads that same bundled taxonomy and the skills actually installed beside it. Unknown third-party skills remain visible under `Unclassified`; they are not guessed into one of this pack's families.
+<a id="two-headliner-families"></a>
 
-## New in 2.0.0
+<a id="orientation"></a>
 
-This release brings the pack to **84 skills**, with **53 declarative protocols**. The [skill guides](docs/README.md) explain each skill's purpose, when not to use it, an example request, its flow and its use of subagents.
+## How I use them
 
-### Build a skill or a library
+<a id="build-a-skill-or-a-library"></a>
 
-[Skill Smith](docs/skills/skill-smith.md) is the authoring and maintenance entrypoint: create, assess, consolidate, diagnose or update a skill. It loads the selected procedure and relevant checks, with optional recipes for different skill types. Assessment stays read-only by default; edits preserve the selected scope and safeguards.
+### Create a skill or give a library its own home
 
-[Skill Library Creator](docs/skills/skill-library-creator.md) creates a portable library with its own family manager, guided setup, templates and installation tools. The generated manager can help, list, create and import skills without requiring the creator at runtime. It previews the chosen locations, preserves customizations during upgrades and distinguishes verified links from actual runtime discovery.
+If you want to create a skill, or check whether an existing one still holds up, [Skill Smith](docs/skills/skill-smith.md) is where I would start. It routes creation, assessment, consolidation, diagnosis and updates to the relevant procedure and checks. Assessment stays read-only by default; changes keep their selected scope and safeguards.
 
-**Migration:** skill-smith replaces the retired skills-audit and new-skill-creator entrypoints. Install the complete skill-smith folder, update explicit references, and retain any local customizations before removing old copies. Library setup remains with skill-library-creator; publication stays a separate operation.
+When related skills need their own library, [Skill Library Creator](docs/skills/skill-library-creator.md) provides a family manager, guided setup, templates and installation tools. The generated manager works without the creator at runtime. It previews selected locations and preserves customizations during reviewed upgrades; a verified link still does not prove runtime discovery.
 
-### Choose an insight method for the question
+<a id="choose-an-insight-method-for-the-question"></a>
 
-The insight family spans exploration, evaluation and learning. Five additions separate future failure, observed causes, outside-view estimates, test design and the value of more research:
+### Work out the question before choosing a method
 
-| Question | Start with | Result |
-|---|---|---|
-| How could this plan fail? | [insight-premortem](docs/skills/insight-premortem.md) | plausible failure paths, prevention and warning signals |
-| Why did this happen? | [insight-root-cause](docs/skills/insight-root-cause.md) | supported causes separated from hypotheses and missing evidence |
-| What happened in comparable cases? | [insight-reference-class](docs/skills/insight-reference-class.md) | a traceable outside-view estimate, or an honest evidence gap |
-| What would test this assumption? | [insight-test-assumption](docs/skills/insight-test-assumption.md) | a bounded test design with decision rules, without running it |
-| Is more research worth the delay and cost? | [insight-value-of-information](docs/skills/insight-value-of-information.md) | gather, decide now or unresolved, with a stopping rule |
+I keep several insight skills because the questions differ. Exploring alternatives, checking a decision and investigating a failure need different work.
 
-[insight-explore](docs/skills/insight-explore.md) generates options; [insight-angles](docs/skills/insight-angles.md) finds missing frames; [insight-critique](docs/skills/insight-critique.md) reviews an artifact; [insight-adversarial](docs/skills/insight-adversarial.md) challenges it through distinct personas; [insight-assess](docs/skills/insight-assess.md) evaluates a decision. [insight-cross-examine](docs/skills/insight-cross-examine.md) selects the useful depth and methods, reuses valid findings and distinguishes missing evidence from missing options. It can select one specialist for a decision-changing uncertainty without chaining the whole family. [insight-retro](docs/skills/insight-retro.md) looks back after implementation; [insight-skill-gap](docs/skills/insight-skill-gap.md) proposes improvements from recurring work.
-
-### Run bounded work and write for the reader
-
-The seven [headless guides](docs/README.md) cover Claude Code, Codex, Antigravity (agy) and Grok CLI tasks, model selection, model refresh and usage checks. They expose provider-specific limits, authentication and evidence boundaries. [write-copy](docs/skills/write-copy.md) routes promotional writing, with [write-copy-event-video](docs/skills/write-copy-event-video.md) covering event campaign copy and voiceover handoff.
-
-The human-draw, human-merge and human-rewrite guides retain their existing procedures while worked examples load only when relevant. Repairs across planning, handoff, mapping, orientation and coordination make conflicting instructions and failure reporting more precise. Structural checks and targeted behavior evidence have distinct limits; neither proves every future run.
-
-See [CHANGELOG.md](CHANGELOG.md) for release details and [Maintainer closeout](CONTRIBUTING.md#maintainer-closeout) for the update and release process.
-
-## New in 1.7.0
-
-Four output skills now form a coherent path from diagnosis to delivery: [`agent-output`](skills/agent-output/) keeps worker reports dense and operational; [`prose-audit`](skills/prose-audit/) finds semantic repetition and stock AI filler without rewriting; [`synthesize`](skills/synthesize/) turns source material into a faithful, purpose-matched decision surface; and [`synthesize-init`](skills/synthesize-init/) can opt a directive file into that report layer through an explicit, reversible install. Two supporting skills strengthen the evidence path: [`freshness-contract`](skills/freshness-contract/) decides when cached evidence must be refreshed, while [`route-task`](skills/route-task/) records an experimental capability-based routing decision before delegation.
-
-**Why output drifts.** Style contagion is ambient formatting pulling an agent away from its declared grammar. Context or content contagion is nearby exemplars, values, names, and wrong premises leaking into later output. `/synthesize` keeps its core small, then loads the grammar and one need-specific reference only for substantive output. It inventories protected facts, preserves source confidence, and stops when another sentence changes neither understanding nor action.
-
-## What is inspectable, and what is not enforced
-
-Each skill folder carries its core instructions and required runtime companions.
-Optional sibling skills and repository-only release checks are declared separately
-and do not block the core skill when absent. Procedural skills also carry
-`protocol.yon`, a declarative companion that names steps, rules (`MUST` /
-`MUST_NOT`), and gates (`ABORT` / `WARN`) as typed records.
-
-That distinction matters:
-
-| Surface | What it proves |
+| The question | Skill |
 |---|---|
-| `SKILL.md` | the operational instructions the agent is being asked to follow |
-| `protocol.yon` | an inspectable, diffable declaration of the intended protocol |
-| parser validation | that the declaration is structurally valid for its profile |
-| CI checks | only the specific syntax, reference, dataflow, catalog, count, and privacy properties they inspect |
+| What approaches could we take? | [insight-explore](docs/skills/insight-explore.md) |
+| What frame or connection are we missing? | [insight-angles](docs/skills/insight-angles.md) |
+| What is weak in this concrete output? | [insight-critique](docs/skills/insight-critique.md) |
+| How could this plan fail? | [insight-premortem](docs/skills/insight-premortem.md) |
+| Why did this problem happen? | [insight-root-cause](docs/skills/insight-root-cause.md) |
+| What happened in comparable completed cases? | [insight-reference-class](docs/skills/insight-reference-class.md) |
+| What would test this assumption? | [insight-test-assumption](docs/skills/insight-test-assumption.md) |
+| Is more research worth the time and cost? | [insight-value-of-information](docs/skills/insight-value-of-information.md) |
 
-There is no interpreter standing over the model and forcing runtime obedience. A valid protocol may still describe something harmful. Validation narrows what you must inspect; it does not replace inspection, sandbox the agent, or make the behavior safe.
+For a decision that needs several methods, [insight-cross-examine](docs/skills/insight-cross-examine.md) selects the useful depth, reuses applicable findings and returns a recommendation with its weak assumption. Missing evidence can justify deferring a choice. More options do not fill an evidence gap.
+
+<a id="worked-example-cold-review"></a>
+
+### Keep planning, execution and checking distinct
+
+A request might start like this:
+
+~~~text
+/investigate Trace how this upload reaches storage. Read only; show the call path and gaps.
+/plan-create Plan the agreed change, with concrete steps and checks for the failure cases.
+~~~
+
+These are separate requests, not a chain that runs itself. Once a concrete plan is approved, [plan-execute](docs/skills/plan-execute.md) follows that plan and stops on unspecified judgments or drift. A ticket or specification alone is not approval of an executable plan.
+
+I keep [verify](docs/skills/verify.md) for the formal check against intent and execution, with the plan when available. Without a plan it can still check evidence, but cannot return a clean synchronization verdict. [cold-review](docs/skills/cold-review.md) brings an outside view to the actual artifacts. [double-check](docs/skills/double-check.md) is the smaller request when one claim needs another look.
+
+For example:
+
+~~~text
+/cold-review Review this auth refactor against the agreed behavior and repository standards. Identify the candidate you inspected and what you could not check.
+~~~
+
+Review findings still need checking against the source. A good report, a valid protocol and a passing test each provide different evidence.
+
+<a id="human-output"></a>
+
+### Give the writing the same care as the work
+
+I want to understand the result without reconstructing the whole conversation. [human-output](docs/skills/human-output.md) puts the decision, practical consequence, evidence and unchecked scope where a reader can find them. [human-rewrite](docs/skills/human-rewrite.md) repairs an existing text while preserving its meaning; [human-merge](docs/skills/human-merge.md) reconciles several reports; [human-draw](docs/skills/human-draw.md) gives relationships a small text figure when that helps.
+
+[synthesize](docs/skills/synthesize.md) chooses a response shape for the reader's need. A simple answer can stay simple. [prose-audit](docs/skills/prose-audit.md) is useful when I want a diagnosis of repetition or avoidable reading load before rewriting.
+
+~~~text
+/synthesize Turn these findings into a decision brief. Keep the source disagreements, uncertainty and conditions that could change the recommendation.
+~~~
+
+The [write-copy](docs/skills/write-copy.md) family handles promotional writing. Its current event-video specialization drafts copy and a separate voiceover handoff; it does not generate media or publish.
+
+<a id="agent-mailbox"></a>
+
+<a id="run-bounded-work-and-write-for-the-reader"></a>
+
+### Keep a record when several agents are involved
+
+I use [agent-mailbox](skills/agent-mailbox/) in FULL mode when I want a traceable orchestration record between agents. Claude Code and Codex agents can exchange append-only Markdown messages through folders I control, including local folders, OneDrive, free **Lyt (Link Your Think™)** vaults and network shares.
+
+~~~text
+shared folder -> request -> durable disposition -> deliverable
+~~~
+
+I keep exclusive claims provisional until the declared writer or Handler grants the exact scope and lease. FULL keeps its session, handshake, claim and rollup mechanics; frozen membership or recipient snapshots, quorum decisions and built-in authentication are not available in this version.
+
+This describes my current use. It does not promise that every host can wake a stopped task or that every synchronization provider has the same latency. Work-or-Listen is local to each participant. Publishing a message, seeing it locally, detecting it, waking a task and recording its disposition are separate observations.
+
+Start with the [skill](skills/agent-mailbox/SKILL.md). Its [resource spine](skills/agent-mailbox/resources/INDEX.md) routes collaboration recipes; [connection guides](skills/agent-mailbox/references/CONNECTION-GUIDES.md) cover adapters; [validation record](skills/agent-mailbox/references/VALIDATION.md) distinguishes observed, design-validated and pending evidence. No watcher, daemon, SDK or runtime dependency is shipped.
+
+The [headless guides](docs/README.md#orchestration--dispatch) cover bounded Claude Code, Codex, Antigravity and Grok CLI work, model selection and usage checks. Provider authentication, limits, permissions and supervision still apply.
+
+### Find my way back into a project or folder
+
+The orientation skills answer a few recurring questions from current artifacts: [status](docs/skills/orient-status.md), [what changed](docs/skills/orient-map.md), [what is stuck](docs/skills/orient-gaps.md), and [what comes next](docs/skills/orient-roadmap.md). Their estimates and gaps should remain visible. When topology is unknown, I keep the evidenced changes and nodes visible without assuming a trunk or branch.
+
+<a id="map-your-knowledge"></a>
+
+For organizing Markdown, [Map Your Knowledge](MapYourKnowledge.md) starts from the scope's existing conventions. [map-this](docs/skills/map-this.md) returns a zero-write assessment and proposals before selected changes. [map-check](docs/skills/map-check.md) reports only the checks it actually covers, refuses malformed contracts or unreadable required evidence, and [map-maintain](docs/skills/map-maintain.md) runs one selected repair-and-recheck cycle. [map-init](docs/skills/map-init.md) can install a route in selected existing directive files after exact-diff approval.
+
+## Try a workflow
+
+Some useful tasks need a recipe rather than another installed skill. The [workflow index](docs/workflows/README.md) gives prerequisites, a request to try, expected output and limits.
+
+- [Prepare an expert questionnaire](docs/workflows/prepare-an-expert-questionnaire.md) when someone else holds the information you need.
+- [Describe a recurring workflow](docs/workflows/describe-a-workflow.md) before deciding whether to automate it.
+- [Co-write a document](docs/workflows/co-write-a-document.md) while preserving sources and intervening edits.
+- [Make a test-driven change](docs/workflows/test-driven-change.md) from an independent behavioral expectation.
+- [Enforce module boundaries](docs/workflows/enforce-module-boundaries.md) with allowed and forbidden controls.
+- [Write PR evidence](docs/workflows/write-pr-evidence.md) that matches the selected change and actual checks.
+- [Create a small skill](docs/workflows/create-a-small-skill.md) or [a portable library](docs/workflows/create-a-portable-library.md) when the repeated work warrants it.
+
+The library creator supplies a family manager, templates and deliberate installation scope. It does not configure sharing or cloud sync. Installing or publishing what you create remains a separate action.
+
+<a id="what-is-inspectable-and-what-is-not-enforced"></a>
+
+## What you can inspect
+
+Read the complete skill folder, including the references and helpers its selected route requires. Check required sibling skills before choosing an install set. Optional siblings and repository release tooling have different roles; the skill's source states which are needed.
+
+| Surface | What it tells you |
+|---|---|
+| SKILL.md | The instructions the agent is being asked to follow |
+| protocol.yon, where supplied | An inspectable declaration of steps, rules and gates |
+| Parser validation | Whether the declaration is structurally valid for its profile |
+| CI checks | The specific syntax, references, dataflow, catalogs, counts and privacy properties those checks inspect |
+
+There is no interpreter forcing the model to obey a protocol. A structurally valid protocol can still describe harmful behavior. Validation does not sandbox an agent or replace reading the instructions.
 
 Validate a protocol yourself with the separately published Apache-2.0 reference parser created by Alexandru Mares:
 
@@ -126,6 +196,10 @@ npx -y @younndai/yon-parser@2 validate \
 The `npx` command may download and execute that package. Inspect the package or install it through a route you trust before relying on it. The exact trust boundaries, including what validation cannot establish, are in [`THREAT-MODEL.md`](THREAT-MODEL.md); current structural results are in [`CONFORMANCE.md`](CONFORMANCE.md).
 
 ## Install
+
+The skills are instructions for a compatible agent runtime; a protocol is not an executable runtime or sandbox. Read the selected guide for required tools and companions. The bundled installer needs Node.js.
+Node 20 is the CI baseline.
+ Its default validation also needs npm/npx and may fetch the public parser. A headless workflow additionally needs its named provider CLI, a working login and the bounded supervision described in that skill. No provider account or subagent is required for the whole collection: those requirements belong to the selected route.
 
 The safest first path is a frozen copy: read the source, copy only the skills you want, and diff before updating.
 
@@ -186,69 +260,21 @@ Other distribution tools may also consume the repository, including `gh skill in
 
 **Telemetry:** the skills themselves contain no telemetry. The installer performs no analytics or reporting; its only optional network execution is parser validation through `npx`. Your agent runtime, plugin manager, package manager, Git host, or referenced external tool may have its own telemetry.
 
-## Worked example: cold review
+<a id="unreleased-additions"></a>
 
-1. Read [`skills/cold-review/SKILL.md`](skills/cold-review/SKILL.md).
-2. Inspect [`skills/cold-review/protocol.yon`](skills/cold-review/protocol.yon). It declares an abort when no concrete artifact exists and bounds reviewer fan-out.
-3. Validate the declaration with the command above.
-4. Run the skill in your agent:
+<a id="new-in-200"></a>
 
-```text
-/cold-review the auth refactor on this branch
-```
+<a id="new-in-170"></a>
 
-The useful property is not that YON makes the review happen. It is that you can see the intended gates and limits before you ask an agent to act, then diff those declarations when they change.
+## Current source and releases
 
-## Agent Mailbox
+The **3.0.0** source adds ask-me, build-prototype, debug-task, write-spec, define-terms and teach-topic, plus the workflow recipes linked above. Every skill has a [guide](docs/README.md). I use the smaller capabilities independently; interviews, saved records, prototypes and implementation are separate choices.
 
-I use [`agent-mailbox`](skills/agent-mailbox/) in FULL mode when I want a traceable orchestration record between agents. It lets Claude Code and Codex agents exchange append-only Markdown calls to action through Handler-controlled folders, including local folders, OneDrive, free **Lyt (Link Your Think™)** vaults, and network shares.
+Before upgrading from 2.x, read the [3.0.0 migration notes](CHANGELOG.md). Exclusive mailbox work now waits for an exact causal grant. Orientation consumers must preserve absent topology as unknown. Diff-recap stops on rename/copy input instead of squeezing it into a single-path record. Existing skill names remain; no skill is removed in this release. Check the [release page](https://github.com/allemaar/open-skills/releases) for publication status.
 
-```text
-shared folder -> request -> durable disposition -> deliverable
-```
+The 2.0.0 release introduced the skill guides, the Skill Smith authoring routes and the portable library creator, along with the focused insight methods. Skill Smith replaces the retired skills-audit and new-skill-creator entrypoints. Preserve local customizations and update explicit references before removing old copies. Install the complete Skill Smith folder; library setup remains with the library creator and publication is separate.
 
-That is a description of my current dogfooding, not a promise that every host can wake a stopped task or that every synchronization provider has the same latency. Work-or-Listen is participant-local and non-negotiated. The skill separates publication, local materialization, detection, full reconciliation, task wake, disposition, and re-arm because success in one layer does not prove the next.
-
-The complete operating and security contract remains in the skill. Start with [`SKILL.md`](skills/agent-mailbox/SKILL.md), use the operation-first [`resource spine`](skills/agent-mailbox/resources/INDEX.md) only when you need a collaboration recipe, then use [`CONNECTION-GUIDES.md`](skills/agent-mailbox/references/CONNECTION-GUIDES.md) for transport/runtime adapters and [`VALIDATION.md`](skills/agent-mailbox/references/VALIDATION.md) for measured, observed, design-validated, and still-pending evidence. Experimental patterns remain in the skill as maintainer source material but are excluded from normal routing. No watcher, daemon, SDK, or runtime dependency is shipped.
-
-## Map Your Knowledge
-
-The `map-` family is a system: **[Map Your Knowledge (MYK)](MapYourKnowledge.md)** — a protocol that makes any folder of markdown navigable cold, for people and agents alike. Every file declares its home map, every map lists its members, and new data is born mapped. Its first law is elasticity: existing conventions outrank MYK's defaults, verdicts are always human-confirmed, and a "no" is remembered forever.
-
-- [`map-rules`](skills/map-rules/) — a small router that loads the scope contract plus only the rules matching the organization task
-- [`map-this`](skills/map-this/) — "map this project": zero-write assessment → proposal table → you pick → careful apply
-- [`map-init`](skills/map-init/) — installs one minimal route on selected, supported directive surfaces after exact-diff approval
-- [`map-check`](skills/map-check/) — the honest inspector: read-only health checks via a bundled deterministic script, never an unqualified "all clear"
-- [`map-maintain`](skills/map-maintain/) — the gardener: one bounded check → you pick the repairs → it mends and rechecks
-
-The full story, diagrams included: [`MapYourKnowledge.md`](MapYourKnowledge.md).
-
-## Two headliner families
-
-### Orientation
-
-The `orient-` family answers “where are we?” from current repository evidence rather than cached notes:
-
-- [`orient-status`](skills/orient-status/) — current position and banded estimate
-- [`orient-map`](skills/orient-map/) — the shape and what changed
-- [`orient-gaps`](skills/orient-gaps/) — blockers and missing evidence
-- [`orient-roadmap`](skills/orient-roadmap/) — increment, gates, and runway
-
-### Human output
-
-The `human-` family treats presentation as part of correctness:
-
-- [`human-output`](skills/human-output/) — write a decision-bearing result
-- [`human-rewrite`](skills/human-rewrite/) — repair text without changing substance
-- [`human-draw`](skills/human-draw/) — use a figure only when relationships need one
-- [`human-merge`](skills/human-merge/) — combine several reports into one decision surface
-
-Adjacent to the family, self-sufficient on its own:
-
-- [`synthesize`](skills/synthesize/) — a small output router: simple answers stay plain; substantive output loads the shared grammar plus one need-specific reference, preserving protected facts and reversing caveats without unrelated examples.
-- [`synthesize-init`](skills/synthesize-init/) — installs one minimal standing route in selected existing directive files. It verifies runtime resolution, shows exact diffs, binds approval to current bytes, backs up, replaces atomically, verifies, and supports removal.
-
-The full breadth remains in [`SKILLS.md`](SKILLS.md).
+[Design scope](docs/design-scope.md) explains larger capabilities that are still deferred. This README describes available work and its limits; planned capabilities are not installed ones.
 
 ## Updating
 
@@ -265,13 +291,7 @@ Before updating, read [`CHANGELOG.md`](CHANGELOG.md). Skill folders can be renam
 
 ## For agents and tooling
 
-- [`catalog.yon`](catalog.yon) — YON-primary machine catalog
-- [`catalog.json`](catalog.json) — JSON courtesy view
-- [`llms.txt`](llms.txt) — dense install and discovery manifest
-- [`skills.graph.yon`](skills.graph.yon) — next-skill recommendation graph
-- [`SKILLS.md`](SKILLS.md) — generated human catalog
-
-These are generated by [`tools/spine.mjs`](tools/spine.mjs) from live skill metadata, protocol facts, and the pack taxonomy. They are discovery surfaces, not runtime enforcement.
+The generated [human catalog](SKILLS.md), [YON catalog](catalog.yon), [JSON catalog](catalog.json), [discovery manifest](llms.txt) and [recommendation graph](skills.graph.yon) come from live skill metadata, protocol facts and the pack taxonomy. Their owner is [tools/spine.mjs](tools/spine.mjs). These surfaces help discovery; they do not enforce runtime behavior.
 
 ## YON and its parser
 
@@ -281,11 +301,11 @@ Alexandru Mares created YON and its Apache-2.0 reference parser. They are publis
 
 ## Contributing and support
 
-Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a pull request. Commits require Developer Certificate of Origin sign-off, current skill metadata must remain complete, and public content must contain no personal paths, credentials, mailbox identifiers, or private operational evidence.
+If you try a skill and find an unclear step or a failure case, a concrete example is useful. Keep private material out of it. Read [CONTRIBUTING.md](CONTRIBUTING.md) before a pull request: commits require DCO sign-off, skill metadata must stay complete, and public content must contain no personal paths, credentials, mailbox identifiers or private operational evidence.
 
-- General questions and examples: [GitHub Discussions](https://github.com/allemaar/open-skills/discussions)
+- Questions and examples: [GitHub Discussions](https://github.com/allemaar/open-skills/discussions)
 - Bugs and feature requests: [GitHub Issues](https://github.com/allemaar/open-skills/issues)
-- Vulnerabilities: [`SECURITY.md`](SECURITY.md), never a public issue for a live report
+- Vulnerabilities: [SECURITY.md](SECURITY.md), never a public issue for a live report
 
 ## License and project identity
 
@@ -297,4 +317,4 @@ This is my personal project, separate from the YounndAI product portfolio. **You
 
 ---
 
-Made by [Alexandru Mares](https://allemaar.com). Model-assisted, then reviewed, tested, and dogfooded in the work it describes.
+Made by [Alexandru Mares](https://allemaar.com).

@@ -36,9 +36,11 @@ to somebody else's text — and hands off to `human-draw` at its restack step
 when the material turns out to be relational.
 
 `human-merge` owns the pass across many. Do **not** route a merge to
-`human-rewrite`: that member reads nothing beyond the one text it was handed and
-adds no facts, so combining N sources is outside its contract and would silently
-drop whatever it never saw — it refuses the pile and hands it to `human-merge`.
+`human-rewrite`: that member repairs one named text and may use explicitly
+supplied established context only to explain it, attributed separately from the
+original claim. It gathers no new evidence and adds no unsupported facts or new
+arguments. Combining reports remains outside its contract; it refuses the pile
+and hands it to `human-merge`.
 The merge is itself *written* to `human-output` and adds only the cross-report
 layer: collapsing reports that share an upstream source, naming what is
 superseded, classifying conflicts rather than averaging them, and pooling
@@ -133,9 +135,7 @@ two blocks of its `SKILL.md`:
 - **Next skills** — on completion, run the Next Skills protocol
   (`next-skills/SKILL.md`): surface the front-matter `next-skills`
   recommendations for the caller to pick. Offer only, never auto-invoke.
-- **Self-improvement** — on completion, run the Self-Improvement Protocol
-  (`self-improve/SKILL.md`): propose a fix only for a concrete,
-  blocking-or-recurring weakness. Conservative, never auto-applied.
+- **Self-improvement** — Run the Self-Improvement Protocol only when its installed owner is available. Preserve its qualification, vetting and approval rules. If absent, skip that optional hook without claiming it ran, surfacing an unvetted fix or auto-editing; substantive work may complete.
 
 **A growing set of the pack's other skills carries the family's outward
 footer** — every skill whose handler-facing output is worth governing. It is one

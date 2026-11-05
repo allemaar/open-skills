@@ -1,7 +1,7 @@
 ### small-multiple — one frame repeated
 
-**Coast and Highland get identical six-month rainfall in opposite halves of the
-year; a combined total hides the entire point.**
+**Coast and Highland get identical six-month rainfall toward opposite ends of the
+displayed six-month period; a combined total hides the entire point.**
 
 ```
   Rainfall, mm per month, one # = 20 mm, same scale for all three
@@ -19,8 +19,8 @@ year; a combined total hides the entire point.**
   [fig small-multiple | 3 frames | 65 cols | ascii | one # = 20 mm]
 ```
 
-Caption: *Site the reservoir for Highland's June peak, not for an annual mean
-that no station actually experiences.*
+Caption: *Site the reservoir for Highland's June peak, rather than planning from the equal
+six-month totals alone.*
 
 Craft notes:
 

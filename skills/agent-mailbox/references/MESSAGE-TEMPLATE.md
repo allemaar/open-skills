@@ -40,6 +40,10 @@ Verdict: the example artifact is complete and ready for independent review.
 
 The sender writes only inside its own validated, settled `workspace/<SENDER-CALLSIGN>/{artifacts,scratch}` tree. A recipient may read that artifact but never repair or rewrite it in place. Workspace presence is not delivery; this causal message and hash create the obligation. Artifact targets are create-once except for one exact existing-path action under current Handler-authorized workspace remediation. Ordinary owner scratch mutation remains allowed under the same path-safety checks. Never reference `workspace/<CALLSIGN>/scratch/`; sensitivity and no-secrets rules still apply there. When a predecessor artifact exists, pen transfer creates a new immutable continuation in the successor's workspace and a causal `deliver` maps old path/hash to new path/hash without changing the predecessor. When no predecessor artifact exists, the successor instead sends a causal `ack` naming the pen and the absence; missing, ambiguous, or scratch-only evidence becomes `needs-audit`, never an invented mapping. A displaced claimant's existing workspace remains attributed to its creator and cannot be inherited or written by the winner until exact-path remediation closes `needs-audit: callsign-collision`. A legacy flat `artifacts/` path is read-only unless local ownership is proved by causal messages, primer provenance, or current Handler direction; it must not become a second active artifact home.
 
+## Exclusive claim settlement
+
+An exclusive claim is provisional. Before work, require a causal `ack` from the declared task/artifact single writer or current Handler, naming the exact claim, task, scope, output, holder and finite lease. Concurrent unordered claims use conflict/arbitration, never arrival or UUID ordering. Follow the kernel settlement rule; a body statement or primer entry alone is not a grant.
+
 ## Kind-specific body checklist
 
 ### `hello`

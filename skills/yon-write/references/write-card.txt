@@ -72,7 +72,7 @@ Yield (streaming partial results):
 
 Session durability:
   @SESSION rid=sid:main | durability=durable | ttl_hours:int=24
-  @CHECKPOINT rid=cp:1 | session=sid:main | label="after_parse" | includes=[block:parsed]
+  @CHECKPOINT rid=cp:1 | session=rid:sid:main | label="after_parse" | includes=[block:parsed]
   @RECOVER rid=rec:1 | from=rid:cp:1 | reason="Step 3 failed"
 
 ---
@@ -125,10 +125,10 @@ AGENT TAGS (profile=agent+) — WRITING GUIDE:
 
 Agent declaration:
   @AGENT rid=agent:reviewer | name="Code Reviewer" | type=ai | model=claude-4
-  @STREAM rid=stream:review | type=collaboration | agents=[agent:reviewer,agent:author]
+  @STREAM rid=stream:review | owner=agent:reviewer | type=session
 
 Dialogue:
-  @TURN from=agent:reviewer | to=agent:author | rid=turn:1 | content="Check lines 42-67"
+  @TURN from=agent:reviewer | to=agent:author | rid=turn:1 | text="Check lines 42-67"
   @ACK from=agent:author | ref=rid:turn:1 | status=accepted
 
 Governance:
@@ -149,7 +149,7 @@ VALIDATION CHECKLIST (extended):
 9. Accept CRLF input; output LF
 10. @RULE lvl=MUST|MUST_NOT are individual records (never merged)
 
-RESULT CONTRACT: Valid YON v2.0, parseable without an LLM, roundtrip-safe.
+RESULT CONTRACT: YON format v2.0 under the exact selected field/profile authority in SKILL.md. Load the required v2.0 reader tables before extended writing; if unavailable, dependent conformance is unverified. Verify parser acceptance and any claimed roundtrip on the actual output; this card alone proves neither.
 
 Full spec: https://yon.younndai.com
 Author: Alexandru Mares | MARLINK TRADING SRL | © 2026

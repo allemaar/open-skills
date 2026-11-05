@@ -35,13 +35,13 @@ Take an existing flat or unstructured plan and restructure it into phased execut
 2. Verify each condition is met
 3. Only continue to the next phase/step once the gate passes
 
-If `/verify` is not a recognized command in your session, replace it with an explicit user confirmation prompt: pause, state what you're verifying, and wait for the user to confirm before continuing.
+If `/verify` is unavailable, verify the same conditions directly with available evidence. User confirmation is evidence only for a Handler-owned decision, never a substitute for objective prerequisites. If a condition cannot be checked, keep the gate unresolved and stop its dependent action.
 
 A `/verify` gate may sit before or after an action. It must block **before** mutation when it proves a prerequisite whose absence would make the action unsafe. Examples include authorization, no-follow target resolution, backup or readback readiness, live-data scope, and destructive-target confirmation. Retain a separate gate **after** the action to verify the intended outcome.
 
 ## Phase 1 — Locate & Load Existing Plan
 
-1. **Find the plan** — when an explicit plan is supplied, select it; if the named source is missing or ambiguous, stop and ask for clarification. Otherwise check `implementation_plan.md`, `PLAN.md`, `task.md`, or recent conversation context. If multiple file candidates exist without an explicit source, use the most recently modified file and note the choice. Load the full content.
+1. **Find the plan** — when an explicit plan is supplied, select it; if the named source is missing or ambiguous, stop and ask for clarification. Otherwise check `implementation_plan.md`, `PLAN.md`, `task.md`, or recent conversation context. Without an explicit source, resolve candidates against the current objective and context. If multiple plausible plans remain, surface the inferred target before replacement or return the proposed rewrite inline; modification time alone does not select a plan. Load the full content.
 2. **Assess structure** — flat (single list)? Partially phased? Missing verification steps? Identify structural gaps.
 
 **If no plan is found** after checking all locations → stop. Ask the user to provide the plan before continuing.
@@ -91,8 +91,9 @@ The bad gate has no observable condition. The good gate has three specific pass/
 
 ## Phase 4 — Rewrite & Output
 
-1. **Rewrite the plan** — in its original format (`implementation_plan.md`, `PLAN.md`, or `task.md`) with the new phased structure. Preserve all original content — restructure, do not delete. Each phase should clearly show: steps, `/verify` gate, and what the gate validates. **If the plan has no source file** (existed only in conversation context), output the full restructured plan as a fenced code block in the response instead.
-2. **Diff report** — summarize what changed: how many phases created, how many `/verify` gates added, any steps reordered or split.
+1. **Validate the candidate before replacement** — check the complete proposed rewrite against original intent, every condition and all preserved content before saving. Before saving, validate the complete candidate, preserve the original bytes and unrelated or unknown content, and bind the exact target and current revision. Recheck identity immediately before a protected replacement; concurrent changes stop the write. Keep a recoverable preimage and read back persisted bytes. New-file creation is exclusive and must not replace an existing artifact.
+2. **Rewrite the plan** — in its original format (`implementation_plan.md`, `PLAN.md`, or `task.md`) with the new phased structure. Preserve all original content — restructure, do not delete. Each phase should clearly show: steps, `/verify` gate, and what the gate validates. **If the plan has no source file** (existed only in conversation context), output the full restructured plan as a fenced code block in the response instead.
+3. **Diff report** — summarize what changed: how many phases created, how many `/verify` gates added, any steps reordered or split.
 
 ## Rules
 

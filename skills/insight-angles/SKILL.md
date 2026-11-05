@@ -96,6 +96,8 @@ The three modes (selected adaptively, not by a fixed default):
 - **quick** — inline single pass (cheap). **Forced when orchestrated under a `*-RESOLVED` marker** (a lens-agent is a *leaf* — runs one lens, returns findings, spawns nothing — which keeps the depth guard intact).
 - **deep** — cold fan-out across 2–3 layers; the orchestrator threads each completed layer's findings into the next layer's briefs (compounding at the orchestrator, independence in the agents). **HIL-gated** (cost).
 
+Before dispatch, bind the worker and total invocation to finite deadlines and resource limits, with a named monitoring owner, observable progress, a cancellation handle and terminal success/failure/timeout outcomes. Use native controls; include read-only scope and no-child instructions in research briefs. On failure or timeout, cancel owned work and report retained partial results and unchecked coverage. If these controls are unavailable, do not dispatch. Use the existing bounded inline fallback when permitted, labeling it non-independent; empty or failed returns never count as completed coverage.
+
 Cold lens-agents are **leaf workers**: each gets a primed brief (subject + its one lens [+ prior-layer findings in deep mode]), runs cold, returns its angles/connections, and orchestrates nothing further.
 
 **Runtime:** detect capabilities, not product names. When the active runtime exposes isolated workers (for example, Claude's `Agent` or Codex collaboration agents when available), cold fan-out may be used. Without isolated workers, all modes fall back to inline — the adaptive selector degrades gracefully since inline is always available.

@@ -28,9 +28,11 @@ Install this skill in a supported runtime, then give it the relevant material an
 
 1. Identify the reader, decision need, and what makes the text hard to use.
 2. Preserve claim strength, attribution, scope, numbers, units, uncertainty, and caveats.
-3. Resolve shorthand and reorder by decision relevance without changing claims.
-4. Restack for the destination while retaining necessary supporting detail.
-5. Check fidelity and name unresolved ambiguity or missing source context.
+3. Explain a missing connection only from the supplied text or explicitly supplied established context, attributing context separately and naming unsupported gaps.
+4. Resolve shorthand and reorder by decision relevance without changing claims.
+5. Restack for the destination while retaining necessary supporting detail.
+6. Check fidelity and name unresolved ambiguity or missing source context.
+7. Check example inventory items individually, retaining exact time windows, threshold meaning and tentative decisions.
 
 ## Subagents
 
@@ -48,6 +50,7 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/human-rewrite/SKILL.md](../../skills/human-rewrite/SKILL.md)
 - [skills/human-rewrite/references/human-contract.md](../../skills/human-rewrite/references/human-contract.md)
+- [skills/human-rewrite/references/examples/estuary-rewrite.md](../../skills/human-rewrite/references/examples/estuary-rewrite.md)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

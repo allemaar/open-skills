@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=orient-record | title="Orientation Record — shared schema for the orient- family" | kind=spec | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Define the generic public orientation-record that every orient-* skill emits a slice of; a private conforming extension conforms and may privately extend. One computed ephemeral bundle = this YON record plus a markdown render plus a visual render." | audience=agent
-@STAMP ts:ts=2026-10-30T13:26:50Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-11-04T23:13:13Z | src="Alexandru Mares | allemaar.com" | method=generated
 @NOTE text="Apache-2.0. Reusable, inspectable, declarative. This is a SCHEMA reference (record shapes plus invariants), NOT an instance."
 @NOTE text="Public and generic: field names carry NO private-system artifact shapes (no handoff, arc, state, or decisions names). a private extension maps its own sources INTO these generic slices and MAY add private riders."
 @NOTE text="Nothing is stored. Every record is recomputed each call; computed_at plus ephemeral true are load-bearing. The only persisted reference point (intent line plus last-look anchor) is caller-supplied or harness-held, never written to disk by default."
@@ -49,6 +49,8 @@
 @NOTE text="ETA is the ONLY forward prediction with no ground truth. It MUST be a band, never a point estimate, and carry explicit estimate-not-observed provenance."
 @CFG id=rec:forecast | set=[kind=str,provenance=str,eta_low=str,eta_high=str,eta_unit=str,confidence=enum.conf_level,unschedulable=bool,unschedulable_ref=str]
 
+@NOTE text="Topology in orient-record/1: snapshot.on_branch and trajectory.on_branch are optional booleans; true is known branch, false is known trunk, absence means unknown and must never default to false. Shared observations agree across slices. On unknown topology omit unsupported dependent topology fields and layout, use existing gate_status indeterminate or degraded with degrade_reason, and render topology unknown without trunk/branch claims or topology-dependent forecasts. Known boolean values and frozen envelope/subject key sets are unchanged."
+
 @SEC name="Slice — trajectory map (orient-map; renders a tree when on_branch)"
 @NOTE text="The done to here to next path; renders a TREE when on_branch. Named trajectory to avoid the reserved @MAP tag. The harness owns the raw file tree; this owns the diff-of-trees and the branch stack."
 @CFG id=rec:trajectory | set=[layout=enum.map_layout,on_branch=bool,trunk_ref=str,cursor_node=str,fork_node=str,ahead=int,behind=int,nodes=list,edges=list]
@@ -83,7 +85,7 @@
 
 @SEC name="Gates"
 @CHECK rid=chk:has-inputs | assert="envelope carries scope and evidence_mode" | fail=ABORT | msg="No scope or evidence_mode — the subagent sweep has no substrate to read."
-@CHECK rid=chk:eta-no-point | assert="forecast eta_low differs from eta_high or confidence is high" | fail=WARN | msg="ETA is a point estimate — band it or justify high confidence."
+@CHECK rid=chk:eta-no-point | assert="forecast is unknown or unschedulable, or asserted eta_low differs from eta_high regardless of confidence" | fail=WARN | msg="ETA is a point estimate — express a band regardless of confidence; unknown remains unknown."
 @CHECK rid=chk:fail-closed | assert="evidence_mode is not barren or gate_status is indeterminate or degraded" | fail=ABORT | msg="Barren evidence must fail closed (indeterminate or degraded), never a plausible ready or blocked verdict."
 
 @SEC name="Emission encoding — reserved tags, no domain"
@@ -91,4 +93,4 @@
 @NOTE text="LIST FIELDS (open_set nodes edges changes no_change_zones missed_while_away family_all) emit ONLY as a sidecar @MAP name=field or as repeated @CFG rows — NEVER a bare bracket-list inside a set value (it silently corrupts and still validates). Do NOT run yon format on an emitted instance: format mode CANON is destructive on set-internal lists. The source repository's optional parse-format-parse round-trip release gate guards the example instance; it is not required at installed runtime."
 @MAP name=emission-encoding | pairs=["envelope"->"@CFG id=orient","subject"->"@CFG id=subject","each slice"->"@CFG id=<slice>","tree node"->"@CFG id=node.<x>","any list field"->"@MAP name=field sidecar never in-set bracket-list","edges"->"@MAP name=edges","provenance rider"->"@MAP name=provenance"]
 
-@STAMP ts:ts=2026-10-30T13:26:50Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-11-04T23:13:13Z | src="Alexandru Mares | allemaar.com" | method=generated

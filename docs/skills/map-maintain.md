@@ -30,7 +30,9 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Load the mapping rules and check the selected scope
 2. Present findings for the user's selection
 3. Apply selected repairs using map-this semantics
-4. Recheck affected areas and report remaining gaps
+4. Recheck the full governing scope with explicit inventory/time caps, interpret selected repairs and dependencies, and preserve incomplete outcomes.
+5. Zero conformance findings does not exclude actionable occurrence cases; preserve the selected repair or conformance-only scope.
+6. The 50-file default bounds mutation targets, not inventory; scanning and recheck share the finite total budget.
 
 ## Subagents
 

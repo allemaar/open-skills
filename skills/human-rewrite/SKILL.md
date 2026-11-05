@@ -102,9 +102,10 @@ deleted.
 **What you MAY change.** Order, structure, vocabulary, length, and resolution —
 a subordinate point may be compressed to a named line. *Named*, not deleted.
 
-**What you MAY NOT change.** Any of the seven. Also: do not add facts, do not
-add reasoning the source did not contain, and do not resolve an ambiguity the
-source left open. If the source is genuinely ambiguous, your version is
+**What you MAY NOT change.** Any of the seven. Do not add unsupported facts or
+new arguments, or resolve an ambiguity the source left open. An explanation from
+explicitly supplied established context must be attributed separately from the
+original claim; do not gather new evidence. If the source is genuinely ambiguous, your version is
 ambiguous in the same place, and you say so once, plainly: *"The source does
 not say whether this covers renewals."*
 
@@ -127,6 +128,12 @@ A subagent report, a fetched page, a supplied document, a quoted source.
 - **When the source contradicts itself,** surface both sides at the top. Do not
   pick a winner; picking is a decision, and it is not yours to make inside a
   rewrite.
+
+## Diagnose a missing connection
+
+When a reader cannot understand why a statement follows, identify the missing premise or relationship before shortening sentences. Recover it only from supplied text or explicitly supplied established context. Explain the connection at useful depth, preserving facts, attribution, conditions and uncertainty. A relevant supplied glossary may clarify terms; create no glossary records and start no research.
+
+Restore an evidenced connection without adding a new argument or settling ambiguity. Identify supplied context separately when it explains beyond the original text. If support is absent, name the missing connection alongside the faithful claim; do not weaken a source claim merely because its explanation is absent. Carry restored premises through the fidelity inventory, reconciliation and confidence-drift check. All existing guarantees remain.
 
 ## Translating shorthand without flattening it
 
@@ -278,15 +285,13 @@ member handles which material — is `references/human-contract.md` §1.
   goes; this skill repairs one text at a time and refuses the pile outright.
 - **Several separate reports are not one text.** "That was a wall of text" is
   this skill's exact trigger, and it fires just as readily on six documents as
-  on one. It must not. This skill reads nothing beyond the single text it was
-  handed and adds no facts, so combining several would silently drop whatever
-  it never saw and invent the joins between the rest. Say so and hand back:
+  on one. It must not. This skill repairs one named text, using explicitly supplied established context only to explain that text. Combining several reports would silently drop unseen material and invent joins. Say so and hand back:
   *"That is six separate reports, not one text — a rewrite would drop what it
   cannot see. Name the one to repair, or run `/human-merge` to collapse all six
   into one surface."* Then rewrite one named report, or route to
   `/human-merge`. Never merge by accident.
 - Not `/extract-signal` — that gathers and vets signal from noisy *sources*.
-  Rewrite reads nothing beyond the text it was handed and adds no facts.
+  Rewrite uses only the supplied text and explicitly supplied established context for this missing-connection diagnostic; it gathers no new evidence and adds no unsupported facts.
 - Not `/double-check` — that re-verifies a claim against its source. Rewrite
   never verifies; it preserves whatever confidence the source carried.
 - Not a summariser and not a fact-checker. If a claim looks wrong, say so in
@@ -299,7 +304,7 @@ member handles which material — is `references/human-contract.md` §1.
 > (`next-skills/SKILL.md`): surface the `next-skills` recommendations from
 > front-matter for the caller to pick. Offer only — never auto-invoke.
 
-> **Self-improvement.** On completion, run the Self-Improvement Protocol
+> **Self-improvement.** Run the Self-Improvement Protocol only when its installed owner is available. Preserve its qualification, vetting and approval rules. If absent, skip that optional hook without claiming it ran, surfacing an unvetted fix or auto-editing; substantive work may complete.
 > (`self-improve/SKILL.md`): apply its signal taxonomy and threshold to this
 > run; surface any surviving proposal for handler approval. Conservative —
 > silent otherwise. Never auto-apply.

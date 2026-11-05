@@ -158,9 +158,9 @@ function consume(line) {
       if(step.tool_name==='run_command')validateCommandStep(step);
       else {
       const p = step.tool_info?.parameters || {};
-      // agy 1.4.11 streams view_file reads as read_file with Path and optional line bounds.
+      // agy 1.4.11 streams view_file reads as read_file with Path and optional line bounds or byte pagination.
       const alias = step.tool_name === 'read_file';
-      if (alias && (step.tool_info?.name !== 'read_file' || Object.keys(p).some(k => !['Path', 'StartLine', 'EndLine'].includes(k)) || typeof p.Path !== 'string' || ['StartLine', 'EndLine'].some(k => p[k] !== undefined && (!Number.isSafeInteger(p[k]) || p[k] < 1)) || (p.StartLine !== undefined && p.EndLine !== undefined && p.StartLine > p.EndLine))) { stop('unexpected read_file shape'); return; }
+      if (alias && (step.tool_info?.name !== 'read_file' || Object.keys(p).some(k => !['Path', 'StartLine', 'EndLine', 'ByteOffset'].includes(k)) || typeof p.Path !== 'string' || (p.ByteOffset !== undefined && (!Number.isSafeInteger(p.ByteOffset) || p.ByteOffset < 0 || p.StartLine !== undefined || p.EndLine !== undefined)) || ['StartLine', 'EndLine'].some(k => p[k] !== undefined && (!Number.isSafeInteger(p[k]) || p[k] < 1)) || (p.StartLine !== undefined && p.EndLine !== undefined && p.StartLine > p.EndLine))) { stop('unexpected read_file shape'); return; }
       const toolName = alias ? 'view_file' : step.tool_name;
       const target = alias ? p.Path : (p.AbsolutePath || p.TargetFile);
       if (typeof target !== 'string' || !isAbsolute(target) || !allowed.some(a => a.tool === toolName && norm(a.path) === norm(target))) stop('unexpected tool or file target');

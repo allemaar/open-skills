@@ -24,12 +24,14 @@ next-skills:
 
 ## Workflow
 
-1. **Create the file**: Create a `.base` file in the vault with valid YAML content
+1. **Select creation or edit**: For a new base, prepare valid YAML and create exclusively. For an existing base, read its exact current content/revision and change only the requested keys, preserving unrelated views, formulas and unknown settings.
 2. **Define scope**: Add `filters` to select which notes appear (by tag, folder, property, or date)
 3. **Add formulas** (optional): Define computed properties in the `formulas` section
 4. **Configure views**: Add one or more views (`table`, `cards`, `list`, or `map`) with `order` specifying which properties to display
 5. **Validate**: Verify the file is valid YAML with no syntax errors. Check that all referenced properties and formulas exist. Common issues: unquoted strings containing special YAML characters, mismatched quotes in formula expressions, referencing `formula.X` without defining `X` in `formulas`
 6. **Test in Obsidian**: Open the `.base` file in Obsidian to confirm the view renders correctly. If it shows a YAML error, check quoting rules below
+
+Before saving, validate the complete candidate, preserve the original bytes and unrelated or unknown content, and bind the exact target and current revision. Recheck identity immediately before a protected replacement; concurrent changes stop the write. Keep a recoverable preimage and read back persisted bytes. New-file creation is exclusive and must not replace an existing artifact.
 
 ## Schema
 

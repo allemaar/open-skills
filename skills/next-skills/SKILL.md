@@ -39,7 +39,7 @@ or **directly**, as `/next-skills <skill>` to preview a skill's declared success
 
 ## The protocol — three steps
 
-1. **Read.** Take the just-finished skill's `next-skills:` front-matter list. Each entry has a
+1. **Read.** For a direct preview, bind the explicitly requested skill; for a completion hook, bind the just-finished skill. An unresolved requested name never falls back to an unrelated predecessor. Take the selected skill’s `next-skills:` front-matter list. Each entry has a
    `skill`, a `phrase` (its activation phrase), and a `why` (one line: why it might be useful
    next). If the list is absent or empty, **stop silently** — NSP surfaces nothing.
 2. **Surface.** Present the recommendations for the caller to pick (runtime-mapped, below).

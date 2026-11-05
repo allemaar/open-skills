@@ -30,7 +30,7 @@ AGP is invoked two ways: **automatically**, as the standard reflex before any As
 
 ### 1. Triage (anti-nag)
 
-A question is the handler's to answer **only if it cannot be resolved from the request, the code, or sensible defaults.** If it can be resolved, resolve it, state the choice you made, and **do not ask**. Asking a resolvable question is the single most common nag failure — this gate exists to kill it. This mirrors COP's step-1 anti-nag triage; if nothing genuinely needs the handler, AGP surfaces nothing.
+Sensible defaults resolve preferences only within existing authority. They never supply missing consent or a required approval. Reuse exact authorization already granted; do not ask for it again. A question is the handler's to answer **if required authorization is missing, or if it cannot otherwise be resolved from the request, the code, or sensible defaults within that authority.** If it can be resolved, resolve it, state the choice you made, and **do not ask**. Asking a resolvable question is the single most common nag failure — this gate exists to kill it. This mirrors COP's step-1 anti-nag triage; if nothing genuinely needs the handler, AGP surfaces nothing.
 
 ### 2. Classify stakes
 
@@ -53,6 +53,8 @@ Apply this lightweight question-quality checklist inline, then surface directly:
 - **Within limits** — ≤4 options per question, ≤4 questions.
 
 ### 3b. High-stakes path — critique → assess → ask
+
+Before using the high-stakes helpers, load their available current owners and check subject fit. For a general question outside the critique owner’s contract, or an unavailable helper, apply the existing question-quality checklist locally and report the skipped method when material; do not reconstruct a missing protocol or claim that it ran. Use the available domain-appropriate assessment, preserving unresolved consent and all existing action gates. This fallback adds no loop or automatic installation.
 
 1. **`/insight-critique`** the *candidate questions themselves* (not the underlying work): are these the right questions? Are the options mutually exclusive, exhaustive, recommended-first? Is anything still resolvable without the handler?
 2. **`/insight-assess`** the critique findings: which framing and option set best serves the decision? Produce the refined question set.

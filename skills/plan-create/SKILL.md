@@ -98,7 +98,7 @@ When in doubt, use Full mode. If the task touches auth, data, external services,
 
 1. Draft PLAN.md using the template below. Populate every section; "N/A" for empty.
 2. **Final gate:** does the plan match user's original intent? Every Phase 3 change → Phase 2 criterion? Every Phase 2 criterion → Phase 4 verification? Gate warnings documented? Executable by someone who didn't write it?
-3. Write to `PLAN.md` in project root (or `<task-slug>-plan.md` if no clear root). If chat-only with no project, present inline and offer to write.
+3. Write to `PLAN.md` in project root (or `<task-slug>-plan.md` if no clear root). Inspect the destination leaf and every existing ancestor without following links; refuse symlinks, junctions, mounts, unknown reparse points or equivalent redirects, including backup and staging paths. Create new artifacts exclusively. On collision preserve existing bytes: choose a fresh identity within the authorized scope or use an explicitly selected revision. For revisions, retain a recoverable preimage, require current bytes/revision to match the selected record immediately before replacement, and use the destination owner’s protected writer. Stop the affected write if identity changes or those guarantees are unavailable; never roll back over concurrent edits. Read back the result and report only actual saves. If chat-only with no project, present inline and offer to write.
 4. Present the plan inline and state the file path.
 
 ## PLAN.md Template

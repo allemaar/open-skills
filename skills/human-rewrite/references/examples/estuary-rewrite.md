@@ -46,13 +46,19 @@ threshold as a safety line (item 9). The water company analysing its own
 discharge is gone (item 8). "Should go up" hardens "may wish to consider" into
 a recommendation the source declined to make (item 12). And the two limits on
 what the survey can say at all — no winter sampling, no comparison with 2023 —
-are absent (items 10, 11). Nine of the twelve inventory items are lost or
-altered — only items 3, 4 and 5 survive — and the reader cannot tell.
+are absent (items 10, 11). The naive panel loses or alters every inventory item: 1–2 lose sampling
+coverage and cause of inaccessibility; 3 replaces May–September 2024 with a
+relative season; 4 keeps the count but turns an occasional exceedance into
+a blanket failure; 5 loses the 48-hour interval; 6–7 promote a hypothesis and
+lose the missing tracer study; 8–9 lose laboratory attribution and exact
+measurements; 10–11 omit comparison and winter limits; 12 strengthens the
+authority’s tentative choice. It retains fragments, not three intact items.
 
 ### Panel 3 — the faithful rewrite
 
 > **3 of the 14 sampled bathing points on the Aldenn estuary exceeded the
-> bacterial threshold last summer; 5 of the estuary's 19 points were not
+> intestinal enterococci threshold between May and September 2024; 5 of the
+> estuary's 19 points were not
 > sampled at all.**
 >
 > **What the source puts to the authority** — and it puts it no more strongly

@@ -29,10 +29,11 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. A subagent proposes questions and named sources with limited spot checks.
 3. Confirm, edit or refuse the pair.
 4. Use an accepted target for downstream priming.
+5. Preserve every confirmed question and associated source; label local checks versus remote/unavailable candidates honestly.
 
 ## Subagents
 
-One subagent performs one turn with at most three source spot checks.
+One subagent performs one turn with at most three source spot checks. Dispatch requires finite limits, monitored cancellation and a terminal/partial result; unavailable controls stop delegation. Only an existing permitted inline fallback may continue.
 
 This describes the skill's own workflow. Available tools and the runtime's permission rules still apply.
 

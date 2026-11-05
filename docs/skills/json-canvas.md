@@ -28,7 +28,8 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Identify the diagram's content and relationships
 2. Create valid nodes and edges with suitable positions
 3. Check IDs, references and JSON structure
-4. Open the canvas when available to inspect the layout
+4. Validate the candidate before saving; preserve unrelated content and recovery, recheck current identity and read back the protected write. New files use exclusive creation.
+5. Open the canvas when available to inspect the layout
 
 ## Subagents
 

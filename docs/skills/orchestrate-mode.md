@@ -32,7 +32,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 
 ## Subagents
 
-Concrete work is dispatched; activation alone need not spawn immediately.
+Concrete work is dispatched; activation alone need not spawn immediately. Dispatch requires finite limits, monitored cancellation and a terminal/partial result; unavailable controls stop delegation. Only an existing permitted inline fallback may continue.
 
 This describes the skill's own workflow. Available tools and the runtime's permission rules still apply.
 

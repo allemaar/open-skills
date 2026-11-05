@@ -35,6 +35,8 @@ If proportion is genuinely the point, draw it with the axis doing real work at
 5 days per cell:
 
 ```
+  Mean onsets only; not guaranteed dates
+  Spread +/- days: 10 / 12 / 21 / 14 (stage order)
   Feb 3         Apr 11                 Jul 29    Sep 14
   |-------------|----------------------|---------|
        67 d              109 d            47 d

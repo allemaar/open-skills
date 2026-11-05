@@ -78,10 +78,13 @@ For every mutating matrix cell:
 
 1. Build the complete replacement bytes and show the exact diff. Bind approval
    as described above.
-2. Immediately before writing, inspect the target and every parent component
-   without following links. Stop on a symlink, junction, mount, or equivalent
-   redirect. Require the current bytes and hash to equal the approved preimage.
-3. Create a uniquely named backup with exclusive create semantics; never reuse
+2. Resolve the target, backup and staging destinations before creation. Immediately
+   before writing, inspect each leaf and every existing parent component without
+   following links. Stop on a symlink, junction, mount, unknown reparse point or
+   equivalent redirect. Require the target bytes and hash to equal the approved preimage.
+3. Choose a verified durable backup location outside runtime discovery when that
+   host loads directory contents; do not place backup instructions where they could
+   become active directives. Create a uniquely named backup with exclusive create semantics; never reuse
    or overwrite a path. Copy the approved preimage and verify its byte hash.
 4. In the target directory, create a uniquely named staging file with exclusive
    create semantics. Write the full replacement, flush it, reopen it, and

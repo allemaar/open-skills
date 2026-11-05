@@ -19,11 +19,11 @@ next-skills:
 
 # /yon-read
 
-YON Reading & Interpretation Mode — read, analyze, or explain YON (YounndAI Object Notation) content. YON is a line-oriented, stream-first Cognitive Architecture for AI systems — every line is independently parseable.
+YON Reading & Interpretation Mode — read, analyze, or explain YON (YounndAI Object Notation) content. YON is a line-oriented, stream-first Cognitive Architecture for AI systems — logical records are the reading unit; a record can span indented continuation lines, and raw blocks retain their boundary context.
 
 ## Quick Orientation
 
-YON looks like this — each line is a self-contained record:
+A simple YON record looks like this; multiline continuations and blocks must be read with their enclosing context:
 
 ```
 @TAG field1=value1 | field2="quoted value" | key:type=typed_value
@@ -117,7 +117,7 @@ When explaining YON content to users:
 - For workflows, describe execution order and data dependencies
 - For `@MAP` records, explain the routing/decision logic
 - Call out `@INTENT` and `@SCOPE` first — they frame the whole document
-- Use YON's preferred terminology: "structural baseline" (not "overhead"), "operational characteristic" (not "trade-off"), "recoverability budget" (not "cost"). Avoid: "revolutionary", "game-changing", "best-in-class", "leverage", "synergy"
+- Preserve source terms, field meanings and units when explaining payloads or provenance, including monetary cost. Only when describing the format’s architecture, use YON's preferred terminology: "structural baseline" (not "overhead"), "operational characteristic" (not "trade-off"), "recoverability budget" (not "cost"). Avoid: "revolutionary", "game-changing", "best-in-class", "leverage", "synergy"
 
 ## Detailed References
 

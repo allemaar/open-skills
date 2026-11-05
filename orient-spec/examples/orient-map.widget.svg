@@ -1,4 +1,4 @@
-<svg width="100%" viewBox="0 0 680 224" role="img" xmlns="http://www.w3.org/2000/svg">
+<svg width="100%" viewBox="0 0 680 380" role="img" xmlns="http://www.w3.org/2000/svg">
   <title>orient-map reference — open-skills on a branch</title>
   <desc>You-are-here breadcrumb: open-skills sits in the open-source push. Then done to here to next as a tree: P0-contract and cold-vet attested on the trunk, the cursor fix-pass attested on a branch off cold-vet, two ahead, zero behind, one commit missed on main, rejoin to main inferred. Tier: filled diamond attested, half diamond inferred.</desc>
 
@@ -33,4 +33,11 @@
 
   <text class="ts" x="60" y="150">ahead 2 · behind 0 · trunk eta n/a (not on this path)</text>
   <text class="ts" x="60" y="186">tier: ◆ attested · ◐ inferred · ◌ guessed</text>
+  <text class="ts" x="60" y="216">open-skills — public skills pack</text>
+  <text class="ts" x="60" y="238">Delta since approximately HEAD@2h: 2 commits, 2 files</text>
+  <text class="ts" x="60" y="260">Changed: orient-record fixes, family-manifest fixes</text>
+  <text class="ts" x="60" y="282">Unchanged: subagent-protocol, README</text>
+  <text class="ts" x="60" y="304">Missed while away: 1 commit on main since the fork</text>
+  <text class="ts" x="60" y="326">Next: finish the fix pass, then re-validate</text>
+  <text class="ts" x="60" y="348">Trust: rejoin inferred; branch not yet merged; next /orient-gaps</text>
 </svg>

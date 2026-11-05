@@ -32,7 +32,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 
 ## Subagents
 
-Use independent subagents when available; otherwise develop each design sequentially without cross-contamination.
+Use fresh isolated worker contexts when available; sequential same-context alternatives are useful but correlated, not independent.
 
 This describes the skill's own workflow. Available tools and the runtime's permission rules still apply.
 

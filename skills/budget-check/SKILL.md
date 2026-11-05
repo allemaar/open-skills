@@ -32,7 +32,7 @@ It is deliberately small: a concrete wrapper around the public [`ccusage`](https
 
 ## The check — one tool, three verdicts
 
-The skill ships [`references/tools/budget-check.mjs`](references/tools/budget-check.mjs) inside its own folder. Resolve the installed skill directory and run the bundled tool, which wraps `ccusage blocks --json`:
+The skill ships [`references/tools/budget-check.mjs`](references/tools/budget-check.mjs) inside its own folder. Resolve the installed skill directory and run the bundled tool, which invokes an already-installed `ccusage blocks --json`. Missing tools or failed launches return `unknown`; never acquire a package to answer this read. Supplied numeric flags require values, while omitted flags retain their defaults:
 
 ```bash
 node <skill-dir>/references/tools/budget-check.mjs                  # go/no-go vs 95% of your historical-peak block

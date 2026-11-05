@@ -9,6 +9,10 @@ triggers:
   - "create a .yon file"
   - "encode this as YON"
   - "YON format"
+companions:
+  - path: ../yon-read
+    optional: true
+    why: "Required for extended tags beyond the local field table: load its v2.0 tag-registry.md and read-card.txt; stop dependent extended conformance when unavailable."
 next-skills:
   - skill: yon-read
     phrase: "/yon-read"
@@ -39,9 +43,9 @@ YON Writing & Compilation Mode — create, generate, or convert content into YON
 
 YON is a Cognitive Architecture for AI pipelines, not a universal data format. Do not use it for:
 
-- **API responses** — YON adds +54–185% size vs JSON minified for pure data payloads
+- **API responses** — compare the actual pure-data payload with minified JSON under the intended tokenizer; this guide supplies no universally applicable measured size ratio
 - **Config files** — TOML or YAML are better for human-edited configuration
-- **Short messages under ~340 tokens** — plain text is cheaper at small context sizes
+- **Short messages** — plain text often needs less structural scaffolding. Treat ~340 tokens only as a scoped rule of thumb, not a measured universal cutoff; choose from the actual payload and tokenizer
 - **Database records** — use JSON, Protobuf, or native formats
 - **Simple key-value data** — YON's structural baseline adds no benefit for flat data
 
@@ -59,6 +63,10 @@ YON belongs in: system prompts, agent instructions, multi-hop pipelines, rules/p
 | `audit`   | Provenance tracking                                  |
 | `cognitive` | AI thought chains                                  |
 | `agent`   | Multi-agent systems                                  |
+
+**Authority and dependency.** This writer targets YON format `2.0`. The profile behavior summarized in [domains-card.txt](references/domains-card.txt) is bound to reference validator `@younndai/yon-parser@2.0.2`; profiles are feature presets, not a cumulative ladder. Structural tags including `@STAMP` are allowed in every preset; logic includes `@INTENT` and `@SCOPE`. `audit` enables additional provenance bookkeeping. For a different validator revision, inspect its exact contract before claiming profile conformance.
+
+For tags beyond the local required-field table, first load the v2.0 [reader field registry](../yon-read/references/tag-registry.md) and [extended reader card](../yon-read/references/read-card.txt). These are required conditional dependencies for extended writing, not permission to install or fetch anything. If absent, incompatible or contradictory, stop dependent extended generation/conformance and name the missing authority; basic supported encoding may continue. Report field-table review separately from actual parser acceptance, including validator version and selected profile. Neither establishes unverified external-spec or all-tag conformance.
 
 ### 2. Choose Format
 
@@ -109,6 +117,8 @@ YON belongs in: system prompts, agent instructions, multi-hop pipelines, rules/p
 | `@REDACTION` | `target`, `reason`                                                            |
 | `@CONSENT`   | `party`, `scope`                                                              |
 
+When `provenance` is enabled, the selected validator additionally requires `rid` on referenceable RULE/CFG/MAP/SCHEMA/STEP/CHECK records. Apply the exact selected profile contract as well as the field table.
+
 ## Conversion Patterns
 
 ### Prose → Rules
@@ -119,8 +129,8 @@ YON belongs in: system prompts, agent instructions, multi-hop pipelines, rules/p
 
 ### Tables → Schema / Map / Cfg
 - Enum/Choices → `@SCHEMA key=severity | opts=[low,med,high] | default=med`
-- Condition→Outcome → `@MAP pairs=["input"->"output"]`
-- Multi-setting → `@CFG id=X | set=[k=v]` then `@MAP pairs=["ctx"->"cfg:X"]`
+- Condition→Outcome → `@MAP name=Routing | pairs=["input"->"output"]`
+- Multi-setting → `@CFG id=X | set=[k=v]` then `@MAP name=Context | pairs=["ctx"->"cfg:X"]`
 
 ### Code/JSON/Logs → Blocks
 ```
@@ -167,9 +177,9 @@ def hello():
 
 When the input doesn't map cleanly to YON:
 
-- **Unclear when/then split:** Use a broad `when` (e.g., `when="in all contexts"`) and put the action in `then`. Don't fabricate conditions.
+- **Unclear when/then split:** Preserve unresolved wording in a nonnormative `@NOTE` or raw block, or ask a material clarification. Do not turn an unknown scope into a universal condition.
 - **Mixed intent and data:** Put purpose in `@INTENT`, constraints in `@RULE`, factual descriptions in `@NOTE`. When unsure, `@NOTE` is the safe default.
-- **Vague severity:** Default to `SHOULD` and flag with `note="severity inferred — confirm with author"`
+- **Vague severity:** Preserve the exact unresolved source in a nonnormative `@NOTE` or raw block, or ask a material clarification. Emit normative level and scope only when supported by the source; do not invent a default severity.
 - **Nested/complex structures:** Flatten. Use `@CFG` for grouped settings, `@BEGIN`/`@END` blocks for verbatim payloads. Depth limit is 1.
 
 ## Validation Checklist

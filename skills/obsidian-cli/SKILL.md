@@ -60,6 +60,8 @@ Commands target the most recently focused vault by default. Use `vault=<name>` a
 obsidian vault="My Vault" search query="test"
 ```
 
+For mutations, resolve and bind the intended vault identity and exact vault-relative path before acting; inspect current content and recheck that target immediately before the command. Pass explicit vault/path parameters supported by live help, rather than relying on changing focus or an ambiguous basename. An explicit active-note request may use the resolved active note after identity verification. Read back the affected artifact and report the actual delta. Read-only browsing may retain focus defaults; reuse existing action authorization without another blanket confirmation.
+
 ## Common patterns
 
 ```bash

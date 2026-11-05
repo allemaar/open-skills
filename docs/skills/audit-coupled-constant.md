@@ -27,8 +27,9 @@ Install this skill in a supported runtime, then give it the relevant material an
 
 1. List all representations and units
 2. Search each representation across the relevant scope
-3. Classify hits and repair missed sites and bidirectional references
+3. Classify hits; audit-only reports proposed repairs, while already-authorized repair updates missed sites and bidirectional references
 4. Report evidence and intentional differences
+5. Use actual commands and justified search scope; failed or unrun shapes remain coverage gaps.
 
 ## Subagents
 

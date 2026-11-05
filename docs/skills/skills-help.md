@@ -28,6 +28,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Read installed siblings, taxonomy and metadata.
 2. Intersect assignments with installed skills and identify unclassified entries.
 3. Render the requested menu and report failures or no matches honestly.
+4. When asked where to start, offer proportionate advice based on installed capabilities without executing it.
 
 ## Subagents
 

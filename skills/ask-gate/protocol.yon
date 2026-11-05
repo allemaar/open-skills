@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=ask-gate | title="Ask-Gate Protocol — Triage-Gated Question Quality Before AskUserQuestion" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Govern the moment before a handler-facing question. Triage whether the question is genuinely the handler's call (anti-nag); for routine questions apply an inline quality checklist and ask directly; for high-stakes, branching, or irreversible questions escalate the candidate questions through /insight-critique then /insight-assess before surfacing AskUserQuestion. A depth guard keeps the gate from recursing through the skills it invokes." | trigger="agent is about to surface an AskUserQuestion or other handler-facing question; or user runs /ask-gate"
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-11-04T15:16:30Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Boundary ---
 
@@ -12,8 +12,8 @@
 # --- Phase 1: Triage (anti-nag) ---
 
 @SEC name="Phase 1 — Triage"
-@STEP rid=step:triage | n:int=1 | op=std:ai.prompt@v1 | args=[task="Decide whether to ask at all. A question is the handler's to answer only if it cannot be resolved from the request, the code, or sensible defaults. If it can be resolved, resolve it, state the choice made, and do NOT ask. If it must be asked, continue."] | in=[ref:candidate-question] | out=[ref:ask-warranted]
-@CHECK rid=check:genuinely-handler-call | assert="the question cannot be resolved from request, code, or sensible defaults" | fail=SKIP | msg="Resolvable without the handler — resolve it, state the choice, and skip the question. Asking a resolvable question is the #1 nag failure."
+@STEP rid=step:triage | n:int=1 | op=std:ai.prompt@v1 | args=[task="Sensible defaults resolve preferences only within existing authority. They never supply missing consent or a required approval. Reuse exact authorization already granted; do not ask for it again. Decide whether to ask at all. A question is the handler's to answer if required authorization is missing, or if it cannot otherwise be resolved from the request, the code, or sensible defaults within that authority. If it can be resolved, resolve it, state the choice made, and do NOT ask. If it must be asked, continue."] | in=[ref:candidate-question] | out=[ref:ask-warranted]
+@CHECK rid=check:genuinely-handler-call | assert="required authorization is missing, or the question cannot otherwise be resolved from request, code, or sensible defaults within existing authority" | fail=SKIP | msg="Resolvable without the handler — resolve it, state the choice, and skip the question. Asking a resolvable question is the #1 nag failure."
 
 # --- Phase 2: Classify stakes ---
 
@@ -25,14 +25,14 @@
 
 @SEC name="Phase 3 — Quality-gate + surface"
 @MAP rid=map:quality-checklist | pairs=["handler-call"->"already confirmed in triage","mutually-exclusive"->"single-select options are mutually exclusive; use multiSelect only when choices are not exclusive","recommended-first"->"recommended option is first and labelled (Recommended)","exhaustive"->"options cover the real space; 'Other' is the escape hatch","self-answerable"->"not answerable by gathering a little context yourself first","within-limits"->"<=4 options per question, <=4 questions"]
-@STEP rid=step:surface | n:int=3 | op=std:human.review@v1 | args=[task="Branch on ref:stakes. ROUTINE: apply map:quality-checklist inline, then surface directly. HIGH-STAKES: first run /insight-critique on the CANDIDATE QUESTIONS themselves (right questions? options mutually exclusive, exhaustive, recommended-first? anything resolvable without the handler?), then run /insight-assess on the findings to produce the refined question set — both inline under an AG-RESOLVED marker carrying depth:1 — then surface the refined set. Surface via AskUserQuestion (Claude Code) or a numbered prose list (other runtimes), recommended option first."] | in=[ref:candidate-question,ref:stakes] | use=[cfg:map:quality-checklist] | out=[ref:answer]
+@STEP rid=step:surface | n:int=3 | op=std:human.review@v1 | args=[task="Branch on ref:stakes. ROUTINE: apply map:quality-checklist inline, then surface directly. Before using the high-stakes helpers, load their available current owners and check subject fit. For a general question outside the critique owner’s contract, or an unavailable helper, apply the existing question-quality checklist locally and report the skipped method when material; do not reconstruct a missing protocol or claim that it ran. Use the available domain-appropriate assessment, preserving unresolved consent and all existing action gates. This fallback adds no loop or automatic installation. HIGH-STAKES: when the selected helper is available and subject-compatible, first run /insight-critique on the CANDIDATE QUESTIONS themselves (right questions? options mutually exclusive, exhaustive, recommended-first? anything resolvable without the handler?), then run /insight-assess on the findings to produce the refined question set — both inline under an AG-RESOLVED marker carrying depth:1 — then surface the refined set. Surface via AskUserQuestion (Claude Code) or a numbered prose list (other runtimes), recommended option first."] | in=[ref:candidate-question,ref:stakes] | use=[cfg:map:quality-checklist] | out=[ref:answer]
 
 # --- Depth & safety ---
 
 @SEC name="Depth & safety"
 @RULE rid=rule:depth-guard | lvl=MUST | when="invoking /insight-critique or /insight-assess from the high-stakes path" | then="run them inline under an AG-RESOLVED marker carrying depth:1 — they, and any question they raise, run inline and never re-enter the gate"
 @RULE rid=rule:no-recurse | lvl=MUST_NOT | when="already running under an AG-RESOLVED marker" | then="re-enter the ask-gate — ask directly after the inline checklist"
-@RULE rid=rule:triage-first | lvl=MUST | when="about to surface any handler-facing question" | then="run triage first — never ask a question resolvable from request, code, or defaults"
+@RULE rid=rule:triage-first | lvl=MUST | when="about to surface any handler-facing question" | then="run triage first — never ask a question resolvable within existing authority from request, code, or defaults; defaults never supply missing consent or required approval"
 @RULE rid=rule:escalate-high-stakes | lvl=SHOULD | when="the question is high-stakes per map:stakes" | then="escalate through critique then assess before asking"
 @RULE rid=rule:escalate-once | lvl=MUST_NOT | when="the high-stakes path has already run critique and assess once" | then="escalate again — if still unclear, ask the handler the meta-question directly"
 
@@ -46,4 +46,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=5 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-11-04T15:16:30Z | src="Alexandru Mares | allemaar.com" | method=generated

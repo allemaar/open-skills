@@ -261,7 +261,7 @@ member handles which material — is `references/human-contract.md` §1.
 > (`next-skills/SKILL.md`): surface the `next-skills` recommendations from
 > front-matter for the caller to pick. Offer only — never auto-invoke.
 
-> **Self-improvement.** On completion, run the Self-Improvement Protocol
+> **Self-improvement.** Run the Self-Improvement Protocol only when its installed owner is available. Preserve its qualification, vetting and approval rules. If absent, skip that optional hook without claiming it ran, surfacing an unvetted fix or auto-editing; substantive work may complete.
 > (`self-improve/SKILL.md`): apply its signal taxonomy and threshold to this
 > run; surface any surviving proposal for handler approval. Conservative —
 > silent otherwise. Never auto-apply.

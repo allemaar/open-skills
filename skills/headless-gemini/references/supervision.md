@@ -24,6 +24,8 @@ Prepare a private prompt file and a JSON spec with absolute paths. The output di
 
 The acknowledgment records a limitation already accepted during preflight; setting it does not grant authority. `shutdownGraceMs` defaults to 5 seconds and must be 100 through 30,000 milliseconds. It bounds waiting after root exit, cancellation, or a failed/hung `taskkill`; it is not proof that descendants have stopped. Empty `allowedFileCalls` means stop when any tool call is observed. It cannot prevent that call from starting. For an authorized file read, set `addWorkspace: true` and add an entry with `tool: "view_file"` and the exact absolute `path`. The only other supported monitored tool is `write_to_file`, using the same exact-path structure, and it requires prior write authorization. Without allowedCommandCall, no shell commands are allowed. Browser operations and native subagents remain unsupported.
 
+The adapter also recognizes the `read_file` alias for an approved `view_file` path. Its parameters may contain `Path` and optional positive safe-integer `StartLine` and `EndLine` bounds, or `Path` and a nonnegative safe-integer `ByteOffset`. It rejects combined line and byte addressing, unknown fields and unapproved paths.
+
 ```powershell
 node '<skill-dir>/scripts/run-windows.mjs' '<absolute-spec.json>'
 ```

@@ -33,7 +33,7 @@ When selecting for a pass: pick personas whose `best-for` tags overlap with the 
 
 ---
 
-### Claude's Own POV
+### Current Reviewer's Own View
 **Lens:** Pattern-matching across all prior context; the AI's structural perspective.
 **Instinct:** "What property of this idea is working against itself?"
 **Best for:** Every target type. Always included. Always last.
@@ -206,4 +206,4 @@ When selecting for a pass: pick personas whose `best-for` tags overlap with the 
 | `code / implementation` | Architect, Security Auditor, Performance Engineer, Maintainability Judge |
 | `ui / ux` | Adversarial User, Disinterested Customer, Overwhelmed Newcomer, Ethical Auditor |
 
-*Claude's Own POV is always added on top of any selection.*
+*Current Reviewer's Own View is always added on top of any selection.*

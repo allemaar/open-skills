@@ -53,10 +53,11 @@ Class is assigned per artifact **kind** at first encounter, not re-judged per us
 | env-coupled or clock-coupled + high leverage | **re-verify** |
 | report, any age, load-bearing | **re-verify** (a report is never promoted to state by aging) |
 | report, orientation only | **reuse, labeled as report** |
-| no cheap discriminator exists for a spot-check row | **re-verify or accept-labeled-risk** — say which, in the output |
 | **unclassified artifact kind (DEFAULT ROW)** | **spot-check**; classify the kind before next reuse |
 
 `accept-labeled-risk` is **agent-electable ONLY on the no-cheap-discriminator row** — it is never a bypass for a `re-verify` result elsewhere in the table. On any other row, proceeding despite a `re-verify` verdict requires explicit Handler authority (that is a Handler override, not a table output). Where it applies, it is never silent: the staleness risk is named next to the conclusion it feeds.
+
+After the first matching policy is selected, handle discriminator availability for every spot-check result, including the default row: if no cheap exclusive discriminator exists, re-verify or explicitly accept labeled risk only where already permitted. Mandatory re-verification for invalidators, conflicts, high-leverage volatile evidence and load-bearing reports remains mandatory; this fallback never loosens those rows.
 
 ## Output record (one line to a few lines, inline where the evidence is used)
 

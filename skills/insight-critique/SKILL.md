@@ -50,7 +50,7 @@ Run all four passes. Passes 1–3 are independent. Pass 4 depends on Risks.
 Output a structured report with four labeled sections: Summary, Strengths, Risks, Fixes. Then set a verdict:
 
 - ✅ **Approved** — all risks are Low or cosmetic
-- ⚠️ **Conditional** — risks present but fixable; apply fixes then proceed to `/plan-execute`
+- ⚠️ **Conditional** — risks present but fixable; propose targeted fixes; offer `/plan-execute` only against a relevant approved executable plan
 - 🚫 **Not Approved** — High risks present; `/plan-create` or a redesign is required
 
 ## Constraints
@@ -65,7 +65,7 @@ Suggest the natural next command — these mirror the `next-skills:` front-matte
 
 - `/insight-adversarial` — stress-test the critiqued work from multiple POVs
 - `/plan-create` — if the verdict is 🚫 Not Approved and a redesign is needed
-- `/plan-execute` — apply the targeted fixes / proceed if the verdict is ✅ Approved or ⚠️ Conditional
+- `/plan-execute` — only for a relevant approved executable plan after an Approved or Conditional verdict. Offer /plan-execute only when a relevant approved executable plan exists. Otherwise offer a scoped authorized repair or the appropriate planning owner; a critique verdict does not create execution approval.
 
 > **Human output.** This skill's handler-facing output obeys the human-output
 > contract (`human-output/SKILL.md`).

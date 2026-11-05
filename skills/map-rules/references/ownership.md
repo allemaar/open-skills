@@ -37,6 +37,30 @@ Migrating exclusions into `m3` is proposal-first. When establishing a scope, sel
 
 Files under an established exclusion produce no organization findings and receive no `meta.map`. An undeclared machine-owned subtree produces one `declare-or-organize` finding.
 
+## Machine declaration grammar
+
+Only `myk.m3` in `.myk/README.md` frontmatter owns `exclusions` and `managed-artifacts`. Use spaces: `myk:` at column 1, `  m3:`, four-space list headings, six-space `- path:` rows and eight-space continuation fields. Path is first; other keys may follow in any order. Scalars are nonempty trimmed bare strings or JSON double-quoted strings. Unknown/duplicate keys, duplicate paths within a list, tabs, malformed rows, invalid UTF-8/BOM or invalid fields invalidate the contract; apply no exclusions or healing from it.
+
+- Exclusion keys: required `path`, `owner`, `prohibition`, `graph-entry`, `reason`, `established-by`; optional `entrypoint`.
+- Managed-artifact keys: required `path`, `owner`, `owned-surfaces`, `established-by`; optional `map`, `section`, `graph-entry`, `entrypoint`, `reason`, `prohibition`. Require either both `map` and `section`, or `graph-entry`. A lone map or section is invalid.
+- `graph-entry` is `single-entrypoint`, `individually-indexed` or `none`. `owned-surfaces` is a comma-separated nonempty subset of `frontmatter, body, locator, whole-file`, optionally enclosed in brackets; duplicate values are invalid.
+- `path`, `map` and `entrypoint` use the contained locator grammar in [link-resolution](link-resolution.md). They must exist and have no observable redirect. Exclusions name directories. A `single-entrypoint` declaration, or a managed directory, requires an existing file `entrypoint` inside that declared path. `section` is the exact covering-map heading text.
+
+Example (inside the enclosing frontmatter):
+
+```yaml
+myk:
+  m3:
+    exclusions:
+      - path: "generated"
+        owner: "generator"
+        prohibition: "Do not edit generated content."
+        graph-entry: "single-entrypoint"
+        entrypoint: "generated/index.md"
+        reason: "The generator owns this subtree."
+        established-by: "Handler-selected scope contract"
+```
+
 ## Shared `meta`
 
 `meta` is shared by multiple writers. Read, merge individual keys, and write. Never replace the container or discard sibling keys. Preserve the map-side member link as the recovery copy for owner drift.

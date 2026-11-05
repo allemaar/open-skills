@@ -30,7 +30,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. State the ask or next action, then explain what it means.
 3. Order details by decision relevance and put claims before supporting evidence.
 4. Label confirmed claims, judgments, and estimates; state what was not checked.
-5. Keep reference detail below the decision and mechanically check figures when present.
+5. Keep reference detail below the decision; the mechanical figure check applies to receipt-marked figures, preserving other code and quotations.
 
 ## Subagents
 

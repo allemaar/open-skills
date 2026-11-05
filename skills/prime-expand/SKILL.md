@@ -23,7 +23,7 @@ triggers:
 
 # /prime-expand
 
-Expand a vague gap statement into a concrete priming target — sharp question(s) + validated source candidates — via a delegated sub-agent, so the expansion reasoning never enters the caller's context. The caller sees only the proposed pair and confirms, edits, or refuses.
+Expand a vague gap statement into a concrete priming target — sharp question(s) + source candidates with explicit validation status — via a delegated sub-agent, so the expansion reasoning never enters the caller's context. The caller sees only the proposed pair and confirms, edits, or refuses.
 
 > **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date.
 
@@ -33,7 +33,7 @@ Expand a vague gap statement into a concrete priming target — sharp question(s
 
 ## Boundary
 
-Use `/prime-expand` to turn a fuzzy "I should know more about X" into a sharp `{question, sources[]}` pair ready to feed downstream priming. Do not use it for actual investigation — that is `/prime-fetch` (single noisy tool call) or `/prime-sweep` (large source-surface, parallel sub-agents). Do not use it to gather facts for the user — that is `/investigate`.
+Use `/prime-expand` to turn a fuzzy "I should know more about X" into a sharp `{questions[], sources[]}` pair ready to feed downstream priming. Do not use it for actual investigation — that is `/prime-fetch` (single noisy tool call) or `/prime-sweep` (large source-surface, parallel sub-agents). Do not use it to gather facts for the user — that is `/investigate`.
 
 ## Step 1 — Receive the seed gap
 
@@ -53,8 +53,11 @@ Assemble a short snapshot for the sub-agent only. **This is the only context-bri
 - CWD, project type (language/framework if known).
 - Last few files mentioned in this turn.
 - The caller's current task or objective if known.
+- Include only the bounded relevant caller conversation units needed to resolve a conversation pointer, never an unseen reference to the full history.
 
 ## Step 3 — Brief and spawn the sub-agent
+
+Before dispatch, bind the worker and total invocation to finite deadlines and resource limits, with a named monitoring owner, observable progress, a cancellation handle and terminal success/failure/timeout outcomes. Use native controls; include read-only scope and no-child instructions in research briefs. On failure or timeout, cancel owned work and report retained partial results and unchecked coverage. If these controls are unavailable, do not dispatch. Mandatory delegation cannot fall back to inline source gathering; report the missing capability and stop the dependent operation.
 
 Spawn one sub-agent with a fresh context window. The brief contains:
 
@@ -70,8 +73,8 @@ The sub-agent works in its own window:
 1. Parses the seed for likely subject, scope, and missing specifics.
 2. Generates 1–3 concrete declarative questions implied by the seed.
 3. Proposes ≥1 source candidate per question (file path, URL, doc reference, `the conversation above`, `the search-result dump in turn N`).
-4. Spot-checks candidates exist (`Glob` / `Read`, ≤200 lines each).
-5. Discards proposals whose sources don't exist or don't look relevant.
+4. Spot-checks permitted local candidates (`Glob` / `Read`, within the existing caps), labeling those actually checked.
+5. Distinguishes remote URLs, unsupplied conversation units and inaccessible candidates as unverified; do not discard a plausible remote source solely because Glob cannot validate it. Discard only evidenced irrelevant or nonexistent sources.
 
 ## Step 5 — Sub-agent emits the proposed pair
 
@@ -85,7 +88,7 @@ Expanded:
   Sources: [<source 1>, <source 2>, ...]
 ```
 
-If the sub-agent cannot produce ≥1 question with ≥1 validated source, it emits:
+If the sub-agent cannot produce ≥1 question with ≥1 plausible source, its validation status explicit, it emits:
 
 ```text
 Seed: <original input verbatim>
@@ -96,7 +99,7 @@ Refused: cannot expand — <one-line reason>
 
 The lead presents the proposed pair to the caller (or user) and waits for one of three responses:
 
-- **Confirm** — emit `{question, sources[]}` to the caller for direct use, or chain into `/prime-fetch` / `/prime-sweep`.
+- **Confirm** — emit `{questions[], sources[]}` preserving every confirmed question and its source associations; if a downstream call needs one question, explicitly select or combine the confirmed objective first to the caller for direct use, or chain into `/prime-fetch` / `/prime-sweep`.
 - **Edit** — caller revises questions or sources; lead re-emits the revised pair.
 - **Refuse** — caller proceeds without priming; skill exits.
 

@@ -1,17 +1,17 @@
 @DOC ver=2.0 | id=insight-adversarial | title="Multi-Pass Adversarial Critique with Persona Selection" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
-@INTENT goal="Run structured adversarial review using a panel of distinct critic personas. 1–3 passes. First pass selects 4+ personas; subsequent passes add 2–4 new personas. Personas tailored to target type." | trigger="user says adversarial, red team this, multi-POV review, stress-test, poke holes, what am I missing, attack my plan, critique from multiple angles, is this solid, what would a skeptic say"
-@STAMP ts:ts=2026-10-30T15:49:33Z | src="Alexandru Mares | allemaar.com" | method=manual
+@INTENT goal="Run structured adversarial review using a panel of distinct critic personas. 1–3 passes. First pass selects 4+ personas; subsequent passes add 3–4 new personas. Personas tailored to target type." | trigger="user says adversarial, red team this, multi-POV review, stress-test, poke holes, what am I missing, attack my plan, critique from multiple angles, is this solid, what would a skeptic say"
+@STAMP ts:ts=2026-11-04T15:16:45Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Governance ---
 
 @SEC name="Governance"
 @RULE rid=rule:classify-first | lvl=MUST | when="starting a pass" | then="classify target type before selecting personas"
-@RULE rid=rule:min-4 | lvl=MUST | when="selecting personas" | then="select minimum 4 personas per pass (including Claude's Own POV)"
-@RULE rid=rule:claude-pov-last | lvl=MUST | when="every pass" | then="include Claude's Own POV as the final persona"
-@RULE rid=rule:no-reuse | lvl=MUST_NOT | when="across passes" | then="reuse a substantive critic persona — track used personas explicitly at top of each pass; Claude's Own POV is exempt"
+@RULE rid=rule:min-4 | lvl=MUST | when="selecting personas" | then="select minimum 4 personas per pass (including Current Reviewer's Own View)"
+@RULE rid=rule:claude-pov-last | lvl=MUST | when="every pass" | then="include Current Reviewer's Own View as the final persona"
+@RULE rid=rule:no-reuse | lvl=MUST_NOT | when="across passes" | then="reuse a substantive critic persona — track used personas explicitly at top of each pass; Current Reviewer's Own View is exempt"
 @RULE rid=rule:no-solutions-in-pass | lvl=MUST_NOT | when="inside a persona pass" | then="offer solutions — remediation belongs in synthesis (Step 4) only"
 @RULE rid=rule:no-soft | lvl=MUST_NOT | when="rendering findings" | then="soften findings to be diplomatic"
-@RULE rid=rule:new-personas-pass2 | lvl=SHOULD | when="running pass 2" | then="add 2–4 genuinely new personas"
+@RULE rid=rule:new-personas-pass2 | lvl=SHOULD | when="running pass 2" | then="add 3–4 genuinely new personas"
 @RULE rid=rule:tailor-personas | lvl=SHOULD | when="selecting personas" | then="tailor selection to target type"
 @RULE rid=rule:user-suppress | lvl=MAY | when="user explicitly requests it" | then="suppress a specific persona"
 
@@ -24,7 +24,7 @@
 # --- Pass Mechanics ---
 
 @SEC name="Pass Mechanics"
-@MAP name=PassFlow | pairs=["Pass-1"->"Classify target → select 4–5 personas → run each → synthesize verdict","Pass-2"->"Check against Pass 1 findings → add 2–4 NEW personas not used before → re-run → delta verdict","Pass-3"->"Final wrap-up. If all critical issues resolved or within params, declare done. Otherwise escalate."]
+@MAP name=PassFlow | pairs=["Pass-1"->"Classify target → select 4–5 personas → run each → synthesize verdict","Pass-2"->"Check against Pass 1 findings → add 3–4 NEW personas not used before → re-run → delta verdict","Pass-3"->"Final wrap-up. If all critical issues resolved or within params, declare done. Otherwise escalate."]
 
 # --- Step 1: Target Classification ---
 
@@ -37,21 +37,21 @@
 # --- Step 2: Persona Selection Logic ---
 
 @SEC name="Step 2 — Persona Selection"
-@STEP rid=step:select-personas | n:int=3 | op=std:ai.prompt@v1 | args=[task="Pick primary persona (whose domain most directly overlaps target's failure mode), 2–3 supporting personas (different angles, complement primary, no duplicates), and Claude's Own POV last. Track used personas explicitly."] | in=[ref:target-class,ref:roster,ref:used-personas] | out=[ref:selected-personas] | rules=[rid:rule:min-4,rid:rule:claude-pov-last,rid:rule:no-reuse,rid:rule:tailor-personas,rid:rule:user-suppress]
-@CHECK rid=check:persona-count | assert="ref:selected-personas count >= 4 AND includes Claude's Own POV last" | fail=ABORT | msg="Persona selection violates minimums."
-@CHECK rid=check:no-reuse | assert="ref:selected-personas has zero overlap with ref:used-personas except Claude's Own POV" | fail=ABORT | msg="Persona reuse detected. Pick different personas."
+@STEP rid=step:select-personas | n:int=3 | op=std:ai.prompt@v1 | args=[task="Pick primary persona (whose domain most directly overlaps target's failure mode), 2–3 supporting personas (different angles, complement primary, no duplicates), and Current Reviewer's Own View last. Track used personas explicitly."] | in=[ref:target-class,ref:roster,ref:used-personas] | out=[ref:selected-personas] | rules=[rid:rule:min-4,rid:rule:claude-pov-last,rid:rule:no-reuse,rid:rule:tailor-personas,rid:rule:user-suppress]
+@CHECK rid=check:persona-count | assert="ref:selected-personas count >= 4 AND includes Current Reviewer's Own View last" | fail=ABORT | msg="Persona selection violates minimums."
+@CHECK rid=check:no-reuse | assert="ref:selected-personas has zero overlap with ref:used-personas except Current Reviewer's Own View" | fail=ABORT | msg="Persona reuse detected. Pick different personas."
 
 # --- Step 3: Run Each Persona Pass ---
 
 @SEC name="Step 3 — Run Each Persona Pass"
-@MAP name=PersonaFormat | pairs=["header"->"## 🔴 [PERSONA NAME]","lens-line"->"*Lens: [one-sentence description]*","critique"->"specific finding(s), no softening, no generalities","constraint"->"findings must be distinct across personas in this pass"]
+@MAP name=PersonaFormat | pairs=["header"->"## 🔴 [PERSONA NAME]","lens-line"->"*Lens: [one-sentence description]*","critique"->"specific evidenced findings, or no material finding supported with inspected scope and remaining uncertainty; never invent an issue","constraint"->"merge convergent findings across personas while retaining their evidence; do not invent distinctions"]
 
-@STEP rid=step:run-passes | n:int=4 | op=std:ai.prompt@v1 | args=[task="For each selected persona: state name and lens (one sentence), run critique with at least one specific named finding. Format per PersonaFormat. Claude's Own POV last — first person, clear position, no hedging."] | in=[ref:selected-personas,ref:target-class] | use=[cfg:PersonaFormat] | out=[ref:persona-findings] | rules=[rid:rule:no-soft,rid:rule:no-solutions-in-pass]
+@STEP rid=step:run-passes | n:int=4 | op=std:ai.prompt@v1 | args=[task="For each selected persona: state name and lens (one sentence), report specific evidenced findings, or state no material finding supported in the inspected scope with remaining uncertainty; never invent an issue. Format per PersonaFormat. Current Reviewer's Own View last — first person, clear position, no hedging."] | in=[ref:selected-personas,ref:target-class] | use=[cfg:PersonaFormat] | out=[ref:persona-findings] | rules=[rid:rule:no-soft,rid:rule:no-solutions-in-pass]
 
 # --- Step 4: Synthesis ---
 
 @SEC name="Step 4 — Synthesis"
-@MAP name=SynthesisSections | pairs=["critical-issues"->"top 3, ranked by severity","blind-spots"->"what aggregate reveals that no single persona fully caught","remediation"->"minimum surgical fix per Critical Issue. If unfixable, say so.","one-line-verdict"->"honest, specific, no hedging"]
+@MAP name=SynthesisSections | pairs=["critical-issues"->"up to 3 supported issues, ranked by actual severity; label lower severities honestly, and state when no critical issue or no material finding is supported","blind-spots"->"what aggregate reveals that no single persona fully caught","remediation"->"minimum surgical fix per Critical Issue. If unfixable, say so.","one-line-verdict"->"honest, specific, no hedging"]
 
 @STEP rid=step:synthesize | n:int=5 | op=std:ai.prompt@v1 | args=[task="Synthesize per SynthesisSections."] | in=[ref:persona-findings] | use=[cfg:SynthesisSections] | out=[ref:pass-verdict]
 
@@ -80,4 +80,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-30T15:49:33Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-11-04T15:16:45Z | src="Alexandru Mares | allemaar.com" | method=generated

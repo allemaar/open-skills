@@ -1,11 +1,11 @@
-@DOC ver=2.0 | id=insight-explore | title="Divergent Brainstorm — 3+ Implementation Options" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
+@DOC ver=2.0 | id=insight-explore | title="Divergent Brainstorm — Implementation Options" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Generate 3+ distinct implementation options for a problem, then converge on a recommendation. Produces options, not plans." | trigger="user runs /explore, asks to brainstorm options, explore approaches, give alternatives, or wants divergent thinking before planning"
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-11-04T15:22:10Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Governance ---
 
 @SEC name="Governance"
-@RULE rid=rule:min-options | lvl=MUST | when="generating options" | then="produce at least 2 distinct options; target 3"
+@RULE rid=rule:min-options | lvl=MUST | when="generating options" | then="Target three distinct feasible options and search for at least two; if evidence supports only one or none, report that constrained or unresolved result, the bounded search scope and decisive gap. Never invent cosmetic alternatives or a winner."
 @RULE rid=rule:no-code | lvl=MUST_NOT | when="exploring" | then="write code or make changes — ideation only"
 @RULE rid=rule:distinct-options | lvl=MUST | when="presenting options" | then="each option must differ in approach, not just in surface detail"
 
@@ -25,12 +25,13 @@
 @SEC name="Phase 2 — Convergence"
 @MAP name=ComparisonAxes | pairs=["DX"->"developer experience, API ergonomics, debuggability","Robustness"->"error handling, edge case coverage, failure modes","Timeline-fit"->"how long does each take to implement and validate","Alignment"->"matches existing patterns and coding standards in the repo"]
 
-@STEP rid=step:compare | n:int=5 | op=std:ai.prompt@v1 | args=[task="Compare all options across the four axes in ComparisonAxes."] | in=[ref:option-A,ref:option-B,ref:option-C,ref:constraints] | use=[cfg:ComparisonAxes] | out=[ref:comparison] | note="Convergence — score each option against the four axes."
+@STEP rid=step:collect-options | n:num=4.5 | op=std:ai.prompt@v1 | args=[task="Build one collection containing every actual feasible candidate from the lens results and any justified additional variant. Lens results may explicitly contain no feasible candidate with evidence; those are not options. Preserve the full two-, four-, one- or zero-option result and its bounded search gaps."] | in=[ref:option-A,ref:option-B,ref:option-C,ref:constraints] | out=[ref:options]
+@STEP rid=step:compare | n:int=5 | op=std:ai.prompt@v1 | args=[task="Collect the actual feasible options from all three lens results and any justified additions into one collection. A lens may return no feasible candidate with evidence; include every actual candidate, including a fourth, and handle a valid two-, one- or zero-option result honestly. Compare that whole collection across the four axes in ComparisonAxes."] | in=[ref:options,ref:constraints] | use=[cfg:ComparisonAxes] | out=[ref:comparison] | note="Convergence — score each option against the four axes."
 
 # --- Phase 3: Recommendation ---
 
 @SEC name="Phase 3 — Recommendation"
-@STEP rid=step:winner | n:int=6 | op=std:ai.prompt@v1 | args=[task="Pick a Winner. Provide 1–2 sentence reason referencing the comparison."] | in=[ref:comparison] | out=[ref:recommendation]
+@STEP rid=step:winner | n:int=6 | op=std:ai.prompt@v1 | args=[task="Choose a supported winner only when evidence permits; otherwise report constrained or unresolved results with search scope and the decisive gap. Provide a concise reason from the comparison."] | in=[ref:comparison] | out=[ref:recommendation]
 @STEP rid=step:next-step | n:int=7 | op=std:ai.prompt@v1 | args=[task="Ask the user: Shall I /plan-create this?"] | in=[ref:recommendation] | note="Always offer the natural next step — never auto-invoke."
 
 # --- Downstream ---
@@ -50,4 +51,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-11-04T15:22:10Z | src="Alexandru Mares | allemaar.com" | method=generated

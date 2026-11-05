@@ -48,7 +48,7 @@ Before doing anything, check whether `syncpack` and `@manypkg/cli` are installed
 | Both installed | Proceed silently to Phase 2 — no asking, no install |
 | One or both missing | Stop. Explain to the user what each tool does + why useful (see prose below), then ASK with a single decision: install + continue, or abort. On reject → stop. On accept → install as root devDeps, then continue. |
 
-Detection: read the root `package.json` and check `devDependencies` for `syncpack` and `@manypkg/cli`. (Don't shell out for this — the file is cheap to read.)
+Read package declarations, then resolve and verify the actual repository-local syncpack and manypkg executables and installed versions. Declarations alone do not prove installation. Invoke those exact local binaries with the native process API; command examples use <repo-local-syncpack> and <repo-local-manypkg> placeholders for these resolved paths. Never use a package-acquiring fallback. If either is unavailable, use the existing single install-or-abort decision.
 
 **If asking the user to install, use this language:**
 
@@ -70,7 +70,7 @@ If the user invoked with a subcommand (`/monorepo-deps update`, `/monorepo-deps 
 | `check` | `syncpack lint` + `manypkg check` + `npm outdated --workspaces` summary. Read-only. |
 | `fix` | `syncpack fix` + `manypkg fix`, then `npm install` to resync lock. No `npm update`. |
 | `update` | The full sweep: `fix` first, then `npm update --workspaces --include-workspace-root`, handle EOVERRIDE/peer conflicts, re-verify. |
-| `init-config` | Create a starter `.syncpackrc.json` from a template (see Phase 5). For repos that don't have one. |
+| `init-config` | Create a starter `.syncpackrc.json` from a template (see the `init-config` subsection). For repos that don't have one. |
 | `maintain-config` | Add/edit groups in an existing `.syncpackrc.json` — pin a new shared dep, add a semver exception, add a banned dep, etc. |
 
 ## Phase 3 — Execute
@@ -78,22 +78,24 @@ If the user invoked with a subcommand (`/monorepo-deps update`, `/monorepo-deps 
 ### `check`
 
 ```bash
-npx syncpack lint
-npx manypkg check
-npm outdated --workspaces --include-workspace-root --json > /tmp/outdated.json
+<repo-local-syncpack> lint
+<repo-local-manypkg> check
+npm outdated --workspaces --include-workspace-root --json
 ```
 
-Summarize `/tmp/outdated.json`: group by major / minor / patch / missing, show consumer count per dep. Don't change anything. Report findings.
+Capture stdout in memory and retain the actual exit status. Summarize the JSON result: group by major / minor / patch / missing, show consumer count per dep. Don't change anything. Report findings.
 
 ### `fix`
 
 ```bash
-npx syncpack fix
-npx manypkg fix
+<repo-local-syncpack> fix
+<repo-local-manypkg> fix
 npm install
 ```
 
 `syncpack fix` rewrites consumer package.json ranges to conform to the version groups + semver groups in `.syncpackrc.json`. `manypkg fix` handles the rules it knows about (typically a no-op once syncpack has run). `npm install` resyncs the lock to the rewritten package.jsons. Re-run `syncpack lint && manypkg check` at the end to confirm clean.
+
+Conflict repair is bounded to one selected repair pass and one retry per invocation. If the conflict persists, stop with actual state and unresolved evidence; never mask it with force flags. Every verification requires completed exit 0; absence of a lock-error substring alone is not success. The read-only check operation reports actual issues without entering mutation-only final gates.
 
 ### `update`
 
@@ -105,7 +107,7 @@ The full sweep. Run in this order:
 4. **Cap unwanted majors in root `overrides`.** Pattern: `"typescript": "^5"`, `"eslint": "^9"`, `"lucide-react": "^0"`. Cap at the current major. See "EOVERRIDE conflicts" below if npm rejects the override.
 5. **`npm update --workspaces --include-workspace-root`** — bumps everything to latest within ranges. The override caps block unwanted majors; consumer `^NewMajor` ranges flow through.
 6. **Handle conflicts** if they fire (see two subsections below).
-7. **Re-verify:** `npx syncpack lint && npx manypkg check && npm ci --dry-run --workspaces --include-workspace-root`. All three must pass before stopping.
+7. **Re-verify:** `<repo-local-syncpack> lint && <repo-local-manypkg> check && npm ci --dry-run --workspaces --include-workspace-root`. All three must pass before stopping.
 
 #### EOVERRIDE conflicts
 
@@ -113,7 +115,7 @@ The full sweep. Run in this order:
 
 - **Match the ranges.** Set root devDep range equal to the override range (e.g. both `^5`). Often the cleanest fix — but watch manypkg in the next subsection.
 - **Remove the root direct dep.** If nothing at the root actually needs the dep directly (it's only used transitively or by workspaces), drop it from root `devDependencies`. The override still applies via dedupe. This was the right call for `typescript` in the YounndAI repo — root scripts use `turbo run check-types` which resolves typescript via workspaces, not the root.
-- **Scope the override to transitive only:** `"typescript": { ".": "^5" }` syntax means "only apply to transitive uses, leave direct deps alone." Useful when you can't drop the root dep but don't want it capped.
+- **Scope a descendant override under its actual parent:** for example, `"parent-package": { "typescript": "^5" }` affects that parent’s descendants. A `"."` key also targets the overridden package itself; it does not exempt direct dependencies. Direct-dependency override specs must match the dependency spec, or use a supported `$dependency` reference. Inspect ownership before changing or removing a root dependency. See the [npm override contract](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/#overrides).
 
 #### Peer-dep conflicts
 
@@ -197,15 +199,15 @@ Common edits:
 - **Cap a major in overrides** — change override value from `*` to `^N` where N is the current major.
 - **Allow patch+minor on an exact-pinned override** — change `X.Y.Z` to `^X.Y.Z`.
 
-Always re-run `npx syncpack lint && npx manypkg check` after editing.
+Always re-run `<repo-local-syncpack> lint && <repo-local-manypkg> check` after editing.
 
 ## Phase 4 — Verify
 
 Before declaring done:
 
 ```bash
-npx syncpack lint              # → "No issues found"
-npx manypkg check              # → "workspaces valid!"
+<repo-local-syncpack> lint              # → "No issues found"
+<repo-local-manypkg> check              # → "workspaces valid!"
 npm ci --dry-run --workspaces --include-workspace-root   # → no "Missing X from lock file" errors
 ```
 
@@ -215,7 +217,7 @@ If any of these fail, surface the error to the user — don't silently re-loop.
 
 Once a repo has syncpack + manypkg + a `.syncpackrc.json`, the maintenance cadence is:
 
-- **On every PR that touches deps** — CI should run `npx syncpack lint && npx manypkg check` as a required gate. Without this, drift creeps back in.
+- **On every PR that touches deps** — CI should run `<repo-local-syncpack> lint && <repo-local-manypkg> check` as a required gate. Without this, drift creeps back in.
 - **Whenever a shared dep needs a new version** — bump the entry in root `overrides` (not in 50 consumer package.jsons).
 - **Whenever a new shared dep appears across multiple consumers** — add it to the "Override-managed deps" group in `.syncpackrc.json`, then root `overrides`.
 - **Whenever a peer dep needs an exact version** — add a semver group exception in `.syncpackrc.json` `semverGroups` before the generic `^` group.

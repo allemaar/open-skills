@@ -28,7 +28,11 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Name the subject and any resume context
 2. Gather bounded read-only evidence
 3. Assess position, remaining work and ETA uncertainty
-4. Return the appropriate result with source limits
+4. Explain needed connections from already gathered evidence in the selected human face; name unestablished connections as gaps.
+5. Return the appropriate result with source limits
+6. When checking the agent record, reject malformed nonempty quoted provenance pairs; this is not full-schema validation.
+7. Synthetic examples identify every payload field or entry with an exact provenance rider; example values are not live project attestation.
+8. Consume absent family topology as unknown, never as false/trunk or a basis for a topology-dependent ETA.
 
 ## Subagents
 
@@ -46,6 +50,10 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/orient-status/SKILL.md](../../skills/orient-status/SKILL.md)
 - [skills/orient-status/protocol.yon](../../skills/orient-status/protocol.yon)
+- [skills/orient-status/references/orient-spec/orient-contract.md](../../skills/orient-status/references/orient-spec/orient-contract.md)
+- [skills/orient-status/references/tools/orient-validate.mjs](../../skills/orient-status/references/tools/orient-validate.mjs)
+- [skills/orient-status/references/orient-spec/examples/orient-record.example.yon](../../skills/orient-status/references/orient-spec/examples/orient-record.example.yon)
+- [skills/orient-status/references/orient-spec/orient-record.yon](../../skills/orient-status/references/orient-spec/orient-record.yon)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

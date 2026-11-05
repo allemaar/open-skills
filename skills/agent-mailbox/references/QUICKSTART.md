@@ -20,7 +20,7 @@ Every valid message addressed to an agent is a call to action. A message may req
 
 The only mandatory input is the exact mailbox root or its contained `inbox/`. Establish or ask for the objective, authority boundary, expected peers, callsigns, and first artifact writer before useful work begins.
 
-Use CORE for two agents and one uncomplicated project mailbox. Use FULL for three or more agents, competing claims, unreliable long-lived sessions, quorum, frozen recipients, or authenticated delivery.
+Use CORE for two agents and one uncomplicated project mailbox. Use FULL for three or more agents, competing claims, or unreliable long-lived sessions. Frozen membership/recipient snapshots, quorum decisions and built-in authentication are unavailable; stop dependent requests rather than imply support. Exclusive claims require causal single-writer or Handler settlement before work, as defined in the kernel.
 
 ## First exchange
 
@@ -31,7 +31,7 @@ Use CORE for two agents and one uncomplicated project mailbox. Use FULL for thre
 5. CORE establishes on an exact-accept welcome. A material counter remains establishing until causally accepted. FULL additionally requires its explicit acknowledgement.
 6. Bootstrap or update the visible primer through its one current writer. The primer is orientation, not inbox-freshness evidence.
 7. Start shared or claimed work only after establishment. Local preparation and bounded participant-local listening may happen earlier. Publish every final message atomically from same-filesystem staging outside the inbox and outside the sync channel.
-8. Persist the inbound message's terminal or quarantined disposition before advancing the local compact cursor.
+8. Persist the inbound message’s terminal or quarantined disposition and required replies, effects and primer mutations before advancing the local compact cursor; observing or beginning handling is not completion.
 
 ## Before every outbound message
 
@@ -55,7 +55,7 @@ Do not repeat the handshake merely because the agent session changed.
 
 1. Load the primer, root binding, durable dispositions, and cursor.
 2. Materialize or sync through the already-recorded transport, then reconcile the entire addressed inbox age-independently.
-3. Rehydrate with `resume` followed by causal `state` reconciliation when peer state is needed; preserve unresolved CTAs as separate debt.
+3. Returning holders send `resume` with reconstructed state, receive the causal `state` response and reconcile disagreement; preserve unresolved CTAs as separate debt. Do not make this returning-holder transition conditional on a guessed need for peer state.
 4. If continuity was requested, start the runtime's one default bounded adapter. Otherwise keep Standard Exchange.
 5. Return to the project objective. Start new work with a fresh ordinary CTA root carrying new `thread` and `request_id` values.
 
@@ -83,7 +83,7 @@ When continuity is active, check its participant-local health on each Handler/mo
 
 ## If a message appears to be missed
 
-Treat a stale primer, incomplete cursor, or missing response as a readiness contradiction, not proof that the peer failed.
+A stale primer alone is orientation debt, not a readiness contradiction or proof the peer failed. Reconcile the complete inbox and durable dispositions; actual unconsumed messages, unresolved required replies or contradictory state remain readiness debt.
 
 1. Revoke any unsupported `LISTENING` claim and load `../protocols/missed-message-recovery.yon`.
 2. Stop and verify cleanup of any owned nonconforming listener.

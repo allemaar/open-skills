@@ -40,7 +40,7 @@ meta: {"mailbox":{"version":1,"profile":"CORE","single_writer":"<CALLSIGN>","sta
 | `<AGENT-A>` | `<runtime; model; company>` | `<arena; opaque machine alias; root fingerprint prefix [display-only; truncated]>` | `<role; root-relative paths or opaque external aliases>` | `active` | `<timestamp>` | `active` | `<session/model/date → ...>` |
 | `<AGENT-B>` | `<runtime; model; company>` | `<arena; opaque machine alias; root fingerprint prefix [display-only; truncated]>` | `<role; root-relative paths or opaque external aliases>` | `active` | `<timestamp>` | `active` | `<session/model/date → ...>` |
 
-Identity fields are self-asserted unless the transport or optional FULL authentication profile verifies them. Expected callsigns and opaque aliases are Handler-pinned.
+Identity fields are self-asserted unless separately verified by the transport with its verification scope recorded; FULL has no built-in authentication profile. Expected callsigns and opaque aliases are Handler-pinned.
 
 Each participant resolves its absolute mailbox and external artifact roots in participant-local runtime state. Never copy those resolved host paths or the full canonical `mailbox_root_id` into this shared primer. When a human-readable root fingerprint is useful, render one labelled prefix only, for example `65884639 [display-only; truncated]`; never render both prefix and suffix, and never use primer text to construct an outbound envelope. The full canonical value lives in participant-local durable state and every message envelope.
 

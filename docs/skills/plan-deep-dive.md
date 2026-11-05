@@ -28,7 +28,8 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Load the plan, enumerate phases, and confirm that it is the correct and current plan.
 2. Inspect each phase in order without skipping.
 3. Present each verdict and obtain acknowledgement of a specific finding, or confirmation of no findings, before advancing.
-4. Apply amendments only after approval; recommend redesign for fundamental issues.
+4. Record the exact approved amendment set before writing; acknowledgement alone changes nothing. Delegated analysis returns after one phase to the lead gate; recommend redesign for fundamental issues.
+5. Report evidence coverage, unchecked scope and unresolved assumptions without an uncalibrated numeric confidence score.
 
 ## Subagents
 

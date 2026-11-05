@@ -31,6 +31,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Commission three independent perspectives when available
 3. Check facts and cross-examine the variants
 4. Synthesize the fourth version and prepare the voice handoff
+5. Keep actual voice-provider configuration and production records in a separate operational handoff; the copy pack carries intent, status and locators.
 
 ## Subagents
 

@@ -29,7 +29,8 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Identify the intended result, exact targets, constraints, and canonical sources.
 2. Choose create, assess/boil, diagnose, update, or consolidate.
 3. Read only the selected procedure and required supporting references.
-4. Follow its read-only or explicitly authorized write flow, then report evidence and gaps.
+4. For creation or behavior-changing updates, clarify only material unresolved choices after preflight; complete briefs and formatting-only updates skip the interview. Deeper questioning is opt-in, and declined or unanswered optional features stay off.
+5. Follow its read-only or explicitly authorized write flow, then report evidence and gaps.
 
 ## Subagents
 
@@ -51,6 +52,7 @@ The guide explains usage. Read the linked skill and its applicable references be
 - [skills/skill-smith/references/doctor.md](../../skills/skill-smith/references/doctor.md)
 - [skills/skill-smith/references/update.md](../../skills/skill-smith/references/update.md)
 - [skills/skill-smith/references/consolidate.md](../../skills/skill-smith/references/consolidate.md)
+- [skills/skill-smith/references/authoring.md](../../skills/skill-smith/references/authoring.md)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

@@ -34,7 +34,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 
 ## Subagents
 
-Selects inline or cold isolated-worker passes by subject; asks when uncertain. Quick/resolved runs are inline. Deep passes and fan-out above about six workers require Handler consent. Cold workers each handle one lens and do not delegate.
+Selects inline or cold isolated-worker passes by subject; asks when uncertain. Quick/resolved runs are inline. Deep passes and fan-out above about six workers require Handler consent. Cold workers each handle one lens and do not delegate. Dispatch requires finite limits, monitored cancellation and a terminal/partial result; unavailable controls stop delegation. Only an existing permitted inline fallback may continue.
 
 This describes the skill's own workflow. Available tools and the runtime's permission rules still apply.
 

@@ -29,6 +29,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Choose a minimal approved tool and path scope; Windows containment is unestablished, so stop if enforced read-only or exact isolation is required without independent proof.
 3. Otherwise disclose that monitoring detects actions after dispatch, then launch and supervise the retained process.
 4. Inspect tool use and validate the result.
+5. Check route-variable presence and scope without revealing or clearing values; unexpected routing stops the dependent run.
 
 ## Subagents
 
@@ -46,6 +47,7 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/headless-grok/SKILL.md](../../skills/headless-grok/SKILL.md)
 - [skills/headless-grok/protocol.yon](../../skills/headless-grok/protocol.yon)
+- [skills/headless-grok/references/validation.md](../../skills/headless-grok/references/validation.md)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

@@ -1,6 +1,6 @@
 @DOC ver=2.0 | id=plan-create | title="Phased Gated Implementation Plan — Design Only" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Produce a structured PLAN.md artifact via 5 gated phases. Design only — no implementation code is written. The plan is the deliverable." | trigger="user runs /plan-create, says make a plan, plan this out, design before coding, lets plan first, architect this, or asks for a phased approach. Also trigger proactively for multi-file changes, new features, architectural shifts, refactors spanning multiple components."
-@STAMP ts:ts=2026-10-30T15:49:33Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-11-04T15:16:21Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Hard Rules ---
 
@@ -53,7 +53,8 @@
 @STEP rid=step:group-by-phase | n:int=10 | op=std:ai.prompt@v1 | args=[task="Group changes by phase or component. Be specific enough that someone else could execute from the list."] | in=[ref:changes] | out=[ref:phased-changes]
 @STEP rid=step:map-dependencies | n:int=11 | op=std:ai.prompt@v1 | args=[task="Map dependencies. What must happen before what? Cross-component impacts? External requirements or approvals? Flag anything that could stall execution mid-plan."] | in=[ref:phased-changes] | out=[ref:dependencies]
 
-@CHECK rid=check:gate3 | assert="proposed changes address every success criterion; architectural/ownership concerns surfaced; minimum work (no over-engineering); split into 2+ distinct phases" | fail=WARN | msg="Gate 3 warnings: surface as warnings in plan. ABORT-level issue (changes don't address goal) → stop, resolve with user, then continue. Recovery: revise change list and re-evaluate."
+@CHECK rid=check:gate3-coverage | assert="proposed changes address every success criterion" | fail=ABORT | msg="Changes do not address the goal. Stop, resolve scope with the user, revise the change list and re-evaluate before advancing."
+@CHECK rid=check:gate3 | assert="architectural/ownership concerns surfaced; minimum work (no over-engineering); split into 2+ distinct phases" | fail=WARN | msg="Surface design warnings in the plan; otherwise adequate coverage may proceed with documented concerns."
 
 # --- Phase 4: Risk & Verification ---
 
@@ -72,7 +73,7 @@
 
 @CHECK rid=check:final-gate | assert="plan matches user's original intent; every Phase 3 change traces to Phase 2 success criterion; every Phase 2 criterion traces to Phase 4 verification; gate warnings documented; plan executable by someone who didn't write it" | fail=ABORT | msg="Final gate failure: fix plan before delivering. Don't deliver a plan you wouldn't execute yourself." | rules=[rid:rule:executable-output]
 
-@STEP rid=step:write-plan | n:int=15 | op=std:fs.write@v1 | args=[path="PLAN.md in project root, OR <task-slug>-plan.md if no clear root, OR present inline if no filesystem context"] | in=[ref:plan-draft] | out=[ref:plan-path] | rules=[rid:rule:cleanup-step]
+@STEP rid=step:write-plan | n:int=15 | op=std:fs.write@v1 | args=[path="PLAN.md in project root, OR <task-slug>-plan.md if no clear root, OR present inline if no filesystem context",task="Inspect the destination leaf and every existing ancestor without following links; refuse symlinks, junctions, mounts, unknown reparse points or equivalent redirects, including backup and staging paths. Create new artifacts exclusively. On collision preserve existing bytes: choose a fresh identity within the authorized scope or use an explicitly selected revision. For revisions, retain a recoverable preimage, require current bytes/revision to match the selected record immediately before replacement, and use the destination owner’s protected writer. Stop the affected write if identity changes or those guarantees are unavailable; never roll back over concurrent edits. Read back the result and report only actual saves."] | in=[ref:plan-draft] | out=[ref:plan-path] | rules=[rid:rule:cleanup-step]
 @STEP rid=step:present-plan | n:int=16 | op=std:ai.prompt@v1 | args=[task="Present the plan inline in the conversation and state the file path (if written)."] | in=[ref:plan-draft,ref:plan-path] | rules=[rid:rule:announce-progress]
 
 # --- Fast Mode Reference ---
@@ -99,4 +100,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-30T15:49:33Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-11-04T15:16:21Z | src="Alexandru Mares | allemaar.com" | method=generated

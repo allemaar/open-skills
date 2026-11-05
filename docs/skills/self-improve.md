@@ -29,6 +29,8 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Check materiality or recurrence and readiness of a fix.
 3. Draft a precise proposal for approval.
 4. Stay silent below threshold and never auto-apply.
+5. Apply a selected proposal through its verified canonical source owner and Skill Smith write procedure; preserve managed-owner and revision safeguards.
+6. Missing required vetting/approval helpers stop the proposal path; the parent task can complete without an invented protocol pass.
 
 ## Subagents
 

@@ -37,6 +37,10 @@ Use `audit-coupled-constant` when you are about to declare done on an edit that 
 
 Do NOT use for constants that are truly local to one file, for purely-imported constants where only the import site moved (the named symbol is the single source), or for constants enforced by the type system (e.g., a TypeScript `as const` literal imported everywhere — the compiler is your audit).
 
+## Authority
+
+An audit request authorizes inspection and a chat report, not code, comment or artifact writes. In audit-only mode, Steps 3–4 identify proposed repairs and the report records them as pending. Apply repairs or save a report only where current authorization already covers the exact effects and scope; reuse that authorization without another prompt. Do not claim an audit is a completed repair.
+
 ## Step 1 — Identify the constant + its shapes
 
 A coupled constant appears in code under multiple shapes. List every shape you might find before grepping:
@@ -54,19 +58,15 @@ Write the list of shapes down before grepping. Missing a shape is the most commo
 
 Run a separate grep for each shape. Use Grep / ripgrep, not find or recursive Read. Examples:
 
+```bash
+# Choose the actual justified scope; these rg examples do not imply a type filter.
+rg -n '\b240\b' <scope>
+rg -n -i -F '60s' <scope>
+rg -n '240\s*\*\s*250' <scope>
+rg -n -F 'RETRY_BUDGET_MS' <scope>
 ```
-# raw value
-Grep "\\b240\\b" --type ts        # word-boundary avoids 1240, 2401, etc.
 
-# unit-suffixed comment
-Grep "60s" --type ts -i
-
-# composite expression
-Grep "240 *\\* *250"
-
-# named symbol (if extracted)
-Grep "RETRY_BUDGET_MS"
-```
+For every shape, record the actual command, searched scope, exit status, hits and any failed/unrun search. An unavailable or unrun search remains a coverage gap; do not declare the audit complete. Explain any file-type exclusions, including docs/fixtures/scripts, against the actual affected invariant.
 
 Set the scope to the package or repo level — coupled constants often span src + tests + scripts. For monorepos, audit each affected package.
 
@@ -81,6 +81,8 @@ Group hits into three categories:
 If you cannot tell which category a site belongs in, halt the edit and ask the author or git blame the comment that introduced the value.
 
 ## Step 4 — Repair the SEE ALSO trail
+
+Apply this step only for authorized repairs; otherwise report the proposed trail changes.
 
 For any newly-found coupled site, add bidirectional SEE ALSO comments so the next auditor doesn't have to re-discover the relationship:
 
@@ -106,7 +108,7 @@ audit-coupled-constant report
     tests/_helpers/fs-retry.ts:47      moved together ✓
     src/flows/rename.ts:297            MISSED — update + add SEE ALSO trail
   intentionally-different sites: 0
-  SEE ALSO trail updated: yes (added rename.ts to the 3 existing sites)
+  SEE ALSO trail updated: no (audit-only; propose adding rename.ts to the 3 existing sites)
 ```
 
 ## Rules
@@ -114,7 +116,7 @@ audit-coupled-constant report
 - MUST list every shape the constant can appear in (raw value, named symbol, unit-suffixed comment, composite expression, embedded in strings) before grepping.
 - MUST run a separate grep for each shape — one grep per shape, not a single broad grep.
 - MUST classify each hit into moved-together / missed / intentionally-different. Halt the edit if you can't classify confidently.
-- MUST update SEE ALSO comments in the existing sites when you find a new site — the trail must be bidirectional.
+- For authorized repairs, MUST update SEE ALSO comments in the existing sites when you find a new site; the trail must be bidirectional. Audit-only mode reports the missing links without changing them.
 - MUST NOT trust SEE ALSO comments as enforcement. They are documentation that decays.
 - MUST NOT declare an edit done before the audit report shows all sites moved (or are intentionally-different with explicit documentation).
 - SHOULD pair with `/cold-review` for high-stakes coupled-constant edits (retry budgets that ship to users, schema versions, feature flags wired into rollouts).
@@ -138,9 +140,9 @@ audit-coupled-constant report
 ## Outputs
 
 - Audit report (above shape) emitted to chat or written to the active retro / handoff result artifact.
-- Updated SEE ALSO comments in all coupled sites (bidirectional trail).
+- Proposed SEE ALSO repairs, or actual updated comments when repair is authorized (bidirectional trail).
 - File path + line number for each MISSED site (so the caller knows where to patch).
-- Documented `// Intentionally different from <other-site>: <reason>` comment at any divergent site.
+- Proposed intent comments at divergent sites, or actual `// Intentionally different from <other-site>: <reason>` comments when repair is authorized.
 
 ## Pairings
 

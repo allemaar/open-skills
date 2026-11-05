@@ -29,10 +29,11 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Dispatch bounded source slices, using one or more subagents as the source mode requires.
 3. Verify each finding against its cited source.
 4. Iterate within wave limits and report gaps.
+5. High-relevance pointers need evidenced closure; wave age and conversation distance do not erase gaps or prove termination.
 
 ## Subagents
 
-Subagents read sources; a single large source can use one agent, while multi-source work can run in parallel. The caller verifies evidence.
+Subagents read sources; a single large source can use one agent, while multi-source work can run in parallel. The caller verifies evidence. Dispatch requires finite limits, monitored cancellation and a terminal/partial result; unavailable controls stop delegation. Only an existing permitted inline fallback may continue.
 
 This describes the skill's own workflow. Available tools and the runtime's permission rules still apply.
 

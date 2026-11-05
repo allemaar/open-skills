@@ -40,9 +40,9 @@ Don't proceed until you have real answers. One vague sentence is not enough.
 
 ## Step 2 — Generate Designs
 
-If you have a Task tool: spawn all three designs simultaneously. Each agent gets the requirements plus its assigned lens and must produce a design that would surprise the others. Brief them to actively resist the obvious answer.
+If the runtime provides fresh isolated worker contexts: spawn the three designs within its supported bounded controls. Each agent gets the requirements plus its assigned lens and must produce a design that would surprise the others. Brief them to actively resist the obvious answer.
 
-If you don't have Task: run them sequentially, but commit fully to each design before moving to the next. Don't let later designs learn from earlier ones — write each as if it were your only attempt.
+Without fresh contexts, produce the contrasting designs sequentially and complete each before the next. Label this a useful correlated same-context fallback; prior visible designs prevent a claim of independent generation.
 
 **Produce 3 radically different designs.** Radically different means different information hiding boundaries — not just different method names or parameter orders. Three designs that all accept a config struct and return a result are not radically different, even if the method names differ.
 

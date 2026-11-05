@@ -28,7 +28,10 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Name the subject and desired horizon
 2. Gather bounded read-only evidence
 3. Identify increments, gates and deferred lanes
-4. Render the appropriate result with uncertainty and source limits
+4. Explain needed connections from already gathered evidence in the selected human face; name unestablished connections as gaps.
+5. Render the appropriate result with uncertainty and source limits
+6. When checking the agent record, reject malformed nonempty quoted provenance pairs; this is not full-schema validation.
+7. Synthetic examples identify every payload field or entry with an exact provenance rider; example values are not live project attestation.
 
 ## Subagents
 
@@ -46,6 +49,10 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/orient-roadmap/SKILL.md](../../skills/orient-roadmap/SKILL.md)
 - [skills/orient-roadmap/protocol.yon](../../skills/orient-roadmap/protocol.yon)
+- [skills/orient-roadmap/references/orient-spec/orient-contract.md](../../skills/orient-roadmap/references/orient-spec/orient-contract.md)
+- [skills/orient-roadmap/references/tools/orient-validate.mjs](../../skills/orient-roadmap/references/tools/orient-validate.mjs)
+- [skills/orient-roadmap/references/orient-spec/examples/orient-record.example.yon](../../skills/orient-roadmap/references/orient-spec/examples/orient-record.example.yon)
+- [skills/orient-roadmap/references/orient-spec/orient-record.yon](../../skills/orient-roadmap/references/orient-spec/orient-record.yon)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

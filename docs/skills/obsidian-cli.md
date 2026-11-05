@@ -26,9 +26,9 @@ Install this skill in a supported runtime, then give it the relevant material an
 ## Flow
 
 1. Confirm Obsidian is running and inspect current CLI help
-2. Select the vault and requested operation
+2. Resolve the intended vault and exact path for mutations, including an explicitly selected active note; recheck identity before acting.
 3. Run the appropriate command with exact arguments
-4. Inspect the result or report the unavailable capability
+4. Read back the affected artifact and actual delta, or report the unavailable capability.
 
 ## Subagents
 

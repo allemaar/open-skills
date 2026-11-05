@@ -13,7 +13,7 @@ Triages a pending question and prepares it according to stakes.
 
 ## When not to use it
 
-- The answer can be resolved from the request or available context.
+- The answer can be resolved within existing authority from the request or available context; missing consent is never a default.
 
 ## How to use it
 
@@ -25,10 +25,11 @@ Install this skill in a supported runtime, then give it the relevant material an
 
 ## Flow
 
-1. Resolve answerable questions without asking.
+1. Resolve answerable preferences within existing authority; reuse exact authorization, and preserve any still-missing approval.
 2. Classify necessary questions as routine or high stakes.
 3. Use the checklist for routine questions, or critique and assess high-stakes options.
 4. Ask a clear, appropriately framed question.
+5. Check high-stakes helper availability and subject fit; an explicit local checklist fallback does not claim missing methods ran.
 
 ## Subagents
 

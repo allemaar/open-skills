@@ -53,6 +53,8 @@ The lead agent should do the first decomposition pass locally:
 5. Inspect helper outputs before integrating or relying on them.
 6. Run or request final verification for the integrated result.
 
+Before dispatch, bind the worker and total invocation to finite deadlines and resource limits, with a named monitoring owner, observable progress, a cancellation handle and terminal success/failure/timeout outcomes. Use native controls; include read-only scope and no-child instructions in research briefs. On failure or timeout, cancel owned work and report retained partial results and unchecked coverage. If these controls are unavailable, do not dispatch. When safe delegation is unavailable, the lead may continue the bounded task inline under this mode.
+
 ## When to delegate
 
 Delegate when a slice is independent and materially useful, such as:
@@ -95,6 +97,9 @@ Do not touch:
 Relevant context:
 Acceptance criteria:
 Verification to run:
+Finite worker / invocation limits, monitoring owner, progress and cancel handle:
+Terminal / partial-result contract:
+Leaf constraint: do not spawn helpers.
 Final report must include: changed paths, commands run, result, unresolved risks.
 ```
 

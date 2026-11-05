@@ -1,7 +1,7 @@
 ---
 name: headless-gemini
 description: >
-  Run bounded Gemini tasks through Antigravity CLI (agy). Trigger on /headless-gemini,
+  Run bounded tasks through Antigravity CLI (agy), including locally exposed Gemini and Claude models on Antigravity’s separate quota pool. Trigger on /headless-gemini,
   "run Gemini headlessly", or "supervise agy". Not for the separate gemini CLI,
   installation, authentication changes, or API-key setup.
 visibility: public

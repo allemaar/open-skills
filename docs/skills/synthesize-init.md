@@ -28,7 +28,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Resolve eligible runtimes and classify existing targets.
 2. Show exact operations, diffs and preimage and replacement hashes.
 3. Obtain approval bound to exact targets and bytes.
-4. Back up, stage, atomically replace and verify eligible targets.
+4. Check target, backup and staging leaves and ancestors without following redirects; back up, stage, atomically replace and verify eligible targets. Keep durable backups outside runtime discovery when directory contents could be loaded as instructions.
 
 ## Subagents
 

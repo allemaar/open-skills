@@ -1,12 +1,12 @@
 # YON LLM Generation Guide
 
-Convert any input into valid YON. Output must be parseable, roundtrip-safe, and usable by diverse LLMs and non-LLM tooling.
+Encode supplied content faithfully using the versioned field/profile authority and conditional dependencies in SKILL.md. Complete examples below target YON 2.0 and the reference-validator 2.0.2 profile contract. Fragments without @DOC illustrate only the named pattern. Parser acceptance is separate from required-field review and does not establish all-runtime or external-spec conformance.
 
 ## Hedging & Uncertainty Preservation
 
 Hedging language ("probably", "maybe", "might", "I think") MUST be preserved verbatim in text values:
 
-- `"The color is probably purple"` → `@CFG key=color | val="probably purple"`
+- `"The color is probably purple"` → `@NOTE text="The color is probably purple"`
 - Do NOT resolve hedging to confidence levels or separate metadata
 - The encoding layer preserves; the downstream consumer interprets
 
@@ -95,9 +95,9 @@ Operations use `@v<N>` suffix:
 @DOC ver=2.0 | id=review-collab | title="Code Review" | profile=agent
 @AGENT rid=agent:reviewer | name="Code Reviewer" | type=ai | model=claude-4
 @AGENT rid=agent:author | name="Ada" | type=human
-@STREAM rid=stream:review | type=collaboration | agents=[agent:reviewer,agent:author]
+@STREAM rid=stream:review | owner=agent:reviewer | type=session
 @TURN from=agent:reviewer | to=agent:author | rid=turn:1
-  | content="Lines 42-67: O(n²) complexity. Consider a hash map."
+  | text="Lines 42-67: O(n²) complexity. Consider a hash map."
 @ACK from=agent:author | ref=rid:turn:1 | status=accepted
 ```
 

@@ -2,8 +2,8 @@
 name: skill-library-creator
 description: Create a portable skill library with its own family manager, guided setup, templates and link tools. Use for "create a skill library" or "set up a skill pool"; individual skills belong to the generated manager.
 visibility: public
-skill-version: 1.3.8
-updated: 2026-10-30
+skill-version: 1.3.9
+updated: 2026-10-31
 companions:
   - path: references/create-library.md
     optional: false
@@ -31,7 +31,7 @@ Create a library under a chosen folder's `skills` directory, with a `{family}-sk
 
 ## Walkthrough
 
-1. Read [creation](references/create-library.md), then explain the result in two or three sentences. Establish the parent folder and family prefix, reuse the supplied purpose, then resolve global or project installation and actual target locations. Reuse supplied settings; ask only unresolved choices. Keep machine paths out of shared configuration.
+1. Read [creation](references/create-library.md), then explain the result in two or three sentences. Establish the parent folder and family prefix, reuse the supplied purpose, then resolve global or project installation and actual target locations. Use its conditional clarification procedure for unresolved material choices; complete briefs skip the interview and deeper questioning is opt-in. Keep machine paths out of shared configuration.
 2. Inspect the physical paths and preview the exact tree and selected local targets. A request to create the library authorizes that scoped creation; resolve collisions before writes.
 3. Generate the manager, README, references, scripts and templates. Install direct complete-directory links only within the selected scope. Verify the source and linked bytes separately from runtime discovery.
 4. Show what was built, the manager's exact path/name, installation results, and three useful starting requests: help, list skills, create/import a skill. Offer details for the selected capability rather than loading every reference.

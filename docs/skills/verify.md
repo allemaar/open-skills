@@ -25,10 +25,11 @@ Install this skill in a supported runtime, then give it the relevant material an
 
 ## Flow
 
-1. Require intent and execution; if the plan is absent skip plan and execution alignment checks, still recheck claims, and report plan-not-found.
+1. Require intent and execution. With no plan, mark only plan/execution alignment not applicable; still check intent and sources, report the applicable status and keep clean false.
 2. Check alignment among intent, plan and execution.
 3. Reopen sources for load-bearing claims, using the consumed artifact where applicable.
 4. Report the structured verdict and mark unchecked claims unverified.
+5. Use status precedence: material unverified evidence, operational incompleteness and established issues take precedence over plan-not-found; only fully supported plan-based verification may be clean.
 
 ## Subagents
 

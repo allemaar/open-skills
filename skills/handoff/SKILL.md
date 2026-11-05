@@ -77,7 +77,7 @@ Required for all profiles:
 - `where` — absolute paths in scope
 - `evidence` — pointer to error/commit/file/line that prompted this
 - `acceptance` — acceptance sentence
-- `verify` — list of verifiable shell commands (REQUIRED — if user can't name one, push back: "this task isn't measurable enough for a handoff; reconsider scope")
+- `verify` — verifiable shell commands. Required unless profile=new-session and the continuation has no single-shot acceptance. Preserve known applicable checks; agent and orchestrator dispatch always require measurable acceptance.
 - `sources_required` — file paths or wikilinks the cold agent MUST read before planning. Asked interactively as: **"Which sources MUST the cold agent read before planning? (file paths or wikilinks, comma-separated.)"** If the user supplies a non-empty list → write to `@SOURCES.required`, brief executes in gated mode. If the user supplies an empty list → **push back** with: *"You haven't named any required sources. Either name what the cold agent must read before planning, OR explicitly confirm 'no sources required' — the brief will run in advisory mode with a prominent warning, and the cold agent will not gate on source ingestion. Confirm 'no sources required' to proceed."* Default is to re-prompt for sources. Only after explicit confirmation does the brief write with empty `@SOURCES.required` and `confirmed_empty:bool=true` in the same block. Never infer this confirmation from an empty list. Writes to the brief's `@SOURCES.required` block (see [`handoff-execute/references/SOURCES-BLOCK.md`](../handoff-execute/references/SOURCES-BLOCK.md)).
 
 Optional with defaults:
@@ -87,6 +87,7 @@ Optional with defaults:
 - `output_location` — vault path override
 
 For `new-session` profile, auto-collect from current session state instead of asking — see [`profiles/new-session.md`](profiles/new-session.md).
+The same profile provides compact continuation. Its verify field may be empty when no single-shot acceptance applies; retain known checks and name remaining verification. Mandatory acceptance commands continue for agent and orchestrator dispatch.
 
 ### 4. Project detection
 
@@ -104,10 +105,12 @@ Lowercase-kebab from task description, max 40 chars.
 
 ### 6. Write file
 
+Inspect the destination leaf and every existing ancestor without following links; refuse symlinks, junctions, mounts, unknown reparse points or equivalent redirects, including backup and staging paths. Create new artifacts exclusively. On collision preserve existing bytes: choose a fresh identity within the authorized scope or use an explicitly selected revision. For revisions, retain a recoverable preimage, require current bytes/revision to match the selected record immediately before replacement, and use the destination owner’s protected writer. Stop the affected write if identity changes or those guarantees are unavailable; never roll back over concurrent edits. Read back the result and report only actual saves. Keep the activation phrase bound to the actual saved brief.
+
 ```bash
 vault_path="${VAULT:?set VAULT to your vault root}/Handoffs/$project/$(date +%Y-%m-%d)-${slug}.md"
 mkdir -p "$(dirname "$vault_path")"
-# write the brief content (see profiles/{profile}.md for shape)
+# exclusively create the brief after the checks above (see profiles/{profile}.md for shape)
 ```
 
 ### 7. Render chat surface
@@ -134,7 +137,7 @@ For multi-handoff (count > 1): render only the numbered index in chat:
 
 ### 8. Emit activation phrase
 
-After the chat surface, ALWAYS emit a copyable activation phrase in a fenced code block. This is the single line the user pastes into a fresh agent session to invoke the brief.
+After the chat surface, ALWAYS emit a copyable activation phrase in a fenced code block when the canonical file was written. For new-session continuation without an available authorized destination or write, return labeled proposed text, not a completed handoff, and stop before emitting an activation path. This is the single line the user pastes into a fresh agent session to invoke the brief.
 
 **Format (single-handoff):**
 ````
@@ -234,7 +237,7 @@ The brief sign-off section instructs the cold agent on this, and points back to 
 ## Rules
 
 - ALWAYS use absolute paths in target file references.
-- ALWAYS check whether the task has a verifiable acceptance command. If not, push back — handoffs without measurable acceptance are unmeasurable.
+- ALWAYS check for verifiable acceptance. Push back if it is absent, except for new-session continuation with no single-shot acceptance. This exception waives no other field, source gate or retro obligation.
 - ALWAYS `mkdir -p` before writing the brief file.
 - ALWAYS use wikilinks `[[file]]` for in-vault references; absolute paths for code-repo references.
 - NEVER prescribe runtime-specific skill or tool names in the brief body (the cold agent may be Claude Code, Codex, or another LLM). Describe outcomes, not procedures. Where a step is genuinely runtime-specific, tag it explicitly (e.g. '(Claude Code only)').

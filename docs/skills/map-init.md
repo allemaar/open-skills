@@ -29,7 +29,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 
 1. Detect selected surfaces and existing managed markers
 2. Prepare exact proposed diffs and obtain scoped approval
-3. Apply approved changes atomically
+3. Check target and auxiliary path chains before backup creation, retain verified preimages, then stage and atomically apply approved bytes.
 4. Report results and any malformed markers
 
 ## Subagents

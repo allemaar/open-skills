@@ -25,7 +25,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 
 ## Flow
 
-1. Run the bundled usage wrapper with a threshold and actual token limit when known.
+1. Run the bundled wrapper from its skill directory using an already-installed ccusage reader; unavailable readers return unknown without package acquisition. Supplied numeric flags need values; omitted flags retain defaults.
 2. Read the active block, ceiling and verdict.
 3. Reduce or defer a no-go wave; never treat unknown as go.
 
@@ -45,6 +45,7 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/budget-check/SKILL.md](../../skills/budget-check/SKILL.md)
 - [skills/budget-check/protocol.yon](../../skills/budget-check/protocol.yon)
+- [skills/budget-check/references/tools/budget-check.mjs](../../skills/budget-check/references/tools/budget-check.mjs)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

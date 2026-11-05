@@ -72,7 +72,7 @@ Suggest the natural next command — these mirror the `next-skills:` front-matte
 
 - `/plan-deep-dive` — inspect the new plan phase-by-phase
 - `/insight-critique` — focused review of the proposed v2 plan
-- `/plan-execute` — execute once approved
+- `/plan-execute` — only when the approved result has numbered concrete actions and a verifiable outcome. Preserve compatible v1 structure; an exploratory result stays provisional and routes to planning. Approval alone does not make an informal outline executable.
 
 > **Human output.** This skill's handler-facing output obeys the human-output
 > contract (`human-output/SKILL.md`).

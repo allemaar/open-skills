@@ -1,7 +1,7 @@
 ---
 name: insight-explore
 description: >
-  Brainstorm 3+ possible implementations before committing. Trigger when the user runs /explore or asks to "brainstorm options", "what are the ways to do this", "explore approaches", "give me alternatives", or wants divergent thinking before planning or assessment. Use insight-assess to evaluate known options, insight-critique to review an existing output, and plan-create to turn a chosen direction into an implementation plan.
+  Explore possible implementations before committing, targeting three distinct options while reporting evidenced constrained or unresolved outcomes honestly. Trigger when the user runs /explore or asks to "brainstorm options", "what are the ways to do this", "explore approaches", "give me alternatives", or wants divergent thinking before planning or assessment. Use insight-assess to evaluate known options, insight-critique to review an existing output, and plan-create to turn a chosen direction into an implementation plan.
 visibility: public
 self-improvable: true
 next-skills:
@@ -49,13 +49,13 @@ Compare all options across:
 
 Output:
 
-- **Winner** — which option and why
+- **Winner** — which supported option and why, or an explicit constrained/unresolved outcome with its decisive gap
 - **Reason** — 1–2 sentences, referencing the comparison
 - **Next step** — ask the user: *"Shall I `/plan-create` this?"*
 
 ## Rules
 
-- MUST generate at least 2 distinct options (3 is the target).
+- Target three distinct feasible options and search for at least two; if evidence supports only one or none, report that constrained or unresolved result, the bounded search scope and decisive gap. Never invent cosmetic alternatives or a winner.
 - MUST NOT write code or make changes — this is ideation only.
 
 ## Next Steps

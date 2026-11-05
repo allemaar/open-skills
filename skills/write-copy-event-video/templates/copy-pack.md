@@ -93,8 +93,8 @@ Required for every complete variant, including V4. Cover every spoken line in or
 - Intended versus supported control: which directions the selected model can express, which remain listening targets or unknown; a global style setting does not enforce selective stress.
 - Full-script evaluation: pending until complete narration is heard; check all lines, flow, stress contrast, pauses and domain/name clarity.
 - Casting excerpt, included line IDs and two or three proposed takes if casting needed: explicitly partial, plan only, not generated. After selection, one complete approved-script delivery test is still required.
-- Model / voice / settings / capability checked date / cost: known values only; otherwise not selected or unknown.
-- Approved project recipe ID/version and local guide / reference audio / approval scope / unchanged audio reused or new take pending / exact input and settings record:
+- Voice delivery intent / supported-control status / capability checked date / separate operational-handoff locator: unknowns remain explicit. Actual provider/model/voice identifiers, settings and cost records belong only in that separate handoff.
+- Approved recipe / reference-audio and operational-record locators / approval scope / unchanged audio reused or new take pending. Exact production inputs and settings are preserved in the separate operational handoff:
 - Content-piece folder and asset/version locations, when the project defines them:
 
 | Written term | Intended spoken form or verified pronunciation | Confidence / verification needed |

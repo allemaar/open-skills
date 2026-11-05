@@ -28,7 +28,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Choose full mode by default, or justify the narrow fast mode.
 2. Investigate and define testable success criteria and scope.
 3. Obtain the mandatory alignment confirmation before designing, then draft phases, risks and executable verification.
-4. Evaluate the gates and present the plan without implementing it.
+4. Evaluate the gates and present the plan without implementing it; create new artifacts exclusively, preserving collisions and requiring current identity and recovery for a selected revision. Missing goal coverage aborts; lesser design warnings can remain documented.
 
 ## Subagents
 

@@ -73,8 +73,9 @@ function main() {
   let declaredRootArg = null;
   if (rmIdx >= 0) { declaredRootArg = argv[rmIdx + 1] || null; argv.splice(rmIdx, 2); }
   // Bounded walk: same defaults and validation grammar as map-scan.
-  const takeN = (flag, dflt) => { const i = argv.indexOf(flag); if (i < 0) return dflt; const v = Number(argv[i + 1]) || dflt; argv.splice(i, 2); return v; };
+  const takeN = (flag, dflt) => { const i = argv.indexOf(flag); if (i < 0) return dflt; const v = Number(argv[i + 1]); argv.splice(i, 2); return v; };
   const MAXF = takeN("--max-files", 20000), MAXMS = takeN("--max-ms", 60000);
+  if (![MAXF,MAXMS].every(n=>Number.isSafeInteger(n)&&n>0)) return opError(2,"invalid-bounds","max-files and max-ms must be finite positive integers");
   const T0 = Date.now();
   if (!argv[0]) return opError(3, "no-target", "usage: map-check.mjs <target-path> [--root-map <scope-relative>] [--json] [--max-files N] [--max-ms N]");
   let target; try { target = resolve(argv[0]); } catch { return opError(3, "bad-target", "target path did not resolve"); }
@@ -159,17 +160,32 @@ function main() {
     if (found.legacy) contractFindingsSeed.push({ check: "exclusion-integrity", class: "legacy-contract-name", path: ".myk/scope.md", evidence: "legacy entrypoint filename — scope.md — Scope contract names .myk/README.md", rule: RULES["exclusion-integrity"] });
     // per-entry M3 parse (path + fields), indentation-scoped
     function entries(section) {
-      const out = []; let inSec = false, cur = null;
-      for (const ln of fmBlock.split("\n")) {
-        const sec = ln.match(/^\s{4}(exclusions|managed-artifacts):/);
-        if (sec) { inSec = sec[1] === section; cur = null; continue; }
-        if (/^\s{2}m\d:/.test(ln) || /^\s{2}[a-z-]+:/.test(ln)) { inSec = false; cur = null; continue; }
-        if (!inSec) continue;
-        const item = ln.match(/^\s+-\s+path:\s*"?([^"\n]+?)"?\s*$/);
-        if (item) { cur = { path: norm(item[1].trim()) }; out.push(cur); continue; }
-        if (cur) { const kv = ln.match(/^\s+([a-z-]+):\s*"?([^"\n]*?)"?\s*$/); if (kv && kv[1] !== "path") cur[kv[1]] = kv[2].trim();
-          const ge = ln.match(/^\s+(map|section|entrypoint):\s*"?([^"\n]+?)"?\s*$/); if (ge) cur[ge[1]] = ge[2].trim(); }
+      const out = []; let m3 = false, active = false, currentList = null, row = null;
+      const invalid = evidence => contractFindingsSeed.push({check:"exclusion-integrity",class:"malformed-exclusion",path:".myk/README.md",evidence,rule:RULES["exclusion-integrity"]});
+      const allowed = section === "exclusions" ? ["path","owner","prohibition","graph-entry","reason","established-by","entrypoint"] : ["path","owner","owned-surfaces","established-by","map","section","graph-entry","entrypoint","reason","prohibition"];
+      let host = false, seenM3 = false, seenLists = new Set();
+      for (const line of fmBlock.replace(/\r\n/g,"\n").split("\n")) {
+        if(line === "myk:"){host=true;continue;}
+        if(line && !/^\s/.test(line)){host=false;m3=false;active=false;}
+        if(!host)continue;
+        if(line === "  m3:"){if(seenM3)invalid("duplicate m3");seenM3=true;m3=true;active=false;currentList=null;continue;}
+        if(/^  \S/.test(line)){m3=false;active=false;}
+        if(!m3)continue;
+        if(line.includes("\t"))invalid("tab in m3");
+        const heading=line.match(/^    (exclusions|managed-artifacts):\s*$/);
+        if(heading){currentList=heading[1];active=currentList===section;row=null;if(active&&seenLists.has(section))invalid("duplicate "+section);if(active)seenLists.add(section);continue;}
+        if(!active){if(!currentList&&line.trim())invalid("malformed m3 line before list: "+line.trim());continue;}
+        if(!line.trim())continue;
+        const m=line.match(/^(      - path|        [a-z-]+):\s*(.+?)\s*$/);
+        if(!m){invalid("malformed m3 line: "+line.trim());continue;}
+        const key=m[1].includes("- path")?"path":m[1].trim();let value=m[2];
+        if(value.startsWith('"')){try{value=JSON.parse(value);}catch{value=null;}}
+        if(typeof value!=="string"||!value.trim()){invalid("invalid scalar "+key);continue;}
+        if(m[1]==="      - path"){row={};out.push(row);}
+        if(!row||!allowed.includes(key)||Object.hasOwn(row,key)){invalid("unknown/duplicate m3 key "+key);continue;}
+        row[key]=value;
       }
+      if(new Set(out.map(e=>e.path)).size!==out.length)invalid("duplicate m3 path");
       return out;
     }
     const excl = entries("exclusions"); managedEntries = entries("managed-artifacts");
@@ -198,6 +214,20 @@ function main() {
       if (!containedRel(e.path)) contractFindingsSeed.push({ check: "exclusion-integrity", class: "malformed-exclusion", path: e.path, evidence: "managed path violates containment grammar", rule: RULES["exclusion-integrity"] });
       else if (missing.length) contractFindingsSeed.push({ check: "exclusion-integrity", class: "malformed-exclusion", path: e.path, evidence: `managed entry missing: ${missing.join(", ")}`, rule: RULES["exclusion-integrity"] });
     }
+    for(const [kind,rows] of [["exclusions",excl],["managed-artifacts",managedEntries]])for(const e of rows){
+      const bad = evidence => contractFindingsSeed.push({check:"exclusion-integrity",class:"malformed-exclusion",path:e.path,evidence,rule:RULES["exclusion-integrity"]});
+      const loc=s=>!!s&&!s.includes("\\")&&!s.includes("\0")&&!/^(?:\/|[a-z][a-z0-9+.-]*:)/i.test(s)&&s.split("/").every(x=>x&&x!=="."&&x!=="..");
+      if(!loc(e.path))bad("invalid path");
+      const st=loc(e.path)?checkedStat(join(scopeRoot,e.path),"M3 path"):null;
+      if(!st)bad("missing M3 path");
+      if(kind==="exclusions"&&st&&!st.isDirectory())bad("excluded path must be a directory");
+      if(e["graph-entry"]&&!["single-entrypoint","individually-indexed","none"].includes(e["graph-entry"]))bad("invalid graph-entry");
+      if(!!e.map!==!!e.section)bad("map and section must appear together");
+      if(e.map&&(!loc(e.map)||!checkedStat(join(scopeRoot,e.map),"covering map")?.isFile()))bad("invalid covering map");
+      if(e["owned-surfaces"]){const v=e["owned-surfaces"].replace(/^\[|\]$/g,"").split(",").map(x=>x.trim());if(v.some(x=>!["frontmatter","body","locator","whole-file"].includes(x))||new Set(v).size!==v.length)bad("invalid owned-surfaces");}
+      if(e.entrypoint||e["graph-entry"]==="single-entrypoint"||(kind==="managed-artifacts"&&st?.isDirectory())){if(!loc(e.entrypoint)||!(e.entrypoint===e.path||e.entrypoint.startsWith(e.path+"/"))||!checkedStat(join(scopeRoot,e.entrypoint),"M3 entrypoint")?.isFile())bad("invalid contained file entrypoint");}
+    }
+    if(contractFindingsSeed.some(f=>f.class==="malformed-exclusion"))return opError(2,"contract-invalid",JSON.stringify(contractFindingsSeed),"repair M3 declarations and recheck; no healing from invalid policy");
     exclusions = excl.map(e => e.path).filter(containedRel);
     exclusionEntriesFull = excl;
   } else if (declaredRootArg) {
@@ -480,7 +510,7 @@ function main() {
         if (!checkedStat(join(scopeRoot, ep), "governed entrypoint")) return opError(2, "check-incomplete", `declared entrypoint does not exist: ${ep}`);
         gbt.push(ep);
       }
-      if (grammarErrors) { dialectDecl = []; accepts = []; gbt = []; }
+      if (grammarErrors) return opError(2, "contract-invalid", JSON.stringify(findings.filter(f=>f.check === "link-contract-grammar")), "repair declarations and recheck before healing");
     }
     gbt = [...new Set(gbt)].sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
     // Canonical inventory and fingerprints from link-resolution.md — Resolution inventory and fingerprints.
@@ -495,17 +525,21 @@ function main() {
     gbtFp = fpOf(gbt.slice().sort());
     // independent resolution: index-based
     const targets = invSorted.concat(gbt.filter(g => !invSorted.includes(g)));
-    const mdT = targets.filter(p => p.endsWith(".md"));
-    const allT = new Set(targets);
-    const stemMap = new Map(); for (const p of targets) { const s2 = p.endsWith(".md") ? basename(p).replace(/\.md$/, "") : basename(p); if (!stemMap.has(s2)) stemMap.set(s2, []); stemMap.get(s2).push(p); }
-    const rlv = t => {
-      if (allT.has(t)) return t;
-      if (allT.has(t + ".md")) return t + ".md";
-      const tails = targets.filter(p => p.endsWith(".md") ? t.endsWith("/" + p.replace(/\.md$/, "")) : t.endsWith("/" + p));
-      if (tails.length) { const mx = Math.max(...tails.map(p => p.length)); const b = tails.filter(p => p.length === mx); return b.length === 1 ? b[0] : "?"; }
-      if (!t.includes("/")) { const c = stemMap.get(t) || []; return c.length === 1 ? c[0] : c.length ? "?" : null; }
-      const t2 = targets.filter(p => p.endsWith("/" + t));
-      return t2.length === 1 ? t2[0] : t2.length > 1 ? "?" : null;
+    const markdownTargets = targets.filter(p => p.endsWith(".md"));
+    const markdownExact = new Set(markdownTargets), allExact = new Set(targets);
+    const addressForms = new Map(targets.map(p => [p, p.endsWith(".md") ? [p, p.slice(0, -3)] : [p]]));
+    const rlv = (t, nonMdAllowed) => {
+      const eligible = nonMdAllowed ? targets : markdownTargets;
+      const exact = nonMdAllowed ? allExact : markdownExact;
+      const key = p => addressForms.get(p);
+      if(exact.has(t))return t;
+      if(exact.has(t+".md"))return t+".md";
+      const pref=eligible.filter(p=>key(p).some(k=>t.endsWith("/"+k)));
+      if(pref.length){const longest=Math.max(...pref.map(p=>p.length)),best=pref.filter(p=>p.length===longest);return best.length===1?best[0]:"?";}
+      const suffix=eligible.filter(p=>key(p).some(k=>k.endsWith("/"+t)));
+      if(suffix.length)return suffix.length===1?suffix[0]:"?";
+      if(!t.includes("/")){const bare=eligible.filter(p=>key(p).some(k=>basename(k)===t));return bare.length===1?bare[0]:bare.length?"?":null;}
+      return null;
     };
     const headOf = new Map(), blockOf = new Map();
     const fragIdx = p => {
@@ -521,7 +555,9 @@ function main() {
     const acceptMatch = (src, target) =>
       accepts.find(a => a.target === target && a.source === src)
       || accepts.find(a => a.target === target && !a.source);
+    const occurrenceInventory=[];
     for (const src of mdFiles) {
+      if(Date.now()-T0>MAXMS)return opError(2,"check-incomplete","cap before occurrence inventory closure");
       if (managedNoParse(src)) continue;
       const body = bodyOf.get(src) || "";
       const occs = [];
@@ -531,17 +567,21 @@ function main() {
         if (/^[a-z][a-z0-9+.-]*:/i.test(t2) || t2.startsWith("/")) continue;
         const j = relJoin(srcDir(src), decodeURIComponent(t2));
         occs.push({ form: "mdrel", target: j === null ? null : j, fragment: m[2] ? decodeURIComponent(m[2].slice(1)).trim() : null, escapes: j === null }); }
-      for (const o of occs) {
+      for(const o of occs)occurrenceInventory.push({src,o});
+    }
+    let resolutionCapped=false;
+    for (const {src,o} of occurrenceInventory) {
         occTotal++;
         const rec = { source: src, raw_target: o.escapes ? "(escapes scope root)" : o.target, fragment: o.fragment || null, form: o.form, class: null, canonical_target: null, rule_id: null, interpretations: null };
         const done = cls => { occ[cls]++; rec.class = cls; resolutionRecords.push(rec); };
+        if(resolutionCapped||Date.now()-T0>MAXMS){resolutionCapped=true;done("residual-at-cap");continue;}
         if (o.escapes) { done("missing-file"); continue; }
         const acc = acceptMatch(src, o.target);
         if (acc) { done(acc.class); continue; }
         if (/^[a-z][a-z0-9+.-]*:/i.test(o.target)) { done("missing-file"); continue; }
-        const interp = [{ rule: "plain", c: rlv(o.target) }];
+        const interp = [{ rule: "plain", c: rlv(o.target, /\.[A-Za-z0-9]+$/.test(o.target) && !o.target.endsWith(".md")) }];
         const dRule = dialectDecl.find(r => src === r.subtree || src.startsWith(r.subtree + "/"));
-        if (dRule) interp.push({ rule: dRule.id, c: rlv(dRule.base + "/" + o.target) });
+        if (dRule) interp.push({ rule: dRule.id, c: rlv(dRule.base + "/" + o.target, /\.[A-Za-z0-9]+$/.test(o.target) && !o.target.endsWith(".md")) });
         rec.interpretations = interp.map(i => ({ rule: i.rule, candidate: i.c === "?" ? "__AMBIG__" : i.c })); // settled record schema parity
         const uniq = [...new Set(interp.map(i => i.c).filter(c => c && c !== "?"))];
         if (interp.some(i => i.c === "?") || uniq.length > 1) { done("ambiguous"); continue; }
@@ -553,7 +593,6 @@ function main() {
           if (o.fragment.startsWith("^")) done(fx.b.has(o.fragment.slice(1)) ? "resolved-block" : "missing-block");
           else done(fx.h.has(o.fragment) ? "resolved-heading" : "missing-heading");
         } else done("resolved-file");
-      }
     }
     if (Object.values(occ).reduce((a, b) => a + b, 0) !== occTotal)
       F("link-occurrence-closure", "occurrence-closure-broken", "(scope)", `occurrence class sums do not equal observed occurrences (${occTotal})`);
@@ -562,23 +601,24 @@ function main() {
   // ---------- envelope ----------
   const checksRun = ["owner-declaration", "reciprocal-spine", "address-form", "meta-container", "archive-consistency", "case-fold-collisions", "exclusion-integrity",
     ...(mode === "FULL" ? ["link-contract-grammar", "link-occurrence-closure"] : [])];
-  const verdict = findings.length === 0
+  const incompleteResolution=occ["residual-at-cap"]>0;
+  const verdict = incompleteResolution ? "incomplete resolution: residual-at-cap; no complete/clean resolution claim" : findings.length === 0
     ? `clean for checks [${checksRun.join(", ")}] over walker inventory (${files.length} files, ${skipped.length} skipped boundaries), mode ${mode}; not checked: ${NOT_CHECKED.length} classes — NOT an unqualified all-clear`
     : `${findings.length} finding(s) across ${new Set(findings.map(f => f.check)).size} check(s), mode ${mode}; not checked: ${NOT_CHECKED.length} classes`;
   const env = { schema_version: 1, kernel_version: KV, kernel_source: KERNEL_SOURCE, target: norm(relative(scopeRoot, target)) || ".", scope: scopeRoot, mode, discovery,
     inventory: { source: "walker", complete: skipped.length === 0, scanned: files.length, markdown_members: mdFiles.length, skipped_boundaries: skipped },
     checks: checksRun, not_checked: NOT_CHECKED, exclusions_honored: exclusions, managed_declared: managedPaths,
-    resolution: mode === "FULL" ? { pinned_to: { resolution_inventory_fingerprint: resInvFp, contract_fingerprint: contractFingerprint, governed_boundary_target_fingerprint: gbtFp },
+    resolution: mode === "FULL" ? { status: incompleteResolution ? "incomplete" : "complete", usable_for_healing: !incompleteResolution, pinned_to: { resolution_inventory_fingerprint: resInvFp, contract_fingerprint: contractFingerprint, governed_boundary_target_fingerprint: gbtFp },
       occurrence_classes: occ, observed_occurrences: occTotal, records: resolutionRecords,
       dialect_rules: dialectDecl, governed_boundary_targets: gbt,
       reparse_proof: "target, scope root and required reads checked with native-realpath identity and lstat; inventory boundaries refuse visible links; reparse forms invisible to these mechanisms and races remain runtime-observation limits" } : null,
     findings, verdict };
-  if (wantJson) emit(env, findings.length ? 1 : 0);
+  if (wantJson) emit(env, findings.length || incompleteResolution ? 1 : 0);
   const lines = [`map-check — ${verdict}`, `scope: ${env.scope}  root-map: ${rootMapRel}  discovery: ${discovery}`];
   for (const f of findings) lines.push(`  [${f.check}] ${f.class}  ${f.path}  — ${f.evidence}`);
   if (skipped.length) lines.push(`  skipped boundaries: ${skipped.join(" · ")}`);
   lines.push(`  not checked (${NOT_CHECKED.length}): ${NOT_CHECKED.map(n => n.split(" (")[0]).join(" · ")}`);
-  emit(lines.join("\n"), findings.length ? 1 : 0);
+  emit(lines.join("\n"), findings.length || incompleteResolution ? 1 : 0);
 }
 
 try { main(); } catch (err) {

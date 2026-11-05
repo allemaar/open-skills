@@ -1,22 +1,42 @@
 YON Domains & Profiles Card (v2.0)
 https://yon.younndai.com
 
-PROFILES — control which record families appear:
-  core       Basic structure (@DOC, @SEC, @NOTE, @META, @CFG, @MAP)
-  decl       Rules and schemas (+@RULE, @SCHEMA, @DEF, @REF)
-  exec       Workflows (+@STEP, @CHECK, @CATCH, @RETRY, @INPUT, @OUTPUT, @YIELD)
-  audit      Provenance (+@STAMP, @REDACTION, @CONSENT)
-  cognitive  AI thought chains (+@INTENT, @SCOPE, profile=cognitive tags)
-  agent      Multi-agent systems (+@AGENT, @STREAM, @SIGNAL, @SUBSCRIBE, @MERGE, @THROTTLE, @ROUTE)
-  full       All record families enabled
+PROFILES — reference-validator @younndai/yon-parser 2.0.2 contract:
+Source: dist/types.js PROFILE_PRESETS, FEATURE_TAGS and STRUCTURAL_TAGS;
+effective-feature computation: dist/validator.js. This is implementation-version
+authority, not a claim about future versions or independently verified spec text.
 
-Declare in @DOC: profile=decl
-Feature toggles: with=[...], without=[...]
+Profiles are named feature presets, not a linear cumulative hierarchy:
+  core       payload, logic, dialogue, sessions
+  decl       core + refs
+  exec       decl + workflow, delta
+  audit      exec + provenance
+  cognitive  exec + cognition, perception, goals, memory, affect (not provenance)
+  agent      cognitive + temporal, collaboration, composition, governance,
+             reactive, signaling (not provenance)
+  full       agent + provenance
+
+Structural tags allowed in every preset: DOC, SEC, META, DEF, NOTE, STAMP,
+REDACTION, CONSENT, IDENTITY, LOCATION. Logic includes INTENT, SCOPE, RULE,
+SCHEMA, CFG, MAP, CHECK. TURN/ACK use dialogue; SESSION/CHECKPOINT/RECOVER
+use sessions. AGENT/STREAM use signaling. STAMP is structural even when the
+provenance feature is absent; provenance additionally requires rid on referenceable
+RULE/CFG/MAP/SCHEMA/STEP/CHECK records.
+
+Default profile is exec. Explicit nonempty document features override the preset;
+validator feature options and scenario defaults are fallback bases when applicable.
+Then with adds features and without removes them; mode chat also implies dialogue
+and sessions, hybrid implies workflow and dialogue. Do not infer a family from
+its name or equate structural STAMP permission with provenance bookkeeping.
 
 Examples:
   @DOC ver=2.0 | id=doc | title="Doc" | profile=decl | with=[workflow]
-  @DOC ver=2.0 | id=doc | title="Doc" | profile=exec | without=[provenance]
+  @DOC ver=2.0 | id=doc | title="Doc" | profile=audit | without=[provenance]
   @DOC ver=2.0 | id=doc | title="Doc" | profile=exec | with=[cognition,memory]
+
+For extended fields load the exact v2.0 yon-read references named in SKILL.md.
+Missing or conflicting required authority stops dependent conformance; do not
+auto-acquire a parser, invent a registry, or promise all-tag validation.
 
 FORMAT MODES — control printing density (lossless, never removes records):
   canon   Full readability, all optional fields. For humans.

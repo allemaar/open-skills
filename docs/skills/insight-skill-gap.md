@@ -31,6 +31,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 3. Classify patterns as covered, incomplete, or absent and apply reuse criteria.
 4. Present a targeted update or new-skill proposal for approval.
 5. Only after approval, use skill-smith to create the chosen skills or apply targeted updates.
+6. Resolve the actual catalog or mark duplicate checks incomplete; apply selected updates through Skill Smith and the canonical write owner.
 
 ## Subagents
 

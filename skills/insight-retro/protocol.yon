@@ -1,14 +1,14 @@
 @DOC ver=2.0 | id=insight-retro | title="Post-Implementation Retrospective — Blast Radius, Docs, Skills, Lessons" | kind=skill | profile=exec | fmt=min | guide="https://yon.younndai.com/yon-guide.txt"
 @INTENT goal="Run a structured retrospective after shipping significant work. Map what changed, audit docs, capture patterns, update knowledge, flag follow-up. Observation only — fixes are separate." | trigger="user runs /retro, asks for retrospective, post-mortem, lessons learned, or what changed after completing significant implementation work"
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=manual
+@STAMP ts:ts=2026-11-04T15:16:43Z | src="Alexandru Mares | allemaar.com" | method=manual
 
 # --- Governance ---
 
 @SEC name="Governance"
-@RULE rid=rule:check-skill-index | lvl=MUST | when="finding reusable patterns" | then="check skill-index first to avoid proposing duplicates"
+@RULE rid=rule:check-skill-index | lvl=MUST | when="finding reusable patterns" | then="Resolve a supplied or current host/repository skill catalog and record its scope. If unavailable, keep proposals provisional with duplicate coverage incomplete; a missing index is not an empty library."
 @RULE rid=rule:propose-format | lvl=MUST | when="proposing new skills" | then="include skill name, domain family, and estimated content scope"
 @RULE rid=rule:concrete-followup | lvl=MUST | when="identifying tech debt" | then="propose concrete follow-up — not vague observations"
-@RULE rid=rule:significance-criteria | lvl=MUST | when="assessing sidecars" | then="apply significance criteria: >100 LOC, public API, component/hook/route handler/schema"
+@RULE rid=rule:significance-criteria | lvl=MUST | when="assessing sidecars" | then="discover actual repository documentation policy; apply sidecar significance criteria (>100 LOC, public API, component/hook/route handler/schema) only if adopted or requested. Otherwise assess actual local documentation obligations."
 @RULE rid=rule:cite-misleading | lvl=MUST | when="finding MISLEADING docs" | then="cite both the doc claim and the contradicting code"
 @RULE rid=rule:no-fix-inline | lvl=MUST_NOT | when="running retro" | then="fix issues in-line — retro is observation only; fixes are separate tasks"
 @RULE rid=rule:propose-high-reuse-now | lvl=SHOULD | when="reuse potential is HIGH" | then="propose creating the skill immediately after retro"
@@ -39,7 +39,7 @@
 @MAP name=DocSeverity | pairs=["MISLEADING"->"docs say X, code does Y — cite both","STALE"->"docs describe removed features","MISSING"->"new features/files undocumented","ACCURATE"->"no action"]
 
 @STEP rid=step:doc-audit | n:int=3 | op=std:ai.prompt@v1 | args=[task="For each package/app in blast radius, audit all documentation surfaces. For docs/skills repos: also check SKILL.md description quality, runtime parity, cross-ref maps, front-matter consistency."] | in=[ref:blast-radius] | use=[cfg:DocSurfaces] | out=[ref:doc-discovery]
-@STEP rid=step:sidecar-audit | n:int=4 | op=std:ai.prompt@v1 | args=[task="For each significant changed file (per SidecarTriggers): does a colocated .yon exist? If yes, still accurate? If no, should one be created?"] | in=[ref:blast-radius] | use=[cfg:SidecarTriggers] | out=[ref:sidecar-findings] | rules=[rid:rule:significance-criteria]
+@STEP rid=step:sidecar-audit | n:int=4 | op=std:ai.prompt@v1 | args=[task="Discover the repository’s actual documentation contract first. Apply the following sidecar thresholds only where that convention is adopted or requested; elsewhere inspect the actual local obligations, without treating absent YON sidecars as defects. For each significant changed file only under the adopted SidecarTriggers: does a colocated .yon exist? If yes, still accurate? If no, should one be created?"] | in=[ref:blast-radius] | use=[cfg:SidecarTriggers] | out=[ref:sidecar-findings] | rules=[rid:rule:significance-criteria]
 @STEP rid=step:readme-accuracy | n:int=5 | op=std:ai.prompt@v1 | args=[task="Verify prose against current code: described APIs accurate? New features documented? Removed features still mentioned?"] | in=[ref:doc-discovery] | out=[ref:readme-findings]
 @STEP rid=step:doc-report | n:int=6 | op=std:ai.prompt@v1 | args=[task="Report findings by severity using DocSeverity."] | in=[ref:doc-discovery,ref:sidecar-findings,ref:readme-findings] | use=[cfg:DocSeverity] | out=[ref:doc-audit] | rules=[rid:rule:cite-misleading]
 
@@ -49,7 +49,7 @@
 @MAP name=SkillStatus | pairs=["A"->"skill exists and covers it — no action","B"->"skill exists but incomplete — specify what's missing/outdated","C"->"no skill exists — evaluate reuse (2+ uses, non-obvious decisions, multi-file scope)"]
 
 @STEP rid=step:ki-assess | n:int=7 | op=std:ai.prompt@v1 | args=[task="Cross-reference changes against existing KI summaries. Report: KIs to update (with what changed), KIs to create (with proposed scope), KIs still accurate (no action)."] | in=[ref:blast-radius,ref:patterns] | out=[ref:ki-assessment]
-@STEP rid=step:skill-assess | n:int=8 | op=std:ai.prompt@v1 | args=[task="Load skill-index. Cross-reference patterns/libraries/techniques against existing skills using SkillStatus categories. For C: propose skill name, domain family, key sections, complexity estimate."] | in=[ref:patterns] | use=[cfg:SkillStatus] | out=[ref:skill-assessment] | rules=[rid:rule:check-skill-index,rid:rule:propose-format,rid:rule:propose-high-reuse-now]
+@STEP rid=step:skill-assess | n:int=8 | op=std:ai.prompt@v1 | args=[task="Resolve a supplied or current host/repository skill catalog and record its scope. If unavailable, keep proposals provisional with duplicate coverage incomplete; a missing index is not an empty library. Cross-reference patterns/libraries/techniques against existing skills using SkillStatus categories. For C: propose skill name, domain family, key sections, complexity estimate."] | in=[ref:patterns] | use=[cfg:SkillStatus] | out=[ref:skill-assessment] | rules=[rid:rule:check-skill-index,rid:rule:propose-format,rid:rule:propose-high-reuse-now]
 
 # --- Phase 5: Difficulty Analysis ---
 
@@ -90,4 +90,4 @@
 @SEC name="Self-improvement"
 @STEP rid=step:sip | n:int=100 | op=std:ai.prompt@v1 | args=[task="Run the Self-Improvement Protocol (self-improve/protocol.yon), which owns signal eligibility, cross-examination, and Handler approval. Conservative, silent otherwise; never auto-apply."] | in=[] | out=[ref:sip-offer]
 
-@STAMP ts:ts=2026-10-14T11:00:00Z | src="Alexandru Mares | allemaar.com" | method=generated
+@STAMP ts:ts=2026-11-04T15:16:43Z | src="Alexandru Mares | allemaar.com" | method=generated

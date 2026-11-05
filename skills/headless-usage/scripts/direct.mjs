@@ -5,7 +5,7 @@ import { spawn } from 'node:child_process';
 const VERSION_TIMEOUT_MS = 5_000;
 const HELP_TIMEOUT_MS = 5_000;
 const QUERY_TIMEOUT_MS = 30_000;
-const CLEANUP_GRACE_MS = 3_000;
+export const CLEANUP_GRACE_MS = 3_000;
 const MAX_OUTPUT_BYTES = 8 * 1024 * 1024;
 
 function errorMessage(value) {
@@ -143,13 +143,15 @@ function stopProcess(child) {
   }
 }
 
-async function runProcess(executable, args, timeoutMs, outputDirectory, name, onStart) {
+async function runProcess(executable, args, timeoutMs, outputDirectory, name, onStart, signal, onProcess) {
+  signal?.throwIfAborted();
   const startedAt = new Date().toISOString();
   return new Promise((resolve) => {
     let stdout = '';
     let stderr = '';
     let outputLimited = false;
     let timedOut = false;
+    let cancelled = false;
     let cleanup = 'close-observed';
     let settled = false;
     let timer;
@@ -161,6 +163,7 @@ async function runProcess(executable, args, timeoutMs, outputDirectory, name, on
       stdio: ['pipe', 'pipe', 'pipe'],
     });
     const processInfo = { pid: child.pid ?? null, startedAt, exitCode: null, cleanup };
+    onProcess?.(processInfo);
     onStart?.(child);
     const append = (current, data) => {
       const text = data.toString();
@@ -183,6 +186,7 @@ async function runProcess(executable, args, timeoutMs, outputDirectory, name, on
       settled = true;
       clearTimeout(timer);
       clearTimeout(grace);
+      signal?.removeEventListener('abort', cancel);
       processInfo.exitCode = Number.isInteger(exitCode) ? exitCode : null;
       if (forced && cleanup === 'close-observed') cleanup = 'cleanup-unverified';
       processInfo.cleanup = cleanup;
@@ -192,11 +196,20 @@ async function runProcess(executable, args, timeoutMs, outputDirectory, name, on
       }
       try {
         await writeRaw(outputDirectory, name, stdout, stderr);
-        resolve({ stdout, stderr, timedOut, outputLimited, process: processInfo, writeError: null });
+        resolve({ stdout, stderr, timedOut, cancelled, outputLimited, process: processInfo, writeError: null });
       } catch (error) {
         resolve({ stdout, stderr, timedOut, outputLimited, process: processInfo, writeError: errorMessage(error) });
       }
     };
+    const cancel = () => {
+      if (settled || cancelled) return;
+      cancelled = true;
+      cleanup = stopProcess(child);
+      processInfo.cleanup = cleanup;
+      grace = setTimeout(() => finish(null, true), CLEANUP_GRACE_MS);
+    };
+    signal?.addEventListener('abort', cancel, { once: true });
+    if (signal?.aborted) cancel();
     child.once('error', (error) => {
       stderr += `\nspawn: ${errorMessage(error)}`;
       finish(null);
@@ -210,12 +223,12 @@ async function runProcess(executable, args, timeoutMs, outputDirectory, name, on
   });
 }
 
-async function verifyExecutable(executable, outputDirectory, processes) {
-  const version = await runProcess(executable, ['--version'], VERSION_TIMEOUT_MS, outputDirectory, 'verify-version');
+async function verifyExecutable(executable, outputDirectory, processes, options) {
+  const version = await runProcess(executable, ['--version'], VERSION_TIMEOUT_MS, outputDirectory, 'verify-version', undefined, options.signal, options.onProcess);
   processes.push(version.process);
-  const help = await runProcess(executable, ['--help'], HELP_TIMEOUT_MS, outputDirectory, 'verify-help');
+  const help = await runProcess(executable, ['--help'], HELP_TIMEOUT_MS, outputDirectory, 'verify-help', undefined, options.signal, options.onProcess);
   processes.push(help.process);
-  if (version.timedOut || help.timedOut || version.outputLimited || help.outputLimited || version.writeError || help.writeError || version.process.exitCode !== 0 || help.process.exitCode !== 0 || version.process.cleanup !== 'close-observed' || help.process.cleanup !== 'close-observed') {
+  if (version.cancelled || help.cancelled || version.timedOut || help.timedOut || version.outputLimited || help.outputLimited || version.writeError || help.writeError || version.process.exitCode !== 0 || help.process.exitCode !== 0 || version.process.cleanup !== 'close-observed' || help.process.cleanup !== 'close-observed') {
     throw new Error('executable verification failed');
   }
   return version.stdout.trim().split(/\r?\n/)[0] || null;
@@ -270,10 +283,10 @@ async function readCodex(executable, outputDirectory, options, result) {
       }
     });
     send({ method: 'initialize', id: 1, params: { clientInfo: { name: 'headless-usage', title: 'Headless Usage', version: '1.0.0' } } });
-  });
+  }, options.signal, options.onProcess);
   result.processes.push(run.process);
   const quota = messages.get(2);
-  if (run.timedOut || run.outputLimited || protocolLimited || run.writeError) throw new Error(`codex quota query failed: ${run.writeError || (run.outputLimited || protocolLimited ? 'output limit exceeded' : 'timed out')}`);
+  if (run.cancelled || run.timedOut || run.outputLimited || protocolLimited || run.writeError) throw new Error(`codex quota query failed: ${run.writeError || (run.cancelled ? 'cancelled' : run.outputLimited || protocolLimited ? 'output limit exceeded' : 'timed out')}`);
   if (run.process.exitCode !== 0 || run.process.cleanup !== 'close-observed') throw new Error('codex quota query did not exit cleanly');
   if (!quota?.result || quota.error) throw new Error('codex quota query failed; see private protocol diagnostics');
   if (options.history) {
@@ -284,14 +297,14 @@ async function readCodex(executable, outputDirectory, options, result) {
 }
 
 async function readAgy(executable, outputDirectory, options, result) {
-  const run = await runProcess(executable, ['-p', '/usage', '--print-timeout', '15s'], options.timeoutMs, outputDirectory, 'agy-query');
+  const run = await runProcess(executable, ['-p', '/usage', '--print-timeout', '15s'], options.timeoutMs, outputDirectory, 'agy-query', undefined, options.signal, options.onProcess);
   result.processes.push(run.process);
-  if (run.timedOut || run.outputLimited || run.writeError) throw new Error(`agy usage query failed: ${run.writeError || (run.outputLimited ? 'output limit exceeded' : 'timed out')}`);
+  if (run.cancelled || run.timedOut || run.outputLimited || run.writeError) throw new Error(`agy usage query failed: ${run.writeError || (run.cancelled ? 'cancelled' : run.outputLimited ? 'output limit exceeded' : 'timed out')}`);
   if (run.process.exitCode !== 0 || run.process.cleanup !== 'close-observed') throw new Error(`agy usage query did not exit cleanly (${run.process.exitCode})`);
   result.windows = parseAgyUsage(run.stdout);
 }
 
-export async function readDirect(provider, executable, outputDirectory, { timeoutMs = QUERY_TIMEOUT_MS, history = false } = {}) {
+export async function readDirect(provider, executable, outputDirectory, { timeoutMs = QUERY_TIMEOUT_MS, history = false, signal, onProcess } = {}) {
   const result = {
     provider,
     transport: 'cli',
@@ -319,9 +332,10 @@ export async function readDirect(provider, executable, outputDirectory, { timeou
   }
   try {
     const inputs = await assertInputs(executable, outputDirectory);
-    result.runtimeVersion = await verifyExecutable(inputs.executable, inputs.outputDirectory, result.processes);
-    if (provider === 'codex') await readCodex(inputs.executable, inputs.outputDirectory, { timeoutMs, history }, result);
-    else await readAgy(inputs.executable, inputs.outputDirectory, { timeoutMs }, result);
+    result.runtimeVersion = await verifyExecutable(inputs.executable, inputs.outputDirectory, result.processes, { signal, onProcess });
+    if (provider === 'codex') await readCodex(inputs.executable, inputs.outputDirectory, { timeoutMs, history, signal, onProcess }, result);
+    else await readAgy(inputs.executable, inputs.outputDirectory, { timeoutMs, signal, onProcess }, result);
+    signal?.throwIfAborted();
     if (provider !== 'codex') result.observedAt = new Date().toISOString();
     result.status = result.windows.length && result.processes.every((entry) => entry.cleanup === 'close-observed') ? 'live' : 'unavailable';
     if (!result.windows.length) result.errors.push('provider returned no recognized quota windows');

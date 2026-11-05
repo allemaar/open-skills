@@ -386,8 +386,19 @@ for (const n of names) lintSkill(n);
 lintRequiresCycles();
 
 // Also lint the root public docs for broken links/refs.
-for (const doc of ['README.md', 'SKILLS.md', 'THREAT-MODEL.md', 'SECURITY.md', 'CONTRIBUTING.md', 'CONFORMANCE.md', 'TRADEMARK.md']) {
+for (const doc of ['README.md', 'SKILLS.md', 'THREAT-MODEL.md', 'SECURITY.md', 'CONTRIBUTING.md', 'CONFORMANCE.md', 'TRADEMARK.md', 'docs/design-scope.md']) {
   if (existsSync(doc)) lintMarkdown(doc);
+}
+
+// Include tracked and non-ignored workflow Markdown at any depth.
+try {
+  const workflows = execFileSync('git', [
+    'ls-files', '--cached', '--others', '--exclude-standard', '--',
+    ':(glob)docs/workflows/*.md', ':(glob)docs/workflows/**/*.md',
+  ], { cwd: ROOT, encoding: 'utf8' }).split(/\r?\n/).filter(Boolean);
+  for (const file of new Set(workflows)) if (existsSync(file)) lintMarkdown(file);
+} catch {
+  warn('tools/lint.mjs', 0, 'could not enumerate workflow files via git ls-files — workflow coverage skipped');
 }
 
 // And the COMPANION markdown under skills/*/ — references/, personas/, profiles/,

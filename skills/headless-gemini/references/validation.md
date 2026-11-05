@@ -2,6 +2,10 @@
 
 Latest prompt-only verification: 2026-10-25, Antigravity 1.4.7 on Windows. One explicitly selected `gemini-4-argon-low` turn returned the exact literal marker with exit 0, SUCCESS, no tools and no remaining root/direct-child processes. CLI init matched the selection; this is not independent backend attestation. No settings or billing route changed. Existing-login headless response worked; quota tier and broader file workflows remain unverified. The broader dispatch route below was verified 2026-09-15 on Antigravity 1.2.3. The repaired-route section records successful Codex, Claude and Gemini worker dispatch. The earlier observations below were checked on 2026-09-14 against `agy 1.2.2` with the existing login. These are bounded smoke observations, not guarantees for another installation. Raw prompts, process identifiers, logs and local paths remain outside the public repository.
 
+## Read pagination, 2026-10-30
+
+On Windows, Antigravity 1.4.11 emitted `read_file` with `Path` and `ByteOffset: 46080` for an approved exact-path read. A recovery supervisor accepting that field completed one read-only review with exit 0, `SUCCESS`, no recorded failures and a checked stopped state. A separate review accepted reads but hit the native print timeout and was incomplete despite exit 0 and a `SUCCESS` envelope. These observations do not establish combined line and byte addressing or general reliability.
+
 ## Claude catalog and prompt smoke, 2026-10-25
 
 Local Antigravity 1.4.7 catalog output listed Claude Opus 5.5 and Sonnet 5.5 at low, medium and high effort. The supported exact slugs and execution-route boundaries are in [Claude model routing](claude-models.md). Sonnet and Opus medium/high remain catalog-only observations.

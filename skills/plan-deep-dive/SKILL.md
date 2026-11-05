@@ -31,9 +31,11 @@ Phase-by-phase deep inspection of any multi-phase plan. Stop at each phase, asse
 
 > **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date.
 
-> **Caller Options.** Before executing, run the Caller Options protocol (`caller-options/SKILL.md`): triage this invocation for material optionality across the venues declared in front-matter; if one path clearly dominates, proceed silently; otherwise surface the options. For very long plans, `delegated` keeps the main context clean while a sub-agent walks the phases and returns the verdict log.
+> **Caller Options.** Before executing, run the Caller Options protocol (`caller-options/SKILL.md`): triage this invocation for material optionality across the venues declared in front-matter; if one path clearly dominates, proceed silently; otherwise surface the options. For long plans, `delegated` returns read-only analysis of one phase to the lead; the lead retains the verdict log, user gate, amendment selection and transition to the next phase.
 
 > **Iterative Depth Protocol.** `/plan-create` produces the plan. `/plan-deep-dive` pressure-tests it phase by phase. Never batch or skip phases — the value is in the forced stops.
+
+For delegated review, dispatch read-only analysis of one phase only and return its findings to the lead before the existing user gate. The lead owns acknowledgement, exact amendment selection and every next-phase transition. Workers never amend the plan or advance phases. If that relay is unavailable, inspect inline.
 
 ## When to escalate to plan-create
 
@@ -99,7 +101,7 @@ Update the running verdict log with this phase's result.
 
 Present the phase verdict and findings summary. The user must **acknowledge at least one specific finding by name** before the gate passes — a blanket "yes" or "proceed" is not sufficient. If the verdict is PASS with no findings, the user must confirm "no findings noted."
 
-After user approval: apply any amendments to the plan artifact. Then loop back to Phase 2, Step 1 for the next phase.
+Record the exact accepted amendment set before writing. Acknowledging a finding may advance inspection without authorizing its remedy; apply only selected amendments and preserve declined or unchanged choices. Reuse explicit approval of the exact set without asking again. After approval of the selected set, apply only those amendments to the plan artifact. Then loop back to Phase 2, Step 1 for the next phase.
 
 ## Phase 3 — Synthesis
 
@@ -109,7 +111,7 @@ After all phases pass, produce a consolidated deep-dive report. Cite per-phase v
 - **Total amendments made** — count and list
 - **Residual risks** — findings not resolved by amendments
 - **Future considerations** — 3-month/6-month items surfaced during Step 4 passes
-- **Overall confidence score** — 1–10, where 10 = all phases PASS with zero findings, 1 = multiple RETHINK with unresolved issues. State the score and the primary reason it is not higher.
+- **Overall support** — evidence coverage, unchecked scope and unresolved assumptions, with a concise support judgment. Finding fewer defects does not imply a stronger review; do not use an uncalibrated numerical confidence score.
 
 **Verdict examples:**
 

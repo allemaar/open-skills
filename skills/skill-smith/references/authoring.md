@@ -2,6 +2,18 @@
 
 Load for creation, content assessment or revision. Establish the useful task, audience, trigger, required inputs, output, stop conditions and observable success. Prefer an existing owner over a competing entrypoint.
 
+## Clarify intended behavior
+
+Apply this procedure only after preflight for creation or an update that changes requested behavior. Formatting-only updates skip it; assessment, diagnosis and consolidation retain their own question behavior even when they load this reference.
+
+- Reuse supplied choices and inspect discoverable facts. Choose ordinary reversible implementation details; ask only about unresolved choices that change scope, behavior, output or acceptance. A complete brief skips the interview.
+- Ask the smallest useful set, batching independent questions and deferring those whose prerequisites are unsettled. Make the tradeoff clear, offer a recommendation when justified, and allow free text. For example, resolve diagnosis-only versus a proposed patch versus applying a scoped fix when the request leaves that boundary open.
+- Suggest an optional feature only when it serves the stated task, with its benefit and burden. Drop declined options; silence leaves non-blocking options off while otherwise-authorized work continues. Do not repeat a settled offer or duplicate an existing improvement-loop opt-in.
+- Use a deeper interview only when requested, including "grill me", or after an explicit offer is accepted. Challenge conflicting requirements and test a representative edge case. Stop when the working contract is sufficient, further answers would not change it, or the user stops. No extra worker fleet or recursive review is required.
+- Carry consequential answers into the draft and relevant evaluation cases. Preferences do not authorize installation, replacement, deletion, publication, provider or permission changes. Preserve applicable question governance and actual stakes; do not add a second approval for already-authorized work or bypass a missing safety prerequisite when the user asks to stop questions.
+
+## Shape the skill
+
 When a type-specific contract changes the work, read the [recipe selector](recipes.md) and only the selected recipe. Choose the method from the requested operation, the recipe from the target skill's job. A reviewer recipe does not replace this skill's assessment method; recipes do not grant writes or take over collection migrations. Existing skills keep their structure unless a demonstrated need justifies changing it.
 
 - Ask what changes if each instruction disappears. Retain unique decisions and constraints; cut generic competence advice, repeated conclusions and ornamental examples. Rewrite vague qualities as observable requirements when necessary. No arbitrary token or line cap, numerical quality score or mandatory section count.

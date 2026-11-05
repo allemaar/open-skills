@@ -38,14 +38,14 @@ This skill is invoked work, never a daemon, schedule, watcher, background loop, 
 
 - Start only from an explicit invocation naming the target scope or path, from the Handler or from an agent whose current task plainly requires a maintenance cycle. Never auto-trigger from elapsed time, repository activity, a schedule, or a prior finding; the Handler selection gate before mutation remains unchanged.
 - Resolve the exact governing scope and its contract before checking. Ambiguity, target drift, missing declaration, or a `map-check` operational/resolution error stops the run without mutation.
-- Show the bounded run before execution: target, discovery mode, inventory source, file cap, finding cap, proposal page cap, elapsed-time cap, stop condition, and the Handler selection point. Defaults: 50 files, 30 findings, 10 proposals per page, 30 minutes, one repair-and-recheck round.
+- Show the bounded run before execution: target, discovery mode, inventory source, file cap, finding cap, proposal page cap, elapsed-time cap, stop condition, and the Handler selection point. Defaults: at most 50 mutation-target files, 30 findings, 10 proposals per page, 30 minutes total, one repair-and-recheck round. Inventory and recheck walk the full governing scope using separately declared `--max-files` and `--max-ms` checker caps within that total budget; the 50-file mutation bound is not a scan bound.
 - Preserve every `map-check` qualification: checks run, not checked, exclusions honored, skipped boundaries, inventory completeness, mode, and discovery source. Never upgrade a partial or qualified result into an all-clear.
 
 ## One maintenance cycle
 
 ### 1. Check
 
-Run `map-check` read-only against the exact target. If it reports zero findings, relay its qualified-clean verdict and stop. If it returns findings, preserve their stable fields and continue. If it returns an error envelope, stop and surface the remedy; absence of findings in an error is not evidence of health.
+Run `map-check` read-only against the exact target. Stop with the qualified-clean verdict only when there are no in-scope actionable findings or normalized resolution occurrence cases. Zero conformance findings alone does not exclude actionable missing/ambiguous occurrences. Preserve confirmed finding and occurrence fields before bounded proposals; intentional red links or a conformance-only request do not manufacture repair work. If it returns an error envelope, stop and surface the remedy; absence of findings in an error is not evidence of health.
 
 ### 2. Prepare repair proposals
 
@@ -72,7 +72,7 @@ For the selected set only:
 
 ### 5. Targeted recheck and stop
 
-Re-run only the checks and affected inventory needed to decide whether the selected findings were repaired. Do not restart a broad audit on unchanged inputs. Report repaired, remaining, deferred, and newly exposed findings separately; preserve the checker's qualifications and name checks not run.
+The current checker has no affected-only mode: rerun it on the full governing scope and record the actual command, inventory and finite caps. Limit interpretation to selected repairs and affected dependencies; reuse unrelated evidence rather than launching another audit. Budget exhaustion remains incomplete, never a manual review relabelled deterministic. Invalid-contract or incomplete resolution blocks dependent link healing/enrichment until contract repair and a complete recheck. Report repaired, remaining, deferred, and newly exposed findings separately; preserve the checker's qualifications and name checks not run.
 
 The invocation ends after this one targeted recheck. It never chains into another repair round automatically. Remaining work needs a new explicit Handler invocation.
 

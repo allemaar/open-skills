@@ -29,6 +29,7 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Select and read every applicable routed reference and confirm required load markers; stop if required content is missing.
 3. Propose existing-file changes for explicit user selection; a new file and its reciprocal owner-map join are one approval set.
 4. Apply the loaded rules only within that selected scope.
+5. Use the owned M3 grammar and address precedence; invalid contracts block dependent resolution and healing.
 
 ## Subagents
 
@@ -45,6 +46,8 @@ The applicable governing rules and any missing-route gap.
 The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.
 
 - [skills/map-rules/SKILL.md](../../skills/map-rules/SKILL.md)
+- [skills/map-rules/references/ownership.md](../../skills/map-rules/references/ownership.md)
+- [skills/map-rules/references/link-resolution.md](../../skills/map-rules/references/link-resolution.md)
 - [Installation and updates](../../README.md#install)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

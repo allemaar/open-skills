@@ -28,7 +28,8 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Inspect changes, destination and all outgoing commits.
 2. Group intended changes and exclude unrelated or unsafe files.
 3. Present the destination, complete outgoing set and exact full ordered commit messages; obtain explicit approval for that plan.
-4. Stage approved paths, check messages and attribution, push and report.
+4. Stage approved paths, check messages and attribution, and permit at most one authorized exact-message correction before stopping on persistent mismatch; push only the approved candidate and report.
+5. Distinguish no new commit from outgoing history; push-only work retains its separate owner and exact authorization.
 
 ## Subagents
 

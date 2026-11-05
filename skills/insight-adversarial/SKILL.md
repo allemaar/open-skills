@@ -1,12 +1,12 @@
 ---
 name: insight-adversarial
 description: >
-  Multi-pass adversarial critique from dynamically selected personas — including Claude's own POV.
+  Multi-pass adversarial critique from dynamically selected personas — including the current reviewer's own view.
   Trigger on: "adversarial", "red team this", "multi-POV review", "stress-test", "poke holes",
   "what am I missing", "attack my plan", "critique from multiple angles", "is this solid",
   "what would a skeptic say", or any request for rigorous structured criticism of a plan, design,
   doc, workflow, YON, idea, or system. Runs 1–3 passes. First pass selects 4+ personas from the
-  roster. Each subsequent pass adds 2–4 new personas to the mix. Third pass wraps with a final
+  roster. Each subsequent pass adds 3–4 new personas to the mix. Third pass wraps with a final
   verdict if all issues are within acceptable params. Do not skip this skill when the user wants
   real scrutiny — "just give me feedback" often means they need this.
 caller-options:
@@ -51,10 +51,10 @@ Structured adversarial review that assembles a panel of distinct critic personas
 | Pass | What Happens |
 |------|-------------|
 | **Pass 1** | Classify the target → select 4–5 personas → run each → synthesize verdict |
-| **Pass 2** | Check against Pass 1 findings → add 2–4 *new* personas not used before → re-run → delta verdict |
+| **Pass 2** | Check against Pass 1 findings → add 3–4 *new* personas not used before → re-run → delta verdict |
 | **Pass 3** | Final wrap-up. If all critical issues resolved or within params, declare done. Otherwise escalate. |
 
-**State tracking:** at the top of each pass, list which personas were used in prior passes. New passes must not reuse substantive critic personas; Claude's Own POV recurs in every pass.
+**State tracking:** at the top of each pass, list which personas were used in prior passes. New passes must not reuse substantive critic personas; Current Reviewer's Own View recurs in every pass.
 
 ## Step 1 — Target Classification
 
@@ -77,16 +77,16 @@ Load `personas/roster.md` to see all available personas and their best-used-for 
 
 1. Pick the **primary persona** — whose domain most directly overlaps the target's failure mode
 2. Pick 2–3 **supporting personas** — different angles that complement, not duplicate, primary
-3. Always include **Claude's Own POV** as the final persona in every pass
-4. **Never reuse** a substantive critic persona across passes; Claude's Own POV is exempt — track used personas explicitly
+3. Always include **Current Reviewer's Own View** as the final persona in every pass
+4. **Never reuse** a substantive critic persona across passes; Current Reviewer's Own View is exempt — track used personas explicitly
 
 ## Step 3 — Run Each Persona Pass
 
 For each selected persona:
 
 1. State the persona name and their lens in one sentence
-2. Run critique — **at least one specific, named finding** — no generalities
-3. Findings must be distinct across personas in this pass
+2. Report specific, evidenced findings. If none are supported, say **no material finding supported in the inspected scope**, naming that scope and remaining uncertainty. Never invent an issue to fill the format.
+3. Merge convergent findings across personas, retaining their evidence; do not invent differences to make each lens unique.
 
 **Format:**
 
@@ -97,11 +97,11 @@ For each selected persona:
 [Critique — specific, no softening]
 ```
 
-Claude's Own POV always goes last. First person, clear position, no hedging.
+Current Reviewer's Own View always goes last. First person, clear position, no hedging.
 
 ## Step 4 — Synthesis
 
-- **Critical Issues** — top 3, ranked by severity
+- **Critical Issues** — up to 3 supported issues, ranked by actual severity; label lower severities honestly and say when no critical issue is supported. A sound target may have no material finding.
 - **Blind Spots** — what the aggregate reveals that no single persona fully caught
 - **Remediation** — minimum surgical fix per Critical Issue. If unfixable, say so.
 - **One-Line Verdict** — honest, specific, no hedging
@@ -114,12 +114,12 @@ Claude's Own POV always goes last. First person, clear position, no hedging.
 ## Rules
 
 - MUST classify target type before selecting personas
-- MUST select minimum 4 personas per pass (including Claude's Own POV)
-- MUST include Claude's Own POV in every pass, always last
-- MUST NOT reuse a substantive critic persona across passes; Claude's Own POV is exempt
+- MUST select minimum 4 personas per pass (including Current Reviewer's Own View)
+- MUST include Current Reviewer's Own View in every pass, always last
+- MUST NOT reuse a substantive critic persona across passes; Current Reviewer's Own View is exempt
 - MUST NOT offer solutions inside a persona pass — remediation belongs in Step 4 only
 - MUST NOT soften findings to be diplomatic
-- SHOULD add 2–4 genuinely new personas on Pass 2
+- SHOULD add 3–4 genuinely new personas on Pass 2
 - SHOULD tailor persona selection to target type
 - MAY suppress a persona if user explicitly requests it
 

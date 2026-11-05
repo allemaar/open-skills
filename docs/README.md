@@ -1,8 +1,10 @@
 # Skill guides
 
-Practical guides to all **84 skills** in open-skills: what each does, when to use it, an example request, its flow, and how it uses subagents.
+These guides cover all **90 skills**: what each does, when to use it, when to leave it out, a request to try, its flow and the result to expect.
 
-Start with a guide below, then read the linked skill source for its complete instructions and safeguards. [Install a skill](../README.md#install) or browse the [compact catalog](../SKILLS.md).
+I keep these guides alongside the skills to help you choose what fits. Read a guide first, then its linked source for the complete procedure and safeguards. [Install a skill](../README.md#install) or browse the [compact catalog](../SKILLS.md).
+
+For a task that spans a few steps, start with the [workflow recipes](workflows/README.md). They cover questionnaires, workflow discovery, coauthoring, testing, review evidence, and creating a skill or library. Each names its prerequisites and stopping points.
 
 Subagent labels describe the skill's own workflow: **No subagent step prescribed** means no separate worker step is defined; **Conditional** depends on the task or selected route; **Part of the workflow** means separate workers or model calls are integral to that route. A label does not grant permission or promise runtime support.
 
@@ -10,6 +12,8 @@ Subagent labels describe the skill's own workflow: **No subagent step prescribed
 
 | Skill | What it does | Subagents |
 |---|---|---|
+| [ask-me](skills/ask-me.md) | Interviews a person to turn an idea, task or decision into a usable working brief. | No subagent step prescribed |
+| [define-terms](skills/define-terms.md) | Refines domain language in bounded contexts while separating accepted definitions, observed implementation and proposed changes. | No subagent step prescribed |
 | [freshness-contract](skills/freshness-contract.md) | Determines whether old evidence remains usable for a current decision. | No subagent step prescribed |
 | [plan-cleanup](skills/plan-cleanup.md) | Removes confirmed disposable planning leftovers after execution. | No subagent step prescribed |
 | [plan-create](skills/plan-create.md) | Designs a phased implementation plan before building. | No subagent step prescribed |
@@ -19,6 +23,7 @@ Subagent labels describe the skill's own workflow: **No subagent step prescribed
 | [plan-phases](skills/plan-phases.md) | Restructures an existing plan into phases with verification and safety gates. | No subagent step prescribed |
 | [reflect](skills/reflect.md) | Pauses to expose assumptions and uncertainty without a gate. | No subagent step prescribed |
 | [verify](skills/verify.md) | Formally gates work against intent, plan and execution using fresh source checks. | No subagent step prescribed |
+| [write-spec](skills/write-spec.md) | Synthesizes supplied discussion and established evidence into a behavioral specification with explicit decisions and gaps. | No subagent step prescribed |
 
 ## Insight & decision
 
@@ -65,7 +70,7 @@ Subagent labels describe the skill's own workflow: **No subagent step prescribed
 
 | Skill | What it does | Subagents |
 |---|---|---|
-| [agent-mailbox](skills/agent-mailbox.md) | Coordinates agents through append-only messages in a shared folder. | Part of the workflow |
+| [agent-mailbox](skills/agent-mailbox.md) | Coordinates agents through append-only messages in a shared folder. | No subagent step prescribed |
 | [ask-gate](skills/ask-gate.md) | Triages a pending question and prepares it according to stakes. | No subagent step prescribed |
 | [budget-check](skills/budget-check.md) | Checks usage before an expensive agent wave, returning go, no-go or unknown. | No subagent step prescribed |
 | [caller-options](skills/caller-options.md) | Routes one skill invocation among viable modes and execution venues. | Conditional |
@@ -103,12 +108,15 @@ Subagent labels describe the skill's own workflow: **No subagent step prescribed
 | [prose-audit](skills/prose-audit.md) | Diagnoses repetition, filler and avoidable reading load in existing prose. | No subagent step prescribed |
 | [synthesize](skills/synthesize.md) | Shapes reader-facing output around its purpose while preserving meaning and caveats. | No subagent step prescribed |
 | [synthesize-init](skills/synthesize-init.md) | Installs, updates or removes a managed synthesize route in existing directives. | No subagent step prescribed |
+| [teach-topic](skills/teach-topic.md) | Teaches one useful next capability with practice, evidence-based feedback and optional progress capture. | No subagent step prescribed |
 
 ## Code & architecture
 
 | Skill | What it does | Subagents |
 |---|---|---|
 | [audit-coupled-constant](skills/audit-coupled-constant.md) | Audit duplicated constants for drift. | No subagent step prescribed |
+| [build-prototype](skills/build-prototype.md) | Builds and exercises a bounded runnable experiment to answer a design question. | No subagent step prescribed |
+| [debug-task](skills/debug-task.md) | Reproduces and diagnoses a specific defect through bounded probes and verifies an authorized repair. | No subagent step prescribed |
 | [design-an-interface](skills/design-an-interface.md) | Compare concrete module interfaces and synthesize a recommendation. | Conditional |
 | [improve-codebase-architecture](skills/improve-codebase-architecture.md) | Find opportunities to deepen modules and reduce coupling. | Conditional |
 | [monorepo-deps](skills/monorepo-deps.md) | Coordinate dependency checks, repairs, updates and lockfile maintenance for npm workspaces. | No subagent step prescribed |
