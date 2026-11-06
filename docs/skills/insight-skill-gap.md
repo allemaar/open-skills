@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Compares recent work with the existing skill index to find reusable patterns that are missing or under-covered.
+Recent work exposed a repeated decision or pitfall and you wonder whether it belongs in a reusable skill. Compare that pattern with the actual skill catalog before proposing an update or a new entry.
+
+A missing catalog is incomplete duplicate coverage, not proof that the library is empty. Proposals identify the reuse case and the specific missing sections.
+
+## Where it fits
+
+Use this to find reusable skill gaps after work; use insight-retro for the broader implementation retrospective.
 
 **Family:** Insight & decision. **Subagents:** No subagent step prescribed.
 
@@ -18,20 +24,34 @@ Compares recent work with the existing skill index to find reusable patterns tha
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/insight-skill-gap Check whether the caching work exposed a skill worth adding.
+/insight-skill-gap Review the recent cache migration and determine whether its recurring invalidation decisions are already covered by the installed skill catalog.
 ```
 
 ## Flow
 
 1. Gather recent work and summarize patterns and technologies.
-2. Read the current skill index.
+2. Resolve the actual supplied or host/repository catalog and record its scope before duplicate checks. If unavailable, keep candidates provisional and duplicate coverage incomplete; missing is not empty.
 3. Classify patterns as covered, incomplete, or absent and apply reuse criteria.
 4. Present a targeted update or new-skill proposal for approval.
-5. Only after approval, use skill-smith to create the chosen skills or apply targeted updates.
-6. Resolve the actual catalog or mark duplicate checks incomplete; apply selected updates through Skill Smith and the canonical write owner.
+5. Only after approval, apply selected creation or updates through Skill Smith and the canonical write owner.
+
+## Common questions
+
+**Does the scan create skills automatically?**
+
+No. It presents proposals for approval; selected work then follows the skill authoring owner.
+
+**What if the catalog cannot be found?**
+
+Keep candidates provisional and say duplicate coverage is incomplete. A missing index does not mean no relevant skill exists.
+
+## It is working when
+
+- Candidates are classified as covered, incomplete or absent against the actual index.
+- A proposal explains reuse and scope, or identifies incomplete duplicate checking.
 
 ## Subagents
 
@@ -49,6 +69,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/insight-skill-gap/SKILL.md](../../skills/insight-skill-gap/SKILL.md)
 - [skills/insight-skill-gap/protocol.yon](../../skills/insight-skill-gap/protocol.yon)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

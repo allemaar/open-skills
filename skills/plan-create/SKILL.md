@@ -184,7 +184,7 @@ Use this exact structure. Do not invent new sections or drop existing ones. Numb
 
 ## Next Steps
 - [ ] Review and approve this plan
-- [ ] Run /execute to implement Phase A
+- [ ] Run /plan-execute to implement Phase A
 - [ ] Run /verify after each phase before starting the next
 - [ ] Run /plan-cleanup to remove planning artifacts and tech debt
 ```

@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Shapes reader-facing output around its purpose while preserving meaning and caveats.
+A report has the right evidence but the decision is buried in a wall of text. The skill first inventories the claims, numbers, conditions and disagreements that must survive, then selects a shape for the reader's task and checks the finished response against that inventory.
+
+Restructuring does not verify claims or increase their confidence. A clear short answer may remain unchanged; when a required reference is unavailable, the skill names the gap and falls back to a minimal word-only shape.
+
+## Where it fits
+
+Use synthesize to shape an answer for its reader. Human-rewrite repairs existing prose, human-merge reconciles multiple reports, and independent verification remains separate.
 
 **Family:** Human output. **Subagents:** No subagent step prescribed.
 
@@ -17,10 +23,10 @@ Shapes reader-facing output around its purpose while preserving meaning and cave
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/synthesize Synthesize this evidence into a decision brief.
+/synthesize Turn these attributed findings into a decision brief; preserve the disagreement, uncertainty and condition that would reverse the recommendation.
 ```
 
 ## Flow
@@ -29,6 +35,21 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Load the matching grammar and reader-need recipe.
 3. Compose and reconcile every protected unit.
 4. Name gaps and require separate confirmation before consequential action.
+
+## Common questions
+
+**Can a caveat be moved to a footnote to make the conclusion shorter?**
+
+A condition that could reverse the conclusion must remain visible with the conclusion; do not conceal protected meaning for brevity.
+
+**Does reorganizing evidence verify it?**
+
+No. Preserve the source's confidence and disclose unchecked evidence that could change the decision.
+
+## It is working when
+
+- Protected claims and their material qualifications survive the chosen shape without silent reconciliation of disagreements.
+- The output fits the reader's need and identifies decision-changing gaps and any separate action gate.
 
 ## Subagents
 
@@ -45,6 +66,7 @@ A faithful scannable response or no-op.
 The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.
 
 - [skills/synthesize/SKILL.md](../../skills/synthesize/SKILL.md)
-- [Installation and updates](../../README.md#install)
+- [skills/synthesize/references/grammar.md](../../skills/synthesize/references/grammar.md)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Formally gates work against intent, plan and execution using fresh source checks.
+A phase is complete and you need a formal decision about whether work matches the goal and plan. Verify requires intent and execution artifacts, examines alignment and reopens the source for each load-bearing claim.
+
+The plan is optional, but without it the plan-based alignment checks are not applicable and the result cannot be clean. For a committed or built artifact, check the consumed form; the working copy is appropriate when that is the artifact under review.
+
+## Where it fits
+
+Use it for a formal self-gate. Cold-review adds a fresh outside perspective; double-check is a smaller recheck of one claim.
 
 **Family:** Planning & execution. **Subagents:** No subagent step prescribed.
 
@@ -17,10 +23,10 @@ Formally gates work against intent, plan and execution using fresh source checks
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/verify Verify this implementation against its approved plan.
+/verify Check the current implementation against the approved migration plan and original intent; reopen evidence for the claimed passing checks.
 ```
 
 ## Flow
@@ -30,6 +36,16 @@ Install this skill in a supported runtime, then give it the relevant material an
 3. Reopen sources for load-bearing claims, using the consumed artifact where applicable.
 4. Report the structured verdict and mark unchecked claims unverified.
 5. Use status precedence: material unverified evidence, operational incompleteness and established issues take precedence over plan-not-found; only fully supported plan-based verification may be clean.
+
+## Common questions
+
+**Does a clean verdict replace required tests?**
+
+No. It checks evidence and alignment within scope; required tests and builds still need to be performed.
+
+## It is working when
+
+- The structured verdict identifies gaps, drift, issues and unverified claims, with source evidence for a supported pass.
 
 ## Subagents
 
@@ -47,6 +63,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/verify/SKILL.md](../../skills/verify/SKILL.md)
 - [skills/verify/protocol.yon](../../skills/verify/protocol.yon)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

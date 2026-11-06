@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Identify blockers, open choices, loose ends and inferred gaps.
+You need to know what is blocking a project, including loose ends easy to miss in a status update. Orient-gaps uses one bounded read-only worker to gather evidence, then distinguishes attributed blockers and open choices from plausible but unproven silent gaps.
+
+Audit mode also checks claims against evidence and identifies activity signals that overstate what they show. If the worker cannot run, the result is partial or unavailable, not evidence that nothing is stuck.
+
+## Where it fits
+
+Use it for the stall surface. Orient-status answers position and estimated completion; orient-map shows change; investigate supports deeper fact gathering.
 
 **Family:** Orientation. **Subagents:** Part of the workflow.
 
@@ -17,10 +23,10 @@ Identify blockers, open choices, loose ends and inferred gaps.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/orient-gaps what is blocking this project?
+/orient-gaps Check this repository and current plan for blockers and loose ends; distinguish my dependencies from those awaiting others.
 ```
 
 ## Flow
@@ -32,6 +38,16 @@ Install this skill in a supported runtime, then give it the relevant material an
 5. Return the consumer-appropriate result and evidence limits
 6. When checking the agent record, reject malformed nonempty quoted provenance pairs; this is not full-schema validation.
 7. Synthetic examples identify every payload field or entry with an exact provenance rider; example values are not live project attestation.
+
+## Common questions
+
+**Does a missing test file prove work was not done?**
+
+Only an acceptance requirement for that file makes its absence a mismatch. Other valid evidence may establish work within the bounded read.
+
+## It is working when
+
+- The orientation names supported stalls, inferred gaps, provenance and unexamined tiers, including an explicit none-surfaced statement where appropriate.
 
 ## Subagents
 
@@ -53,6 +69,7 @@ The guide explains usage. Read the linked skill and its applicable references be
 - [skills/orient-gaps/references/tools/orient-validate.mjs](../../skills/orient-gaps/references/tools/orient-validate.mjs)
 - [skills/orient-gaps/references/orient-spec/examples/orient-record.example.yon](../../skills/orient-gaps/references/orient-spec/examples/orient-record.example.yon)
 - [skills/orient-gaps/references/orient-spec/orient-record.yon](../../skills/orient-gaps/references/orient-spec/orient-record.yon)
-- [Installation and updates](../../README.md#install)
+- [skills/orient-gaps/references/orient-spec/family-behaviors.md](../../skills/orient-gaps/references/orient-spec/family-behaviors.md)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

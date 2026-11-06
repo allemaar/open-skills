@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Creates a structured brief for a fresh agent or session.
+You are changing sessions or transferring a bounded task and do not want the next person to reconstruct the conversation. Handoff produces a structured brief containing the objective, scope, evidence, acceptance, required reading and a route for reporting what happened.
+
+A continuation carries in-flight state and may leave a single-shot verify command empty when none applies. Dispatch profiles require measurable acceptance. An empty required-source list becomes advisory only after explicit confirmation; the saved brief remains canonical.
+
+## Where it fits
+
+Use it to transfer work into a fresh session. Orchestrate-mode makes the current session a coordinator; handoff-execute consumes the saved brief.
 
 **Family:** Orchestration & dispatch. **Subagents:** Conditional.
 
@@ -17,10 +23,10 @@ Creates a structured brief for a fresh agent or session.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/handoff Create a handoff for the remaining import flow.
+/handoff Carry the unfinished import flow into a new session; include the current plan, failing test, changed files and next verification step.
 ```
 
 ## Flow
@@ -30,6 +36,16 @@ Install this skill in a supported runtime, then give it the relevant material an
 3. Exclusively create and verify the structured brief, preserving existing artifacts on collision; selected revisions require current identity and recovery. Compact continuation keeps source and retro obligations and does not claim an unsaved draft is complete.
 4. Provide the artifact and activation phrase.
 5. Use the actual saved-path activation in the receiving session; pasted background alone does not select execution.
+
+## Common questions
+
+**Is a pasted draft a completed handoff?**
+
+No. The receiving activation is bound to the actual saved brief; text without an authorized save is proposed content.
+
+## It is working when
+
+- The saved brief identifies actionable scope and required sources, and its copyable activation names the actual path.
 
 ## Subagents
 
@@ -48,6 +64,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 - [skills/handoff/SKILL.md](../../skills/handoff/SKILL.md)
 - [skills/handoff/protocol.yon](../../skills/handoff/protocol.yon)
 - [skills/handoff/profiles/new-session.md](../../skills/handoff/profiles/new-session.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

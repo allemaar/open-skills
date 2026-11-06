@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Designs a phased implementation plan before building.
+A feature crosses several components and the team needs to agree on the problem before committing to a design. The skill first establishes testable success criteria and scope, waits for alignment, then develops concrete phases, dependencies, risks and verification.
+
+Map changes to criteria, dependencies and executable checks; high risks require mitigation or explicit acceptance. Evaluate each gate and document warnings. When saving, protect existing artifacts and revisions, then read back the saved result.
+
+## Where it fits
+
+Use plan-create to design new work, plan-deep-dive to inspect a plan, and plan-execute to carry out an approved executable plan.
 
 **Family:** Planning & execution. **Subagents:** No subagent step prescribed.
 
@@ -17,10 +23,10 @@ Designs a phased implementation plan before building.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/plan-create Create a plan for account export.
+/plan-create Design an account export using the supplied requirements, with explicit exclusions, phased actions and observable checks; do not implement it.
 ```
 
 ## Flow
@@ -29,6 +35,21 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Investigate and define testable success criteria and scope.
 3. Obtain the mandatory alignment confirmation before designing, then draft phases, risks and executable verification.
 4. Evaluate the gates and present the plan without implementing it; create new artifacts exclusively, preserving collisions and requiring current identity and recovery for a selected revision. Missing goal coverage aborts; lesser design warnings can remain documented.
+
+## Common questions
+
+**When can fast mode be used?**
+
+Only for a specifically justified single unit without cross-component impact or external dependencies. It condenses some work but skips no gates or the alignment checkpoint.
+
+**Does a finished plan authorize implementation?**
+
+No. The plan is presented for review; execution requires the appropriate approval and a separate execution step.
+
+## It is working when
+
+- Each success criterion has an observable verification path and the proposed changes cover the goal.
+- The plan records concrete actions, dependencies, risks, gate outcomes and the actual save status.
 
 ## Subagents
 
@@ -46,6 +67,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/plan-create/SKILL.md](../../skills/plan-create/SKILL.md)
 - [skills/plan-create/protocol.yon](../../skills/plan-create/protocol.yon)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

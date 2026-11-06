@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Create or edit Obsidian Bases views over note properties.
+You have notes with frontmatter properties and want a table of active projects, perhaps with a computed due-date field. A Base selects notes using filters and presents properties through views; formulas and summaries are optional additions to that selection.
+
+Validate the YAML and references before saving, preserve unrelated views and unknown settings during edits, and protect a recoverable preimage. Recheck the current revision immediately before replacement. A concurrent change stops the write and leaves the candidate unsaved; inspect a successfully saved view in Obsidian when available.
+
+## Where it fits
+
+Use obsidian-bases to query note properties, obsidian-markdown to author those notes, and json-canvas for a spatial diagram.
 
 **Family:** Obsidian & vault. **Subagents:** No subagent step prescribed.
 
@@ -17,10 +23,10 @@ Create or edit Obsidian Bases views over note properties.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/obsidian-bases build a table of project notes
+/obsidian-bases Create a table of notes in Projects with status and due date, filtering out completed notes; preserve existing views if the base already exists.
 ```
 
 ## Flow
@@ -28,8 +34,19 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Choose the notes and properties to include
 2. Define filters, optional formulas and views in YAML
 3. Validate syntax and property references
-4. Validate the candidate before saving; preserve unrelated content and recovery, recheck current identity and read back the protected write. New files use exclusive creation.
+4. Validate the candidate before saving; preserve unrelated content and recovery, then recheck current identity. A changed revision stops replacement and leaves the candidate unsaved. Read back a successful protected write; new files use exclusive creation.
 5. Open the base in Obsidian when available
+
+## Common questions
+
+**Why can a formula column be empty or fail despite valid YAML?**
+
+The formula may be undefined, a note property may be missing, or the expression may use the wrong type. Check references and guard missing values.
+
+## It is working when
+
+- The candidate parses as YAML and referenced properties and formulas are accounted for.
+- The requested view is preserved in the read-back file, with rendering checked when Obsidian is available.
 
 ## Subagents
 
@@ -46,6 +63,6 @@ A .base file with configured views.
 The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.
 
 - [skills/obsidian-bases/SKILL.md](../../skills/obsidian-bases/SKILL.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

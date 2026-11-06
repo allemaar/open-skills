@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Run a bounded Codex CLI task with scoped authority.
+A focused task can run in a separate non-interactive Codex CLI process while a parent supervises it. Before launch the parent discovers current CLI and account capabilities, binds a working directory and permissions, and records a deadline, output capture and cancellation path.
+
+A successful process exit can still leave an incomplete or incorrect result. The supervisor examines the terminal result and independently checks the artifact or change; unsupported explicit model choices and permission failures stop the run.
+
+## Where it fits
+
+Use this for one bounded Codex CLI task under a capable supervisor. Headless-models compares setups; headless-usage reports available quota information.
 
 **Family:** Orchestration & dispatch. **Subagents:** Part of the workflow.
 
@@ -17,10 +23,10 @@ Run a bounded Codex CLI task with scoped authority.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/headless-codex review the test failures in this package
+/headless-codex Review the failing tests in this package read-only; use the selected model, a ten-minute deadline and a retained result file.
 ```
 
 ## Flow
@@ -29,6 +35,16 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Set explicit scope, deadline and supervision
 3. Capture events and monitor the child through completion
 4. Verify the requested result independently
+
+## Common questions
+
+**Does finding the CLI prove the requested model is available?**
+
+No. Authentication, model access, effective configuration and supervision are separate observations.
+
+## It is working when
+
+- The report records runtime and boundaries, terminal outcome, retained output and independent checks, with failures and gaps visible.
 
 ## Subagents
 
@@ -46,6 +62,9 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/headless-codex/SKILL.md](../../skills/headless-codex/SKILL.md)
 - [skills/headless-codex/protocol.yon](../../skills/headless-codex/protocol.yon)
-- [Installation and updates](../../README.md#install)
+- [skills/headless-codex/references/access.md](../../skills/headless-codex/references/access.md)
+- [skills/headless-codex/references/run-contract.md](../../skills/headless-codex/references/run-contract.md)
+- [skills/headless-codex/references/model-selection.md](../../skills/headless-codex/references/model-selection.md)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

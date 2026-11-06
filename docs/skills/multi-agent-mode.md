@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Activates assisted mode: the lead works directly and delegates useful independent slices.
+A task has independent slices that can progress alongside the lead's work. In multi-agent mode the lead continues on the critical path, assigns helpers non-overlapping ownership, inspects results and integrates the outcome.
+
+Before a helper starts, the work and invocation need finite limits, monitoring and cancellation. Shared filesystems require coordination of write paths and Git state; activation alone does not require an immediate dispatch.
+
+## Where it fits
+
+Use it when the lead should work directly with helpers. Orchestrate-mode is the dispatch-only sibling.
 
 **Family:** Orchestration & dispatch. **Subagents:** Conditional.
 
@@ -17,10 +23,10 @@ Activates assisted mode: the lead works directly and delegates useful independen
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/multi-agent-mode Activate multi-agent mode for this implementation.
+/multi-agent-mode Implement the approved change; delegate the independent documentation review while you handle the core code, with disjoint write scopes.
 ```
 
 ## Flow
@@ -29,6 +35,16 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Decompose into lead work and independent slices.
 3. Delegate useful bounded slices and inspect results.
 4. Integrate and verify as lead.
+
+## Common questions
+
+**Who checks the pieces together?**
+
+The lead retains responsibility for inspecting helper output, integration and final verification.
+
+## It is working when
+
+- Each helper has a bounded brief and clear ownership, and the lead reports the integrated result and gaps.
 
 ## Subagents
 
@@ -45,6 +61,6 @@ A persistent assisted mode and integrated results.
 The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.
 
 - [skills/multi-agent-mode/SKILL.md](../../skills/multi-agent-mode/SKILL.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

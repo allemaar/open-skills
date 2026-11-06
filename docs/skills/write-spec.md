@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Synthesizes supplied discussion and established evidence into a behavioral specification with explicit decisions and gaps.
+A discussion has settled some behavior but left other choices open. Write-spec turns the supplied conversation and established evidence into a standalone behavioral specification, tracking later corrections and distinguishing agreed requirements from proposals.
+
+It describes observable success, relevant constraints and exclusions, and readiness gaps. A useful draft can be incomplete: producing it neither approves the behavior nor starts implementation.
+
+## Where it fits
+
+Use it to capture established behavior. An implementation plan, tracker publication and execution are separate work.
 
 **Family:** Planning & execution. **Subagents:** No subagent step prescribed.
 
@@ -17,10 +23,10 @@ Synthesizes supplied discussion and established evidence into a behavioral speci
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/write-spec Turn our discussion into a spec, preserving the retry decision and unresolved timeout.
+/write-spec Turn our discussion and attached prototype notes into a spec; preserve agreed retry behavior and mark the timeout decision open.
 ```
 
 ## Flow
@@ -29,6 +35,16 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Reconcile corrections, evidence, agreed behavior and proposals without inventing decisions.
 3. Shape observable acceptance, constraints and unresolved gaps for the subject.
 4. Return a draft or save only to an authorized safe destination.
+
+## Common questions
+
+**What if code shows behavior nobody agreed should remain?**
+
+Describe it as observed current behavior, not an approved product requirement. The decision remains open until established.
+
+## It is working when
+
+- The spec stands on its own with observable acceptance, source coverage, unresolved questions and an honest saved or text-only disposition.
 
 ## Subagents
 
@@ -45,6 +61,6 @@ A readable specification, source coverage, open questions and actual save status
 The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.
 
 - [skills/write-spec/SKILL.md](../../skills/write-spec/SKILL.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

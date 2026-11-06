@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Gathers facts without changing the target.
+Before choosing a change, you need to know where the behavior lives and what depends on it. This read-only pass starts at relevant entry points and follows call sites and imports into a source-backed map.
+
+The report identifies concrete files, patterns and constraints, and makes evidence gaps visible. It does not turn fact gathering into a plan or implementation.
+
+## Where it fits
+
+Use debug-task for executed reproduction of a specific failure and investigate for a source-backed map.
 
 **Family:** Insight & decision. **Subagents:** Conditional.
 
@@ -17,10 +23,10 @@ Gathers facts without changing the target.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/investigate Investigate how authentication reaches the API.
+/investigate Trace how an uploaded file reaches storage, including validation, callers and configuration. Report the relevant paths and unresolved links.
 ```
 
 ## Flow
@@ -28,6 +34,21 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Identify target and read entry points.
 2. Trace relevant usages, imports and patterns.
 3. Report findings, source anchors and gaps without making changes.
+
+## Common questions
+
+**Can investigation choose the future architecture?**
+
+It supplies facts for that decision; evaluation and planning are separate tasks.
+
+**Does this run or fix the suspected failure?**
+
+No. It gathers facts without changes. Use a bounded debugging workflow if executed reproduction is needed.
+
+## It is working when
+
+- Findings name relevant paths and their relationships.
+- The report distinguishes observed behavior from unresolved paths or unknowns.
 
 ## Subagents
 
@@ -45,6 +66,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/investigate/SKILL.md](../../skills/investigate/SKILL.md)
 - [skills/investigate/protocol.yon](../../skills/investigate/protocol.yon)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

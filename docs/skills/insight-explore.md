@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Generates distinct approaches to a problem and compares them before a plan is chosen.
+You know the problem but have not chosen how to solve it. The skill separates requirements from preferences and searches through different lenses, such as a familiar pattern, a performance-oriented approach and a minimal approach, before comparing the feasible candidates.
+
+Compare the entire candidate set on developer experience, robustness, timeline and alignment. Recommend a winner only if evidence supports one; otherwise explain the constrained or unresolved outcome, search scope and decisive gap.
+
+## Where it fits
+
+Use insight-explore before committing to a direction. Insight-assess evaluates established options in greater depth, and plan-create designs the chosen implementation.
 
 **Family:** Insight & decision. **Subagents:** No subagent step prescribed.
 
@@ -18,19 +24,29 @@ Generates distinct approaches to a problem and compares them before a plan is ch
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/insight-explore Explore three ways to add offline support to this app.
+/insight-explore Explore ways to add offline support to this app, keeping existing authentication and a two-week delivery constraint in view.
 ```
 
 ## Flow
 
 1. Clarify constraints, requirements, and preferences.
 2. Generate distinct approaches, including standard, performance-oriented, and minimal options where useful.
-3. Compare on developer experience, robustness, timeline, and alignment.
-4. Recommend a winner and suggest the next step.
-5. Compare the full actual candidate set, including additions; report evidenced single/no-feasible or unresolved outcomes without invented alternatives.
+3. Collect every actual feasible candidate from the lenses and justified additions; compare the complete set on developer experience, robustness, timeline and alignment. Keep bounded-search evidence for single-option, no-feasible-option or unresolved outcomes without inventing alternatives.
+4. Recommend a supported option or report a constrained or unresolved outcome, then suggest the next useful step.
+
+## Common questions
+
+**What if the bounded search finds fewer than three feasible options?**
+
+Report the actual one- or zero-option result and its evidence and gaps. Do not invent options or a winner to meet a count.
+
+## It is working when
+
+- The result distinguishes constraints and compares all actual candidates rather than only the first three.
+- A recommendation is supported by the comparison, or the unresolved outcome and decisive gap are explicit.
 
 ## Subagents
 
@@ -48,6 +64,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/insight-explore/SKILL.md](../../skills/insight-explore/SKILL.md)
 - [skills/insight-explore/protocol.yon](../../skills/insight-explore/protocol.yon)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

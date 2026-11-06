@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Delegates one read-only fetch and returns a filtered digest.
+One repository search is expected to return a large amount of noise, but the caller needs only matches relevant to a specific question. A single worker performs the specified read-only call and returns a digest with evidence, discarded categories, unfollowed pointers and gaps.
+
+The lead checks each finding and pointer against a rereadable source or independently retained capture using exact proof. A match only to a worker-provided excerpt is not independent provenance and remains an attributed gap.
+
+## Where it fits
+
+Prime-expand frames a vague question, prime-fetch handles one read-only call, and prime-sweep addresses a multi-source investigation.
 
 **Family:** Priming. **Subagents:** Part of the workflow.
 
@@ -17,10 +23,10 @@ Delegates one read-only fetch and returns a filtered digest.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/prime-fetch Fetch relevant matches for this function.
+/prime-fetch Run one read-only search for 'retry budget' in the supplied repository and return only relevant matches with source lines and exact proof.
 ```
 
 ## Flow
@@ -28,6 +34,17 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Specify one read-only call and objective.
 2. A subagent returns a filtered digest with proof of work.
 3. Verify each finding against its source and quoted evidence or exact token; report missing proof.
+
+## Common questions
+
+**What if safe bounded delegation is unavailable?**
+
+Stop the dependent operation. Mandatory delegation has no inline source-gathering fallback.
+
+## It is working when
+
+- Each relayed finding and pointer has source-grounded proof checked by a deterministic tool call.
+- Discarded categories and coverage gaps are reported, including any provenance-unverified material.
 
 ## Subagents
 
@@ -45,6 +62,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/prime-fetch/SKILL.md](../../skills/prime-fetch/SKILL.md)
 - [skills/prime-fetch/protocol.yon](../../skills/prime-fetch/protocol.yon)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Write Obsidian-flavored Markdown with links, embeds, properties and callouts.
+You are writing a note in an Obsidian vault and want links, properties, embeds or callouts to work with its conventions. This skill applies the relevant Obsidian Markdown forms to the requested content.
+
+Link targets and syntax need checking in the intended vault. Rendering in Obsidian is useful when available, but cannot be claimed if it was not observed.
+
+## Where it fits
+
+Use this for note content; use the separate application or Bases workflows for live operations or .base files.
 
 **Family:** Obsidian & vault. **Subagents:** No subagent step prescribed.
 
@@ -17,10 +23,10 @@ Write Obsidian-flavored Markdown with links, embeds, properties and callouts.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/obsidian-markdown create a project note with links and a callout
+/obsidian-markdown Draft a project note with a status property, a link to the supplied roadmap note and a warning callout for the unresolved deadline.
 ```
 
 ## Flow
@@ -29,6 +35,21 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Write Markdown with appropriate vault links and embeds
 3. Check syntax and referenced content
 4. Inspect rendering in Obsidian when available
+
+## Common questions
+
+**Does writing a wikilink guarantee its target exists?**
+
+No. Check the referenced content and distinguish an intended new target from an existing one.
+
+**When should I use the application workflow instead?**
+
+Use the live application route for actions such as searching or opening Obsidian; use this skill for the note’s Markdown.
+
+## It is working when
+
+- The note contains the requested content and valid applicable Markdown structures.
+- Referenced targets and any unobserved rendering are reported accurately.
 
 ## Subagents
 
@@ -45,6 +66,6 @@ An Obsidian Markdown note.
 The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.
 
 - [skills/obsidian-markdown/SKILL.md](../../skills/obsidian-markdown/SKILL.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Builds and exercises a bounded runnable experiment to answer a design question.
+You are unsure how a rule or interaction will behave and a description cannot settle it. Frame one decision question, then build a small runnable model and compare its observations with expectations derived before running it.
+
+The smallest runnable artifact is exercised in an isolated setting. Its observations support a recommendation only within the scenarios actually tried.
+
+## Where it fits
+
+Use design-an-interface to compare module interfaces; use this when running state, logic or interaction will answer the question.
 
 **Family:** Code & architecture. **Subagents:** No subagent step prescribed.
 
@@ -17,10 +23,10 @@ Builds and exercises a bounded runnable experiment to answer a design question.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/build-prototype Test reservation cancellation and capacity rules using synthetic data.
+/build-prototype Test whether a cancelled reservation releases capacity immediately. Use synthetic bookings and show valid, invalid and reset cases.
 ```
 
 ## Flow
@@ -30,6 +36,21 @@ Install this skill in a supported runtime, then give it the relevant material an
 3. Build and exercise the minimum artifact within the boundary.
 4. Report expectations, observations, limitations, instructions and a recommendation.
 5. Use design-an-interface for module/API alternatives; visual interaction experiments may remain runnable prototypes.
+
+## Common questions
+
+**Is a prototype the production implementation?**
+
+No. It is an experiment; production work needs its own scope and authorization.
+
+**What if the runtime is missing?**
+
+The dependent execution stops. The result can include useful unexecuted source, but must identify the missing runtime and cannot invent observations.
+
+## It is working when
+
+- The report connects each exercised scenario to its expected and observed result.
+- The artifact can be run with the supplied instructions, or a missing prerequisite is named.
 
 ## Subagents
 
@@ -49,6 +70,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 - [skills/build-prototype/protocol.yon](../../skills/build-prototype/protocol.yon)
 - [skills/build-prototype/references/state-and-logic.md](../../skills/build-prototype/references/state-and-logic.md)
 - [skills/build-prototype/references/ui.md](../../skills/build-prototype/references/ui.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

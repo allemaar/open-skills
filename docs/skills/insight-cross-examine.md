@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Routes a subject or option set through depth-scaled deliberation, discovers angles, critiques and assesses choices, then recommends.
+You need a recommendation among candidates and the available evidence is uneven. This workflow adjusts its depth to the question, discovers useful angles, then compares the choices and any justified combinations against consistent criteria.
+
+It reuses applicable findings, evaluates selected options consistently and may recommend deferral when the evidence is insufficient. Deeper reassessment or large fan-out is offered rather than launched automatically.
+
+## Where it fits
+
+Use a focused insight skill for a single method; choose cross-examine for a recommendation that combines methods.
 
 **Family:** Insight & decision. **Subagents:** Conditional.
 
@@ -18,10 +24,10 @@ Routes a subject or option set through depth-scaled deliberation, discovers angl
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/insight-cross-examine Weigh these vendor options and recommend one.
+/insight-cross-examine Recommend among these three storage options for a small team. Compare migration effort, operating cost and recovery; flag missing evidence that could reverse the choice.
 ```
 
 ## Flow
@@ -31,6 +37,21 @@ Install this skill in a supported runtime, then give it the relevant material an
 3. Run only selected critique, assessment, or one relevant specialist method.
 4. For sets, compare consistently and consider justified hybrids.
 5. Report recommendation, alternatives, uncertainty, and coverage.
+
+## Common questions
+
+**What if the problem is missing evidence rather than missing options?**
+
+Name the decision-changing evidence gap instead of generating extra candidates to fill it.
+
+**What if the evidence cannot support a winner?**
+
+Recommend a specific evidence-gathering step or deferral. More candidate options do not resolve an evidence gap.
+
+## It is working when
+
+- The decision surface includes a recommendation, alternatives, the weak assumption and what could change the result.
+- Coverage, intentionally skipped angles and material uncertainty are stated.
 
 ## Subagents
 
@@ -48,6 +69,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/insight-cross-examine/SKILL.md](../../skills/insight-cross-examine/SKILL.md)
 - [skills/insight-cross-examine/protocol.yon](../../skills/insight-cross-examine/protocol.yon)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

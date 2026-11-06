@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Reviews actual work against objectives using fresh independent perspectives.
+A change is ready to inspect and its authors may be too close to see its gaps. Cold-review starts from the actual artifact and objectives, selects review lenses and uses fresh reviewers when supported. The lead reopens evidence behind material findings before returning one report.
+
+For code, identify whether the candidate is the working tree, staged content or a commit. Repository standards and the approved specification are separate review bases. If fresh reviewers are unavailable, the same-session review is labeled degraded.
+
+## Where it fits
+
+Use it for an outside view of concrete work. Verify is the formal self-gate; double-check reexamines one claim.
 
 **Family:** Insight & decision. **Subagents:** Conditional.
 
@@ -17,10 +23,10 @@ Reviews actual work against objectives using fresh independent perspectives.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/cold-review Review this implementation against its objective.
+/cold-review Review the current working-tree changes against the approved import spec and repository standards; identify unexamined files.
 ```
 
 ## Flow
@@ -31,6 +37,16 @@ Install this skill in a supported runtime, then give it the relevant material an
 4. Reopen evidence when synthesizing and verify findings.
 5. Report coverage, findings, score and threshold verdict.
 6. Bundle the required lenses within the existing reviewer budget and name any coverage gap.
+
+## Common questions
+
+**Does a high score mean the tests passed?**
+
+No. A review score does not replace required tests, builds or verification.
+
+## It is working when
+
+- The report identifies the candidate and objectives, groups evidence-backed findings by severity, states coverage gaps and gives a threshold verdict.
 
 ## Subagents
 
@@ -48,6 +64,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/cold-review/SKILL.md](../../skills/cold-review/SKILL.md)
 - [skills/cold-review/protocol.yon](../../skills/cold-review/protocol.yon)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

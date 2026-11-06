@@ -9,7 +9,7 @@ const MODES = {
   conditional: 'Conditional',
   required: 'Part of the workflow',
 };
-const FIELDS = ['summary', 'when', 'avoid', 'example', 'steps', 'delegation', 'outputs', 'sources'];
+const FIELDS = ['summary', 'when', 'avoid', 'example', 'steps', 'delegation', 'outputs', 'sources', 'overview', 'position', 'questions', 'working'];
 const hashText = (text) => createHash('sha256').update(text.replace(/\r\n/g, '\n')).digest('hex');
 const cell = (text) => text.replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim();
 
@@ -19,13 +19,16 @@ function fail(message) {
 
 function validateGuide(name, guide, sourceHashes) {
   if (!guide || FIELDS.some((key) => !Object.hasOwn(guide, key))) fail(`${name}: missing editorial field`);
-  for (const key of ['summary', 'example', 'outputs']) {
+  for (const key of ['summary', 'example', 'outputs', 'position']) {
     if (typeof guide[key] !== 'string' || !guide[key].trim()) fail(`${name}: empty ${key}`);
   }
-  for (const key of ['when', 'avoid', 'steps', 'sources']) {
+  for (const key of ['when', 'avoid', 'steps', 'sources', 'overview', 'working']) {
     if (!Array.isArray(guide[key]) || !guide[key].length || guide[key].some((s) => typeof s !== 'string' || !s.trim())) {
       fail(`${name}: ${key} must contain nonempty strings`);
     }
+  }
+  if (!Array.isArray(guide.questions) || !guide.questions.length || guide.questions.some((q) => !q || typeof q.question !== 'string' || !q.question.trim() || typeof q.answer !== 'string' || !q.answer.trim())) {
+    fail(`${name}: questions require a nonempty question and answer`);
   }
   if (!guide.example.startsWith(`/${name} `)) fail(`${name}: example must use its canonical command`);
   if (!Object.hasOwn(MODES, guide.delegation?.mode) || typeof guide.delegation.detail !== 'string' || !guide.delegation.detail.trim()) {
@@ -49,7 +52,10 @@ function emitGuide(skill, guide, families) {
     '',
     '[All skill guides](../README.md) · [Catalog](../../SKILLS.md)',
     '',
-    guide.summary,
+    ...guide.overview.flatMap((paragraph) => [paragraph, '']),
+    '## Where it fits',
+    '',
+    guide.position,
     '',
     `**Family:** ${family}. **Subagents:** ${MODES[guide.delegation.mode]}.`,
     '',
@@ -63,7 +69,7 @@ function emitGuide(skill, guide, families) {
     '',
     '## How to use it',
     '',
-    'Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:',
+    'Start with a concrete request. For example:',
     '',
     '```text', guide.example, '```',
     '',
@@ -73,13 +79,15 @@ function emitGuide(skill, guide, families) {
   }
   lines.push(
     '## Flow', '', ...guide.steps.map((s, i) => `${i + 1}. ${s}`), '',
+    '## Common questions', '', ...guide.questions.flatMap((q) => [`**${q.question}**`, '', q.answer, '']),
+    '## It is working when', '', ...guide.working.map((s) => `- ${s}`), '',
     '## Subagents', '', guide.delegation.detail, '',
     'This describes the skill\'s own workflow. Available tools and the runtime\'s permission rules still apply.', '',
     '## What you get', '', guide.outputs, '',
     '## Source and installation', '',
     'The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.', '',
     ...guide.sources.map((path) => `- [${path}](../../${path})`),
-    '- [Installation and updates](../../README.md#install)',
+    '- [Installation and updates](../installation.md)',
     '', '[License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)', '',
   );
   return lines.join('\n');
@@ -102,8 +110,9 @@ export function emitSkillDocs(skills, families) {
   }
   const lines = [
     '# Skill guides', '',
-    `These guides cover all **${skills.length} skills**: what each does, when to use it, when to leave it out, a request to try, its flow and the result to expect.`, '',
-    'I keep these guides alongside the skills to help you choose what fits. Read a guide first, then its linked source for the complete procedure and safeguards. [Install a skill](../README.md#install) or browse the [compact catalog](../SKILLS.md).', '',
+    `These guides cover all **${skills.length} skills**: what each does, where it fits, when to use it, a request to try, its flow, practical questions and signs of a useful result.`, '',
+    'I keep these guides alongside the skills to help you choose what fits. Read a guide first, then its linked source for the complete procedure and safeguards. [Install or update a skill](installation.md) or browse the [compact catalog](../SKILLS.md).', '',
+    'For shared terms and library boundaries, see the [glossary](../GLOSSARY.md) and [scope](../SCOPE.md).', '',
     'For a task that spans a few steps, start with the [workflow recipes](workflows/README.md). They cover questionnaires, workflow discovery, coauthoring, testing, review evidence, and creating a skill or library. Each names its prerequisites and stopping points.', '',
     'Subagent labels describe the skill\'s own workflow: **No subagent step prescribed** means no separate worker step is defined; **Conditional** depends on the task or selected route; **Part of the workflow** means separate workers or model calls are integral to that route. A label does not grant permission or promise runtime support.', '',
   ];

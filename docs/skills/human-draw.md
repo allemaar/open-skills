@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Turns relational, positional, or proportional information into a text figure that carries meaning alongside concise prose.
+A reader has to hold several relationships in mind, such as a rollout with a rollback branch. Human-draw gives them a compact text figure, preceded by the verdict and followed by a caption stating the finding.
+
+Position, connection and length encode only what the source supports. The figure marks unknown or deferred territory and is checked for width, alignment, arithmetic and honest encoding; the mechanical checker covers only part of that work.
+
+## Where it fits
+
+Use it for a monospace figure when a relationship carries meaning. Shared-attribute records usually need a table; graphical charts are a different task.
 
 **Family:** Human output. **Subagents:** No subagent step prescribed.
 
@@ -18,10 +24,10 @@ Turns relational, positional, or proportional information into a text figure tha
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/human-draw Show the three rollout stages and rollback branches as a diagram.
+/human-draw Show these three rollout stages and the two documented rollback branches; mark the unconfirmed dependency as unknown.
 ```
 
 ## Flow
@@ -32,6 +38,16 @@ Install this skill in a supported runtime, then give it the relevant material an
 4. Check width, glyphs, alignment, arithmetic, node limits, and honesty; the mechanical helper recognizes figures by their final receipt line and leaves other code and quotations outside figure checks.
 5. Return the figure with its check receipt and surrounding explanation.
 6. Examples keep axes, node counts, timing precision and temporal coverage faithful to their stated data.
+
+## Common questions
+
+**What if equal boxes would falsely imply equal durations?**
+
+Use a shape that encodes sequence without implying duration, or show measured durations on an honest scale.
+
+## It is working when
+
+- The figure makes the relationship readable, includes its check receipt and is supported by a verdict and caption that stand on their own.
 
 ## Subagents
 
@@ -54,6 +70,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 - [skills/human-draw/references/examples/bad-figure.md](../../skills/human-draw/references/examples/bad-figure.md)
 - [skills/human-draw/references/examples/fork.md](../../skills/human-draw/references/examples/fork.md)
 - [skills/human-draw/references/examples/small-multiple.md](../../skills/human-draw/references/examples/small-multiple.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

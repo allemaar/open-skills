@@ -8,6 +8,7 @@
         "ask-me",
         "define-terms",
         "freshness-contract",
+        "implement-task",
         "plan-cleanup",
         "plan-create",
         "plan-deep-dive",
@@ -57,7 +58,8 @@
         "self-improve",
         "skill-library-creator",
         "skill-smith",
-        "skills-help"
+        "skills-help",
+        "update-open-skills"
       ]
     },
     {

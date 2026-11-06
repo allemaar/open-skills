@@ -1,8 +1,10 @@
 # Skill guides
 
-These guides cover all **90 skills**: what each does, when to use it, when to leave it out, a request to try, its flow and the result to expect.
+These guides cover all **92 skills**: what each does, where it fits, when to use it, a request to try, its flow, practical questions and signs of a useful result.
 
-I keep these guides alongside the skills to help you choose what fits. Read a guide first, then its linked source for the complete procedure and safeguards. [Install a skill](../README.md#install) or browse the [compact catalog](../SKILLS.md).
+I keep these guides alongside the skills to help you choose what fits. Read a guide first, then its linked source for the complete procedure and safeguards. [Install or update a skill](installation.md) or browse the [compact catalog](../SKILLS.md).
+
+For shared terms and library boundaries, see the [glossary](../GLOSSARY.md) and [scope](../SCOPE.md).
 
 For a task that spans a few steps, start with the [workflow recipes](workflows/README.md). They cover questionnaires, workflow discovery, coauthoring, testing, review evidence, and creating a skill or library. Each names its prerequisites and stopping points.
 
@@ -15,6 +17,7 @@ Subagent labels describe the skill's own workflow: **No subagent step prescribed
 | [ask-me](skills/ask-me.md) | Interviews a person to turn an idea, task or decision into a usable working brief. | No subagent step prescribed |
 | [define-terms](skills/define-terms.md) | Refines domain language in bounded contexts while separating accepted definitions, observed implementation and proposed changes. | No subagent step prescribed |
 | [freshness-contract](skills/freshness-contract.md) | Determines whether old evidence remains usable for a current decision. | No subagent step prescribed |
+| [implement-task](skills/implement-task.md) | Implements one explicitly selected, authorized outcome and verifies it against observable acceptance. | No subagent step prescribed |
 | [plan-cleanup](skills/plan-cleanup.md) | Removes confirmed disposable planning leftovers after execution. | No subagent step prescribed |
 | [plan-create](skills/plan-create.md) | Designs a phased implementation plan before building. | No subagent step prescribed |
 | [plan-deep-dive](skills/plan-deep-dive.md) | Inspects a multi-phase plan one phase at a time. | Conditional |
@@ -65,6 +68,7 @@ Subagent labels describe the skill's own workflow: **No subagent step prescribed
 | [skill-library-creator](skills/skill-library-creator.md) | Creates a portable skill library with its own family manager, guidance, authoring resources, and optional local links into selected harness locations. | No subagent step prescribed |
 | [skill-smith](skills/skill-smith.md) | Creates, assesses, diagnoses, updates, or reorganizes skills through a route-specific procedure and selected references. | Conditional |
 | [skills-help](skills/skills-help.md) | Shows a live installed-skills menu using the bundled taxonomy. | No subagent step prescribed |
+| [update-open-skills](skills/update-open-skills.md) | Checks or updates an existing open-skills installation to a selected stable release while preserving its method and local changes. | No subagent step prescribed |
 
 ## Orchestration & dispatch
 

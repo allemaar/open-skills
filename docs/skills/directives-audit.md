@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Audits directive systems for authority, scope, safety, routing and drift.
+A project has accumulated standing instructions and you need to know whether their authority and routing still make sense. This audit inventories selected entrypoints, conditional routes, managed projections and consumed forms, then traces the in-scope edges.
+
+Findings separate what to do with a rule from its severity and any conflict. Source-to-consumed parity for checked surfaces does not by itself prove runtime behavior.
+
+## Where it fits
+
+Use it for directive authority, safety and routing. Skill-smith owns skill behavior; prose-audit owns reader-facing wording.
 
 **Family:** Skill library. **Subagents:** No subagent step prescribed.
 
@@ -17,10 +23,10 @@ Audits directive systems for authority, scope, safety, routing and drift.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/directives-audit Audit these project directives.
+/directives-audit Audit the project entrypoint and the conditional files it routes to; report unreachable paths and consumed-form gaps.
 ```
 
 ## Flow
@@ -29,6 +35,16 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Traverse each in-scope edge and name gaps.
 3. Report findings with evidence and ownership.
 4. Housekeep only on explicit request and follow its mutation gate.
+
+## Common questions
+
+**Does the audit automatically repair the directives?**
+
+No. It is read-only by default; selected housekeeping is a separate explicitly requested operation.
+
+## It is working when
+
+- The report names its inventory and unchecked edges, and gives each material finding a disposition, conflict and severity with a source location.
 
 ## Subagents
 
@@ -45,6 +61,6 @@ An audit and, if explicitly requested, approved housekeeping.
 The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.
 
 - [skills/directives-audit/SKILL.md](../../skills/directives-audit/SKILL.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Compresses agent-to-agent reports while preserving decision-critical evidence and caveats.
+A worker has finished a slice and the receiving agent needs to know whether it can proceed. A compact report puts the outcome, exact supporting evidence, changed artifact, material gap and next action in reach without making the receiver read the full work history.
+
+The envelope is optional: a short update can use two lines, and findings use their own fields. Compression must retain scope, failed checks, uncertainty and authority or stop conditions that could change the recipient's decision.
+
+## Where it fits
+
+Choose agent-mailbox for message transport, handoff for a cold-agent context package, and human-output for prose addressed to a person.
 
 **Family:** Human output. **Subagents:** No subagent step prescribed.
 
@@ -17,10 +23,10 @@ Compresses agent-to-agent reports while preserving decision-critical evidence an
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/agent-output Compress this worker report.
+/agent-output Compress this worker report: the parser fix passed its focused test, the integration suite was not run, and the changed file is src/parser.ts.
 ```
 
 ## Flow
@@ -28,6 +34,21 @@ Install this skill in a supported runtime, then give it the relevant material an
 1. Lead with state and result.
 2. Include exact evidence, changes and material gaps.
 3. Give the next action while retaining scope, uncertainty and gates.
+
+## Common questions
+
+**Do I need every envelope field?**
+
+No. Omit empty fields and use a smaller update when it carries the needed information.
+
+**Can the report omit an untested scope to save space?**
+
+No. Material gaps and reversing caveats remain part of the fidelity floor.
+
+## It is working when
+
+- The recipient can identify the result and its supporting evidence without reconstructing the work chronology.
+- Material uncertainty, authority limits and the next required action remain visible.
 
 ## Subagents
 
@@ -44,6 +65,6 @@ A compact operational report.
 The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.
 
 - [skills/agent-output/SKILL.md](../../skills/agent-output/SKILL.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

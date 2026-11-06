@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Reproduces and diagnoses a specific defect through bounded probes and verifies an authorized repair.
+A reported bug has a symptom but its cause is uncertain. This workflow first finds a path that distinguishes the failure from expected behavior, then uses observations to test explanations before making an authorized repair.
+
+Bounded probes compare competing explanations. A supported repair is made only within authorization, then the original scenario and relevant affected paths are checked.
+
+## Where it fits
+
+Use investigate for read-only fact gathering and this skill when reproduction and executed diagnosis are needed.
 
 **Family:** Code & architecture. **Subagents:** No subagent step prescribed.
 
@@ -17,10 +23,10 @@ Reproduces and diagnoses a specific defect through bounded probes and verifies a
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/debug-task Reproduce and fix the reported reservation failure using the local test environment.
+/debug-task Reproduce and fix the reservation cancellation failure locally. The expected result is that a cancelled booking releases one slot; use the existing test environment.
 ```
 
 ## Flow
@@ -30,6 +36,21 @@ Install this skill in a supported runtime, then give it the relevant material an
 3. Compare competing hypotheses using bounded probes and symptom-preserving minimization.
 4. When authorized, repair the supported mechanism and check appropriate affected callers.
 5. Rerun the original scenario and sanctioned checks; report evidence, gaps and effects.
+
+## Common questions
+
+**What if the failure cannot be reproduced safely?**
+
+Report the missing discriminator and evidence gap; do not present a speculative cause as verified.
+
+**What if an intermittent failure does not recur?**
+
+Report the attempts and conditions, and leave reproduction unresolved. A non-reproduction does not prove a cause or a successful fix.
+
+## It is working when
+
+- The report states the reproduction conditions, observations and causal evidence.
+- Any repair is checked against the original failure and limitations of the checks remain visible.
 
 ## Subagents
 
@@ -46,6 +67,6 @@ Reproduction and causal evidence, an authorized repair when supported, verificat
 The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.
 
 - [skills/debug-task/SKILL.md](../../skills/debug-task/SKILL.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

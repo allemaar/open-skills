@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Reviews one existing plan, code change, architecture, or UI output and reports strengths, risks, and fixes.
+You have one concrete output, such as an API migration plan, and want focused feedback before deciding what to do next. Insight-critique classifies the subject, then separates purpose and strengths from severity-ranked risks and actionable fixes.
+
+The verdict is advisory. Approved requires only low or cosmetic risks; a critique does not itself authorize execution.
+
+## Where it fits
+
+Use it for a specific plan, code change, architecture or UI. Insight-adversarial adds distinct critic lenses; option generation belongs to insight-explore.
 
 **Family:** Insight & decision. **Subagents:** Conditional.
 
@@ -18,10 +24,10 @@ Reviews one existing plan, code change, architecture, or UI output and reports s
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/insight-critique Review this API migration plan for gaps.
+/insight-critique Review this API migration plan against its stated compatibility and rollback requirements.
 ```
 
 ## Flow
@@ -31,6 +37,16 @@ Install this skill in a supported runtime, then give it the relevant material an
 3. Identify specific strengths and rank risks.
 4. Pair risks with concrete must-fix or optional fixes.
 5. Return the report and verdict.
+
+## Common questions
+
+**Can a Conditional verdict start implementation?**
+
+Not by itself. Execution needs the relevant approved executable plan and applicable authority.
+
+## It is working when
+
+- The report gives a summary, specific strengths, ranked risks, concrete fixes and a verdict consistent with the risks.
 
 ## Subagents
 
@@ -48,6 +64,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/insight-critique/SKILL.md](../../skills/insight-critique/SKILL.md)
 - [skills/insight-critique/protocol.yon](../../skills/insight-critique/protocol.yon)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

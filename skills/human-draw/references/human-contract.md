@@ -152,7 +152,7 @@ Inline the five rules of `human-output` into any worker or subagent brief. A
 subagent does not inherit the harness's response guidance, and unbriefed
 workers are where verbose reporting accumulates.
 
-## 5. Roster edits
+## 6. Roster edits
 
 Adding, cutting, or renaming a member is an edit **here** plus the member's own
 boundary section — not an N-by-N sweep of every sibling. The routing table above

@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Determines whether old evidence remains usable for a current decision.
+You have a passing test or earlier report and need to decide whether it still supports today’s decision. Classify the evidence, check changes and invalidators, and use the table to decide whether to reuse, spot-check or re-verify it.
+
+Its table selects reuse, a discriminating spot-check or re-verification. A missing cheap discriminator does not erase a mandatory re-verification requirement.
+
+## Where it fits
+
+Use this before reusing existing evidence; use a fresh investigation or test to establish a new claim.
 
 **Family:** Planning & execution. **Subagents:** No subagent step prescribed.
 
@@ -17,10 +23,10 @@ Determines whether old evidence remains usable for a current decision.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/freshness-contract Check whether yesterday's test still supports release.
+/freshness-contract Can yesterday’s integration test support this release? The service configuration changed after the run; the test used a local database.
 ```
 
 ## Flow
@@ -29,6 +35,21 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Identify age anchors, intervening changes and invalidators.
 3. Apply the restrictive table: reuse, spot-check or re-verify; accept labeled risk only in the no-cheap-discriminator case.
 4. After selecting any spot-check row, handle missing discriminators without relaxing mandatory re-verification.
+
+## Common questions
+
+**Does an old passing result automatically expire?**
+
+Not solely because it is old. The applicable category, anchors and changes determine what the evidence can still support.
+
+**Does a matching hash prove an old specification still governs?**
+
+No. The bytes can be unchanged while the governing version or dependency has been superseded; applicability to the current decision still matters.
+
+## It is working when
+
+- The decision names the artifact, current use, invalidators and selected freshness action.
+- Any required follow-up or unaccepted uncertainty is explicit.
 
 ## Subagents
 
@@ -45,6 +66,6 @@ A freshness decision and required follow-up.
 The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.
 
 - [skills/freshness-contract/SKILL.md](../../skills/freshness-contract/SKILL.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

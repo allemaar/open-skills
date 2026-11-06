@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Perform one bounded check, selected repair and recheck cycle.
+An existing knowledge map has accumulated broken links or ownership inconsistencies, and you want one controlled maintenance pass. The skill checks the exact governing scope, turns confirmed findings and link occurrences into case-bound proposals, and applies only the selected repairs.
+
+The recheck walks the full governing scope under explicit inventory and time bounds, while interpreting selected repairs and their dependencies. Incomplete inventory or an operational error remains incomplete; new enrichment suggestions are separate from repairs and do not authorize writes.
+
+## Where it fits
+
+Map-check performs the read-only conformance check, map-this owns proposal and apply semantics, and map-maintain combines them for one selected repair cycle.
 
 **Family:** Obsidian & vault. **Subagents:** No subagent step prescribed.
 
@@ -17,22 +23,36 @@ Perform one bounded check, selected repair and recheck cycle.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/map-maintain tend this project map
+/map-maintain Check the named project map, propose repairs for confirmed findings and wait for my selection before applying them.
 ```
 
 **Required skills:** [map-rules](map-rules.md), [map-check](map-check.md), [map-this](map-this.md). Install these first.
 
 ## Flow
 
-1. Load the mapping rules and check the selected scope
-2. Present findings for the user's selection
-3. Apply selected repairs using map-this semantics
-4. Recheck the full governing scope with explicit inventory/time caps, interpret selected repairs and dependencies, and preserve incomplete outcomes.
-5. Zero conformance findings does not exclude actionable occurrence cases; preserve the selected repair or conformance-only scope.
-6. The 50-file default bounds mutation targets, not inventory; scanning and recheck share the finite total budget.
+1. Declare the selected scope and finite mutation, inventory and time bounds before checking; the 50-file default limits mutation targets, not scanning or recheck. Load the governing mapping rules.
+2. Check the scope and occurrence cases. Zero conformance findings alone does not exclude actionable occurrences; honor an explicitly conformance-only request.
+3. Present findings for the user's selection
+4. Apply selected repairs using map-this semantics
+5. Recheck the full governing scope with explicit inventory/time caps, interpret selected repairs and dependencies, and preserve incomplete outcomes.
+
+## Common questions
+
+**Does zero conformance findings mean there is nothing to repair?**
+
+Not necessarily. Actionable missing or ambiguous link occurrences can exist separately; preserve the selected scope and intentional unresolved links.
+
+**Does selecting one repair allow adjacent cleanup?**
+
+No. Apply the exact selected set, including its coupled changes, and stop if drift or an out-of-set mutation is required.
+
+## It is working when
+
+- The report retains the checker's actual scope, inventory, qualifications and any incomplete coverage.
+- Selected changes and their recheck are distinguished from deferred, unresolved or newly exposed findings.
 
 ## Subagents
 
@@ -50,6 +70,10 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/map-maintain/SKILL.md](../../skills/map-maintain/SKILL.md)
 - [skills/map-maintain/protocol.yon](../../skills/map-maintain/protocol.yon)
-- [Installation and updates](../../README.md#install)
+- [skills/map-rules/SKILL.md](../../skills/map-rules/SKILL.md)
+- [skills/map-rules/references/link-resolution.md](../../skills/map-rules/references/link-resolution.md)
+- [skills/map-check/SKILL.md](../../skills/map-check/SKILL.md)
+- [skills/map-this/SKILL.md](../../skills/map-this/SKILL.md)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

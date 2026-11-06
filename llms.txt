@@ -1,8 +1,8 @@
 # open-skills
 
-Version: 3.0.1
+Version: 3.1.0
 
-> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; 54 of 90 also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.
+> Reusable, inspectable skills for AI coding agents (Claude Code, Codex, any runtime that reads the open Agent Skills format). Every skill has a readable SKILL.md; 54 of 92 also carry a protocol.yon — a declarative, mechanically validatable account of steps, rules, and gates. Validation proves the declared structure, not runtime obedience. Apache-2.0. Read before you trust.
 
 ## About YON (YounndAI Object Notation™)
 The protocol.yon files are written in YON (https://github.com/YounndAI/yon), a stream-first data format for AI-agent workflows with a public spec (https://github.com/YounndAI/yon-spec) and an Apache-2.0 reference parser (@younndai/yon-parser). YON makes a skill's declared rules (MUST / MUST_NOT) and gates (ABORT / WARN) inspectable as named, typed objects; it does not enforce runtime obedience.
@@ -33,6 +33,7 @@ Updating later: these are frozen copies — they do not change until you re-copy
 - ask-me [md-only] — Constructively interview someone about an idea, task, project or decision so useful work can start. — triggers: /ask-me, ask me, interview me about this idea, help me clarify this through questions
 - define-terms [md-only] — Refine domain terminology in bounded contexts and update authorized definitions or consequential decision records. — triggers: /define-terms, define our domain terms, clarify this overloaded domain term, update the shared domain terminology
 - freshness-contract [md-only] — Categorical decision table for reusing cached evidence — when an artifact you already read, a banked test result, a primer, a worker report, or a probe verdict is still trustworthy, and when it must be spot-checked or re-verified. — triggers: /freshness-contract, is this still current, can I trust what I read earlier, do I need to re-check this
+- implement-task [md-only] — Implement one currently authorized outcome without requiring an approved plan. — triggers: /implement-task, use implement-task
 - plan-cleanup [protocol.yon] — Post-execution cleanup — remove planning artifacts and tech debt left behind after a plan runs. — triggers: /plan-cleanup, clean up artifacts, remove the plan file, no tech debt
 - plan-create [protocol.yon] — Propose a phased, gated implementation plan before any work begins. — triggers: /plan-create, make a plan, plan this out, design before coding
 - plan-deep-dive [protocol.yon] — Phase-by-phase deep inspection of any multi-phase plan — stop at each phase and assess completeness, quality, and future-readiness before advancing. — triggers: /deep-dive, do a deep dive, inspect each phase, look at this more carefully
@@ -74,6 +75,7 @@ Updating later: these are frozen copies — they do not change until you re-copy
 - skill-library-creator [protocol.yon] — Create a portable skill library with its own family manager, guided setup, templates and link tools. — triggers: /skill-library-creator, create a skill library, set up a skill pool, create a family skills manager
 - skill-smith [md-only] — Create, assess, boil, diagnose, update or consolidate skills using concise instructions and task-selected references. — triggers: /skill-smith, create a skill, make a new skill for X, add a slash command
 - skills-help [md-only] — The skills library menu — every skill grouped by family, each with a one-line description and a dual-doc/single-doc marker; pass a family name to drill into one family in full detail. — triggers: /skills-help, /skills-help {family}, list my skills, which skill for X
+- update-open-skills [md-only] — Inspect and update an existing allemaar/open-skills installation to a selected stable release while preserving local edits, backups and its installation method. — triggers: /update-open-skills, update my installed open-skills, check my open-skills version
 
 ### Orchestration & dispatch
 - agent-mailbox [protocol.yon] — Two or more agents — any harness, any vendor — collaborate through any shared folder: share a folder, load the skill, point at it. — triggers: /agent-mailbox, handshake with the other agent, collaborate through this inbox, listen for the other agent's reply

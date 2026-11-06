@@ -141,7 +141,7 @@ the blockquote exactly. A citation without the footer fails; a paraphrased
 footer fails. If you ever change the footer's wording, change the literal in the
 guard in the same edit.
 
-**Coverage is machine-checked too: 42 of the pack's 90 skills carry it.** That
+**Coverage is machine-checked too: 42 of the pack's 92 skills carry it.** That
 sentence is a gate, not a note — the guard recomputes both numbers and fails on
 a mismatch. It exists because the citation rule alone cannot catch a *deleted*
 footer: for most carriers the footer is the only place the contract is named, so

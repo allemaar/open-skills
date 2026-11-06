@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Repairs existing text so a person can read and act on it while preserving its claims and degree of certainty.
+A report contains the right facts but the reader cannot see the decision. Human-rewrite inventories the claims that must survive, brings decision-reversing caveats up with the verdict, and restacks one existing text by what the reader needs.
+
+It preserves strength, scope, numbers, attribution and missing results. For example, a possible relationship must not become a proven cause. A source error is flagged separately rather than silently corrected.
+
+## Where it fits
+
+Use it to repair one text. Human-merge reconciles several reports; human-output governs new writing; double-check investigates a contested claim.
 
 **Family:** Human output. **Subagents:** No subagent step prescribed.
 
@@ -18,10 +24,10 @@ Repairs existing text so a person can read and act on it while preserving its cl
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/human-rewrite Rewrite this update so a client can see the decision and what remains uncertain.
+/human-rewrite Rewrite this client update around the release decision, keeping its untested configuration and estimated date visible.
 ```
 
 ## Flow
@@ -32,7 +38,20 @@ Install this skill in a supported runtime, then give it the relevant material an
 4. Resolve shorthand and reorder by decision relevance without changing claims.
 5. Restack for the destination while retaining necessary supporting detail.
 6. Check fidelity and name unresolved ambiguity or missing source context.
-7. Check example inventory items individually, retaining exact time windows, threshold meaning and tentative decisions.
+
+## Common questions
+
+**Can missing context explain a confusing connection?**
+
+Only supplied text or explicitly supplied established context may support it; attribute that context separately and name unsupported gaps.
+
+**Must an ordinary rewrite work through the bundled example?**
+
+No. Read it only for explicitly selected onboarding or demonstration, or when procedural ambiguity remains after the core rules. Its facts and inventory counts are illustrative, never inputs to the current rewrite. When selected, inspect its inventory items individually, preserving exact windows, thresholds and tentative decisions.
+
+## It is working when
+
+- The rewrite puts the decision and qualifying caveats early, and the fidelity trace accounts for the source's material claims.
 
 ## Subagents
 
@@ -51,6 +70,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 - [skills/human-rewrite/SKILL.md](../../skills/human-rewrite/SKILL.md)
 - [skills/human-rewrite/references/human-contract.md](../../skills/human-rewrite/references/human-contract.md)
 - [skills/human-rewrite/references/examples/estuary-rewrite.md](../../skills/human-rewrite/references/examples/estuary-rewrite.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

@@ -18,9 +18,9 @@ Cache-inclusive input fell 95.09% between these two literal trials. This is a co
 
 Startup still scanned plugins and permission configuration. Both stderr logs included unsupported Stripe-event and skipped permission-prefix warnings. The lean profile reduced injected context and advertised tools; it did not establish scan-free startup or OS isolation.
 
-Local provenance: `D:/agent-spaces/grok-setup-20261025/lean-smoke.md`, `lean-profile-spec.json`, `lean-profile-run/{stdout.log,stderr.log,status.json}`, `trial-spec.json`, and `trial-run/{stdout.log,stderr.log,status.json}`. Environment overrides came from the supervising parent launch record; workspace plugin configuration was read from `workspace/.grok/config.toml`. These are maintainer evidence locations, not runtime path requirements.
+Private maintainer evidence retains the exact trial profiles, process logs and command specifications. The dated observations above are retained here; those private storage locations are not runtime prerequisites or current-host guarantees.
 
-The lean session ID was `01a1727c-3c73-7651-9ed5-58ad29c2f770`. The supported `grok usage <SESSION_ID> [TURN]` surface provides persisted session accounting. Its 1,446 input, 58 output and 1,504 total tokens are session usage, not remaining subscription allowance or reset times. Use an observed current interactive **/usage** or Settings -> Usage surface for the remaining shared pool; otherwise mark it unknown.
+The trial session identifier is retained privately; use your own `<SESSION_ID>` for the supported accounting command. The supported `grok usage <SESSION_ID> [TURN]` surface provides persisted session accounting. Its 1,446 input, 58 output and 1,504 total tokens are session usage, not remaining subscription allowance or reset times. Use an observed current interactive **/usage** or Settings -> Usage surface for the remaining shared pool; otherwise mark it unknown.
 
 ## Read event observation, 2026-10-30
 

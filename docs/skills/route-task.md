@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Recommends task capability and effort routing using an experimental rubric.
+You are sizing a task and need a reasoned capability recommendation before dispatch. Route-task scores scope, coupling, risk, uncertainty and verification, then derives an advisory capability band, effort volume and separate plan gate.
+
+The rubric is experimental. It resolves bands against the live runtime roster, records drivers and actual resolution, and falls back to the session model when the roster is ambiguous. The score does not authorize dispatch or spending.
+
+## Where it fits
+
+Use it for advisory task sizing. Caller-options handles venue and isolation; budget-check assesses a pre-wave usage boundary.
 
 **Family:** Orchestration & dispatch. **Subagents:** No subagent step prescribed.
 
@@ -17,10 +23,10 @@ Recommends task capability and effort routing using an experimental rubric.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/route-task Route this database migration.
+/route-task Size this database migration using the specification, affected components and required verification; state whether design is still open.
 ```
 
 ## Flow
@@ -30,6 +36,16 @@ Install this skill in a supported runtime, then give it the relevant material an
 3. Report the plan gate and resolve against the live runtime roster.
 4. Treat the recommendation as advisory.
 5. Use the defined local inline card when no configured sink exists, including did-not-use decisions and unknown observations.
+
+## Common questions
+
+**Does a high score automatically require a plan?**
+
+No. The plan gate depends on unresolved design or a plan requirement, independently of the score.
+
+## It is working when
+
+- The routing record contains evidence-based axis drivers, derived tuple, plan-gate result and actual runtime resolution or unknown.
 
 ## Subagents
 
@@ -46,6 +62,6 @@ An advisory routing record and plan-gate result.
 The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.
 
 - [skills/route-task/SKILL.md](../../skills/route-task/SKILL.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

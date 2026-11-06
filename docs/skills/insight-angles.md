@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Finds less-visible frames, connections, assumptions, candidate expansions, and second-order effects around a subject.
+A proposal feels narrow, but you do not yet know which perspective is missing. The skill selects lenses for the subject and looks for alternative frames, hidden assumptions, connections and second-order effects.
+
+It selects lenses for the subject and returns an angle map, including candidate expansions and material assumptions. Findings remain leads to assess rather than established facts simply because they sound novel.
+
+## Where it fits
+
+Choose this for missing perspectives without requiring a decision; cross-examine combines discovery with evaluation.
 
 **Family:** Insight & decision. **Subagents:** Conditional.
 
@@ -18,10 +24,10 @@ Finds less-visible frames, connections, assumptions, candidate expansions, and s
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/insight-angles Find missing perspectives and connections in this proposal.
+/insight-angles Examine this onboarding proposal. We currently optimize completion rate; surface missing stakeholder perspectives, assumptions and possible downstream effects.
 ```
 
 ## Flow
@@ -31,6 +37,21 @@ Install this skill in a supported runtime, then give it the relevant material an
 3. Choose roster and subject-specific lenses; note skips.
 4. Run context-appropriate passes and connect and score findings.
 5. Return an angle map and synthesis.
+
+## Common questions
+
+**Is this an implementation brainstorm?**
+
+Its focus is reframing and connections; use insight-explore for competing implementations.
+
+**Does every surprising connection become a recommendation?**
+
+No. Connections are leads, with their relevance and implications stated; the skill does not decide or implement them.
+
+## It is working when
+
+- The angle map distinguishes frames, connections, assumptions and possible effects.
+- The synthesis identifies useful implications and states the limits of coverage.
 
 ## Subagents
 
@@ -48,6 +69,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/insight-angles/SKILL.md](../../skills/insight-angles/SKILL.md)
 - [skills/insight-angles/protocol.yon](../../skills/insight-angles/protocol.yon)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

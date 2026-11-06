@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Detects concrete improvement signals and proposes specific skill changes for approval.
+A skill run exposed an unclear instruction or repeated workaround that could affect future runs. This protocol checks for a concrete, material or recurring signal and prepares a specific improvement only when a fix is ready.
+
+A surviving proposal is precise and approval-ready. Below the threshold the protocol stays silent; an accepted change still goes through its canonical owner and write safeguards.
+
+## Where it fits
+
+Use this lightweight run-specific detector; a broader skill assessment or gap analysis serves a different scope.
 
 **Family:** Skill library. **Subagents:** No subagent step prescribed.
 
@@ -17,10 +23,10 @@ Detects concrete improvement signals and proposes specific skill changes for app
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/self-improve Review the last verify run for improvement.
+/self-improve Review the most recent verify run for an instruction that caused a material ambiguity.
 ```
 
 ## Flow
@@ -31,6 +37,21 @@ Install this skill in a supported runtime, then give it the relevant material an
 4. Stay silent below threshold and never auto-apply.
 5. Apply a selected proposal through its verified canonical source owner and Skill Smith write procedure; preserve managed-owner and revision safeguards.
 6. Missing required vetting/approval helpers stop the proposal path; the parent task can complete without an invented protocol pass.
+
+## Common questions
+
+**Does a useful observation automatically change the skill?**
+
+No. The proposal requires selection and the appropriate authoring process before a change.
+
+**What happens if the required vetting helper is missing?**
+
+The proposal path stops and names the missing coverage when material. The parent task may still complete; an unvetted proposal is not presented as approved work.
+
+## It is working when
+
+- Any proposal names the run evidence, affected behavior and specific fix.
+- The skill remains unchanged unless the proposal is selected and its write prerequisites are satisfied.
 
 ## Subagents
 
@@ -48,6 +69,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/self-improve/SKILL.md](../../skills/self-improve/SKILL.md)
 - [skills/self-improve/protocol.yon](../../skills/self-improve/protocol.yon)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

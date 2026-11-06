@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Guides writing as it happens so a reader can understand the decision, consequence, evidence, and unchecked scope.
+A decision maker needs to know what to do before reading a long investigation. Put the verdict and any reversing condition first, then state the practical consequence, evidence and unchecked scope in the order they matter to that decision.
+
+The bundled checker detects selected mechanical patterns in drafted text. It cannot determine whether the verdict is correct, confidence is warranted or a number matches its source; those require direct inspection. A simple answer need not carry a full report structure.
+
+## Where it fits
+
+Human-output governs writing as it happens. Human-rewrite repairs an existing text, human-merge reconciles reports, and human-draw owns the inside of a useful figure.
 
 **Family:** Human output. **Subagents:** No subagent step prescribed.
 
@@ -18,10 +24,10 @@ Guides writing as it happens so a reader can understand the decision, consequenc
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/human-output Write a concise decision memo on whether to accept this vendor proposal.
+/human-output Write a decision memo from these vendor findings, including the cost, the condition that could reverse the recommendation and what was not checked.
 ```
 
 ## Flow
@@ -30,7 +36,22 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. State the ask or next action, then explain what it means.
 3. Order details by decision relevance and put claims before supporting evidence.
 4. Label confirmed claims, judgments, and estimates; state what was not checked.
-5. Keep reference detail below the decision; the mechanical figure check applies to receipt-marked figures, preserving other code and quotations.
+5. Keep reference detail below the decision. Mechanical figure checks cover figures identified by a final [fig ...] receipt line; other code and quotations remain outside those figure checks.
+
+## Common questions
+
+**Why must a reversing caveat appear with the verdict?**
+
+A reader may stop before later detail; placing a condition that changes the decision below that point can leave the reader wrong.
+
+**Does a green checker result prove the report is faithful?**
+
+No. It only means the implemented mechanical checks detected no errors; source fidelity and judgment still require checking.
+
+## It is working when
+
+- A reader can identify the verdict, material condition, practical consequence and needed action without decoding internal shorthand.
+- Claims, evidence and unchecked scope are distinguishable, with mechanical-check limitations stated when relevant.
 
 ## Subagents
 
@@ -49,6 +70,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 - [skills/human-output/SKILL.md](../../skills/human-output/SKILL.md)
 - [skills/human-output/references/human-contract.md](../../skills/human-output/references/human-contract.md)
 - [skills/human-output/references/tools/human-output-check.mjs](../../skills/human-output/references/tools/human-output-check.mjs)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

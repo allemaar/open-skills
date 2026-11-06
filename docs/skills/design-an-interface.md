@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Compare concrete module interfaces and synthesize a recommendation.
+You know the job a module must do but have not settled what callers should see. Compare three concrete boundaries, including their call sites and failure cases, before committing to one interface.
+
+Three substantially different designs include signatures and usage examples, allowing a comparison of tradeoffs before a recommendation is synthesized.
+
+## Where it fits
+
+Use this for competing module or API boundaries. Build-prototype is suited to testing behavior in a runnable artifact.
 
 **Family:** Code & architecture. **Subagents:** Conditional.
 
@@ -17,10 +23,10 @@ Compare concrete module interfaces and synthesize a recommendation.
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/design-an-interface compare interfaces for a file upload module
+/design-an-interface Compare APIs for an upload module used by a web form and a batch importer. Cover validation errors, retries and the common single-file case.
 ```
 
 ## Flow
@@ -29,6 +35,21 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Produce three different designs with signatures and examples
 3. Compare tradeoffs and synthesize a concrete recommendation
 4. Ask whether the result fits the primary use case
+
+## Common questions
+
+**Do three designs have to come from independent workers?**
+
+Fresh isolated workers are useful when available; sequential alternatives are correlated and should not be described as independent.
+
+**How different must the designs be?**
+
+They should hide and expose different information, not merely rename the same methods. Each includes concrete signatures and happy, error and awkward usage cases.
+
+## It is working when
+
+- Each design shows a concrete caller interaction and failure handling.
+- The recommendation explains its tradeoffs against the principal use case.
 
 ## Subagents
 
@@ -45,6 +66,6 @@ Designs, comparison and recommended interface.
 The guide explains usage. Read the linked skill and its applicable references before running it; they contain the full conditions and safeguards.
 
 - [skills/design-an-interface/SKILL.md](../../skills/design-an-interface/SKILL.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

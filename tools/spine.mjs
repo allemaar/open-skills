@@ -33,7 +33,7 @@ import { emitSkillDocs } from './skill-docs.mjs';
 const SKILLS = 'skills';
 const TAXONOMY = join(SKILLS, 'skills-help', 'taxonomy.yon');
 // Keep in sync with .claude-plugin/plugin.json and the newest CHANGELOG release.
-const PACK_VERSION = '3.0.1';
+const PACK_VERSION = '3.1.0';
 const LICENSE = 'Apache-2.0';
 const SRC = 'github.com/allemaar/open-skills';
 const ATTRIBUTION =

@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Combines reports into one decision-ready account while accounting for shared sources, superseded claims, conflicts, and pooled gaps.
+Several reports are individually useful but the decision depends on how they relate. One may quote another, use a different definition or supersede a figure on which someone already acted. This skill makes those relationships visible before combining findings.
+
+It keeps genuine conflicts and supersessions visible, counts repeated upstream evidence once and considers gaps across the combined coverage. Repetition alone does not make an otherwise confirmed fact uncertain.
+
+## Where it fits
+
+Use human-rewrite to repair one text, human-output to shape a new report, and human-merge to reconcile multiple reports.
 
 **Family:** Human output. **Subagents:** No subagent step prescribed.
 
@@ -18,10 +24,10 @@ Combines reports into one decision-ready account while accounting for shared sou
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/human-merge Combine these three review reports and show which evidence is independent.
+/human-merge Combine these three review reports for the release decision. Identify shared sources, contradictions, superseded findings and checks none of the reports covered.
 ```
 
 ## Flow
@@ -32,6 +38,21 @@ Install this skill in a supported runtime, then give it the relevant material an
 4. Pool coverage to reveal gaps absent from individual reports.
 5. Present combined findings and limits in decision-relevant order.
 6. Separate actual source uncertainty from source count; repeated evidence counts once without automatically lowering confirmed facts.
+
+## Common questions
+
+**Should conflicting findings be averaged into a compromise?**
+
+No. Classify the disagreement and preserve what the evidence can and cannot resolve.
+
+**What if the reports cannot be combined?**
+
+Keep the findings separate, name why each is parked and what would make it combinable. A merge with no combined claims is a valid result.
+
+## It is working when
+
+- The merged account identifies shared evidence, independent support, conflicts and superseded claims.
+- Pooled coverage and material uncertainty are visible to the decision maker.
 
 ## Subagents
 
@@ -50,6 +71,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 - [skills/human-merge/SKILL.md](../../skills/human-merge/SKILL.md)
 - [skills/human-merge/references/human-contract.md](../../skills/human-merge/references/human-contract.md)
 - [skills/human-merge/references/examples/museum-archive.md](../../skills/human-merge/references/examples/museum-archive.md)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

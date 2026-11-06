@@ -2,7 +2,13 @@
 
 [All skill guides](../README.md) · [Catalog](../../SKILLS.md)
 
-Assesses whether information could improve a pending choice enough to justify research, testing, and delay costs.
+You must choose a launch date and wonder whether a pilot is worth delaying the decision. This skill asks what signal the pilot could produce, which action would change for each signal, and whether the benefit could exceed acquisition and delay costs.
+
+With defensible probabilities, payoffs and signal accuracy it can calculate expected information value and check the perfect-information upper bound. Otherwise it gives qualitative switching conditions and missing evidence instead of invented numbers.
+
+## Where it fits
+
+Use it to decide whether more information is worth pursuing. Insight-test-assumption can design a selected test; this assessment does not launch it.
 
 **Family:** Insight & decision. **Subagents:** Conditional.
 
@@ -18,10 +24,10 @@ Assesses whether information could improve a pending choice enough to justify re
 
 ## How to use it
 
-Install this skill in a supported runtime, then give it the relevant material and a concrete request. For example:
+Start with a concrete request. For example:
 
 ```text
-/insight-value-of-information Is a customer pilot worth running before we choose a launch date?
+/insight-value-of-information Compare deciding the launch date now with this proposed customer pilot, using the attached deadline, costs and possible decisions.
 ```
 
 ## Flow
@@ -30,6 +36,16 @@ Install this skill in a supported runtime, then give it the relevant material an
 2. Describe information, signals, reliability, action changes, and costs.
 3. Calculate EVSI/EVPI only when probabilities, payoffs, and signal accuracy are supported.
 4. Recommend gathering information, deciding now, or remaining unresolved, with a stopping rule.
+
+## Common questions
+
+**What if the result arrives after the decision deadline?**
+
+It cannot improve that choice if it cannot affect the action in time, although a separate learning or compliance purpose may remain.
+
+## It is working when
+
+- The recommendation says gather, decide now or unresolved, and identifies switching conditions, costs, gaps and a stopping rule.
 
 ## Subagents
 
@@ -47,6 +63,6 @@ The guide explains usage. Read the linked skill and its applicable references be
 
 - [skills/insight-value-of-information/SKILL.md](../../skills/insight-value-of-information/SKILL.md)
 - [skills/insight-value-of-information/protocol.yon](../../skills/insight-value-of-information/protocol.yon)
-- [Installation and updates](../../README.md#install)
+- [Installation and updates](../installation.md)
 
 [License](../../LICENSE) · [Trademark policy](../../TRADEMARK.md)

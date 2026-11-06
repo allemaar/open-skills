@@ -13,6 +13,29 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+## [3.1.0] — 2026-11-05
+
+### Added
+
+- `implement-task` delivers one authorized outcome without requiring a plan file; governing approved plans and explicitly selected handoffs retain their own contracts.
+- `update-open-skills` inspects existing installed skills, selects a stable release and preserves local changes, backups and installation ownership. Already-current links need no replacement; unresolved conflicts remain explicit.
+- A shared glossary, scope statement and installation/update guide explain the library, method-specific prerequisites and source-versus-directory visibility.
+
+### Changed
+
+- Every skill guide now explains its mechanism and role, answers task-specific questions and names observable successful results, while preserving use/non-use, examples, flow, subagent conditions and source links.
+- README navigation and task journeys include the new capabilities and retain the collection's personal, practical voice. Generated catalogs, guides and directory grouping stay aligned with all 92 skills.
+- Installation guidance distinguishes editable copies, source links, the bundled installer and manager-owned updates. It names the separate current external-CLI prerequisites and does not promise unobserved automatic updates or directory reach.
+
+### Fixed
+
+- Reader flows put full-set comparison, decision stops, complete voice handoffs and current-record checks before dependent recommendations, actions or output. Conditional examples, catalog binding and preflight requirements match their owning skills.
+- Installation guidance explains first installation of the new updater and separate selection of newly added skills; guide links lead directly to that shared guidance.
+- Insight-explore’s option-count check accepts an evidenced bounded-search result with one or zero feasible candidates, matching its existing rule and prose without permitting invented alternatives.
+- Guide flows preserve required delegation stops, high-stakes question preparation order, concurrent-edit stops and existing plan formats.
+- Historical Grok validation notes omit private host and session locators while retaining dated observations and limitations.
+- The plan template uses the skill-folder execution command; human-output drops an orphaned footer fragment and its four bundled contracts use unambiguous section numbering.
+
 ## [3.0.1] — 2026-11-05
 
 ### Fixed
