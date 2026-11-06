@@ -41,7 +41,7 @@ Start with a concrete request. For example:
 
 **What if the bounded search finds fewer than three feasible options?**
 
-Report the actual one- or zero-option result and its evidence and gaps. Do not invent options or a winner to meet a count.
+Report the actual two-, one- or zero-option result and its evidence and gaps. Do not invent options or a winner to meet a count.
 
 ## It is working when
 

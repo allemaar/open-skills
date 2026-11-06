@@ -54,9 +54,9 @@ Each skill has a [usage guide](docs/README.md) covering purpose, examples, flow 
 | Skill | Use when | Example triggers | Requires | Format |
 |---|---|---|---|---|
 | [`extract-signal`](skills/extract-signal/) | An elastic signal-extraction methodology run under /multi-agent-mode. | /extract-signal, extract the signal on X and present it as Y, gather + vet + report the signal about X | — | Markdown + YON |
-| [`prime-expand`](skills/prime-expand/) | Expand a vague gap into concrete questions + named source candidates via a delegated sub-agent — caller sees only the proposed pair for confirm/edit/refuse, never the expansion reasoning. | /prime-expand, expand on this | — | Markdown + YON |
-| [`prime-fetch`](skills/prime-fetch/) | Run a noisy data-fetching tool call (Grep, Glob, WebFetch, MCP search) on the caller's behalf in a sub-agent's context — only the filtered, proof-of-work-verified digest enters the caller's window. | /prime-fetch | — | Markdown + YON |
-| [`prime-sweep`](skills/prime-sweep/) | Prime the calling agent with high-signal context from large source surfaces (multiple files, packages, folders) via parallel delegated sub-agents. | /prime-sweep | — | Markdown + YON |
+| [`prime-expand`](skills/prime-expand/) | Expand a vague gap into concrete questions + named source candidates via a delegated sub-agent — caller sees only the proposed pair for confirm/edit/refuse, never the expansion reasoning. | /prime-expand, expand on this | `caller-options` | Markdown + YON |
+| [`prime-fetch`](skills/prime-fetch/) | Run a noisy data-fetching tool call (Grep, Glob, WebFetch, MCP search) on the caller's behalf in a sub-agent's context — only the filtered, proof-of-work-verified digest enters the caller's window. | /prime-fetch | `caller-options` | Markdown + YON |
+| [`prime-sweep`](skills/prime-sweep/) | Prime the calling agent with high-signal context from large source surfaces (multiple files, packages, folders) via parallel delegated sub-agents. | /prime-sweep | `caller-options` | Markdown + YON |
 
 ## Skill library
 

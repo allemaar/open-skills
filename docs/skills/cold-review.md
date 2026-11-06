@@ -33,10 +33,10 @@ Start with a concrete request. For example:
 
 1. Classify the work and choose review breadth.
 2. For code, identify the actual selected candidate and distinguish repository standards from the approved specification, naming each source or unknown.
-3. Brief fresh reviewers on objectives and artifacts when available, keeping them read-only; otherwise label the same-session review degraded.
-4. Reopen evidence when synthesizing and verify findings.
-5. Report coverage, findings, score and threshold verdict.
-6. Bundle the required lenses within the existing reviewer budget and name any coverage gap.
+3. Bundle the required lenses within the existing reviewer budget and name any coverage gap.
+4. Brief fresh reviewers on objectives and artifacts when available, keeping them read-only; otherwise label the same-session review degraded.
+5. Reopen evidence when synthesizing and verify findings.
+6. Report coverage, findings, score and threshold verdict.
 
 ## Common questions
 

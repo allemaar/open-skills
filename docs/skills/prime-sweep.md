@@ -29,6 +29,8 @@ Start with a concrete request. For example:
 /prime-sweep Trace configuration loading across these packages, including defaults and failure paths; cite the source for each finding.
 ```
 
+**Required skills:** [caller-options](caller-options.md). Install these first.
+
 ## Flow
 
 1. Choose source mode and objective.

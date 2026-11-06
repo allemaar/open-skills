@@ -5,6 +5,8 @@ caller-options:
   venue: [inline]
   default-policy: ask
 visibility: public
+requires-skills:
+  - caller-options
 self-improvable: true
 next-skills:
   - skill: prime-sweep

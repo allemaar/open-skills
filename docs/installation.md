@@ -29,9 +29,9 @@ node install.mjs --list
 node install.mjs --runtime claude cold-review
 ```
 
-The runtime option narrows the destination. Without it the installer considers every known skills directory that already exists. --all selects the whole catalog; it is not the first-use default.
+The runtime option narrows the destination. Without it the installer considers every known skills directory that already exists. --all selects the whole catalog; it is not the first-use default. Before new or replacement copies, the installer checks declared sibling dependencies in each selected runtime. Missing siblings stop the operation before copying; it lists them without installing them automatically. Select those dependencies explicitly.
 
-Existing entries are skipped unless --force is selected. A forced replacement stages and validates first, swaps the old copy aside and restores it on swap failure; after success it removes that temporary old copy. It does not merge your edits or keep a durable backup for you. Preserve an independent backup and compare before selecting replacement. The installer refuses to overwrite junctions or symlinks. --no-stamp preserves byte identity; otherwise unsigned provenance metadata changes SKILL.md. --no-validate skips the optional parser check, not your responsibility to inspect the files.
+Existing entries are skipped unless --force is selected. A forced replacement stages and validates first, compares current destination identity and content before moving it, and checks the displaced tree before activation. It retains the previous copy in an exclusive `open-skills-backups/<run>/previous` directory beside the runtime skills directory, outside discovery, and prints the exact path. A detected intervening edit stops replacement. Failed activation retains the candidate and prior copy for inspected recovery; it does not blindly restore over another writer or automatically delete recovery material. These checks do not lock other editors or promise portable atomic exclusion. It does not merge your edits. Preserve an independent backup and compare before selecting replacement. The installer refuses to overwrite junctions or symlinks. --no-stamp preserves byte identity; otherwise unsigned provenance metadata changes SKILL.md. --no-validate skips the optional parser check, not your responsibility to inspect the files.
 
 ## Managed plugin
 
@@ -60,7 +60,7 @@ This command may acquire and execute the CLI. It is not a prerequisite for other
 
 ## Update an existing installation
 
-If your installation predates 3.1.0, separately select installation of the complete update-open-skills folder, including references/methods.md, before invoking it; alternatively use the manual update route. Newly added upstream skills such as implement-task also need separate selection. Updating an existing skill set does not install missing skills.
+If your installation predates 3.1.0, separately select installation of the complete update-open-skills folder, including references/methods.md, before invoking it; alternatively use the manual update route. Newly added upstream skills such as implement-task also need separate selection. A selective-copy update does not install missing skills. Whole-package managers or shared checkouts can expose added or retired skills; name those effects and explicitly select them with their applicable installation, deletion and shared-source gates before applying the update.
 
 [update-open-skills](skills/update-open-skills.md) first checks the installation and may correctly return already current. Use it for a selected update that preserves local edits and backups:
 

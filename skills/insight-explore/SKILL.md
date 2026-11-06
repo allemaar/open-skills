@@ -21,7 +21,7 @@ triggers:
 
 # /explore
 
-Divergent thinking — generate 3+ implementation options, then converge on a recommendation. Produces options, not plans.
+Divergent thinking — target three distinct feasible implementation options, then converge on a recommendation. Produces options, not plans.
 
 > **Structured execution spec:** [`protocol.yon`](protocol.yon). Read it for the canonical rules and step sequence; this file is explanation. The two must stay in sync — if you edit one, update the other and refresh the `@STAMP` date.
 

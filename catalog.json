@@ -1,6 +1,6 @@
 {
   "name": "open-skills",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "homepage": "https://allemaar.com",
   "repository": "https://github.com/allemaar/open-skills",
   "generated": "2026-11-06",
@@ -154,7 +154,7 @@
   ],
   "count": 92,
   "dualDoc": 54,
-  "install": "Resolve requiresSkills recursively and install dependencies first. Then copy the requested skill folder into your runtime skills dir (copy-default, not symlink) and validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.",
+  "install": "Resolve requiresSkills recursively and install dependencies first. Then copy the requested skill folder into your runtime skills dir (copy-default, not symlink) and validate its protocol.yon with @younndai/yon-parser@2. See llms.txt for the agent recipe.",
   "skills": [
     {
       "name": "agent-mailbox",
@@ -351,7 +351,7 @@
       "steps": 14,
       "install": {
         "copy": "cp -r skills/agent-mailbox <skills-dir>/agent-mailbox",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/agent-mailbox/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/agent-mailbox/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -427,7 +427,7 @@
       "steps": 4,
       "install": {
         "copy": "cp -r skills/ask-gate <skills-dir>/ask-gate",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/ask-gate/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/ask-gate/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -554,7 +554,7 @@
       "steps": 5,
       "install": {
         "copy": "cp -r skills/budget-check <skills-dir>/budget-check",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/budget-check/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/budget-check/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -603,7 +603,7 @@
       "steps": 4,
       "install": {
         "copy": "cp -r skills/build-prototype <skills-dir>/build-prototype",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/build-prototype/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/build-prototype/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -660,7 +660,7 @@
       "steps": 6,
       "install": {
         "copy": "cp -r skills/caller-options <skills-dir>/caller-options",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/caller-options/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/caller-options/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -741,7 +741,7 @@
       "steps": 7,
       "install": {
         "copy": "cp -r skills/cold-review <skills-dir>/cold-review",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/cold-review/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/cold-review/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -947,7 +947,7 @@
       "steps": 6,
       "install": {
         "copy": "cp -r skills/diff-recap <skills-dir>/diff-recap",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/diff-recap/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/diff-recap/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -1049,7 +1049,7 @@
       "steps": 10,
       "install": {
         "copy": "cp -r skills/domain-check <skills-dir>/domain-check",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/domain-check/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/domain-check/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -1104,7 +1104,7 @@
       "steps": 7,
       "install": {
         "copy": "cp -r skills/double-check <skills-dir>/double-check",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/double-check/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/double-check/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -1171,7 +1171,7 @@
       "steps": 5,
       "install": {
         "copy": "cp -r skills/extract-signal <skills-dir>/extract-signal",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/extract-signal/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/extract-signal/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -1265,7 +1265,7 @@
       "steps": 10,
       "install": {
         "copy": "cp -r skills/github-sync <skills-dir>/github-sync",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/github-sync/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/github-sync/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -1321,10 +1321,10 @@
         "no-runtime-names=MUST_NOT",
         "file-canonical=MUST_NOT"
       ],
-      "steps": 9,
+      "steps": 10,
       "install": {
         "copy": "cp -r skills/handoff <skills-dir>/handoff",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/handoff/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/handoff/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -1357,7 +1357,18 @@
           "why": "Commit and push the work the cold agent produced"
         }
       ],
-      "companions": [],
+      "companions": [
+        {
+          "path": "references/RETRO-SCHEMA.md",
+          "optional": false,
+          "why": "Local derived retro schema, required when producing the receiving report."
+        },
+        {
+          "path": "../audit-coupled-constant",
+          "optional": true,
+          "why": "Required only for a selected repair of duplicated constants; absence blocks that repair route."
+        }
+      ],
       "hasProtocol": true,
       "profile": "exec",
       "gates": [
@@ -1392,7 +1403,7 @@
       "steps": 11,
       "install": {
         "copy": "cp -r skills/handoff-execute <skills-dir>/handoff-execute",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/handoff-execute/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/handoff-execute/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -1459,7 +1470,7 @@
       "steps": 7,
       "install": {
         "copy": "cp -r skills/headless-claude <skills-dir>/headless-claude",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/headless-claude/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/headless-claude/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -1516,7 +1527,7 @@
       "steps": 6,
       "install": {
         "copy": "cp -r skills/headless-codex <skills-dir>/headless-codex",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/headless-codex/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/headless-codex/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -1569,7 +1580,7 @@
       "steps": 7,
       "install": {
         "copy": "cp -r skills/headless-gemini <skills-dir>/headless-gemini",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/headless-gemini/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/headless-gemini/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -1611,7 +1622,7 @@
       "steps": 6,
       "install": {
         "copy": "cp -r skills/headless-grok <skills-dir>/headless-grok",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/headless-grok/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/headless-grok/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -1651,7 +1662,7 @@
       "steps": 7,
       "install": {
         "copy": "cp -r skills/headless-models <skills-dir>/headless-models",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/headless-models/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/headless-models/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -1688,7 +1699,7 @@
       "steps": 6,
       "install": {
         "copy": "cp -r skills/headless-update-models <skills-dir>/headless-update-models",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/headless-update-models/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/headless-update-models/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -1724,7 +1735,7 @@
       "steps": 6,
       "install": {
         "copy": "cp -r skills/headless-usage <skills-dir>/headless-usage",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/headless-usage/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/headless-usage/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2063,7 +2074,7 @@
       "steps": 9,
       "install": {
         "copy": "cp -r skills/improve-codebase-architecture <skills-dir>/improve-codebase-architecture",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/improve-codebase-architecture/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/improve-codebase-architecture/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2127,7 +2138,7 @@
       "steps": 9,
       "install": {
         "copy": "cp -r skills/insight-adversarial <skills-dir>/insight-adversarial",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-adversarial/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/insight-adversarial/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2189,7 +2200,7 @@
       "steps": 9,
       "install": {
         "copy": "cp -r skills/insight-angles <skills-dir>/insight-angles",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-angles/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/insight-angles/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2251,7 +2262,7 @@
       "steps": 9,
       "install": {
         "copy": "cp -r skills/insight-assess <skills-dir>/insight-assess",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-assess/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/insight-assess/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2279,11 +2290,6 @@
           "skill": "plan-create",
           "phrase": "/plan-create",
           "why": "Redesign if the verdict is Not Approved"
-        },
-        {
-          "skill": "plan-execute",
-          "phrase": "/plan-execute",
-          "why": "Apply the fixes and proceed if the verdict is Approved or Conditional"
         }
       ],
       "companions": [],
@@ -2302,7 +2308,7 @@
       "steps": 11,
       "install": {
         "copy": "cp -r skills/insight-critique <skills-dir>/insight-critique",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-critique/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/insight-critique/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2377,7 +2383,7 @@
       "steps": 16,
       "install": {
         "copy": "cp -r skills/insight-cross-examine <skills-dir>/insight-cross-examine",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-cross-examine/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/insight-cross-examine/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2422,7 +2428,7 @@
       "steps": 10,
       "install": {
         "copy": "cp -r skills/insight-explore <skills-dir>/insight-explore",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-explore/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/insight-explore/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2451,7 +2457,7 @@
       "steps": 5,
       "install": {
         "copy": "cp -r skills/insight-premortem <skills-dir>/insight-premortem",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-premortem/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/insight-premortem/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2481,7 +2487,7 @@
       "steps": 5,
       "install": {
         "copy": "cp -r skills/insight-reference-class <skills-dir>/insight-reference-class",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-reference-class/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/insight-reference-class/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2532,7 +2538,7 @@
       "steps": 13,
       "install": {
         "copy": "cp -r skills/insight-retro <skills-dir>/insight-retro",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-retro/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/insight-retro/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2561,7 +2567,7 @@
       "steps": 5,
       "install": {
         "copy": "cp -r skills/insight-root-cause <skills-dir>/insight-root-cause",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-root-cause/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/insight-root-cause/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2603,7 +2609,7 @@
       "steps": 8,
       "install": {
         "copy": "cp -r skills/insight-skill-gap <skills-dir>/insight-skill-gap",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-skill-gap/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/insight-skill-gap/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2632,7 +2638,7 @@
       "steps": 5,
       "install": {
         "copy": "cp -r skills/insight-test-assumption <skills-dir>/insight-test-assumption",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-test-assumption/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/insight-test-assumption/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2661,7 +2667,7 @@
       "steps": 5,
       "install": {
         "copy": "cp -r skills/insight-value-of-information <skills-dir>/insight-value-of-information",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/insight-value-of-information/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/insight-value-of-information/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2716,7 +2722,7 @@
       "steps": 9,
       "install": {
         "copy": "cp -r skills/investigate <skills-dir>/investigate",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/investigate/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/investigate/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -2891,7 +2897,7 @@
       "steps": 11,
       "install": {
         "copy": "cp -r skills/map-maintain <skills-dir>/map-maintain",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/map-maintain/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/map-maintain/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3028,7 +3034,7 @@
       "steps": 28,
       "install": {
         "copy": "cp -r skills/monorepo-deps <skills-dir>/monorepo-deps",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/monorepo-deps/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/monorepo-deps/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3117,7 +3123,7 @@
       "steps": 3,
       "install": {
         "copy": "cp -r skills/next-skills <skills-dir>/next-skills",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/next-skills/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/next-skills/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3365,7 +3371,7 @@
       "steps": 7,
       "install": {
         "copy": "cp -r skills/orient-gaps <skills-dir>/orient-gaps",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/orient-gaps/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/orient-gaps/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3436,7 +3442,7 @@
       "steps": 7,
       "install": {
         "copy": "cp -r skills/orient-map <skills-dir>/orient-map",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/orient-map/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/orient-map/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3506,7 +3512,7 @@
       "steps": 6,
       "install": {
         "copy": "cp -r skills/orient-roadmap <skills-dir>/orient-roadmap",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/orient-roadmap/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/orient-roadmap/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3575,7 +3581,7 @@
       "steps": 7,
       "install": {
         "copy": "cp -r skills/orient-status <skills-dir>/orient-status",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/orient-status/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/orient-status/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3626,7 +3632,7 @@
       "steps": 7,
       "install": {
         "copy": "cp -r skills/plan-cleanup <skills-dir>/plan-cleanup",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-cleanup/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/plan-cleanup/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3698,7 +3704,7 @@
       "steps": 19,
       "install": {
         "copy": "cp -r skills/plan-create <skills-dir>/plan-create",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-create/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/plan-create/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3753,7 +3759,7 @@
       "steps": 13,
       "install": {
         "copy": "cp -r skills/plan-deep-dive <skills-dir>/plan-deep-dive",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-deep-dive/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/plan-deep-dive/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3855,7 +3861,7 @@
       "steps": 10,
       "install": {
         "copy": "cp -r skills/plan-execute <skills-dir>/plan-execute",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-execute/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/plan-execute/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3911,7 +3917,7 @@
       "steps": 10,
       "install": {
         "copy": "cp -r skills/plan-phases <skills-dir>/plan-phases",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/plan-phases/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/plan-phases/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3926,7 +3932,9 @@
         "/prime-expand",
         "expand on this"
       ],
-      "requiresSkills": [],
+      "requiresSkills": [
+        "caller-options"
+      ],
       "nextSkills": [
         {
           "skill": "prime-fetch",
@@ -3968,7 +3976,7 @@
       "steps": 10,
       "install": {
         "copy": "cp -r skills/prime-expand <skills-dir>/prime-expand",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/prime-expand/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/prime-expand/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -3982,7 +3990,9 @@
       "triggers": [
         "/prime-fetch"
       ],
-      "requiresSkills": [],
+      "requiresSkills": [
+        "caller-options"
+      ],
       "nextSkills": [
         {
           "skill": "prime-sweep",
@@ -4019,7 +4029,7 @@
       "steps": 9,
       "install": {
         "copy": "cp -r skills/prime-fetch <skills-dir>/prime-fetch",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/prime-fetch/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/prime-fetch/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -4033,7 +4043,9 @@
       "triggers": [
         "/prime-sweep"
       ],
-      "requiresSkills": [],
+      "requiresSkills": [
+        "caller-options"
+      ],
       "nextSkills": [
         {
           "skill": "prime-expand",
@@ -4076,7 +4088,7 @@
       "steps": 11,
       "install": {
         "copy": "cp -r skills/prime-sweep <skills-dir>/prime-sweep",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/prime-sweep/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/prime-sweep/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -4250,7 +4262,7 @@
       "steps": 5,
       "install": {
         "copy": "cp -r skills/self-improve <skills-dir>/self-improve",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/self-improve/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/self-improve/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -4317,7 +4329,7 @@
       "steps": 5,
       "install": {
         "copy": "cp -r skills/skill-library-creator <skills-dir>/skill-library-creator",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/skill-library-creator/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/skill-library-creator/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -4614,7 +4626,7 @@
       "steps": 6,
       "install": {
         "copy": "cp -r skills/verify <skills-dir>/verify",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/verify/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/verify/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."
@@ -4709,7 +4721,7 @@
       "steps": 9,
       "install": {
         "copy": "cp -r skills/write-copy-event-video <skills-dir>/write-copy-event-video",
-        "validate": "npx @younndai/yon-parser validate <skills-dir>/write-copy-event-video/protocol.yon --profile exec"
+        "validate": "npx @younndai/yon-parser@2 validate <skills-dir>/write-copy-event-video/protocol.yon --profile exec"
       },
       "license": "Apache-2.0",
       "attribution": "open-skills is a personal project by Alexandru Mares (allemaar.com), separate from the YounndAI™ product portfolio. Apache-2.0. YON (YounndAI Object Notation™), Lyt (Link Your Think™), and YounndAI™ are trademarks of MARLINK TRADING SRL."

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // install.mjs — copy-default skill installer for open-skills.
 //
-// Read this before you run it. It does exactly three things, and nothing else:
+// Read this before you run it. The selected install has these effects:
 //   1. COPIES a readable skill folder from this repo into your agent's skills dir.
 //   2. STAMPS the copied SKILL.md with where it came from (repo, ref, tree sha) under
 //      the spec's `metadata:` key. This is the ONLY edit to the copied bytes, and it
@@ -10,6 +10,8 @@
 //      are `gh skill`'s own, so `gh skill update --dry-run` can report staleness on
 //      these copies without us shipping an updater. `--no-stamp` skips it.
 //   3. VALIDATES that skill's declarative protocol.yon with the public YON parser.
+//   4. CHECKS declared sibling dependencies before copies and, for --force, retains
+//      displaced files under a sibling open-skills-backups directory for recovery.
 // No build step or local npm install. This file itself uses Node built-ins only.
 // Validation is a separate execution boundary: the first `npx` run may download
 // and execute the public parser package (pinned to major 2, not a fixed version or
@@ -33,6 +35,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { execSync, execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
 
 const PARSER = "@younndai/yon-parser@2"; // pinned to major 2; CI tracks latest 2.0.x
 const NAME_RE = /^[a-z0-9][a-z0-9-]*$/; // a skill name is also a path segment — keep it one
@@ -135,6 +138,11 @@ function loadCatalog() {
     if (!s || typeof s.name !== "string" || !NAME_RE.test(s.name)) {
       die(`refusing a catalog entry with an unsafe skill name: ${JSON.stringify(s && s.name)}`);
     }
+    if (m.has(s.name)) die(`duplicate catalog skill: ${s.name}`);
+    if (s.requiresSkills !== undefined && (!Array.isArray(s.requiresSkills) ||
+        s.requiresSkills.some((n) => typeof n !== "string" || !NAME_RE.test(n)))) {
+      die(`refusing malformed required skills for ${s.name}.`);
+    }
     if (s.companions !== undefined && !Array.isArray(s.companions)) {
       die(`refusing catalog companions for ${s.name}: expected a list.`);
     }
@@ -159,6 +167,84 @@ function loadCatalog() {
     m.set(s.name, s);
   }
   return m;
+}
+
+// Inspect the selected graph before any install writes. Existing dependency links
+// are read locators only; this does not permit overwriting a linked installation.
+function preflightDependencies(want, catalog, runtimes, force) {
+  const selected = new Set(want), missing = new Set();
+  function installed(dir, name) {
+    try {
+      const root = fs.realpathSync(path.join(dir, name));
+      const file = path.join(root, "SKILL.md");
+      if (!fs.lstatSync(file).isFile()) return false;
+      const text = fs.readFileSync(file, "utf8").replace(/\r\n/g, "\n");
+      const frontmatter = /^---\n([\s\S]*?)\n---(?:\n|$)/.exec(text)?.[1];
+      return !!frontmatter?.split("\n").some((line) => line === `name: ${name}` ||
+        line === `name: "${name}"` || line === `name: '${name}'`);
+    } catch { return false; }
+  }
+  for (const [rtName, dir] of runtimes) {
+    const complete = new Set(), active = new Set();
+    function visit(name, chain) {
+      const skill = catalog.get(name);
+      if (!skill) die(`unknown required skill in ${chain.concat(name).join(" -> ")}.`);
+      if (active.has(name)) die(`required-skill cycle: ${chain.concat(name).join(" -> ")}.`);
+      if (complete.has(name)) return;
+      active.add(name);
+      for (const dep of skill.requiresSkills || []) {
+        if (!catalog.has(dep)) die(`unknown required skill ${dep} declared by ${name}.`);
+        let pending = selected.has(dep);
+        if (pending && !force) {
+          try { fs.lstatSync(path.join(dir, dep)); pending = false; }
+          catch (e) { if (e.code !== "ENOENT") die(`cannot inspect required skill ${dep}: ${e.message}`); }
+        }
+        if (!pending && !installed(dir, dep)) missing.add(`${rtName}: ${name} requires ${dep}`);
+        visit(dep, chain.concat(name));
+      }
+      active.delete(name); complete.add(name);
+    }
+    for (const name of want) {
+      if (!catalog.has(name)) die(`"${name}" is not in the catalog. Run --list to see installable skills.`);
+      let existing = null;
+      try { existing = fs.lstatSync(path.join(dir, name)); }
+      catch (e) { if (e.code !== "ENOENT") die(`cannot inspect ${name} -> ${rtName}: ${e.message}`); }
+      if (existing && !force) continue; // Preserve ordinary no-force skips.
+      visit(name, []);
+    }
+  }
+  if (missing.size) die(`missing required siblings; no skills were copied:\n        ${[...missing].sort().join("\n        ")}\n` +
+    "        Select the missing skills explicitly, or inspect an existing installation. Nothing is installed automatically.");
+}
+
+// Full content plus filesystem identity, not timestamps alone. Comparisons also
+// run after displacement; retained backups cover the remaining external-writer
+// window. This is not a portable atomic compare-and-swap or an editor lock.
+function installationState(root) {
+  let st;
+  try { st = fs.lstatSync(root, { bigint: true }); }
+  catch (e) { if (e.code === "ENOENT") return null; throw e; }
+  assertChainIsReal(root, "installation");
+  assertNoNestedLinks(root);
+  const entries = [];
+  function visit(dir, prefix = "") {
+    for (const name of fs.readdirSync(dir).sort()) {
+      const file = path.join(dir, name), rel = prefix + name;
+      const before = fs.lstatSync(file, { bigint: true });
+      if (before.isDirectory()) { entries.push([rel + "/", String(before.dev), String(before.ino), String(before.mode)]); visit(file, rel + "/"); }
+      else if (before.isFile()) {
+        const digest = createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+        const after = fs.lstatSync(file, { bigint: true });
+        if (before.dev !== after.dev || before.ino !== after.ino || before.size !== after.size ||
+            before.mtimeNs !== after.mtimeNs || before.ctimeNs !== after.ctimeNs) {
+          die(`installation changed while reading ${file}; no replacement attempted.`);
+        }
+        entries.push([rel, String(before.dev), String(before.ino), String(before.mode), digest]);
+      } else die(`unsupported entry in installation: ${file}; no replacement attempted.`);
+    }
+  }
+  visit(root);
+  return JSON.stringify({ identity: [String(st.dev), String(st.ino), String(st.mode)], entries });
 }
 
 function targetRuntimes(forced) {
@@ -324,6 +410,7 @@ function installOne(name, catalog, runtimes, { noValidate, noStamp, force }, fai
       // and later removed. The candidate is prepared first; this copy stays live.
       assertNoNestedLinks(real);
     }
+    const inspected = installationState(dest);
     // Guard the write path itself, not only the pre-existing-destination case: when
     // nothing is there yet, everything above still has to be a real directory.
     assertChainIsReal(dir, rtName);
@@ -344,8 +431,7 @@ function installOne(name, catalog, runtimes, { noValidate, noStamp, force }, fai
     // each leaf must still be absent before use.
     const tag = `${process.pid}-${Date.now().toString(36)}`;
     const staging = path.join(dir, `.${name}.staging-${tag}`);
-    const oldDir = path.join(dir, `.${name}.old-${tag}`);
-    for (const ownedLeaf of [staging, oldDir]) {
+    for (const ownedLeaf of [staging]) {
       let leafState = null;
       try {
         leafState = fs.lstatSync(ownedLeaf);
@@ -369,46 +455,47 @@ function installOne(name, catalog, runtimes, { noValidate, noStamp, force }, fai
       const preFailures = failures.length;
       validate(staging, skill, rtName, failures);
       if (failures.length > preFailures) {
-        assertNoNestedLinks(staging);
-        fs.rmSync(staging, { recursive: true, force: true });
-        console.error(`  ${name} -> ${rtName}: validation failed in staging; existing install untouched.`);
+        console.error(`  ${name} -> ${rtName}: validation failed; existing install untouched. Candidate retained at ${staging}.`);
         continue;
       }
     }
 
-    let movedOld = false;
+    if (installationState(dest) !== inspected) {
+      die(`${name} -> ${rtName}: destination changed during staging; existing content was not replaced. Candidate retained at ${staging}.`);
+    }
+    let oldDir = null;
     if (st) {
+      const backups = path.join(path.dirname(dir), "open-skills-backups");
+      assertChainIsReal(backups, `${rtName} backup`);
+      fs.mkdirSync(backups, { recursive: true });
+      const run = fs.mkdtempSync(path.join(backups, `${name}-`));
+      assertChainIsReal(run, `${rtName} backup`);
+      oldDir = path.join(run, "previous");
+      console.log(`  recovery copy: ${oldDir}`);
+      // Preparing the recovery directory can take time too.
+      if (installationState(dest) !== inspected) die(`${name}: destination changed; candidate retained at ${staging}.`);
       try {
         fs.renameSync(dest, oldDir);
-        movedOld = true;
       } catch (e) {
         die(`${name} -> ${rtName}: could not move the existing install aside (${e.code || e.message}). ` +
           `The existing install remains active; the staged candidate remains at ${staging} for inspection.`);
       }
+      if (installationState(oldDir) !== inspected) {
+        die(`${name}: displaced installation changed; activation stopped. Previous content is at ${oldDir}; candidate at ${staging}. ` +
+          "No automatic restore over an uncertain destination was attempted.");
+      }
     }
     try {
+      // Refuse an observed new occupant. No claim is made that this check can
+      // exclude an unrelated writer between the check and the OS rename.
+      let occupant = null;
+      try { occupant = fs.lstatSync(dest); } catch (e) { if (e.code !== "ENOENT") throw e; }
+      if (occupant) throw new Error("destination acquired another occupant");
       fs.renameSync(staging, dest);
     } catch (e) {
-      let restored = false;
-      if (movedOld) {
-        try { fs.renameSync(oldDir, dest); restored = true; } catch {}
-      }
-      try {
-        assertNoNestedLinks(staging);
-        fs.rmSync(staging, { recursive: true, force: true });
-      } catch {}
       die(`${name} -> ${rtName}: swap failed (${e.code || e.message}). ` +
-        (movedOld ? (restored ? "Existing install restored." :
-          `RESTORE ALSO FAILED — the previous copy is intact at ${oldDir}.`) :
-          "Nothing was installed."));
-    }
-    if (movedOld) {
-      try {
-        assertNoNestedLinks(oldDir);
-        fs.rmSync(oldDir, { recursive: true, force: true });
-      } catch {
-        console.error(`  warning: could not remove backup ${oldDir} — the new copy is in place; remove the backup manually.`);
-      }
+        (oldDir ? `Previous copy retained at ${oldDir}. ` : "No prior copy was displaced. ") +
+        `Candidate retained at ${staging}. Inspect recovery state; no automatic restore or cleanup was attempted.`);
     }
     console.log(`  copied ${name} -> ${rtName}`);
   }
@@ -441,6 +528,7 @@ function main() {
   if (want.length === 0) die("name a skill, or pass --all. Run --list to see them.");
 
   const runtimes = targetRuntimes(opts.runtime);
+  preflightDependencies(want, catalog, runtimes, opts.force);
   console.log(`Installing ${want.length} skill(s) into: ${runtimes.map(([n]) => n).join(", ")}`);
   const failures = [];
   for (const name of want) installOne(name, catalog, runtimes, opts, failures);

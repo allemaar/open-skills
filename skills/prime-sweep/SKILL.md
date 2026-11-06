@@ -6,6 +6,8 @@ caller-options:
   modes: [single-source, multi-source, discovery, mixed]
   default-policy: ask
 visibility: public
+requires-skills:
+  - caller-options
 self-improvable: true
 next-skills:
   - skill: prime-expand

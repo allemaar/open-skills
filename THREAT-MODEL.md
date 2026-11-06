@@ -84,14 +84,35 @@ The workflow the design is built for:
 
    Exit 0 means identical and prints nothing; anything printed is behavior you have not read yet. The `-I` skips the `metadata:` block `install.mjs` stamped into your copy — that block is expected and is not drift. Note this compares your copy against *your clone*, so it also catches a copy edited locally after install, which no upstream check can see.
 
-   To check everything you have installed, loop over the intersection — don't point the command at the two parent dirs, or it will also print a full diff for every skill in the repo you *didn't* install and bury the real answer:
+   To compare installed copies with the selected checkout, report names outside the intersection — don't point the command at the two parent dirs, or it will also print a full diff for every skill in the repo you *didn't* install and bury the real answer:
 
    ```bash
-   for d in ~/.claude/skills/*/; do n=$(basename "$d"); [ -d "skills/$n" ] &&
-     git diff --no-index -I '^(metadata:|  (github-|local-path))' "$d" "skills/$n"; done
+   audit_status=0
+   compared=0
+   for d in ~/.claude/skills/*/; do
+     [ -d "$d" ] || continue
+     n=$(basename "$d")
+     if [ ! -d "skills/$n" ]; then
+       printf 'UNCHECKED installed-only skill: %s\n' "$n"
+       audit_status=1
+       continue
+     fi
+     compared=$((compared + 1))
+     if git diff --no-index -I '^(metadata:|  (github-|local-path))' "$d" "skills/$n"; then
+       :
+     else
+       diff_status=$?
+       if [ "$diff_status" -gt 1 ]; then
+         printf 'ERROR comparing %s (exit %s)\n' "$n" "$diff_status" >&2
+       fi
+       audit_status=1
+     fi
+   done
+   printf 'Compared %s installed/source pairs.\n' "$compared"
+   [ "$audit_status" -eq 0 ]
    ```
 
-   Silence means every installed skill matches your clone.
+   A successful comparison means the checked intersection matches this checkout, apart from the explicitly excluded installer stamp. Installed-only names remain unchecked and are listed; differences or comparison errors produce a nonzero final status. Zero compared pairs establishes no skill coverage. This does not prove the checkout is the latest release. Do not delete unmatched installations automatically.
 
    If you symlinked instead, there is no diff to review and no moment to review it in: the repo changes the skill your agent runs, and you find out afterwards. That is the trade, stated plainly — and it is why copying is the default.
 

@@ -33,7 +33,7 @@ import { emitSkillDocs } from './skill-docs.mjs';
 const SKILLS = 'skills';
 const TAXONOMY = join(SKILLS, 'skills-help', 'taxonomy.yon');
 // Keep in sync with .claude-plugin/plugin.json and the newest CHANGELOG release.
-const PACK_VERSION = '3.1.0';
+const PACK_VERSION = '3.1.1';
 const LICENSE = 'Apache-2.0';
 const SRC = 'github.com/allemaar/open-skills';
 const ATTRIBUTION =
@@ -258,7 +258,7 @@ function collect() {
       install: {
         copy: `cp -r ${SKILLS}/${name} <skills-dir>/${name}`,
         validate: proto
-          ? `npx @younndai/yon-parser validate <skills-dir>/${name}/protocol.yon --profile ${proto.profile}`
+          ? `npx @younndai/yon-parser@2 validate <skills-dir>/${name}/protocol.yon --profile ${proto.profile}`
           : null,
       },
       license: LICENSE,
@@ -357,7 +357,7 @@ function emitJson(skills, families, stampDay) {
         count: skills.length,
         dualDoc: skills.filter((s) => s.hasProtocol).length,
         install:
-          'Resolve requiresSkills recursively and install dependencies first. Then copy the requested skill folder into your runtime skills dir (copy-default, not symlink) and validate its protocol.yon with @younndai/yon-parser. See llms.txt for the agent recipe.',
+          'Resolve requiresSkills recursively and install dependencies first. Then copy the requested skill folder into your runtime skills dir (copy-default, not symlink) and validate its protocol.yon with @younndai/yon-parser@2. See llms.txt for the agent recipe.',
         skills,
       },
       null,
@@ -396,7 +396,7 @@ function emitLlms(skills, families) {
   L.push('   a. `test -e "$SKILLS_DIR/<name>"` — if it exists, the user already has this skill. ASK before replacing it. Do NOT just copy: `cp -r` onto an existing directory does not fail, it nests a second copy INSIDE it and leaves the old SKILL.md exactly where the runtime will keep reading it.');
   L.push('   b. `test -L "$SKILLS_DIR/<name>"` (PowerShell: `(Get-Item -Force "$SKILLS_DIR/<name>").LinkType`) — if it is a symlink or junction, STOP and ask. Copying through it writes into whatever it points at, outside the skills dir, and exits 0 while doing so. Remove the link itself (`rmdir` on Windows, `unlink` on POSIX) — never delete or copy through it.');
   L.push('5. COPY each folder in dependency-first order (copy-default, never symlink): `cp -r skills/<name> "$SKILLS_DIR/<name>"` (Windows PowerShell: `Copy-Item -Recurse skills/<name> "$SKILLS_DIR/<name>"`). Required companions are contained in that folder and travel with it; optional companions in catalog.json are repository or sibling enhancements and do not block the core skill when absent. If the copy fails because SKILLS_DIR itself does not exist, create exactly that directory and retry — do not invent a different path to make the command succeed.');
-  L.push('6. If it ships a protocol.yon, validate it: `npx @younndai/yon-parser validate "$SKILLS_DIR/<name>/protocol.yon" --profile <profile>` (profile is in catalog.json).');
+  L.push('6. If it ships a protocol.yon, validate it: `npx @younndai/yon-parser@2 validate "$SKILLS_DIR/<name>/protocol.yon" --profile <profile>` (profile is in catalog.json).');
   L.push('   EXPECT exit 0 and `✓ <the path you passed>: Valid` — the parser echoes the full path, so match on `: Valid` and the exit code, not on a fixed string. Anything else — a parse error, a non-zero exit — means STOP: report the output to the user and do not claim the skill installed cleanly.');
   L.push('7. VERIFY, then report the path: `$SKILLS_DIR/<name>/SKILL.md` exists and its first line is `---`. Tell the user the exact directory you installed into — that is what decides which runtime can see it. (This confirms the copy landed; it cannot tell you SKILLS_DIR was the right dir. Step 2 is what gets that right.)');
   L.push('That is the basic install: copy a readable folder, then optionally validate its declarative protocol. The npx validation command may download and execute the separately published parser package; inspect that boundary before using it.');
@@ -506,12 +506,24 @@ function normalize(s) {
     .replace(/^(\s*)"generated":\s*"[^"]*"/gm, '$1"generated": "<DATE>"');
 }
 
+function emitRetroSchema() {
+  const source = readFileSync('skills/handoff/SKILL.md', 'utf8').replace(/\r\n/g, '\n');
+  const start = '## Retro schema (what the cold agent emits)';
+  if (source.split(start).length !== 2) throw new Error('Canonical retro schema heading missing or ambiguous');
+  const tail = source.split(start)[1], end = '\n## Rules\n';
+  if (tail.split(end).length !== 2) throw new Error('Canonical retro schema end missing or ambiguous');
+  const section = tail.split(end)[0];
+  if (!section.includes('type: retro') || !section.includes('@GROUND_TRUTH') || !section.includes('@VERDICT')) throw new Error('Canonical retro schema is incomplete');
+  return '# Retro schema\n\nDerived from the Retro schema section in skills/handoff/SKILL.md. Edit that owner; the repository spine maintains this local resource.\n' + section;
+}
+
 function main() {
   const check = process.argv.includes('--check');
   const { skills, families } = collect();
   const stampDay = new Date().toISOString().slice(0, 10);
 
   const outputs = {
+    'skills/handoff-execute/references/RETRO-SCHEMA.md': emitRetroSchema(),
     'catalog.yon': emitYon(skills, families, stampDay),
     'catalog.json': emitJson(skills, families, stampDay),
     'llms.txt': emitLlms(skills, families),

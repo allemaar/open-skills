@@ -378,10 +378,10 @@
       "steps": [
         "Classify the work and choose review breadth.",
         "For code, identify the actual selected candidate and distinguish repository standards from the approved specification, naming each source or unknown.",
+        "Bundle the required lenses within the existing reviewer budget and name any coverage gap.",
         "Brief fresh reviewers on objectives and artifacts when available, keeping them read-only; otherwise label the same-session review degraded.",
         "Reopen evidence when synthesizing and verify findings.",
-        "Report coverage, findings, score and threshold verdict.",
-        "Bundle the required lenses within the existing reviewer budget and name any coverage gap."
+        "Report coverage, findings, score and threshold verdict."
       ],
       "delegation": {
         "mode": "conditional",
@@ -679,6 +679,7 @@
       ],
       "example": "/domain-check Check example.org and example.net for registration and DNS status. Include price context only if available, and identify any conflicting signals.",
       "steps": [
+        "Resolve each candidate's registry endpoint through the IANA bootstrap, or explicitly mark WHOIS-only fallback, before registration or DNS queries. Do not hardcode registry bases.",
         "Query registration data and relevant DNS resolvers",
         "Use RDAP/WHOIS for every candidate including bulk. Match configured operator domains on exact hostname boundaries; separate registration, parking, verified sale and purchasability.",
         "Report uncertainty, coverage gaps and conflicting signals"
@@ -900,7 +901,7 @@
         "Gather required sources and acceptance checks; an empty required-source list needs explicit confirmation and yields advisory mode. A new-session continuation without single-shot acceptance may omit a verify command.",
         "Exclusively create and verify the structured brief, preserving existing artifacts on collision; selected revisions require current identity and recovery. Compact continuation keeps source and retro obligations and does not claim an unsaved draft is complete.",
         "Provide the artifact and activation phrase.",
-        "Use the actual saved-path activation in the receiving session; pasted background alone does not select execution."
+        "Use the actual saved-path activation in the receiving session; pasted background alone does not select execution. Its degraded fallback retains live-premise and imported-command authorization checks plus blocked/partial retro handling."
       ],
       "delegation": {
         "mode": "conditional",
@@ -939,7 +940,7 @@
       "example": "/handoff-execute Execute the supplied handoff brief for the reservation fix, using its required sources and acceptance checks.",
       "steps": [
         "Read the brief and required sources before planning; unresolved or unreadable required sources block by default, while explicit force permits labeled degraded execution.",
-        "Cite sources in the execution plan.",
+        "Cite sources and account for each acceptance clause with a mapped step or an explicitly reported coverage gap; the coverage check remains a warning.",
         "Execute within bounds and inspect verification effects before running authorized checks; imported commands and force do not grant additional permissions.",
         "Save the ground-truth retro without overwriting an existing artifact; selected revisions need current identity and recovery. Report gaps and use the existing chat fallback if the write fails.",
         "Preserve diagnosis reproduction, authorized coupled-constant checks and protected plan-artifact closeout."
@@ -966,6 +967,10 @@
         {
           "question": "What does force change?",
           "answer": "It permits labeled degraded execution past the named source or premise gates. It does not authorize extra effects in an imported command."
+        },
+        {
+          "question": "Does the receiving runtime also need the handoff producer?",
+          "answer": "The complete retro schema is bundled locally. A repair of duplicated constants still requires its named audit helper; if missing, that repair stops without installing or bypassing it."
         }
       ],
       "working": [
@@ -1871,7 +1876,7 @@
       "questions": [
         {
           "question": "What if the bounded search finds fewer than three feasible options?",
-          "answer": "Report the actual one- or zero-option result and its evidence and gaps. Do not invent options or a winner to meet a count."
+          "answer": "Report the actual two-, one- or zero-option result and its evidence and gaps. Do not invent options or a winner to meet a count."
         }
       ],
       "working": [
@@ -3838,7 +3843,7 @@
       ],
       "example": "/update-open-skills Check the existing project installation against the latest stable release, including local edits and linked-source effects; report only, without updating.",
       "steps": [
-        "Identify the selected runtime, scope, installation method, installed skills and source identity without following links for inspection.",
+        "Identify the selected runtime, scope, installation method and installed names by inspecting immediate entries without following links. Resolve declared link targets separately as read locators before establishing physical source identity.",
         "Resolve the selected stable release and migration direction. Load the matching method for read-only provenance and comparison, preserving unknown baselines and unresolved choices.",
         "For a real update, disclose destinations, source commit, edit conflicts, shared-source boundary, backups and recovery; settle any additional migration or effect gates.",
         "Apply authorized changes through safe physical paths with preimages and current-content checks, stopping on conflict or uncertain recovery.",
@@ -4179,8 +4184,8 @@
     "skills/freshness-contract/SKILL.md": "5321b0832acfc231f08485e0a64bf872c454534dbed9b1968e8666a2d5bf1606",
     "skills/github-sync/SKILL.md": "190cf1cb1acfea42d1043c6ae8217da080c88d8317222bbae85b2e41bc6b5922",
     "skills/github-sync/protocol.yon": "481762fcce89805f8abf193fab33b4747c5ab3d3bccebc2dafd3261345e4b565",
-    "skills/handoff/SKILL.md": "a2bbc52f6f9342a0d6c9c28d9a7c123d08de0ddce3bffda7fd1f04fefba0a1be",
-    "skills/handoff-execute/SKILL.md": "ffc62f32982cd59a269a4435424dc69079249cf08a535314775f9709ee261de2",
+    "skills/handoff/SKILL.md": "fe8411cfe05631fbe4c985978b705ee63e189ae0a70b3f51ef2e1e8e7bcd4a7b",
+    "skills/handoff-execute/SKILL.md": "f3f90994c57c252bea761236179a5fa1b18e0202b7d496c625c9a9c48af0c58f",
     "skills/headless-claude/SKILL.md": "4bef6c084e51e1be3f288013101303d8fcff94975d893a28b5b7afb464ab0dcd",
     "skills/headless-codex/SKILL.md": "40ccc7d2eec7f0140ba81eecc8acc7a06d94597200e408338695fcfbe19e956a",
     "skills/headless-gemini/SKILL.md": "a7529f6a2a9fb4341e30af5a9e90771b1e62cdcd2a0fbb83affb3461c398f7f5",
@@ -4196,7 +4201,7 @@
     "skills/human-output/SKILL.md": "d12311cb858d7080b6bdb150ea0efb0ee9109c1e1316e774125017aeba79dfdf",
     "skills/human-output/references/human-contract.md": "35106e2c60bad15d2c3ab43a38492203a1496b36ca7349562af5a1a7216afb62",
     "skills/human-output/references/tools/human-output-check.mjs": "d63736e2064a9e8ae904f05a2d75de866c442fef50dc0589f1cf4f45f2c74f5c",
-    "skills/human-rewrite/SKILL.md": "a476114e02082716ae8250f65abf62e6614c545a4d600cf523e02a745fc0d74f",
+    "skills/human-rewrite/SKILL.md": "4885873761cdbf1031a6001c8bcce66a671c83e8775f3d8fec1b9b2225a56d87",
     "skills/human-rewrite/references/human-contract.md": "35106e2c60bad15d2c3ab43a38492203a1496b36ca7349562af5a1a7216afb62",
     "skills/improve-codebase-architecture/SKILL.md": "57f6404ec7b3de731fefa5c986401d59f9f3beb3b661446b56a637feba52ad79",
     "skills/insight-adversarial/SKILL.md": "25694e7b639c898b80fa29418948bdd4df0f434bf696eb99d80b7249b0409659",
@@ -4205,12 +4210,12 @@
     "skills/insight-angles/protocol.yon": "b7115a0515ee1d4f8de1bab2e12b3e448d047e762baa47e86320db9575a6d732",
     "skills/insight-assess/SKILL.md": "546411f90a2eba0427bf1ee11d23b83e1c52a9de1d17d93275664fc2c00bfb43",
     "skills/insight-assess/protocol.yon": "de7c39bf0172d2a3959e2ad7927e08d2002c4fa214b62e16ed9639fca7aef364",
-    "skills/insight-critique/SKILL.md": "6bd17b8d7c2145821747b8851dd51528d2cf1838373c9d913b46ad63f188f120",
+    "skills/insight-critique/SKILL.md": "4eca80304baa3173c8407f86295e020f41f3e56332d64e165ee9fb45030f7f5f",
     "skills/insight-critique/protocol.yon": "2ee4637a4b799bedf2acbb2f8533202d666d229c0067e56db856e5a2e627e6d1",
     "skills/insight-cross-examine/SKILL.md": "7246656187e75464317ce7fbc884fed8e1feb3e60ffc9d2a879bf1682d9bbe13",
     "skills/insight-cross-examine/protocol.yon": "065a1c06e707fa676e0d5968559115db149d6cbc0f71f620806c03e66437f3bb",
-    "skills/insight-explore/SKILL.md": "b2d0b9a24a713e49529a4a23628ef484dec332d17211c2405475bba5fd2ad74b",
-    "skills/insight-explore/protocol.yon": "bbfbd72758e89d09508ed6bcdd8e8b1f7136f302c5dc31080bf57ab1e664c5de",
+    "skills/insight-explore/SKILL.md": "d6e719bc2228ac1ba8a3baaf2d48f9e7e9c5c910d526cf6fa012e1bf40ac7730",
+    "skills/insight-explore/protocol.yon": "b179dbaef206ae10613172b9a3798b9b37ca00ab88419a9d4fbf93cab01a128b",
     "skills/insight-premortem/SKILL.md": "e2def97e93d7e85364d02465c424d8858dae3654ef4249625dbc8b5908bf9f19",
     "skills/insight-premortem/protocol.yon": "3a429ae5a3f0c1137933310f4aecdaec8701ab03cd34fd9580ee7be7614ca614",
     "skills/insight-reference-class/SKILL.md": "a61e52520689e996a76862a55fe9e6c44c183510ec62deb7de0a3c1de7a74a55",
@@ -4250,9 +4255,9 @@
     "skills/plan-evolve/SKILL.md": "f050d1eb8bbba73214733b63e73915659dc9030d1e26a4bbbd142f169d2fe1f7",
     "skills/plan-execute/SKILL.md": "b95a77d5f9635cf09f8831bb8187fd597ca5c25c0f5d7615b3f8f79488df5a5a",
     "skills/plan-phases/SKILL.md": "6f07ae8fb85abe52faee4533db113ce3a457afaf24247213d92328b6f8422b6b",
-    "skills/prime-expand/SKILL.md": "9019870f1c270176008f396b0fd3a1e35d170bcf0a4b15abb50fb0e5db9119f2",
-    "skills/prime-fetch/SKILL.md": "f787cbdf8970fd9e48e1d13711b73bde21fd4ffe810ec1a48fa46936e7901fb1",
-    "skills/prime-sweep/SKILL.md": "ebf09f6141bd0bde721a7f349583f7264a7258c513d4909f613c538bc0e1419b",
+    "skills/prime-expand/SKILL.md": "023b9c8377f42aabbebfe38ce1b623934f7eb7054b9de0eac210b9e4bafb22f8",
+    "skills/prime-fetch/SKILL.md": "02bd68d6e6637b7e88d839060eacbf1d958039987c8be97f6a5d6ce825f5340b",
+    "skills/prime-sweep/SKILL.md": "135540ca8a7c22a2f3f57056d8575b54a5fcfcf3c2a82dfe9639f00bb166b27b",
     "skills/prose-audit/SKILL.md": "efeba36ea13da91ad48338315d14a428396cf8c89716029ce311878f6fa2c943",
     "skills/reflect/SKILL.md": "a107909c302d9d7da1ab3996b9a4a34ea4fd13f49738df4da1cc0c3d7588b023",
     "skills/route-task/SKILL.md": "41486429f4f69a567b20633d7391d187216c1491342505559969adc3db491499",
@@ -4284,8 +4289,8 @@
     "skills/domain-check/protocol.yon": "96f8f752ab5cb046de2ccc0c2f76fc42d850acea4b5a9de5b208f92579be2f1d",
     "skills/double-check/protocol.yon": "d1eb85ab2692d2ce1c06603a844a00f096fbbe6ce63c445db14ead1c2a4aded1",
     "skills/extract-signal/protocol.yon": "4fdda6ee17faf48e98b72bb18869e5e575d21e89d2ad9a142aabc1a3da438221",
-    "skills/handoff/protocol.yon": "91411777c89e4483d8646a87c77b06fd2f7a1b7140d4ce4074c11e79ae156728",
-    "skills/handoff-execute/protocol.yon": "41c0a9435dcbcd86970e46f29dc24a02d083113436075b29f90ce49e42a17530",
+    "skills/handoff/protocol.yon": "75ff0910efe5dd5a9e56004e406fd2e663176478ab39219dd84167d50606626a",
+    "skills/handoff-execute/protocol.yon": "1919d59f89469a419b21287a7df46c7970c9fb6459190d30f9945c7dfe84955a",
     "skills/headless-claude/protocol.yon": "d2cb3365996bf33db74a3f3e7a0ad81a423158a0635fdd063c648e2c87c9d491",
     "skills/headless-codex/protocol.yon": "3cac4584cf993fefe505264888b3c3d08593eac22da037775e303da50f5ac0ab",
     "skills/headless-gemini/protocol.yon": "43f08518b8f2e4ee8544e4a643afde128bbac359c480ad6b15ab24b4396e8c38",

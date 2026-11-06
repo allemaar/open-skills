@@ -150,7 +150,7 @@ decoration, it is restoring a scope boundary.
 
 | Shorthand | Naive flattening | Faithful translation |
 |---|---|---|
-| "p < 0.05" | "proven" | "unlikely to be chance alone (p < 0.05) — this says nothing about how large the effect is" |
+| "p < 0.05" | "proven" | "under the stated null model and assumptions, results at least this extreme have probability below 5% (p < 0.05); this gives neither the probability the null is true nor the effect size" |
 | "force majeure" | "we can cancel" | "a party can suspend obligations only for listed uncontrollable events (force majeure) — the list is in section 12" |
 | "idiopathic" | "unexplained, probably minor" | "no identified cause (idiopathic) — the cause was not found, not ruled out" |
 

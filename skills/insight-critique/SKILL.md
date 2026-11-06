@@ -14,9 +14,6 @@ next-skills:
   - skill: plan-create
     phrase: "/plan-create"
     why: "Redesign if the verdict is Not Approved"
-  - skill: plan-execute
-    phrase: "/plan-execute"
-    why: "Apply the fixes and proceed if the verdict is Approved or Conditional"
 triggers:
   - "/critique"
   - "review this"

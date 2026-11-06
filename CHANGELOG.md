@@ -13,6 +13,22 @@ or guard changes that neither add nor remove a skill.
 
 ## [Unreleased]
 
+## [3.1.1] — 2026-11-06
+
+### Fixed
+
+- Selective installer runs check declared sibling dependencies before copying and report missing names without silently expanding the selected installation.
+- Forced replacements detect intervening edits and retain displaced copies outside skill discovery; failed runs preserve recovery evidence instead of blindly restoring or deleting it.
+- Degraded handoff activations retain premise and imported-command authorization checks. Receivers bundle the canonical retro schema locally; acceptance coverage keeps its warning behavior and successor offers follow their declared conditions.
+- Prime skills declare their existing Caller Options prerequisite. Explore summaries target three feasible options without inventing alternatives, and the statistical rewrite example preserves null-model assumptions.
+- Reader flows, installed-copy comparison coverage, first-install setup, pinned parser examples, update-method effects and Handler terminology match their owning procedures.
+
+### Updating
+
+- Select required sibling skills explicitly when installing into an incomplete runtime; the installer now stops before copying and lists missing dependencies rather than adding them automatically.
+- Forced replacements retain recovery copies under `open-skills-backups` beside the runtime skills directory. Keep these copies until separately reviewed for cleanup; failed activation may require inspected manual recovery.
+- No skills were added, removed or renamed. Existing installed copies change only through their selected update method; publishing this patch does not update local installations.
+
 ## [3.1.0] — 2026-11-05
 
 ### Added

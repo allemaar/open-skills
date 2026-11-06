@@ -1,5 +1,7 @@
 # Glossary
 
+**Handler:** the participant directing the work and owning its objective and relevant approval gates. The caller may be a person or another agent; an agent caller does not replace human approval where applicable rules require it.
+
 **Skill:** a reusable capability whose entrypoint is SKILL.md. Its description helps an agent select it; its body and selected resources define the procedure.
 
 **Protocol:** an accompanying protocol.yon declaring inspectable steps, rules and gates. Structural validation does not prove an agent follows them. Not every skill needs a protocol.

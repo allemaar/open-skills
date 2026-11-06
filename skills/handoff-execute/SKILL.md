@@ -4,6 +4,13 @@ description: Execute a handoff brief with enforced source-read discipline — lo
 disable-model-invocation: true
 visibility: public
 self-improvable: true
+companions:
+  - path: references/RETRO-SCHEMA.md
+    optional: false
+    why: "Local derived retro schema, required when producing the receiving report."
+  - path: ../audit-coupled-constant
+    optional: true
+    why: "Required only for a selected repair of duplicated constants; absence blocks that repair route."
 next-skills:
   - skill: cold-review
     phrase: "/cold-review"
@@ -135,6 +142,7 @@ Run each plan step in order. **On-demand `@SOURCES.optional` reads are citation-
 **Diagnosis-mode briefs (`mode: diagnosis` in frontmatter) — reproduction-first rule.** If the brief names specific files as "affected" by a flake/bug, treat the list as a *hypothesis*, not ground truth. Before applying fixes, reproduce the named failure mode and verify each listed file is actually involved. Briefs carry forward stale bisects from prior phases; the actually-affected file set may differ (new file flake-prone, listed file unrelated). Surface any divergence in `@DELTA_FROM_BRIEF` before declaring the fix complete.
 
 **Coupled-constant edits.** If the plan involves touching a constant whose value is duplicated across multiple files (retry budgets, timeouts, page sizes, magic numbers, feature flags), invoke `/audit-coupled-constant` as part of this phase — author-maintained `SEE ALSO` comments are documentation, not enforcement, and one missed site means the trail silently lies.
+Before entering that duplicated-constant repair route, verify `audit-coupled-constant` is available. If absent, stop the affected repair and report the missing capability; do not skip the audit or install it implicitly. Other handoff routes remain available.
 
 If a step fails, do not silently retry — emit a partial retro (`verdict: partial`) listing what was completed, what failed, and why.
 
@@ -152,7 +160,7 @@ $VAULT/Handoffs/{project}/retros/{date}-{slug}-retro.md
 
 Inspect the destination leaf and every existing ancestor without following links; refuse symlinks, junctions, mounts, unknown reparse points or equivalent redirects, including backup and staging paths. Create new artifacts exclusively. On collision preserve existing bytes: choose a fresh identity within the authorized scope or use an explicitly selected revision. For revisions, retain a recoverable preimage, require current bytes/revision to match the selected record immediately before replacement, and use the destination owner’s protected writer. Stop the affected write if identity changes or those guarantees are unavailable; never roll back over concurrent edits. Read back the result and report only actual saves. Keep the retro linked to its originating brief, including blocked retros. A collision or refused write uses the existing chat-only write-failure fallback; do not overwrite an earlier retro.
 
-The retro frontmatter and body schema is canonical in [`handoff/SKILL.md` "Retro schema"](../handoff/SKILL.md). Mandatory YON blocks: `@OUTCOME_DELIVERED`, `@GROUND_TRUTH` (with `artifacts_modified` paths+hashes and `git_diff_summary`), `@GATE_STATUS` (per-clause `verified|unverified|failed` + gate-suite outcome), `@DELTA_FROM_BRIEF`, `@RECOMMENDATIONS`, `@VERDICT`. Narrative-only retros are rejected at write time. For evidenced zero task changes, use `artifacts_modified="none"` and state the observation; exclude the retro itself. Record the actual scoped diff comparison or its unavailable reason, preserving pre-existing changes. If mutation state is unknown, report unknown with a blocked task outcome, never "none"; the existing write-failure rule may still make the final verdict partial. Real changes still require paths and hashes; source/premise failures, resume hints and all mandatory blocks remain.
+Load the complete local [retro schema](references/RETRO-SCHEMA.md) before producing the retro. It is derived from the canonical `handoff/SKILL.md` Retro schema by the repository spine owner, and travels with this skill; the producer need not be installed. Mandatory YON blocks: `@OUTCOME_DELIVERED`, `@GROUND_TRUTH` (with `artifacts_modified` paths+hashes and `git_diff_summary`), `@GATE_STATUS` (per-clause `verified|unverified|failed` + gate-suite outcome), `@DELTA_FROM_BRIEF`, `@RECOMMENDATIONS`, `@VERDICT`. Narrative-only retros are rejected at write time. For evidenced zero task changes, use `artifacts_modified="none"` and state the observation; exclude the retro itself. Record the actual scoped diff comparison or its unavailable reason, preserving pre-existing changes. If mutation state is unknown, report unknown with a blocked task outcome, never "none"; the existing write-failure rule may still make the final verdict partial. Real changes still require paths and hashes; source/premise failures, resume hints and all mandatory blocks remain.
 
 Also emit the retro as a chat block — full content if <500 lines, otherwise a summary + path — so the originating session can paste it back for second-assessment.
 

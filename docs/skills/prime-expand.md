@@ -29,6 +29,8 @@ Start with a concrete request. For example:
 /prime-expand I need to understand why the cache layer causes stale results before changing invalidation.
 ```
 
+**Required skills:** [caller-options](caller-options.md). Install these first.
+
 ## Flow
 
 1. Provide the seed gap and context.

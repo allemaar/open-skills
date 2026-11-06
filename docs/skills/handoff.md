@@ -35,7 +35,7 @@ Start with a concrete request. For example:
 2. Gather required sources and acceptance checks; an empty required-source list needs explicit confirmation and yields advisory mode. A new-session continuation without single-shot acceptance may omit a verify command.
 3. Exclusively create and verify the structured brief, preserving existing artifacts on collision; selected revisions require current identity and recovery. Compact continuation keeps source and retro obligations and does not claim an unsaved draft is complete.
 4. Provide the artifact and activation phrase.
-5. Use the actual saved-path activation in the receiving session; pasted background alone does not select execution.
+5. Use the actual saved-path activation in the receiving session; pasted background alone does not select execution. Its degraded fallback retains live-premise and imported-command authorization checks plus blocked/partial retro handling.
 
 ## Common questions
 

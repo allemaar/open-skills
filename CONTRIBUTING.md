@@ -84,7 +84,7 @@ When adding a skill, add exactly one assignment to `SkillFamilies` using an exis
 - [ ] The skill has exactly one assignment in `skills/skills-help/taxonomy.yon`
 - [ ] `SKILL.md` reads in the repo's voice and is honest about limits
 - [ ] If a `protocol.yon` is included, it validates:
-      `npx @younndai/yon-parser validate skills/<name>/protocol.yon --profile exec`
+      `npx @younndai/yon-parser@2 validate skills/<name>/protocol.yon --profile exec`
 - [ ] No personal or machine-specific data anywhere in the contribution
 - [ ] Conformance stays green — your change does not break [CONFORMANCE.md](CONFORMANCE.md) or the CI check
 - [ ] First prominent public uses follow the canonical forms `YON (YounndAI Object Notation™)`, `Lyt (Link Your Think™)`, and `YounndAI™`; see [`TRADEMARK.md`](TRADEMARK.md)

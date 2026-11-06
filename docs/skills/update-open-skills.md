@@ -32,7 +32,7 @@ Start with a concrete request. For example:
 
 ## Flow
 
-1. Identify the selected runtime, scope, installation method, installed skills and source identity without following links for inspection.
+1. Identify the selected runtime, scope, installation method and installed names by inspecting immediate entries without following links. Resolve declared link targets separately as read locators before establishing physical source identity.
 2. Resolve the selected stable release and migration direction. Load the matching method for read-only provenance and comparison, preserving unknown baselines and unresolved choices.
 3. For a real update, disclose destinations, source commit, edit conflicts, shared-source boundary, backups and recovery; settle any additional migration or effect gates.
 4. Apply authorized changes through safe physical paths with preimages and current-content checks, stopping on conflict or uncertain recovery.

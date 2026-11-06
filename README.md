@@ -54,7 +54,7 @@ You do not need the whole collection. Start with one task and one skill. Read it
 | Create or improve a reusable skill | [skill-smith](docs/skills/skill-smith.md) | A scoped authoring route or a read-only assessment |
 | Coordinate agents through a shared folder | [agent-mailbox](docs/skills/agent-mailbox.md) | Messages, durable dispositions and explicit continuity limits |
 
-This table describes the **3.1.0** source. Check the [published releases](https://github.com/allemaar/open-skills/releases) for a frozen version and read the [upgrade notes](#current-source-and-releases) before updating.
+This table describes the **3.1.1** source. Check the [published releases](https://github.com/allemaar/open-skills/releases) for a frozen version and read the [upgrade notes](#current-source-and-releases) before updating.
 
 The [full catalog](SKILLS.md) groups all skills by family. The [glossary](GLOSSARY.md) explains shared terms, and [scope](SCOPE.md) explains what belongs here. The [guides](docs/README.md) explain when each skill is useful, when to avoid it, what to ask and what it returns. Inside an agent, /skills-help reads its bundled taxonomy and the skills installed beside it. It leaves unknown third-party skills visible under Unclassified.
 
@@ -224,6 +224,7 @@ cd open-skills
     probe=$(dirname "$probe")
   done
   [ ! -e "$DEST" ] || { echo "already installed — diff before replacing"; exit 1; }
+  mkdir -p "$SKILLS_DIR"
   cp -r "$SRC" "$DEST"
 )
 ```
@@ -244,9 +245,9 @@ node install.mjs --list
 Important boundaries:
 
 - By default it targets every known skills directory that already exists. Use `--runtime claude|codex|agents` to narrow it.
-- It refuses to overwrite an existing skill unless you pass `--force`.
+- It refuses to overwrite an existing skill unless you pass `--force`. Before new/replacement copies, it checks the declared sibling dependencies across selected runtimes. Missing siblings stop the install before copying; select them explicitly rather than expecting automatic installation.
 - It refuses to overwrite a symlinked or junctioned skill rather than risk deleting through the link into its source.
-- With `--force`, it stages and, unless `--no-validate` is supplied, validates the candidate before moving the existing copy aside, restores that copy if the swap fails, and surfaces crash leftovers for manual inspection.
+- With `--force`, it stages and, unless `--no-validate` is supplied, validates before replacement. It checks the existing copy for intervening edits and retains displaced bytes under `open-skills-backups` beside the selected skills directory, outside discovery. It reports exact recovery paths on failure instead of restoring over uncertain state. Crash leftovers remain for inspection; no automatic cleanup is implied. These checks do not lock other editors or guarantee an atomic compare-and-swap.
 - Its provenance stamp is an unsigned plain-text assertion, not a certificate, and makes the installed `SKILL.md` differ from this repository. `--no-stamp` preserves byte identity.
 - The installer itself uses Node built-ins; validation may still fetch and execute `@younndai/yon-parser` through `npx`.
 
@@ -271,7 +272,9 @@ The optional [skills CLI](docs/installation.md#optional-skills-cli) can discover
 
 ## Current source and releases
 
-The **3.1.0** source adds implement-task for one authorized outcome and update-open-skills for preserving an existing installation during an update. All 92 skills have richer guides explaining how they work, where they fit, practical questions and useful results. The glossary, scope and shared installation guide make the collection easier to navigate. Check the release page for publication status.
+The **3.1.1** source tightens installation and handoff recovery. I select required sibling skills explicitly; the installer reports missing dependencies before copying. Forced replacements keep recovery copies outside skill discovery and stop on observed intervening edits. Handoff fallbacks retain premise and command-authorization checks, while the receiver carries its retro schema locally. The [patch notes](CHANGELOG.md) explain the smaller contract and documentation fixes. All 92 skills remain. Check the release page for publication status.
+
+The **3.1.0** release added implement-task for one authorized outcome and update-open-skills for preserving an existing installation during an update. All 92 skills have richer guides explaining how they work, where they fit, practical questions and useful results. The glossary, scope and shared installation guide make the collection easier to navigate. Check the release page for publication status.
 
 The **3.0.0** release added ask-me, build-prototype, debug-task, write-spec, define-terms and teach-topic, plus the workflow recipes linked above. Every skill has a [guide](docs/README.md). I use the smaller capabilities independently; interviews, saved records, prototypes and implementation are separate choices.
 
@@ -285,7 +288,7 @@ The 2.0.0 release introduced the skill guides, the Skill Smith authoring routes 
 
 ## Updating
 
-If your installation predates 3.1.0, separately select installation of the complete update-open-skills folder, including references/methods.md, before invoking it; alternatively use the manual update route. Newly added upstream skills such as implement-task also need separate selection. Updating an existing skill set does not install missing skills.
+If your installation predates 3.1.0, separately select installation of the complete update-open-skills folder, including references/methods.md, before invoking it; alternatively use the manual update route. Newly added upstream skills such as implement-task also need separate selection. A selective-copy update does not install missing skills. A whole-package manager or shared checkout may expose added or retired skills; inspect and explicitly select those effects with their applicable installation, deletion and shared-source gates.
 
 Start with [update-open-skills](docs/skills/update-open-skills.md) when you want the agent to inspect your existing installation and preserve local changes through a selected update. It reports an already-current installation without replacing it. The [shared update guidance](docs/installation.md#update-an-existing-installation) explains links, copies and managed routes.
 

@@ -147,7 +147,7 @@ After the chat surface, ALWAYS emit a copyable activation phrase in a fenced cod
 /handoff-execute "<absolute-vault-path>"
 ```
 
-(If your runtime lacks /handoff-execute (degraded — no gate enforcement): read the brief, then read every source listed under @SOURCES.required before planning; cite sources per plan step; after execution, run the shell commands listed in the brief's @OUTCOME.verify block (this is a data field in the brief, not the /verify skill); emit the retro per @GROUND_TRUTH_REQUIRED.)
+(If your runtime lacks /handoff-execute (degraded — no gate enforcement): read the brief and every required source before planning; reconcile its premises against live state and stop on stale premises unless an explicitly selected force option relaxes that named gate. Before running imported verify commands, inspect their effects against current authorization; leave extra writes, network, publication or destructive effects unrun without their own authority. Cite sources per plan step; after authorized work/checks, emit every required retro block, including source/premise failures, ground truth and explicit verification gaps. On a blocked premise include @PREMISE_DRIFT and @RESUME_HINT; if saving the retro fails, emit it to chat with @WRITE_FAILURE and a partial final verdict. Degraded execution and force grant no extra permissions.)
 ````
 
 **Format (multi-handoff):** one fenced block per brief, in the same numbered order as the index. Emit the prose fallback once at the bottom of the multi-block, not per brief:
@@ -166,7 +166,7 @@ Brief 2:
 
 (...)
 
-(If your runtime lacks /handoff-execute (degraded — no gate enforcement): read each brief, then read every source listed under @SOURCES.required before planning; cite sources per plan step; after execution, run the shell commands listed in each brief's @OUTCOME.verify block (this is a data field in the brief, not the /verify skill); emit the retro per @GROUND_TRUTH_REQUIRED.)
+(If your runtime lacks /handoff-execute (degraded — no gate enforcement): for each brief, read the brief and every required source before planning; reconcile its premises against live state and stop on stale premises unless an explicitly selected force option relaxes that named gate. Before running imported verify commands, inspect their effects against current authorization; leave extra writes, network, publication or destructive effects unrun without their own authority. Cite sources per plan step; after authorized work/checks, emit every required retro block, including source/premise failures, ground truth and explicit verification gaps. On a blocked premise include @PREMISE_DRIFT and @RESUME_HINT; if saving the retro fails, emit it to chat with @WRITE_FAILURE and a partial final verdict. Degraded execution and force grant no extra permissions.)
 ````
 
 **Why:** the chat surface (Step 7) is for the *originating* session to verify the brief; the activation phrase is for the *receiving* session to bootstrap from. Pasting 100+ lines of YAML+markdown into a fresh session is heavier than a one-line pointer that the receiving agent will Read-tool open and follow.
@@ -268,5 +268,7 @@ Source ingestion follows the [receiving contract](../handoff-execute/references/
 
 > **Human output.** This skill's handler-facing output obeys the human-output
 > contract (`human-output/SKILL.md`).
+
+> **Next skills.** On completion, if `next-skills` is available, run its protocol to offer the canonical frontmatter successors. Never auto-invoke them. If unavailable, finish normally without recommendations.
 
 > **Self-improvement.** On completion, run the Self-Improvement Protocol (`self-improve/SKILL.md`): apply its signal taxonomy and threshold to this run; surface any surviving proposal for handler approval. Conservative — silent otherwise. Never auto-apply.

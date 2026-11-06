@@ -29,6 +29,8 @@ Start with a concrete request. For example:
 /prime-fetch Run one read-only search for 'retry budget' in the supplied repository and return only relevant matches with source lines and exact proof.
 ```
 
+**Required skills:** [caller-options](caller-options.md). Install these first.
+
 ## Flow
 
 1. Specify one read-only call and objective.

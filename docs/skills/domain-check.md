@@ -31,9 +31,10 @@ Start with a concrete request. For example:
 
 ## Flow
 
-1. Query registration data and relevant DNS resolvers
-2. Use RDAP/WHOIS for every candidate including bulk. Match configured operator domains on exact hostname boundaries; separate registration, parking, verified sale and purchasability.
-3. Report uncertainty, coverage gaps and conflicting signals
+1. Resolve each candidate's registry endpoint through the IANA bootstrap, or explicitly mark WHOIS-only fallback, before registration or DNS queries. Do not hardcode registry bases.
+2. Query registration data and relevant DNS resolvers
+3. Use RDAP/WHOIS for every candidate including bulk. Match configured operator domains on exact hostname boundaries; separate registration, parking, verified sale and purchasability.
+4. Report uncertainty, coverage gaps and conflicting signals
 
 ## Common questions
 
